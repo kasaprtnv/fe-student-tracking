@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { setLocale } from "@/actions/setLocale";
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { setLocale } from '@/actions/setLocale';
 
 export default function LanguageSwitcher() {
   const [pending, startTransition] = useTransition();
@@ -17,8 +17,8 @@ export default function LanguageSwitcher() {
 
   return (
     <div>
-      <button onClick={() => changeLanguage("en")}>EN</button>
-      <button onClick={() => changeLanguage("th")}>TH</button>
+      <button onClick={() => changeLanguage('en')}>EN</button>
+      <button onClick={() => changeLanguage('th')}>TH</button>
     </div>
   );
 }

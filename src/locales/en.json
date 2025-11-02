@@ -1,6 +1,6 @@
 {
-    "homepage": {
-        "title": "Student Tracker",
-        "welcomeMessage": "Welcome to the Student Tracker Application!"
-    }
+  "homepage": {
+    "title": "Student Tracker",
+    "welcomeMessage": "Welcome to the Student Tracker Application!"
+  }
 }
