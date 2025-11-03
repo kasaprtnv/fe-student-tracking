@@ -6,6 +6,7 @@ export default function HomePage() {
   return (
     <>
       <h1>{t('homepage.title')}</h1>
+      <p>{t('homepage.welcomeMessage')}</p>
       <LanguageSwitcher />
     </>
   );

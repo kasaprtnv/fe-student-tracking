@@ -102,7 +102,7 @@ export const useStudent = () => {
     async (data: Omit<Student, 'id'>): Promise<Student> => {
       const result = await dispatch(createStudent(data));
       if (createStudent.fulfilled.match(result)) {
-        return result.payload;
+        return result.payload.receivedData;
       }
       throw new Error('Failed to create student');
     },

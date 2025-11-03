@@ -1,7 +1,7 @@
 'use client';
 
 import { useStudent } from '@/hooks/use-student';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 
 export default function StudentExample() {
@@ -34,8 +34,8 @@ export default function StudentExample() {
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
 
   // Replace useEffect with useSWR
-  const { mutate } = useSWR(
-    'STUDENTS_LIST',
+  useSWR(
+    `STUDENTS_LIST`,
     async () => {
       await fetchAllStudents();
     },
@@ -57,7 +57,6 @@ export default function StudentExample() {
         surname: 'Doe',
       });
       // Trigger revalidation after successful creation
-      mutate();
     } catch (error) {
       console.error('Failed to create student:', error);
     }
@@ -69,7 +68,6 @@ export default function StudentExample() {
         firstname: 'Updated Name',
       });
       // Trigger revalidation after successful update
-      mutate();
     } catch (error) {
       console.error('Failed to update student:', error);
     }
@@ -79,7 +77,6 @@ export default function StudentExample() {
     try {
       await removeStudent(id);
       // Trigger revalidation after successful deletion
-      mutate();
     } catch (error) {
       console.error('Failed to delete student:', error);
     }
@@ -92,7 +89,6 @@ export default function StudentExample() {
       await removeMultipleStudents(selectedStudentIds);
       setSelectedStudentIds([]);
       // Trigger revalidation after successful deletion
-      mutate();
     } catch (error) {
       console.error('Failed to delete students:', error);
     }
@@ -152,7 +148,6 @@ export default function StudentExample() {
 
         {/* Add Refresh Button */}
         <button
-          onClick={() => mutate()}
           disabled={loader}
           className="rounded bg-green-500 px-4 py-2 text-white disabled:opacity-50"
         >
@@ -244,10 +239,7 @@ export default function StudentExample() {
         <p>Filtered students: {filteredStudents.length}</p>
         <p>Search query: {searchQuery}</p>
         <p>Store action: {storeAction}</p>
-        <button
-          onClick={() => mutate()}
-          className="mt-2 rounded bg-blue-500 px-3 py-1 text-sm text-white"
-        >
+        <button className="mt-2 rounded bg-blue-500 px-3 py-1 text-sm text-white">
           Force Revalidate
         </button>
       </div>
