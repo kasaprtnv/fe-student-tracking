@@ -11,7 +11,7 @@ import { RootState } from '@/store';
 // Async thunks
 export const fetchStudents = createAsyncThunk('students/fetchAll', async () => {
   const response = await studentService.getAll();
-  return response;
+  return response.data;
 });
 
 export const fetchStudentById = createAsyncThunk(
@@ -26,7 +26,7 @@ export const fetchStudentOptions = createAsyncThunk(
   'students/fetchOptions',
   async () => {
     const response = await studentService.getOptions();
-    return response;
+    return response.data;
   },
 );
 
@@ -42,7 +42,7 @@ export const updateStudent = createAsyncThunk(
   'students/update',
   async ({ id, data }: { id: string; data: Partial<Student> }) => {
     const response = await studentService.update(id, data);
-    return { id, data: response };
+    return { id, data: response.updatedFields };
   },
 );
 
@@ -157,7 +157,8 @@ const studentSlice = createSlice({
       })
       .addCase(createStudent.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        state.studentMap[action.payload.id] = action.payload;
+        state.studentMap[action.payload.receivedData.id] =
+          action.payload.receivedData;
       })
       .addCase(createStudent.rejected, (state, action) => {
         state.storeAction = 'none';

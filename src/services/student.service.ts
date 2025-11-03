@@ -1,65 +1,77 @@
 import { Student } from '@/types/student';
-import { SelectOption } from '@/types/index';
+import {
+  SelectOption,
+  IApiGetResponse,
+  IApiPostResponse,
+  IApiPatchResponse,
+  IApiDeleteResponse,
+} from '@/types/index';
+import { APIService } from '@/services/api.service';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-class StudentService {
-  private async request<T>(
-    endpoint: string,
-    options?: RequestInit,
-  ): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-      ...options,
-    });
-
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
-    }
-
-    return response.json();
+class StudentService extends APIService {
+  constructor(baseURL?: string) {
+    super(baseURL ?? API_BASE_URL);
   }
 
-  async getAll(): Promise<Student[]> {
-    return this.request<Student[]>('/students');
+  async getAll(): Promise<IApiGetResponse<Student>> {
+    return this.get('/students')
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 
   async getById(id: string): Promise<Student> {
-    return this.request<Student>(`/students/${id}`);
+    return this.get(`/students/${id}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 
-  async getOptions(): Promise<SelectOption[]> {
-    return this.request<SelectOption[]>('/students/options');
+  async getOptions(): Promise<IApiGetResponse<SelectOption>> {
+    return this.get('/students/options')
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 
-  async create(data: Omit<Student, 'id'>): Promise<Student> {
-    return this.request<Student>('/students', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+  async create(data: Omit<Student, 'id'>): Promise<IApiPostResponse<Student>> {
+    return this.post('/students', data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 
-  async update(id: string, data: Partial<Student>): Promise<Partial<Student>> {
-    return this.request<Partial<Student>>(`/students/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
+  async update(
+    id: string,
+    data: Partial<Student>,
+  ): Promise<IApiPatchResponse<Student>> {
+    return this.patch(`/students/${id}`, data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 
-  async delete(id: string): Promise<void> {
-    return this.request<void>(`/students/${id}`, {
-      method: 'DELETE',
-    });
+  async deleteById(id: string): Promise<IApiDeleteResponse> {
+    return this.delete(`/students/${id}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 
-  async deleteMultiple(ids: string[]): Promise<void> {
-    return this.request<void>('/students/bulk-delete', {
-      method: 'DELETE',
-      body: JSON.stringify({ ids }),
-    });
+  async deleteMultiple(ids: string[]): Promise<IApiDeleteResponse> {
+    return this.delete('/students/bulk-delete', ids)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
   }
 }
 

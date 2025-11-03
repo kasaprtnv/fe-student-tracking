@@ -1,7 +1,8 @@
 'use client';
 
 import { useStudent } from '@/hooks/use-student';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import useSWR from 'swr';
 
 export default function StudentExample() {
   const {
@@ -32,10 +33,21 @@ export default function StudentExample() {
 
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
 
-  useEffect(() => {
-    // Fetch all students on component mount
-    fetchAllStudents().catch(console.error);
-  }, [fetchAllStudents]);
+  // Replace useEffect with useSWR
+  const { mutate } = useSWR(
+    'STUDENTS_LIST',
+    async () => {
+      await fetchAllStudents();
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: true,
+      shouldRetryOnError: true,
+      errorRetryCount: 3,
+      errorRetryInterval: 5000,
+    },
+  );
 
   const handleCreate = async () => {
     try {
@@ -44,6 +56,8 @@ export default function StudentExample() {
         firstname: 'John',
         surname: 'Doe',
       });
+      // Trigger revalidation after successful creation
+      mutate();
     } catch (error) {
       console.error('Failed to create student:', error);
     }
@@ -54,6 +68,8 @@ export default function StudentExample() {
       await updateExistingStudent(id, {
         firstname: 'Updated Name',
       });
+      // Trigger revalidation after successful update
+      mutate();
     } catch (error) {
       console.error('Failed to update student:', error);
     }
@@ -62,6 +78,8 @@ export default function StudentExample() {
   const handleDelete = async (id: string) => {
     try {
       await removeStudent(id);
+      // Trigger revalidation after successful deletion
+      mutate();
     } catch (error) {
       console.error('Failed to delete student:', error);
     }
@@ -73,6 +91,8 @@ export default function StudentExample() {
     try {
       await removeMultipleStudents(selectedStudentIds);
       setSelectedStudentIds([]);
+      // Trigger revalidation after successful deletion
+      mutate();
     } catch (error) {
       console.error('Failed to delete students:', error);
     }
@@ -129,6 +149,15 @@ export default function StudentExample() {
               : `Delete Selected (${selectedStudentIds.length})`}
           </button>
         )}
+
+        {/* Add Refresh Button */}
+        <button
+          onClick={() => mutate()}
+          disabled={loader}
+          className="rounded bg-green-500 px-4 py-2 text-white disabled:opacity-50"
+        >
+          {loader ? 'Refreshing...' : 'Refresh Data'}
+        </button>
       </div>
 
       {/* Pagination Controls */}
@@ -215,6 +244,12 @@ export default function StudentExample() {
         <p>Filtered students: {filteredStudents.length}</p>
         <p>Search query: {searchQuery}</p>
         <p>Store action: {storeAction}</p>
+        <button
+          onClick={() => mutate()}
+          className="mt-2 rounded bg-blue-500 px-3 py-1 text-sm text-white"
+        >
+          Force Revalidate
+        </button>
       </div>
     </div>
   );
