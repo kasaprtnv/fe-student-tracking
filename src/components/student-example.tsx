@@ -34,27 +34,16 @@ export default function StudentExample() {
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
 
   // Replace useEffect with useSWR
-  useSWR(
-    `STUDENTS_LIST`,
-    async () => {
-      await fetchAllStudents();
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: true,
-      shouldRetryOnError: true,
-      errorRetryCount: 3,
-      errorRetryInterval: 5000,
-    },
-  );
+  useSWR(`STUDENTS_LIST`, async () => {
+    await fetchAllStudents();
+  });
 
   const handleCreate = async () => {
     try {
       await createNewStudent({
-        stu_id: Math.floor(Math.random() * 100000),
+        studentId: Math.floor(Math.random() * 100000),
         firstname: 'John',
-        surname: 'Doe',
+        lastname: 'Doe',
       });
       // Trigger revalidation after successful creation
     } catch (error) {
@@ -199,9 +188,9 @@ export default function StudentExample() {
                 />
                 <div>
                   <h3 className="font-medium">
-                    {student.firstname} {student.surname}
+                    {student.firstname} {student.lastname}
                   </h3>
-                  <p className="text-gray-600">ID: {student.stu_id}</p>
+                  <p className="text-gray-600">ID: {student.studentId}</p>
                   {student.createdAt && (
                     <p className="text-sm text-gray-500">
                       Created:{' '}
