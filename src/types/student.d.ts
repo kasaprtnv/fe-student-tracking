@@ -1,11 +1,11 @@
 export interface Student {
   id: string;
-  stu_id: number;
+  studentId: number;
   firstname: string;
-  surname: string;
+  lastname: string;
+  degree?: string;
   createdAt?: string;
   updatedAt?: string;
-  inactive?: boolean;
 }
 
 export interface StudentState {

@@ -230,12 +230,10 @@ export const selectFilteredStudentIds = createSelector(
     if (!query) return students.map((s) => s.id);
 
     const filteredStudents = students.filter((student) => {
-      if (student.inactive) return false;
-
       return (
         student.firstname?.toLowerCase().includes(query) ||
-        student.surname?.toLowerCase().includes(query) ||
-        student.stu_id?.toString().includes(query) ||
+        student.lastname?.toLowerCase().includes(query) ||
+        student.studentId?.toString().includes(query) ||
         student.createdAt?.toLowerCase().includes(query) ||
         student.updatedAt?.toLowerCase().includes(query)
       );
