@@ -49,7 +49,7 @@ export const updateStudent = createAsyncThunk(
 export const deleteStudent = createAsyncThunk(
   'students/delete',
   async (id: string) => {
-    await studentService.delete(id);
+    await studentService.deleteById(id); // แก้ไขเป็น deleteById
     return id;
   },
 );
@@ -108,7 +108,7 @@ const studentSlice = createSlice({
       })
       .addCase(fetchStudents.fulfilled, (state, action) => {
         state.loader = false;
-        // Sort by firstname like in MobX version
+        // Sort by firstname
         const sortedStudents = action.payload.sort((a, b) =>
           a.firstname.localeCompare(b.firstname),
         );
@@ -122,6 +122,7 @@ const studentSlice = createSlice({
       .addCase(fetchStudents.rejected, (state, action) => {
         state.loader = false;
         state.error = action.error.message || 'Failed to fetch students';
+        console.error('Fetch students error:', action.error); // เพิ่ม debug log
       })
 
       // Fetch by ID
@@ -220,7 +221,7 @@ export const selectSearchQuery = (state: RootState) =>
   state.students.searchQuery;
 export const selectStudentState = (state: RootState) => state.students;
 
-// Filtered Students (คล้าย computed filteredChannelIds)
+// Filtered Students
 export const selectFilteredStudentIds = createSelector(
   [selectStudentMap, selectSearchQuery],
   (studentMap, searchQuery) => {
@@ -243,7 +244,7 @@ export const selectFilteredStudentIds = createSelector(
   },
 );
 
-// All Student IDs (คล้าย computed workspaceChannelIds)
+// All Student IDs
 export const selectAllStudentIds = createSelector(
   [selectStudentMap],
   (studentMap) => Object.keys(studentMap),

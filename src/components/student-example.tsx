@@ -41,7 +41,7 @@ export default function StudentExample() {
   const handleCreate = async () => {
     try {
       await createNewStudent({
-        studentId: Math.floor(Math.random() * 100000),
+        studentId: '000000000',
         firstname: 'John',
         lastname: 'Doe',
       });

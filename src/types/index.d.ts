@@ -11,6 +11,10 @@ export interface IApiGetResponse<T> {
   pageCount: number;
 }
 
+export interface IApiGetByIdResponse<T> {
+  data: T;
+}
+
 export interface IApiPostResponse<T> {
   receivedData: T;
   success: boolean;

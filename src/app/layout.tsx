@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import React from 'react';
 import ReduxProvider from '@/providers/ReduxProvider';
 import SWRProvider from '@/providers/SwrProvider';
+import './globals.css';
 
 type Props = {
   children: React.ReactNode;
