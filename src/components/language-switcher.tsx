@@ -5,7 +5,7 @@ import { useTransition } from 'react';
 import { setLocale } from '@/actions/setLocale';
 
 export default function LanguageSwitcher() {
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const router = useRouter();
 
   function changeLanguage(locale: string) {
