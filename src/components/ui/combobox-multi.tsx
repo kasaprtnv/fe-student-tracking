@@ -9,25 +9,25 @@ export interface Option {
   value: string;
 }
 
-interface SingleComboboxProps {
+interface MultiSelectProps {
   options: Option[];
-  value?: string;
-  onChange: (value: string | null) => void;
+  value: string[];
+  onChange: (value: string[]) => void;
   placeholder?: string;
   className?: string;
   disabled?: boolean;
-  clearable?: boolean; // สามารถลบการเลือกได้
+  maxDisplayItems?: number;
 }
 
-export function SingleCombobox({
+export function MultiSelect({
   options,
   value,
   onChange,
   placeholder = 'เลือกรายการ...',
   className,
   disabled = false,
-  clearable = true,
-}: SingleComboboxProps) {
+  maxDisplayItems = 4,
+}: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,20 +38,23 @@ export function SingleCombobox({
     option.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // Get selected option
-  const selectedOption = options.find((option) => option.value === value);
+  // Get selected options
+  const selectedOptions = options.filter((option) =>
+    value.includes(option.value),
+  );
 
   // Handle option selection
   const handleOptionSelect = (optionValue: string) => {
-    onChange(optionValue);
-    setIsOpen(false);
-    setSearchTerm('');
+    const newValue = value.includes(optionValue)
+      ? value.filter((v) => v !== optionValue)
+      : [...value, optionValue];
+    onChange(newValue);
   };
 
-  // Clear selection
-  const clearSelection = (event: React.MouseEvent) => {
+  // Remove selected item
+  const removeItem = (valueToRemove: string, event: React.MouseEvent) => {
     event.stopPropagation();
-    onChange(null);
+    onChange(value.filter((v) => v !== valueToRemove));
   };
 
   // Close dropdown when clicking outside
@@ -70,20 +73,18 @@ export function SingleCombobox({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle keyboard navigation
-  useEffect(() => {
-    if (!isOpen) return;
+  // Display text for selected items
+  const getDisplayText = () => {
+    if (selectedOptions.length === 0) {
+      return placeholder;
+    }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-        setSearchTerm('');
-      }
-    };
+    if (selectedOptions.length <= maxDisplayItems) {
+      return selectedOptions.map((option) => option.label).join(', ');
+    }
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+    return `เลือกแล้ว ${selectedOptions.length} รายการ`;
+  };
 
   return (
     <div ref={containerRef} className={cn('relative w-full', className)}>
@@ -97,23 +98,50 @@ export function SingleCombobox({
         )}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
-        {/* Selected Option Display */}
-        <span
-          className={cn(
-            'flex-1 truncate',
-            selectedOption ? 'text-foreground' : 'text-muted-foreground',
+        <div className="flex flex-1 flex-wrap gap-1">
+          {/* Selected Items Display */}
+          {selectedOptions.length > 0 &&
+          selectedOptions.length <= maxDisplayItems ? (
+            selectedOptions.map((option) => (
+              <span
+                key={option.value}
+                className="bg-secondary inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium"
+              >
+                {option.label}
+                {!disabled && (
+                  <button
+                    type="button"
+                    onClick={(e) => removeItem(option.value, e)}
+                    className="hover:bg-secondary-foreground/20 ml-1 h-3 w-3 rounded-sm"
+                  >
+                    <X className="h-2 w-2" />
+                  </button>
+                )}
+              </span>
+            ))
+          ) : (
+            <span
+              className={cn(
+                'truncate',
+                selectedOptions.length === 0
+                  ? 'text-muted-foreground'
+                  : 'text-foreground',
+              )}
+            >
+              {getDisplayText()}
+            </span>
           )}
-        >
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
+        </div>
 
-        {/* Clear Button */}
-        {selectedOption && clearable && !disabled && (
+        {/* Clear All Button */}
+        {selectedOptions.length > 0 && !disabled && (
           <button
             type="button"
-            onClick={clearSelection}
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange([]);
+            }}
             className="hover:bg-secondary mr-2 h-4 w-4 rounded-sm"
-            title="ลบการเลือก"
           >
             <X className="h-3 w-3" />
           </button>
@@ -151,43 +179,31 @@ export function SingleCombobox({
                 ไม่พบรายการที่ค้นหา
               </div>
             ) : (
-              <>
-                {/* Clear option (if clearable) */}
-                {clearable && selectedOption && (
+              filteredOptions.map((option) => {
+                const isSelected = value.includes(option.value);
+                return (
                   <div
-                    className="hover:bg-accent hover:text-accent-foreground flex cursor-pointer items-center border-b px-3 py-2 text-sm"
-                    onClick={() => {
-                      onChange(null);
-                      setIsOpen(false);
-                      setSearchTerm('');
-                    }}
+                    key={option.value}
+                    className={cn(
+                      'hover:bg-accent hover:text-accent-foreground flex cursor-pointer items-center justify-between px-2 py-2 text-sm',
+                      isSelected && 'bg-accent/50',
+                    )}
+                    onClick={() => handleOptionSelect(option.value)}
                   >
-                    <span className="text-muted-foreground italic">
-                      ไม่เลือกรายการใด
-                    </span>
+                    <span className="flex-1">{option.label}</span>
+                    {isSelected && <Check className="text-primary h-4 w-4" />}
                   </div>
-                )}
-
-                {/* Options */}
-                {filteredOptions.map((option) => {
-                  const isSelected = option.value === value;
-                  return (
-                    <div
-                      key={option.value}
-                      className={cn(
-                        'hover:bg-accent hover:text-accent-foreground flex cursor-pointer items-center justify-between px-3 py-2 text-sm',
-                        isSelected && 'bg-accent/50',
-                      )}
-                      onClick={() => handleOptionSelect(option.value)}
-                    >
-                      <span className="flex-1">{option.label}</span>
-                      {isSelected && <Check className="text-primary h-4 w-4" />}
-                    </div>
-                  );
-                })}
-              </>
+                );
+              })
             )}
           </div>
+
+          {/* Footer with count */}
+          {selectedOptions.length > 0 && (
+            <div className="text-muted-foreground border-t px-2 py-2 text-xs">
+              เลือกแล้ว: {selectedOptions.length} รายการ
+            </div>
+          )}
         </div>
       )}
     </div>
