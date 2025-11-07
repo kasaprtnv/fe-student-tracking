@@ -66,8 +66,7 @@ export default function TestComboboxPage() {
   return (
     <div className="container mx-auto space-y-12 p-8">
       <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">🎯 Combobox Testing Zone</h1>
-        <p className="text-gray-600">ทดสอบ Multi-Select Combobox ทั้ง 2 แบบ</p>
+        <h1 className="mb-4 text-4xl font-bold">Combobox</h1>
       </div>
 
       {/* ============ MultiSelect ธรรมดา ============ */}
