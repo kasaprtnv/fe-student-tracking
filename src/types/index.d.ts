@@ -27,3 +27,8 @@ export interface IApiPatchResponse<T> {
   success: boolean;
   message: string;
 }
+
+export interface IPdf {
+  url: string;
+  filename: string;
+}
