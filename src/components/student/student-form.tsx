@@ -2,6 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -20,11 +21,11 @@ import {
 } from '@/validations/student';
 import { Student } from '@/types/student';
 import { useStudent } from '@/hooks/use-student';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 interface StudentFormProps {
   mode: 'create' | 'edit';
-  student?: Student; // มี id อยู่ในนี้แล้วถ้าเป็น edit mode
+  student?: Student;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -35,11 +36,18 @@ export default function StudentForm({
   onSuccess,
   onCancel,
 }: StudentFormProps) {
+  const t = useTranslations('student-form.errors');
+  const tLabel = useTranslations('student-form.label');
   const { createNewStudent, updateExistingStudent, storeAction } = useStudent();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEdit = mode === 'edit';
-  const schema = isEdit ? updateStudentSchema : createStudentSchema;
+
+  // สร้าง schema พร้อม translations
+  const schema = useMemo(
+    () => (isEdit ? updateStudentSchema(t) : createStudentSchema(t)),
+    [isEdit, t],
+  );
 
   const form = useForm<CreateStudentFormData | UpdateStudentFormData>({
     resolver: zodResolver(schema),
@@ -67,7 +75,6 @@ export default function StudentForm({
 
     try {
       if (isEdit && student?.id) {
-        // ใช้ id จาก prop student
         await updateExistingStudent(student.id, {
           ...data,
         });
@@ -80,7 +87,6 @@ export default function StudentForm({
       form.reset();
       onSuccess?.();
     } catch (error) {
-      // Handle error (optional)
       console.error('Error submitting form:', error);
     } finally {
       setIsSubmitting(false);
@@ -107,10 +113,10 @@ export default function StudentForm({
             name="studentId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Student ID</FormLabel>
+                <FormLabel>{tLabel('student-id')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter first name"
+                    placeholder={tLabel('student-id-placeholder')}
                     {...field}
                     disabled={isSubmitting || storeAction !== 'none'}
                   />
@@ -119,16 +125,16 @@ export default function StudentForm({
               </FormItem>
             )}
           />
-          {/* First Name */}
+
           <FormField
             control={form.control}
             name="firstname"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel>{tLabel('first-name')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter first name"
+                    placeholder={tLabel('first-name-placeholder')}
                     {...field}
                     disabled={isSubmitting || storeAction !== 'none'}
                   />
@@ -138,16 +144,15 @@ export default function StudentForm({
             )}
           />
 
-          {/* Last Name */}
           <FormField
             control={form.control}
             name="lastname"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel>{tLabel('last-name')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter last name"
+                    placeholder={tLabel('last-name-placeholder')}
                     {...field}
                     disabled={isSubmitting || storeAction !== 'none'}
                   />
@@ -157,16 +162,15 @@ export default function StudentForm({
             )}
           />
 
-          {/* Degree */}
           <FormField
             control={form.control}
             name="degree"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Degree (Optional)</FormLabel>
+                <FormLabel>{tLabel('degree')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter degree"
+                    placeholder={tLabel('degree-placeholder')}
                     {...field}
                     disabled={isSubmitting || storeAction !== 'none'}
                   />
@@ -176,14 +180,12 @@ export default function StudentForm({
             )}
           />
 
-          {/* Root Error Message */}
           {form.formState.errors.root && (
             <div className="text-destructive bg-destructive/10 border-destructive/20 rounded-md border p-3 text-sm">
               {form.formState.errors.root.message}
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex gap-3 pt-4">
             <Button
               type="submit"
