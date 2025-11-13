@@ -2,5 +2,29 @@
   "homepage": {
     "title": "ตัวติดตามนักเรียน",
     "welcomeMessage": "ยินดีต้อนรับสู่แอปพลิเคชันตัวติดตามนักเรียน!"
+  },
+  "student-form": {
+    "label": {
+      "student-id": "รหัสนักศึกษา",
+      "student-id-placeholder": "กรอกรหัสนักศึกษา",
+      "first-name": "ชื่อ",
+      "first-name-placeholder": "กรอกชื่อ",
+      "last-name": "นามสกุล",
+      "last-name-placeholder": "กรอกนามสกุล",
+      "degree": "วุฒิการศึกษา (ไม่บังคับ)",
+      "degree-placeholder": "กรอกวุฒิการศึกษา"
+    },
+    "errors": {
+      "student-id-required": "กรุณากรอกรหัสนักศึกษา",
+      "first-name-required": "กรุณากรอกชื่อ",
+      "first-name-min": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
+      "first-name-max": "ชื่อต้องไม่เกิน 50 ตัวอักษร",
+      "first-name-invalid": "ชื่อต้องเป็นตัวอักษรเท่านั้น",
+      "last-name-required": "กรุณากรอกนามสกุล",
+      "last-name-min": "นามสกุลต้องมีอย่างน้อย 2 ตัวอักษร",
+      "last-name-max": "นามสกุลต้องไม่เกิน 50 ตัวอักษร",
+      "last-name-invalid": "นามสกุลต้องเป็นตัวอักษรเท่านั้น",
+      "degree-max": "วุฒิการศึกษาต้องไม่เกิน 100 ตัวอักษร"
+    }
   }
 }
