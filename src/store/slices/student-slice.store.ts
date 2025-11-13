@@ -108,9 +108,9 @@ const studentSlice = createSlice({
       })
       .addCase(fetchStudents.fulfilled, (state, action) => {
         state.loader = false;
-        // Sort by firstname
+        // Sort by firstName
         const sortedStudents = action.payload.sort((a, b) =>
-          a.firstname.localeCompare(b.firstname),
+          a.firstName.localeCompare(b.firstName),
         );
 
         // Clear existing map and rebuild
@@ -165,6 +165,19 @@ const studentSlice = createSlice({
         state.storeAction = 'none';
         state.error = action.error.message || 'Failed to create student';
       })
+
+      // try {
+      //   state.storeAction = 'creating';
+      //   const result = this.studentService.create(data);
+
+      //   state.studentMap[result.receivedData.id] =
+      //     result.receivedData;
+
+      //   state.storeAction = 'none';
+      // } catch (error) {
+      //   state.storeAction = 'none';
+      //   state.error = action.error.message || 'Failed to create student';
+      // }
 
       // Update
       .addCase(updateStudent.pending, (state) => {
@@ -232,9 +245,9 @@ export const selectFilteredStudentIds = createSelector(
 
     const filteredStudents = students.filter((student) => {
       return (
-        student.firstname?.toLowerCase().includes(query) ||
-        student.lastname?.toLowerCase().includes(query) ||
-        student.studentId?.toString().includes(query) ||
+        student.firstName?.toLowerCase().includes(query) ||
+        student.lastName?.toLowerCase().includes(query) ||
+        student.code?.toString().includes(query) ||
         student.createdAt?.toLowerCase().includes(query) ||
         student.updatedAt?.toLowerCase().includes(query)
       );

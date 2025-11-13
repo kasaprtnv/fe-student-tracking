@@ -1,8 +1,8 @@
 export interface Student {
   id: string;
-  studentId: string;
-  firstname: string;
-  lastname: string;
+  code: string;
+  firstName: string;
+  lastName: string;
   degree?: string;
   createdAt?: string;
   updatedAt?: string;

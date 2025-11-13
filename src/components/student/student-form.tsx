@@ -54,15 +54,15 @@ export default function StudentForm({
     defaultValues:
       isEdit && student
         ? {
-            studentId: student.studentId || '',
-            firstname: student.firstname || '',
-            lastname: student.lastname || '',
+            code: student.code || '',
+            firstName: student.firstName || '',
+            lastName: student.lastName || '',
             degree: student.degree || '',
           }
         : {
-            studentId: '',
-            firstname: '',
-            lastname: '',
+            code: '',
+            firstName: '',
+            lastName: '',
             degree: '',
           },
     mode: 'onChange',
@@ -101,7 +101,7 @@ export default function StudentForm({
         </h2>
         <p className="text-muted-foreground mt-1 text-center text-sm">
           {isEdit
-            ? `Editing: ${student?.firstname} ${student?.lastname}`
+            ? `Editing: ${student?.firstName} ${student?.lastName}`
             : 'Fill in the details below'}
         </p>
       </div>
@@ -110,7 +110,7 @@ export default function StudentForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
-            name="studentId"
+            name="code"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tLabel('student-id')}</FormLabel>
@@ -128,7 +128,7 @@ export default function StudentForm({
 
           <FormField
             control={form.control}
-            name="firstname"
+            name="firstName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tLabel('first-name')}</FormLabel>
@@ -146,7 +146,7 @@ export default function StudentForm({
 
           <FormField
             control={form.control}
-            name="lastname"
+            name="lastName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tLabel('last-name')}</FormLabel>
