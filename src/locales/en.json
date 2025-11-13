@@ -2,5 +2,29 @@
   "homepage": {
     "title": "Student Tracker",
     "welcomeMessage": "Welcome to the Student Tracker Application!"
+  },
+  "student-form": {
+    "label": {
+      "student-id": "Student ID",
+      "student-id-placeholder": "Enter student ID",
+      "first-name": "First Name",
+      "first-name-placeholder": "Enter first name",
+      "last-name": "Last Name",
+      "last-name-placeholder": "Enter last name",
+      "degree": "Degree (Optional)",
+      "degree-placeholder": "Enter degree"
+    },
+    "errors": {
+      "student-id-required": "Student ID is required",
+      "first-name-required": "First name is required",
+      "first-name-min": "First name must be at least 2 characters",
+      "first-name-max": "First name must not exceed 50 characters",
+      "first-name-invalid": "First name can only contain letters",
+      "last-name-required": "Last name is required",
+      "last-name-min": "Last name must be at least 2 characters",
+      "last-name-max": "Last name must not exceed 50 characters",
+      "last-name-invalid": "Last name can only contain letters",
+      "degree-max": "Degree must not exceed 100 characters"
+    }
   }
 }

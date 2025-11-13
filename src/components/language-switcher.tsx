@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { setLocale } from '@/actions/setLocale';
+import { Button } from './ui/button';
 
 export default function LanguageSwitcher() {
   const [, startTransition] = useTransition();
@@ -16,9 +17,9 @@ export default function LanguageSwitcher() {
   }
 
   return (
-    <div>
-      <button onClick={() => changeLanguage('en')}>EN</button>
-      <button onClick={() => changeLanguage('th')}>TH</button>
+    <div className="space-x-2">
+      <Button onClick={() => changeLanguage('en')}>EN</Button>
+      <Button onClick={() => changeLanguage('th')}>TH</Button>
     </div>
   );
 }

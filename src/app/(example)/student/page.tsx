@@ -113,7 +113,7 @@ export default function StudentPage() {
     console.log('getAllFromCache: ', getAllFromCache());
   }, [filteredStudents, loader, getAllFromCache]);
 
-  if (loader && getAllFromCache().length === 0) {
+  if (loader) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
@@ -254,10 +254,10 @@ export default function StudentPage() {
 
                     <div>
                       <h3 className="font-medium">
-                        {student.firstname} {student.lastname}
+                        {student.firstName} {student.lastName}
                       </h3>
                       <p className="text-muted-foreground text-sm">
-                        ID: {student.studentId}
+                        ID: {student.code}
                       </p>
                       {student.degree && (
                         <Badge variant="secondary" className="mt-1">
