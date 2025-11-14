@@ -67,18 +67,20 @@ export default function Sidebar() {
           role="button"
           tabIndex={0}
           className={cn(
-            'flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-100',
-            open ? 'justify-start' : 'justify-center',
+            'flex cursor-pointer items-center rounded-lg p-2 transition-colors hover:bg-gray-100',
+            open ? 'justify-start gap-3' : 'justify-center',
           )}
         >
           <Avatar className={cn('h-10 w-10', open ? '' : 'mx-auto')}>
             <AvatarImage src="/avatar.png" alt="Avatar" />
             <AvatarFallback>สม</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">สมชาย ใจดี</span>
-            <span className="text-muted-foreground text-xs">ผู้ดูแลระบบ</span>
-          </div>
+          {open && (
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">สมชาย ใจดี</span>
+              <span className="text-muted-foreground text-xs">ผู้ดูแลระบบ</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
