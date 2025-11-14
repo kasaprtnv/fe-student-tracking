@@ -62,6 +62,55 @@ export const deleteStudents = createAsyncThunk(
   },
 );
 
+export const importStudents = createAsyncThunk(
+  'students/import',
+  async (students: Omit<Student, 'id'>[], { rejectWithValue }) => {
+    try {
+      const response = await studentService.importStudents(students);
+      return response.receivedData;
+    } catch (error: unknown) {
+      const err = error as {
+        message?: string;
+        code?: string;
+        response?: {
+          status?: number;
+          data?: { message?: string; error?: string; statusCode?: number };
+        };
+      };
+
+      // Log full error for debugging
+      console.error('Import students error:', err);
+      console.error('Error response:', err.response);
+
+      // Check if it's a connection error
+      if (
+        err.message?.includes('ERR_CONNECTION_REFUSED') ||
+        err.code === 'ERR_NETWORK'
+      ) {
+        return rejectWithValue(
+          'Backend server is not running. Please start the server at http://localhost:3001',
+        );
+      }
+
+      // Handle different HTTP status codes
+      if (err.response?.status === 500) {
+        const errorMsg =
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          'Internal server error. Check backend logs.';
+        return rejectWithValue(`Backend Error (500): ${errorMsg}`);
+      }
+
+      // Return the actual error message from the API
+      return rejectWithValue(
+        err.response?.data?.message ||
+          err.message ||
+          'Failed to import students',
+      );
+    }
+  },
+);
+
 const initialState: StudentState = {
   studentMap: {},
   searchQuery: '',
@@ -224,6 +273,25 @@ const studentSlice = createSlice({
       .addCase(deleteStudents.rejected, (state, action) => {
         state.storeAction = 'none';
         state.error = action.error.message || 'Failed to delete students';
+      })
+
+      // Import Multiple Students
+      .addCase(importStudents.pending, (state) => {
+        state.storeAction = 'creating';
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(importStudents.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+        state.loader = false;
+        action.payload.forEach((student: Student) => {
+          state.studentMap[student.id] = student;
+        });
+      })
+      .addCase(importStudents.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.loader = false;
+        state.error = action.error.message || 'Failed to import students';
       });
   },
 });

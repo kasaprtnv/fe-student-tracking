@@ -9,6 +9,7 @@ import {
   updateStudent,
   deleteStudent,
   deleteStudents,
+  importStudents,
   addToCache,
   removeFromCache,
   updateCache,
@@ -150,6 +151,23 @@ export const useStudent = () => {
     [dispatch],
   );
 
+  const importMultipleStudents = useCallback(
+    async (students: Omit<Student, 'id'>[]): Promise<Student[]> => {
+      const result = await dispatch(importStudents(students));
+      if (importStudents.fulfilled.match(result)) {
+        return result.payload;
+      }
+      // Get detailed error message from the rejected action
+      // payload contains the error message from rejectWithValue
+      const errorMessage =
+        (result.payload as string) ||
+        result.error?.message ||
+        'Failed to import students';
+      throw new Error(errorMessage);
+    },
+    [dispatch],
+  );
+
   // Manual cache management
   const addStudentToCache = useCallback(
     (student: Student) => {
@@ -212,6 +230,7 @@ export const useStudent = () => {
     updateExistingStudent,
     removeStudent,
     removeMultipleStudents,
+    importMultipleStudents,
 
     // Cache management
     addStudentToCache,

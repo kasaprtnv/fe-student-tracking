@@ -73,6 +73,16 @@ class StudentService extends APIService {
         throw error?.response?.data;
       });
   }
+
+  async importStudents(
+    students: Omit<Student, 'id'>[],
+  ): Promise<IApiPostResponse<Student[]>> {
+    return this.post('/students/import', students)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
 }
 
 export const studentService = new StudentService();
