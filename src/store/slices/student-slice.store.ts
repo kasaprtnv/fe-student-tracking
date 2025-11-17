@@ -166,19 +166,6 @@ const studentSlice = createSlice({
         state.error = action.error.message || 'Failed to create student';
       })
 
-      // try {
-      //   state.storeAction = 'creating';
-      //   const result = this.studentService.create(data);
-
-      //   state.studentMap[result.receivedData.id] =
-      //     result.receivedData;
-
-      //   state.storeAction = 'none';
-      // } catch (error) {
-      //   state.storeAction = 'none';
-      //   state.error = action.error.message || 'Failed to create student';
-      // }
-
       // Update
       .addCase(updateStudent.pending, (state) => {
         state.storeAction = 'updating';

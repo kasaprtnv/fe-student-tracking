@@ -3,6 +3,42 @@
     "title": "Student Tracker",
     "welcomeMessage": "Welcome to the Student Tracker Application!"
   },
+  "data-table": {
+    "reset_filters": "Reset",
+    "filter": "Filter",
+    "no_results": "No results found.",
+    "clear_filter": "Clear all filters",
+    "view_options": "View",
+    "search_columns": "Search columns...",
+    "search_placeholder": "Search...",
+    "of": "of",
+    "rows_per_page": "Rows per page:",
+    "row_selected": "row selected",
+    "page": "Page",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "delete_selected": "{count} item(s) selected"
+  },
+  "column": {
+    "name": "Name",
+    "description": "Description",
+    "code": "Code",
+    "is_active": "Is Active",
+    "edit": "Edit",
+    "delete": "Delete",
+    "created_at": "Created At",
+    "updated_at": "Updated At"
+  },
+  "common": {
+    "submit": "Submit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close"
+  },
   "student-form": {
     "label": {
       "student-id": "Student ID",
@@ -25,6 +61,47 @@
       "last-name-max": "Last name must not exceed 50 characters",
       "last-name-invalid": "Last name can only contain letters",
       "degree-max": "Degree must not exceed 100 characters"
+    }
+  },
+  "course": {
+    "title": "Courses",
+    "sub_title": "Manage your courses here.",
+    "course-form": {
+      "errors" : {
+        "code-required": "Course code is required",
+        "name-required": "Course name is required",
+        "code-duplicate": "Course code already exists"
+      },
+      "label": {
+        "code": "Course Code",
+        "name": "Course Name",
+        "description": "Course Description"
+      },
+      "placeholder": {
+        "code": "Enter course code",
+        "name": "Enter course name",
+        "description": "Enter course description"
+      },
+      "toast": {
+        "created-successfully": "Course created successfully!",
+        "creation-failed": "Failed to create course. Please try again.",
+        "updated-successfully": "Course updated successfully!",
+        "update-failed": "Failed to update course. Please try again.",
+        "deleted-successfully": "Course deleted successfully!",
+        "deletion-failed": "Failed to delete course. Please try again."
+      },
+      "header": {
+        "create": "Create New Course",
+        "edit": "Edit Course"
+      },
+      "header_description": {
+        "create": "Fill out the form below to create a new course.",
+        "edit": "Update the course details below."
+      }
+    },
+    "delete": {
+      "header": "Delete Course",
+      "confirm": "Are you sure you want to delete this course? This action cannot be undone."
     }
   }
 }

@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import React from 'react';
 import ReduxProvider from '@/providers/ReduxProvider';
 import SWRProvider from '@/providers/SwrProvider';
+import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 type Props = {
@@ -14,7 +15,10 @@ export default async function RootLayout({ children }: Props) {
       <body>
         <ReduxProvider>
           <SWRProvider>
-            <NextIntlClientProvider>{children}</NextIntlClientProvider>
+            <NextIntlClientProvider>
+              {children}
+              <Toaster />
+            </NextIntlClientProvider>
           </SWRProvider>
         </ReduxProvider>
       </body>

@@ -10,6 +10,7 @@ import { Student } from '@/types/student';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trash2, Edit, Plus, RefreshCw } from 'lucide-react';
+import { DataTable } from '@/components/data-table/data-table';
 
 export default function StudentPage() {
   const {
@@ -158,6 +159,19 @@ export default function StudentPage() {
           </CardContent>
         </Card>
       )}
+
+      <DataTable
+        data={filteredStudents}
+        columns={[
+          { id: 'firstName', header: 'First Name', accessorKey: 'firstName' },
+          { id: 'lastName', header: 'Last Name', accessorKey: 'lastName' },
+          { id: 'degree', header: 'Degree', accessorKey: 'degree' },
+        ]}
+        onAdd={handleOpenCreateForm}
+        onEdit={handleOpenEditForm}
+        onDelete={handleDelete}
+        onMultiDelete={handleDeleteMultiple}
+      />
 
       {/* Search and Actions */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row">
