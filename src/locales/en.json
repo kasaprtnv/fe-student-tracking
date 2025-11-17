@@ -1,6 +1,10 @@
 {
   "homepage": {
     "title": "Student Tracker",
+    "welcomeMessage": "Welcome to the Student Tracker Application!",
+    "dashboard": "Dashboard",
+    "graduateList": "List Student",
+    "userManagement": "User Management"
     "welcomeMessage": "Welcome to the Student Tracker Application!"
   },
   "data-table": {
