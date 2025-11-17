@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { MultiSelect, Option } from '@/components/ui/combobox';
+import { Option } from '@/components/ui/combobox';
 import {
   MultiSelectWithDescription,
   OptionWithDescription,
 } from '@/components/ui/combobox-desc';
+import { MultiSelect } from '@/components/ui/combobox-multi';
 
 const fruits: Option[] = [
   { label: 'แอปเปิ้ล', value: 'apple' },
