@@ -1,0 +1,15 @@
+export interface Option {
+  label: string;
+  value: string | number | boolean;
+  icon?: React.ComponentType<{ className?: string }>;
+  count?: number;
+}
+
+export type StringKeyOf<TData> = Extract<keyof TData, string>;
+
+export interface DataTableFilterField<TData> {
+  id: StringKeyOf<TData>;
+  label: string;
+  placeholder?: string;
+  options?: Option[];
+}

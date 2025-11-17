@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import React from 'react';
 import ReduxProvider from '@/providers/ReduxProvider';
 import SWRProvider from '@/providers/SwrProvider';
+import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 import Sidebar from '@/components/sidebar/sidebar';
 
@@ -20,6 +21,8 @@ export default async function RootLayout({ children }: Props) {
                 <Sidebar />
                 <main className="flex-1 overflow-auto p-6">{children}</main>
               </div>
+              {children}
+              <Toaster />
             </NextIntlClientProvider>
           </SWRProvider>
         </ReduxProvider>

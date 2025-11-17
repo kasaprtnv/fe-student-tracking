@@ -10,6 +10,7 @@ import { Student } from '@/types/student';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trash2, Edit, Plus, RefreshCw } from 'lucide-react';
+import { DataTable } from '@/components/data-table/data-table';
 
 export default function StudentPage() {
   const {
@@ -113,7 +114,7 @@ export default function StudentPage() {
     console.log('getAllFromCache: ', getAllFromCache());
   }, [filteredStudents, loader, getAllFromCache]);
 
-  if (loader && getAllFromCache().length === 0) {
+  if (loader) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
@@ -158,6 +159,19 @@ export default function StudentPage() {
           </CardContent>
         </Card>
       )}
+
+      <DataTable
+        data={filteredStudents}
+        columns={[
+          { id: 'firstName', header: 'First Name', accessorKey: 'firstName' },
+          { id: 'lastName', header: 'Last Name', accessorKey: 'lastName' },
+          { id: 'degree', header: 'Degree', accessorKey: 'degree' },
+        ]}
+        onAdd={handleOpenCreateForm}
+        onEdit={handleOpenEditForm}
+        onDelete={handleDelete}
+        onMultiDelete={handleDeleteMultiple}
+      />
 
       {/* Search and Actions */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row">
@@ -254,10 +268,10 @@ export default function StudentPage() {
 
                     <div>
                       <h3 className="font-medium">
-                        {student.firstname} {student.lastname}
+                        {student.firstName} {student.lastName}
                       </h3>
                       <p className="text-muted-foreground text-sm">
-                        ID: {student.studentId}
+                        ID: {student.code}
                       </p>
                       {student.degree && (
                         <Badge variant="secondary" className="mt-1">

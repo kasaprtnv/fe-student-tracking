@@ -108,9 +108,9 @@ const studentSlice = createSlice({
       })
       .addCase(fetchStudents.fulfilled, (state, action) => {
         state.loader = false;
-        // Sort by firstname
+        // Sort by firstName
         const sortedStudents = action.payload.sort((a, b) =>
-          a.firstname.localeCompare(b.firstname),
+          a.firstName.localeCompare(b.firstName),
         );
 
         // Clear existing map and rebuild
@@ -232,9 +232,9 @@ export const selectFilteredStudentIds = createSelector(
 
     const filteredStudents = students.filter((student) => {
       return (
-        student.firstname?.toLowerCase().includes(query) ||
-        student.lastname?.toLowerCase().includes(query) ||
-        student.studentId?.toString().includes(query) ||
+        student.firstName?.toLowerCase().includes(query) ||
+        student.lastName?.toLowerCase().includes(query) ||
+        student.code?.toString().includes(query) ||
         student.createdAt?.toLowerCase().includes(query) ||
         student.updatedAt?.toLowerCase().includes(query)
       );

@@ -48,7 +48,7 @@ export abstract class APIService {
     return this.axiosInstance.patch(url, data, config);
   }
 
-  delete(url: string, data?: string[], config: AxiosRequestConfig = {}) {
+  delete(url: string, data?: unknown, config: AxiosRequestConfig = {}) {
     return this.axiosInstance.delete(url, { data, ...config });
   }
 
