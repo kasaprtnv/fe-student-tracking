@@ -7,12 +7,14 @@ import { useRouter, usePathname } from 'next/navigation';
 import { List } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
+import { useTranslations } from 'next-intl';
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
   const ToggleIcon = List;
+  const t = useTranslations();
 
   return (
     <div
@@ -33,7 +35,7 @@ export default function Sidebar() {
           )}
         >
           <ToggleIcon className={cn('h-5 w-5', open && 'mr-3')} />
-          {open && 'เมนู'}
+          {open && t('homepage.title')}
         </Button>
       </div>
 
@@ -56,7 +58,7 @@ export default function Sidebar() {
               onClick={() => router.push(item.route)}
             >
               <Icon className={cn('h-5 w-5', open && 'mr-3')} />
-              {open && item.title}
+              {open && t(item.title)}
             </Button>
           );
         })}

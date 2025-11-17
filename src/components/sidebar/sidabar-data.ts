@@ -2,17 +2,17 @@ import { LayoutDashboard, User, Users } from 'lucide-react';
 
 export const sidebarItems = [
   {
-    title: 'แดชบอร์ด',
+    title: 'homepage.dashboard',
     icon: LayoutDashboard,
     route: '/',
   },
   {
-    title: 'รายชื่อบัณฑิต',
+    title: 'homepage.graduateList',
     icon: User,
     route: '/graduates',
   },
   {
-    title: 'จัดการข้อมูลผู้ใช้งาน',
+    title: 'homepage.userManagement',
     icon: Users,
     route: '/users',
   },
