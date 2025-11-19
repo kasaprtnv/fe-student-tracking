@@ -42,7 +42,8 @@ export function CreateMilestoneFormSheet({
   const t = useTranslations('milestone.milestone-form');
   const tCommon = useTranslations('common');
 
-  const { createNewMilestone, storeAction } = useMilestone();
+  const { createNewMilestone, storeAction, allMilestoneId, getMilestoneById } =
+    useMilestone();
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
   const form = useForm<CreateMilestoneFormData>({
@@ -58,12 +59,30 @@ export function CreateMilestoneFormSheet({
     },
   });
 
+  const isDuplicateMilestoneName = (name: string) => {
+    return allMilestoneId.some(
+      (id) => getMilestoneById(id)?.name.toLowerCase() === name.toLowerCase(),
+    );
+  };
+
   const onSubmit = async (data: CreateMilestoneFormData) => {
     try {
-      await createNewMilestone(data);
-      form.reset();
-      props.onOpenChange?.(false);
-      toast.success(t('toast.created-successfully'));
+      if (isDuplicateMilestoneName(data.name)) {
+        form.setError('name', {
+          type: 'manual',
+          message: t('errors.name-duplicate'),
+        });
+        return;
+      } else {
+        await createNewMilestone({
+          ...data,
+          position: Number(data.position),
+          notifyBeforeDays: Number(data.notifyBeforeDays),
+        });
+        form.reset();
+        props.onOpenChange?.(false);
+        toast.success(t('toast.created-successfully'));
+      }
     } catch (error) {
       console.error('Error creating milestone:', error);
       toast.error(t('toast.creation-failed'));
@@ -234,14 +253,13 @@ export function CreateMilestoneFormSheet({
               name="position"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.position')}
-                  </FormLabel>
+                  <FormLabel>{t('label.position')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      min={1}
                     />
                   </FormControl>
                   <FormMessage />
@@ -254,14 +272,12 @@ export function CreateMilestoneFormSheet({
               name="notifyBeforeDays"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.notifyBeforeDays')}
-                  </FormLabel>
+                  <FormLabel>{t('label.notifyBeforeDays')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                       min={0}
                     />
                   </FormControl>

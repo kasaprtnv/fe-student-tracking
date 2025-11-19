@@ -154,6 +154,7 @@
         "courseId-required": "กรุณากรอก CourseId",
         "courseId-duplicate": "CourseId นี้ถูกใช้แล้ว",
         "name-required": "กรุณากรอกชื่อ Milestone",
+        "name-duplicate": "ชื่อ Milestone นี้มีอยู่แล้ว",
         "description-required": "กรุณากรอกคำอธิบาย",
 
         "position-integer": "ลำดับต้องเป็นตัวเลขเท่านั้น",

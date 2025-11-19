@@ -113,7 +113,6 @@ export const useMilestone = () => {
   const removeMultipleMilestones = useCallback(
     async (ids: string[]): Promise<boolean> => {
       const result = await dispatch(deleteMilestones(ids));
-      console.log('result', result);
       if (deleteMilestones.fulfilled.match(result)) {
         return true;
       }

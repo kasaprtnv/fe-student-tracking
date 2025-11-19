@@ -154,6 +154,7 @@
         "courseId-required": "CourseId is required",
         "courseId-duplicate": "This CourseId is already in use",
         "name-required": "Milestone name is required",
+        "name-duplicate": "Milestone name already exists",
         "description-required": "Description is required",
 
         "position-integer": "Position must be a number",

@@ -90,33 +90,29 @@ export function UpdateMilestoneFormSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [milestone]);
 
-  const isDuplicateCourseId = (courseId: string) =>
-    (allMilestoneId ?? []).some((id) => {
-      const existing = getMilestoneById(id);
-      return existing?.courseId === courseId && existing.id !== milestone?.id;
-    });
-
+  const isDuplicateMilestoneName = (name: string) => {
+    return allMilestoneId.some(
+      (id) =>
+        getMilestoneById(id)?.name.toLowerCase() === name.toLowerCase() &&
+        getMilestoneById(id)?.id !== milestone?.id,
+    );
+  };
   // ⭐ onSubmit type-safe แบบสมบูรณ์
   const onSubmit: SubmitHandler<UpdateMilestoneFormData> = async (data) => {
     if (!milestone?.id) return;
-
     try {
-      if (isDuplicateCourseId(data.courseId)) {
-        form.setError('courseId', {
+      if (isDuplicateMilestoneName(data.name)) {
+        form.setError('name', {
           type: 'manual',
-          message: t('errors.courseId-duplicate'),
+          message: t('errors.name-duplicate'),
         });
         return;
+      } else {
+        await updateExistingMilestone(milestone.id, {
+          position: Number(data.position),
+          notifyBeforeDays: Number(data.notifyBeforeDays),
+        });
       }
-
-      await updateExistingMilestone(milestone.id, {
-        ...data,
-        position: Number(data.position),
-        notifyBeforeDays: Number(data.notifyBeforeDays),
-        deadlineDate: data.deadlineDate
-          ? new Date(data.deadlineDate)
-          : undefined,
-      });
 
       toast.success(t('toast.updated-successfully'));
       onOpenChange?.(false);
@@ -272,7 +268,12 @@ export function UpdateMilestoneFormSheet({
                 <FormItem>
                   <FormLabel>{t('label.position')}</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      min={1}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -287,7 +288,12 @@ export function UpdateMilestoneFormSheet({
                 <FormItem>
                   <FormLabel>{t('label.notifyBeforeDays')}</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      min={0}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

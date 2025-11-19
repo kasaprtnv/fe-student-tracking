@@ -202,6 +202,23 @@ const milestoneSlice = createSlice({
         state.storeAction = 'none';
         state.error = action.error.message || 'Failed to delete milestone';
       });
+
+    // DELETE MULTIPLE
+    builder
+      .addCase(deleteMilestones.pending, (state) => {
+        state.storeAction = 'deleting';
+        state.error = null;
+      })
+      .addCase(deleteMilestones.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+        action.payload.forEach((id) => {
+          delete state.milestonemap[id];
+        });
+      })
+      .addCase(deleteMilestones.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.error = action.error.message || 'Failed to delete milestone';
+      });
   },
 });
 
