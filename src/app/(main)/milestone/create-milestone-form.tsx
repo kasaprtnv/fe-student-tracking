@@ -181,12 +181,22 @@ export function CreateMilestoneFormSheet({
                         <PopoverContent>
                           <Calendar
                             mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
+                            selected={field.value}
                             onSelect={(date) => {
-                              field.onChange(date); // อัปเดตค่าในฟอร์ม
-                              setIsPopoverOpen(false); // ปิด Popover หลังเลือกวันที่
+                              if (date) {
+                                const utcDate = new Date(
+                                  Date.UTC(
+                                    date.getFullYear(),
+                                    date.getMonth(),
+                                    date.getDate(),
+                                  ),
+                                );
+                                field.onChange(utcDate);
+                                form.setValue('deadlineDate', utcDate);
+                              } else {
+                                field.onChange(date);
+                              }
+                              setIsPopoverOpen(false);
                             }}
                             captionLayout="dropdown"
                           />
