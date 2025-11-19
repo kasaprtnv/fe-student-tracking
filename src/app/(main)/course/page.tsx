@@ -11,7 +11,6 @@ import { ICourse } from '@/types/course';
 import { CreateCourseFormSheet } from './create-course-form';
 import { UpdateCourseFormSheet } from './update-course-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
-import { DataTableFilterField } from '@/components/data-table/types';
 
 const CoursePage = () => {
   const tForm = useTranslations('course.course-form');
@@ -37,8 +36,6 @@ const CoursePage = () => {
     }
     return column;
   });
-
-  console.log('Filter Columns:', filterColumns);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -131,7 +128,6 @@ const CoursePage = () => {
           onActiveChange={onIsActiveChange}
           onSearch={onSearchChange}
           searchQuery={searchQuery}
-          filterColumns={filterColumns}
         />
         <CreateCourseFormSheet
           open={isAdd}
