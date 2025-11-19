@@ -12,7 +12,6 @@ import { CreateMilestoneFormSheet } from './create-milestone-form';
 import { UpdateMilestoneFormSheet } from './update-milestone-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { createMilestoneColumns } from './milestone-columns';
-import { useState } from 'react';
 
 const MilestonePage = () => {
   const tForm = useTranslations('milestone.milestone-form');
@@ -29,11 +28,6 @@ const MilestonePage = () => {
     removeMultipleMilestones,
     updateExistingMilestone,
   } = useMilestone();
-
-  const [openEdit, setOpenEdit] = useState(false);
-  const [selectedMilestone, setSelectedMilestone] = useState<string | null>(
-    null,
-  );
 
   const milestoneColumns = createMilestoneColumns().map((column) => {
     if (typeof column.header === 'string') {

@@ -2,10 +2,10 @@ export interface IMilestone {
   id: string;
   courseId: string;
   name: string;
-  description: string;
+  description?: string;
   position: number;
   notifyReceiverEmail: string;
-  deadlineDate: string;
+  deadlineDate: Date;
   notifyBeforeDays: number;
   isActive: boolean;
 }
@@ -13,10 +13,10 @@ export interface IMilestone {
 export interface IMilestoneCreateDTO {
   courseId: string;
   name: string;
-  description: string;
+  description?: string;
   position: number;
   notifyReceiverEmail: string;
-  deadlineDate: string;
+  deadlineDate: Date;
   notifyBeforeDays: number;
 }
 

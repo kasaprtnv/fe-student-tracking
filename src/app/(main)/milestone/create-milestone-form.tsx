@@ -28,6 +28,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import React from 'react';
 
 export function CreateMilestoneFormSheet({
   ...props
@@ -35,8 +42,8 @@ export function CreateMilestoneFormSheet({
   const t = useTranslations('milestone.milestone-form');
   const tCommon = useTranslations('common');
 
-  const { createNewMilestone, storeAction, allMilestoneId, getMilestoneById } =
-    useMilestone();
+  const { createNewMilestone, storeAction } = useMilestone();
+  const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
   const form = useForm<CreateMilestoneFormData>({
     resolver: zodResolver(createMilestoneSchema(t)),
@@ -46,36 +53,14 @@ export function CreateMilestoneFormSheet({
       courseId: '',
       position: 1,
       notifyReceiverEmail: '',
-      deadlineDate: '',
+      deadlineDate: undefined,
       notifyBeforeDays: 0,
     },
   });
 
-  const isDuplicateCourseId = (courseId: string) => {
-    return (allMilestoneId ?? []).some((id) => {
-      const m = getMilestoneById(id);
-      return m?.courseId === courseId;
-    });
-  };
-
   const onSubmit = async (data: CreateMilestoneFormData) => {
     try {
-      if (isDuplicateCourseId(data.courseId)) {
-        form.setError('courseId', {
-          type: 'manual',
-          message: t('errors.code-duplicate'),
-        });
-        return;
-      }
-
-      await createNewMilestone({
-        ...data,
-        description: data.description ?? '',
-        deadlineDate: data.deadlineDate
-          ? new Date(data.deadlineDate).toISOString()
-          : '',
-      });
-
+      await createNewMilestone(data);
       form.reset();
       props.onOpenChange?.(false);
       toast.success(t('toast.created-successfully'));
@@ -170,21 +155,48 @@ export function CreateMilestoneFormSheet({
             <FormField
               control={form.control}
               name="deadlineDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.deadlineDate')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      {t('label.deadlineDate')}
+                    </FormLabel>
+                    <FormControl>
+                      <Popover
+                        open={isPopoverOpen}
+                        onOpenChange={setIsPopoverOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Input
+                            readOnly
+                            value={
+                              field.value
+                                ? new Date(field.value).toLocaleDateString()
+                                : t('placeholder.deadlineDate')
+                            }
+                            placeholder={t('placeholder.deadlineDate')}
+                            className="cursor-pointer border-gray-300 text-left"
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) => {
+                              field.onChange(date); // อัปเดตค่าในฟอร์ม
+                              setIsPopoverOpen(false); // ปิด Popover หลังเลือกวันที่
+                            }}
+                            captionLayout="dropdown"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             <FormField
@@ -240,6 +252,7 @@ export function CreateMilestoneFormSheet({
                       type="number"
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
+                      min={0}
                     />
                   </FormControl>
                   <FormMessage />

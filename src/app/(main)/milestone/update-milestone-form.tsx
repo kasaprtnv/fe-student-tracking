@@ -26,12 +26,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { IMilestone } from '@/types/milestone';
 import { useEffect } from 'react';
+import React from 'react';
 
 interface UpdateMilestoneFormSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
@@ -45,7 +52,7 @@ export function UpdateMilestoneFormSheet({
 }: UpdateMilestoneFormSheetProps) {
   const t = useTranslations('milestone.milestone-form');
   const tCommon = useTranslations('common');
-
+  const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   const {
     updateExistingMilestone,
     storeAction,
@@ -53,25 +60,19 @@ export function UpdateMilestoneFormSheet({
     getMilestoneById,
   } = useMilestone();
 
-  // ⭐ ใช้ generic แบบ 3 parameter เพื่อแก้ TS Control error
-  const form = useForm<
-    UpdateMilestoneFormData,
-    unknown,
-    UpdateMilestoneFormData
-  >({
+  const form = useForm<UpdateMilestoneFormData>({
     resolver: zodResolver(updateMilestoneSchema(t)),
     defaultValues: {
-      name: '',
-      courseId: '',
-      description: '',
-      position: 1,
-      notifyReceiverEmail: '',
-      notifyBeforeDays: 0,
-      deadlineDate: '',
+      name: milestone?.name || '',
+      courseId: milestone?.courseId || '',
+      description: milestone?.description || '',
+      position: milestone?.position || 1,
+      notifyReceiverEmail: milestone?.notifyReceiverEmail || '',
+      deadlineDate: milestone?.deadlineDate || undefined,
+      notifyBeforeDays: milestone?.notifyBeforeDays || 0,
     },
   });
 
-  // ⭐ Reset form เมื่อ milestone เปลี่ยน และ milestone ต้องไม่ใช่ null
   useEffect(() => {
     if (!milestone) return;
 
@@ -83,9 +84,10 @@ export function UpdateMilestoneFormSheet({
       notifyReceiverEmail: milestone.notifyReceiverEmail ?? '',
       notifyBeforeDays: milestone.notifyBeforeDays ?? 0,
       deadlineDate: milestone.deadlineDate
-        ? milestone.deadlineDate.substring(0, 10)
-        : '',
+        ? new Date(milestone.deadlineDate)
+        : undefined,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [milestone]);
 
   const isDuplicateCourseId = (courseId: string) =>
@@ -112,8 +114,8 @@ export function UpdateMilestoneFormSheet({
         position: Number(data.position),
         notifyBeforeDays: Number(data.notifyBeforeDays),
         deadlineDate: data.deadlineDate
-          ? new Date(data.deadlineDate).toISOString()
-          : '',
+          ? new Date(data.deadlineDate)
+          : undefined,
       });
 
       toast.success(t('toast.updated-successfully'));
@@ -193,15 +195,48 @@ export function UpdateMilestoneFormSheet({
             <FormField
               control={form.control}
               name="deadlineDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('label.deadlineDate')}</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      {t('label.deadlineDate')}
+                    </FormLabel>
+                    <FormControl>
+                      <Popover
+                        open={isPopoverOpen}
+                        onOpenChange={setIsPopoverOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Input
+                            readOnly
+                            value={
+                              field.value
+                                ? new Date(field.value).toLocaleDateString()
+                                : t('placeholder.deadlineDate')
+                            }
+                            placeholder={t('placeholder.deadlineDate')}
+                            className="cursor-pointer border-gray-300 text-left"
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) => {
+                              field.onChange(date); // อัปเดตค่าในฟอร์ม
+                              setIsPopoverOpen(false); // ปิด Popover หลังเลือกวันที่
+                            }}
+                            captionLayout="dropdown"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             {/* notifyReceiverEmail */}

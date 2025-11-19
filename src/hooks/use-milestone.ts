@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/store';
+import { AppDispatch } from '@/store';
 import { useCallback } from 'react';
 import {
   fetchMilestones,
@@ -19,7 +19,6 @@ import {
   selectMilestoneState,
 } from '@/store/slices/milestone-silce.store';
 import { IMilestone, IMilestoneCreateDTO } from '@/types/milestone';
-import { Milestone } from 'lucide-react';
 
 export const useMilestone = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -86,6 +85,9 @@ export const useMilestone = () => {
       data: Partial<IMilestone>,
     ): Promise<Partial<IMilestone>> => {
       const currentMilestone = getMilestoneById(id);
+      if (currentMilestone) {
+        dispatch(updateMilestoneInMap({ id, data }));
+      }
       const result = await dispatch(updateMilestone({ id, data }));
       if (updateMilestone.fulfilled.match(result)) {
         return result.payload.data;

@@ -10,10 +10,7 @@ import {
   MilestoneState,
 } from '../../types/milestone';
 import { milestoneService } from '@/services/milestone.service';
-import { setSearchQuery } from './student-slice.store';
-import { Loader, Milestone } from 'lucide-react';
 import { RootState } from '..';
-import { selectCourseMap } from './course-slice.store';
 
 // --------------------------------------------------
 // GET ALL MILESTONES
@@ -229,7 +226,10 @@ export const selectFilteredMilestoneId = createSelector(
         milestone.notifyReceiverEmail
           ?.toLowerCase()
           .includes(lowerSearchQuery) ||
-        milestone.deadlineDate?.toLowerCase().includes(lowerSearchQuery),
+        milestone.deadlineDate
+          ?.toISOString()
+          .toLowerCase()
+          .includes(lowerSearchQuery),
     );
     return filtered.map((milestone) => milestone.id);
   },

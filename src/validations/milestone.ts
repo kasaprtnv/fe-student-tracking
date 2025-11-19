@@ -11,7 +11,12 @@ export const createMilestoneSchema = (t: (key: string) => string) =>
     notifyReceiverEmail: z
       .string()
       .nonempty(t('errors.notifyReceiverEmail-required')),
-    deadlineDate: z.string().nonempty(t('errors.deadlineDate-required')),
+    deadlineDate: z.date({
+      error: (issue) =>
+        issue.input === undefined
+          ? t('errors.deadlineDate-required')
+          : t('errors.deadlineDate-invalid'),
+    }),
     notifyBeforeDays: z
       .int(t('errors.notifyBeforeDays-integer'))
       .min(0, t('errors.notifyBeforeDays-min')),
@@ -27,8 +32,13 @@ export const updateMilestoneSchema = (t: (key: string) => string) =>
       .nonnegative(t('errors.position-nonnegative')), // ต้องไม่เป็นค่าลบ,
     notifyReceiverEmail: z
       .string()
-      .nonempty(t('errors.notifyReceiverEmail-requried')),
-    deadlineDate: z.string().nonempty(t('errors.deadlineDate-requried')),
+      .nonempty(t('errors.notifyReceiverEmail-required')),
+    deadlineDate: z.date({
+      error: (issue) =>
+        issue.input === undefined
+          ? t('errors.deadlineDate-required')
+          : t('errors.deadlineDate-invalid'),
+    }),
     notifyBeforeDays: z
       .int(t('errors.notifyBeforeDays-integer'))
       .min(0, t('errors.notifyBeforeDays-min')),

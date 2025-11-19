@@ -163,6 +163,7 @@
         "notifyReceiverEmail-invalid": "รูปแบบอีเมลไม่ถูกต้อง",
 
         "deadlineDate-required": "กรุณาเลือกวันที่กำหนดส่ง",
+        "deadlineDate-invalid": "รูปแบบวันที่ไม่ถูกต้อง",
 
         "notifyBeforeDays-integer": "จำนวนวันต้องเป็นตัวเลข",
         "notifyBeforeDays-min": "จำนวนวันต้องมากกว่าหรือเท่ากับ 0",

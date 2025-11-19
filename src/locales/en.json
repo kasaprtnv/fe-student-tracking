@@ -163,6 +163,7 @@
         "notifyReceiverEmail-invalid": "Invalid email format",
 
         "deadlineDate-required": "Deadline date is required",
+        "deadlineDate-invalid": "Invalid date format",
 
         "notifyBeforeDays-integer": "Notify-before-days must be a number",
         "notifyBeforeDays-min": "Notify-before-days must be greater than or equal to 0",

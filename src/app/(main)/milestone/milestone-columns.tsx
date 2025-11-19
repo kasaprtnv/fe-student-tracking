@@ -1,40 +1,89 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { IMilestone } from '@/types/milestone';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
 
-export interface MilestoneTableMeta {
-  onEdit?: (m: IMilestone) => void;
+interface ColumnActions {
+  onEdit?: (data: IMilestone) => void;
   onDelete?: (id: string) => void;
-  onActiveChange?: (id: string, v: boolean) => void;
+  onActiveChange?: (id: string, isActive: boolean) => void;
+  t?: (key: string) => string;
 }
 
-export const createMilestoneColumns = (): ColumnDef<IMilestone, unknown>[] => [
-  { accessorKey: 'name', header: 'name' },
-  { accessorKey: 'description', header: 'description' },
-  { accessorKey: 'courseId', header: 'courseId' },
-  { accessorKey: 'position', header: 'position' },
-  { accessorKey: 'deadlineDate', header: 'deadlineDate' },
-  {
+export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
+  const columns: ColumnDef<IMilestone>[] = [
+    {
+      accessorKey: 'name',
+      header: 'name',
+    },
+    {
+      accessorKey: 'description',
+      header: 'description',
+    },
+    {
+      accessorKey: 'courseId',
+      header: 'courseId',
+    },
+    {
+      accessorKey: 'position',
+      header: 'position',
+    },
+    {
+      accessorKey: 'deadlineDate',
+      header: 'deadlineDate',
+    },
+  ];
+
+  columns.push({
     id: 'actions',
-    header: 'Actions',
+    size: 40,
     cell: ({ row, table }) => {
-      const m = row.original;
-      const meta = table.options.meta as MilestoneTableMeta;
+      const record = row.original;
+      const { onEdit, onDelete, t } = table.options.meta as ColumnActions;
 
       return (
-        <div className="flex gap-2">
-          <Button size="sm" onClick={() => meta.onEdit?.(m)}>
-            Edit
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={() => meta.onDelete?.(m.id)}
-          >
-            Delete
-          </Button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              aria-label="Open menu"
+              variant="ghost"
+              className="data-[state=open]:bg-muted flex size-8 p-0"
+            >
+              <Ellipsis className="size-4" aria-hidden="true" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            {onEdit && (
+              <>
+                <DropdownMenuItem onSelect={() => onEdit(record)}>
+                  <div className="flex items-center gap-2">
+                    <Pencil size={14} />
+                    {t?.('edit')}
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
+
+            {onDelete && (
+              <DropdownMenuItem onSelect={() => onDelete(record.id)}>
+                <div className="flex items-center gap-2">
+                  <Trash2 size={14} color="#e7000b" />
+                  {t?.('delete')}
+                </div>
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
-  },
-];
+  });
+  return columns;
+};
