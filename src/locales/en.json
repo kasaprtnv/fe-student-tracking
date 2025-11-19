@@ -32,6 +32,8 @@
     "Actions": "Actions",
     "code": "Code",
     "is_active": "Is Active",
+    "active": "Active",
+    "inactive": "Inactive",
     "edit": "Edit",
     "delete": "Delete",
     "created_at": "Created At",
