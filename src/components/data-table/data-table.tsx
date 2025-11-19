@@ -171,7 +171,7 @@ export function DataTable<TData, TValue>({
       onMultiDeleteIds(ids);
     }
 
-    // setRowSelection({});
+    setRowSelection({});
   };
 
   const isFiltered = table.getState().columnFilters.length > 0;
