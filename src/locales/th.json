@@ -25,6 +25,8 @@
     "description": "คำอธิบาย",
     "code": "รหัส",
     "is_active": "ใช้งานอยู่",
+    "active": "ใช้งาน",
+    "inactive": "ไม่ใช้งาน",
     "edit": "แก้ไข",
     "delete": "ลบ",
     "created_at": "สร้างเมื่อ",

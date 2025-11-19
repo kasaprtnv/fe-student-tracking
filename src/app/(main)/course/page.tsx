@@ -11,6 +11,7 @@ import { ICourse } from '@/types/course';
 import { CreateCourseFormSheet } from './create-course-form';
 import { UpdateCourseFormSheet } from './update-course-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
+import { DataTableFilterField } from '@/components/data-table/types';
 
 const CoursePage = () => {
   const tForm = useTranslations('course.course-form');
@@ -36,6 +37,45 @@ const CoursePage = () => {
     }
     return column;
   });
+
+  const filterColumns: DataTableFilterField<ICourse>[] = [
+    {
+      id: 'name',
+      label: tCol('name'),
+      options: filteredCoursesId
+        ?.map((id) => {
+          const course = getCourseById(id);
+          if (course) {
+            return {
+              label: course.name,
+              value: course.name,
+            };
+          }
+          return undefined;
+        })
+        .filter((item) => item !== undefined),
+    },
+    {
+      id: 'isActive',
+      label: tCol('is_active'),
+      options: Array.from(
+        new Set(
+          filteredCoursesId?.map((id) => {
+            const course = getCourseById(id);
+            if (course) {
+              return {
+                label: course.isActive ? tCol('active') : tCol('inactive'),
+                value: course.isActive,
+              };
+            }
+            return undefined;
+          }),
+        ),
+      ).filter((item) => item !== undefined),
+    },
+  ];
+
+  console.log('Filter Columns:', filterColumns);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -128,6 +168,7 @@ const CoursePage = () => {
           onActiveChange={onIsActiveChange}
           onSearch={onSearchChange}
           searchQuery={searchQuery}
+          filterColumns={filterColumns}
         />
         <CreateCourseFormSheet
           open={isAdd}
