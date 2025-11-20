@@ -5,7 +5,6 @@
     "dashboard": "Dashboard",
     "graduateList": "List Student",
     "userManagement": "User Management"
-    "welcomeMessage": "Welcome to the Student Tracker Application!"
   },
   "data-table": {
     "reset_filters": "Reset",
@@ -71,7 +70,7 @@
     "title": "Courses",
     "sub_title": "Manage your courses here.",
     "course-form": {
-      "errors" : {
+      "errors": {
         "code-required": "Course code is required",
         "name-required": "Course name is required",
         "code-duplicate": "Course code already exists"
@@ -107,5 +106,19 @@
       "header": "Delete Course",
       "confirm": "Are you sure you want to delete this course? This action cannot be undone."
     }
+  },
+  "profile": {
+    "personal_information": {
+      "title": "Personal Information",
+      "name": "Name",
+      "email": "Email",
+      "address": "Address",
+      "year": "Year of Enrollment",
+      "student_id": "Student ID",
+      "department": "Department",
+      "faculty": "Faculty",
+      "degree": "Degree"
+    },
+    "progress_title": "Graduate Progress"
   }
 }
