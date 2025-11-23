@@ -3,6 +3,178 @@
 import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import MilestoneComponent from '@/components/milestone-progress/milestone-progress';
+
+const mockMilestones = [
+  {
+    id: 'ms-thesis-001',
+    name: 'Thesis Process',
+    description: 'Full thesis submission and defense workflow',
+    created_at: '2025-01-01',
+    updated_at: '2025-01-01',
+    steps: [
+      {
+        id: 'step-001',
+        milestoneId: 'ms-thesis-001',
+        position: 1,
+        name: 'Submit Proposal',
+        description:
+          'Student submits research proposal including objectives, methodology, and timeline',
+        requiresAttachment: true,
+        allowedFileTypes: '.pdf,.docx',
+        deadlineDate: '2025-11-20',
+        isActive: true,
+        completed: true,
+      },
+      {
+        id: 'step-002',
+        milestoneId: 'ms-thesis-001',
+        position: 2,
+        name: 'Advisor Approval',
+        description: 'Advisor reviews and approves the research proposal',
+        requiresAttachment: false,
+        deadlineDate: '2025-11-25',
+        isActive: true,
+        completed: true,
+      },
+      {
+        id: 'step-003',
+        milestoneId: 'ms-thesis-001',
+        position: 3,
+        name: 'Upload Chapter 1',
+        description: 'Upload completed first chapter (Introduction)',
+        requiresAttachment: true,
+        allowedFileTypes: '.pdf,.docx',
+        deadlineDate: '2025-12-10',
+        isActive: true,
+        completed: false,
+      },
+      {
+        id: 'step-004',
+        milestoneId: 'ms-thesis-001',
+        position: 4,
+        name: 'Committee Review',
+        description: 'Committee reviews progress and provides feedback',
+        requiresAttachment: false,
+        deadlineDate: '2025-12-20',
+        isActive: true,
+        completed: false,
+      },
+      {
+        id: 'step-005',
+        milestoneId: 'ms-thesis-001',
+        position: 5,
+        name: 'Final Defense',
+        description: 'Student defends thesis before the committee',
+        requiresAttachment: true,
+        allowedFileTypes: '.pdf,.pptx',
+        deadlineDate: '2026-01-15',
+        isActive: true,
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: 'ms-internship-001',
+    name: 'Internship Program',
+    description: 'Complete internship requirements',
+    created_at: '2025-01-01',
+    updated_at: '2025-01-01',
+    steps: [
+      {
+        id: 'step-101',
+        milestoneId: 'ms-internship-001',
+        position: 1,
+        name: 'Find Company',
+        description: 'Search and apply for internship positions',
+        requiresAttachment: false,
+        deadlineDate: '2025-11-30',
+        isActive: true,
+        completed: true,
+      },
+      {
+        id: 'step-102',
+        milestoneId: 'ms-internship-001',
+        position: 2,
+        name: 'Submit Agreement',
+        description: 'Submit signed internship agreement form',
+        requiresAttachment: true,
+        allowedFileTypes: '.pdf',
+        deadlineDate: '2025-12-05',
+        isActive: true,
+        completed: true,
+      },
+      {
+        id: 'step-103',
+        milestoneId: 'ms-internship-001',
+        position: 3,
+        name: 'Weekly Reports',
+        description: 'Submit weekly progress reports',
+        requiresAttachment: true,
+        allowedFileTypes: '.pdf,.docx',
+        deadlineDate: '2026-01-31',
+        isActive: true,
+        completed: false,
+      },
+      {
+        id: 'step-104',
+        milestoneId: 'ms-internship-001',
+        position: 4,
+        name: 'Final Report',
+        description: 'Submit comprehensive internship report',
+        requiresAttachment: true,
+        allowedFileTypes: '.pdf,.docx',
+        deadlineDate: '2026-02-15',
+        isActive: true,
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: 'ms-project-001',
+    name: 'Capstone Project',
+    description: 'Final year project development',
+    created_at: '2025-01-01',
+    updated_at: '2025-01-01',
+    steps: [
+      {
+        id: 'step-201',
+        milestoneId: 'ms-project-001',
+        position: 1,
+        name: 'Project Proposal',
+        description: 'Submit project proposal and get approval',
+        requiresAttachment: true,
+        allowedFileTypes: '.pdf,.docx',
+        deadlineDate: '2025-12-01',
+        isActive: true,
+        completed: false,
+      },
+      {
+        id: 'step-202',
+        milestoneId: 'ms-project-001',
+        position: 2,
+        name: 'Prototype Demo',
+        description: 'Present working prototype to advisors',
+        requiresAttachment: false,
+        deadlineDate: '2026-01-10',
+        isActive: true,
+        completed: false,
+      },
+      {
+        id: 'step-203',
+        milestoneId: 'ms-project-001',
+        position: 3,
+        name: 'Final Presentation',
+        description: 'Present completed project to evaluation committee',
+        requiresAttachment: true,
+        allowedFileTypes: '.pdf,.pptx',
+        deadlineDate: '2026-02-20',
+        isActive: true,
+        completed: false,
+      },
+    ],
+  },
+];
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
@@ -69,6 +241,12 @@ export default function ProfilePage() {
       </div>
       <Separator className="my-6" />
       <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+      <div>
+        <MilestoneComponent
+          milestones={mockMilestones}
+          mode="upload"
+        ></MilestoneComponent>
+      </div>
     </div>
   );
 }
