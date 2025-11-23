@@ -36,6 +36,7 @@ interface MilestoneProgressProps {
   mode?: ViewMode;
   onFileUpload?: (stepId: string, file: File) => void;
   onToggleLock?: (id: string, type: 'milestone' | 'step') => void;
+  uploadedFiles?: Record<string, string>;
 }
 
 export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
@@ -43,6 +44,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   mode = 'readonly',
   onFileUpload,
   onToggleLock,
+  uploadedFiles,
 }) => {
   const [openMilestones, setOpenMilestones] = React.useState<
     Record<string, boolean>
@@ -82,8 +84,8 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
+    return new Date(dateString).toLocaleDateString('th-TH', {
+      month: 'long',
       day: 'numeric',
       year: 'numeric',
     });
@@ -288,6 +290,12 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       {step.allowedFileTypes && (
                                         <p className="text-muted-foreground mt-1 text-xs">
                                           Accepted: {step.allowedFileTypes}
+                                        </p>
+                                      )}
+
+                                      {uploadedFiles?.[step.id] && (
+                                        <p className="mt-1 text-xs text-green-700">
+                                          อัปโหลดแล้ว: {uploadedFiles[step.id]}
                                         </p>
                                       )}
                                     </div>
