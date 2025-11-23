@@ -120,5 +120,13 @@
       "degree": "หลักสูตร"
     },
     "progress_title": "ความคืบหน้าของบัณฑิตศึกษา"
+  },
+  "milestone-progress": {
+    "completed": "สำเร็จ",
+    "upload_button": "อัปโหลดไฟล์",
+    "uploaded_file": "ไฟล์ที่อัปโหลด",
+    "overall_progress": "ความคืบหน้า",
+    "accept_file_type": "รองรับไฟล์ประเภท",
+    "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน"
   }
 }

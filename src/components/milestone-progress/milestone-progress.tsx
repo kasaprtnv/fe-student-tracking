@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -28,6 +28,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Milestone } from '@/types/milestone';
+import { useLocale, useTranslations } from 'next-intl';
 
 type ViewMode = 'readonly' | 'upload' | 'edit';
 
@@ -46,9 +47,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   onToggleLock,
   uploadedFiles,
 }) => {
-  const [openMilestones, setOpenMilestones] = React.useState<
-    Record<string, boolean>
-  >({});
+  const t = useTranslations('milestone-progress');
+  const language = useLocale();
+  const [openMilestones, setOpenMilestones] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(milestones.map((m) => [m.id, true])),
+  );
 
   // Calculate overall progress
   const totalSteps = milestones.reduce((acc, ms) => acc + ms.steps.length, 0);
@@ -84,7 +87,8 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('th-TH', {
+    const locale = language === 'th' ? 'th-TH' : 'en-US';
+    return new Date(dateString).toLocaleDateString(locale, {
       month: 'long',
       day: 'numeric',
       year: 'numeric',
@@ -99,14 +103,17 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TrendingUp className="text-primary h-5 w-5" />
-              <span className="font-semibold">Overall Progress</span>
+              <span className="font-semibold">{t('overall_progress')}</span>
             </div>
             <div className="text-right">
               <div className="text-primary text-3xl font-bold">
                 {overallProgress}%
               </div>
               <div className="text-muted-foreground text-xs">
-                {completedSteps} of {totalSteps} completed
+                {t('progress_count', {
+                  completed: completedSteps,
+                  total: totalSteps,
+                })}
               </div>
             </div>
           </div>
@@ -202,7 +209,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                               {/* Step Number */}
                               <div
                                 className={cn(
-                                  'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-sm font-semibold',
+                                  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-semibold',
                                   step.completed
                                     ? 'bg-green-500 text-white'
                                     : 'bg-muted text-muted-foreground',
@@ -214,9 +221,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                               <div className="min-w-0 flex-1">
                                 <div className="mb-1 flex items-center gap-2">
                                   {step.completed ? (
-                                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-500" />
+                                    <CheckCircle2 className="h-5 w-5 shrink-0 text-green-500" />
                                   ) : (
-                                    <Circle className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+                                    <Circle className="text-muted-foreground h-5 w-5 shrink-0" />
                                   )}
                                   <h4 className="font-semibold">{step.name}</h4>
                                   {step.requiresAttachment && (
@@ -254,7 +261,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       variant="secondary"
                                       className="bg-green-100 text-green-700 hover:bg-green-100"
                                     >
-                                      ✓ Completed
+                                      ✓ {t('completed')}
                                     </Badge>
                                   )}
                                 </div>
@@ -268,7 +275,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        className="w-full"
+                                        className=""
                                         onClick={() =>
                                           document
                                             .getElementById(`file-${step.id}`)
@@ -276,7 +283,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         }
                                       >
                                         <Upload className="mr-2 h-4 w-4" />
-                                        Upload File
+                                        {t('upload_button')}
                                       </Button>
                                       <input
                                         id={`file-${step.id}`}
@@ -289,13 +296,17 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       />
                                       {step.allowedFileTypes && (
                                         <p className="text-muted-foreground mt-1 text-xs">
-                                          Accepted: {step.allowedFileTypes}
+                                          {t('accept_file_type')}
+                                          {' : '}
+                                          {step.allowedFileTypes}
                                         </p>
                                       )}
 
                                       {uploadedFiles?.[step.id] && (
                                         <p className="mt-1 text-xs text-green-700">
-                                          อัปโหลดแล้ว: {uploadedFiles[step.id]}
+                                          {t('uploaded_file')}
+                                          {' : '}
+                                          {uploadedFiles[step.id]}
                                         </p>
                                       )}
                                     </div>

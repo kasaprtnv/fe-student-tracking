@@ -120,5 +120,13 @@
       "degree": "Degree"
     },
     "progress_title": "Graduate Progress"
+  },
+  "milestone-progress": {
+    "completed": "Completed",
+    "upload_button": "Upload File",
+    "uploaded_file": "Uploaded File",
+    "overall_progress": "Overall Progress",
+    "accept_file_type": "Accept File Type",
+    "progress_count": "completed {completed} out of {total} steps"
   }
 }

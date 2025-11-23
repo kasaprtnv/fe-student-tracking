@@ -20,3 +20,7 @@ export interface Milestone {
   updated_at: string;
   steps: MilestoneStep[];
 }
+
+export interface UploadedFilesMap {
+  [stepId: string]: string;
+}
