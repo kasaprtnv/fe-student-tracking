@@ -4,12 +4,15 @@ import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import MilestoneComponent from '@/components/milestone-progress/milestone-progress';
+import React, { useState } from 'react';
+import { ProfileComponent } from '@/components/profile/profile';
+import { UploadedFilesMap } from '@/types/milestone';
 
 const mockMilestones = [
   {
     id: 'ms-thesis-001',
-    name: 'Thesis Process',
-    description: 'Full thesis submission and defense workflow',
+    name: 'กระบวนการวิทยานิพนธ์',
+    description: 'ขั้นตอนการส่งและป้องกันวิทยานิพนธ์',
     created_at: '2025-01-01',
     updated_at: '2025-01-01',
     steps: [
@@ -17,9 +20,9 @@ const mockMilestones = [
         id: 'step-001',
         milestoneId: 'ms-thesis-001',
         position: 1,
-        name: 'Submit Proposal',
+        name: 'ส่งข้อเสนอโครงงาน',
         description:
-          'Student submits research proposal including objectives, methodology, and timeline',
+          'นักศึกษาส่งข้อเสนอโครงงานวิจัยพร้อมวัตถุประสงค์ วิธีการ และแผนดำเนินงาน',
         requiresAttachment: true,
         allowedFileTypes: '.pdf,.docx',
         deadlineDate: '2025-11-20',
@@ -30,8 +33,8 @@ const mockMilestones = [
         id: 'step-002',
         milestoneId: 'ms-thesis-001',
         position: 2,
-        name: 'Advisor Approval',
-        description: 'Advisor reviews and approves the research proposal',
+        name: 'อาจารย์ที่ปรึกษาอนุมัติ',
+        description: 'อาจารย์ที่ปรึกษาตรวจสอบและอนุมัติข้อเสนอโครงงาน',
         requiresAttachment: false,
         deadlineDate: '2025-11-25',
         isActive: true,
@@ -41,8 +44,8 @@ const mockMilestones = [
         id: 'step-003',
         milestoneId: 'ms-thesis-001',
         position: 3,
-        name: 'Upload Chapter 1',
-        description: 'Upload completed first chapter (Introduction)',
+        name: 'อัปโหลดบทที่ 1',
+        description: 'อัปโหลดบทที่ 1 (บทนำ) ที่เสร็จสมบูรณ์',
         requiresAttachment: true,
         allowedFileTypes: '.pdf,.docx',
         deadlineDate: '2025-12-10',
@@ -53,8 +56,8 @@ const mockMilestones = [
         id: 'step-004',
         milestoneId: 'ms-thesis-001',
         position: 4,
-        name: 'Committee Review',
-        description: 'Committee reviews progress and provides feedback',
+        name: 'คณะกรรมการตรวจสอบ',
+        description: 'คณะกรรมการตรวจสอบความคืบหน้าและให้ข้อเสนอแนะ',
         requiresAttachment: false,
         deadlineDate: '2025-12-20',
         isActive: true,
@@ -64,8 +67,8 @@ const mockMilestones = [
         id: 'step-005',
         milestoneId: 'ms-thesis-001',
         position: 5,
-        name: 'Final Defense',
-        description: 'Student defends thesis before the committee',
+        name: 'สอบป้องกันวิทยานิพนธ์',
+        description: 'นักศึกษาสอบป้องกันวิทยานิพนธ์ต่อคณะกรรมการ',
         requiresAttachment: true,
         allowedFileTypes: '.pdf,.pptx',
         deadlineDate: '2026-01-15',
@@ -76,8 +79,8 @@ const mockMilestones = [
   },
   {
     id: 'ms-internship-001',
-    name: 'Internship Program',
-    description: 'Complete internship requirements',
+    name: 'โครงการฝึกงาน',
+    description: 'ดำเนินการตามข้อกำหนดการฝึกงาน',
     created_at: '2025-01-01',
     updated_at: '2025-01-01',
     steps: [
@@ -85,8 +88,8 @@ const mockMilestones = [
         id: 'step-101',
         milestoneId: 'ms-internship-001',
         position: 1,
-        name: 'Find Company',
-        description: 'Search and apply for internship positions',
+        name: 'หาสถานประกอบการ',
+        description: 'ค้นหาและสมัครฝึกงานกับสถานประกอบการ',
         requiresAttachment: false,
         deadlineDate: '2025-11-30',
         isActive: true,
@@ -96,8 +99,8 @@ const mockMilestones = [
         id: 'step-102',
         milestoneId: 'ms-internship-001',
         position: 2,
-        name: 'Submit Agreement',
-        description: 'Submit signed internship agreement form',
+        name: 'ส่งสัญญาฝึกงาน',
+        description: 'ส่งแบบฟอร์มสัญญาฝึกงานที่ลงนามแล้ว',
         requiresAttachment: true,
         allowedFileTypes: '.pdf',
         deadlineDate: '2025-12-05',
@@ -108,8 +111,8 @@ const mockMilestones = [
         id: 'step-103',
         milestoneId: 'ms-internship-001',
         position: 3,
-        name: 'Weekly Reports',
-        description: 'Submit weekly progress reports',
+        name: 'รายงานประจำสัปดาห์',
+        description: 'ส่งรายงานความคืบหน้าประจำสัปดาห์',
         requiresAttachment: true,
         allowedFileTypes: '.pdf,.docx',
         deadlineDate: '2026-01-31',
@@ -120,8 +123,8 @@ const mockMilestones = [
         id: 'step-104',
         milestoneId: 'ms-internship-001',
         position: 4,
-        name: 'Final Report',
-        description: 'Submit comprehensive internship report',
+        name: 'รายงานสรุปผล',
+        description: 'ส่งรายงานสรุปผลการฝึกงาน',
         requiresAttachment: true,
         allowedFileTypes: '.pdf,.docx',
         deadlineDate: '2026-02-15',
@@ -132,8 +135,8 @@ const mockMilestones = [
   },
   {
     id: 'ms-project-001',
-    name: 'Capstone Project',
-    description: 'Final year project development',
+    name: 'โครงงานจบการศึกษา',
+    description: 'พัฒนาโครงงานในปีสุดท้าย',
     created_at: '2025-01-01',
     updated_at: '2025-01-01',
     steps: [
@@ -141,8 +144,8 @@ const mockMilestones = [
         id: 'step-201',
         milestoneId: 'ms-project-001',
         position: 1,
-        name: 'Project Proposal',
-        description: 'Submit project proposal and get approval',
+        name: 'เสนอหัวข้อโครงงาน',
+        description: 'ส่งข้อเสนอโครงงานและรับการอนุมัติ',
         requiresAttachment: true,
         allowedFileTypes: '.pdf,.docx',
         deadlineDate: '2025-12-01',
@@ -153,8 +156,8 @@ const mockMilestones = [
         id: 'step-202',
         milestoneId: 'ms-project-001',
         position: 2,
-        name: 'Prototype Demo',
-        description: 'Present working prototype to advisors',
+        name: 'นำเสนอผลงานต้นแบบ',
+        description: 'นำเสนอผลงานต้นแบบต่ออาจารย์ที่ปรึกษา',
         requiresAttachment: false,
         deadlineDate: '2026-01-10',
         isActive: true,
@@ -164,8 +167,8 @@ const mockMilestones = [
         id: 'step-203',
         milestoneId: 'ms-project-001',
         position: 3,
-        name: 'Final Presentation',
-        description: 'Present completed project to evaluation committee',
+        name: 'นำเสนอรอบสุดท้าย',
+        description: 'นำเสนอโครงงานที่เสร็จสมบูรณ์ต่อคณะกรรมการ',
         requiresAttachment: true,
         allowedFileTypes: '.pdf,.pptx',
         deadlineDate: '2026-02-20',
@@ -178,73 +181,29 @@ const mockMilestones = [
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
+
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesMap>({});
+
+  const handleFileUpload = (stepId: string, file: File) => {
+    setUploadedFiles((prev) => ({
+      ...prev,
+      [stepId]: file.name,
+    }));
+  };
   return (
     <div>
       <div className="mb-4 text-2xl font-bold">
         {t('personal_information.title')}
       </div>
-      <div className="flex flex-row items-center gap-8">
-        {/* Profile Image */}
-        <div>
-          <Avatar className="h-60 w-60">
-            <AvatarImage src="/profile.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-        </div>
-        {/* Information */}
-        <div className="flex-1">
-          <div className="grid grid-cols-3 gap-x-2 gap-y-4">
-            <div className="flex">
-              <div className="mr-2 text-xl">
-                {t('personal_information.name')} :
-              </div>
-              <div className="text-xl">นางสาวนภพร เพ็ญบุตดี</div>
-            </div>
-            <div className="flex">
-              <div className="mr-2 text-xl">
-                {t('personal_information.student_id')} :
-              </div>
-              <div className="text-xl">65160339</div>
-            </div>
-            <div className="flex">
-              <div className="mr-2 text-xl">
-                {t('personal_information.department')} :
-              </div>
-              <div className="text-xl">วิชาการบริหารงานยุติธรรมและสังคม</div>
-            </div>
-            <div className="flex">
-              <div className="mr-2 text-xl">
-                {t('personal_information.faculty')} :
-              </div>
-              <div className="text-xl">วิทยาศาสตร์และเทคโนโลยี</div>
-            </div>
-            <div className="flex">
-              <div className="mr-2 text-xl">
-                {t('personal_information.year')} :
-              </div>
-              <div className="text-xl">2565</div>
-            </div>
-            <div className="flex">
-              <div className="mr-2 text-xl">
-                {t('personal_information.email')} :
-              </div>
-              <div className="text-xl">65160222@g.go.buu.ac.th</div>
-            </div>
-            <div className="flex">
-              <div className="mr-2 text-xl">
-                {t('personal_information.degree')} :
-              </div>
-              <div className="text-xl">ปรัชญาดุษฎีบัณฑิต</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ProfileComponent role="student" />
       <Separator className="my-6" />
       <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
       <div>
         <MilestoneComponent
           milestones={mockMilestones}
-          mode="upload"
+          mode="readonly"
+          onFileUpload={handleFileUpload}
+          uploadedFiles={uploadedFiles}
         ></MilestoneComponent>
       </div>
     </div>
