@@ -31,13 +31,12 @@ export const useCourse = () => {
     useSelector(selectCourseState);
 
   // Get course by ID
-  const getCourseById = useCallback(
-    (courseId: string | undefined | null): ICourse | undefined => {
-      if (!courseId) return undefined;
-      return courseMap[courseId];
-    },
-    [courseMap],
-  );
+  const getCourseById = (
+    courseId: string | undefined | null,
+  ): ICourse | undefined => {
+    if (!courseId) return undefined;
+    return courseMap[courseId];
+  };
 
   // Fetch all courses
   const fetchAllCourses = useCallback(async (): Promise<ICourse[]> => {
@@ -81,17 +80,13 @@ export const useCourse = () => {
   // Update an existing course
   const updateExistingCourse = useCallback(
     async (id: string, data: Partial<ICourse>): Promise<Partial<ICourse>> => {
-      const currentCourse = getCourseById(id);
-      if (currentCourse) {
-        dispatch(updateCourseInMap({ id, data }));
-      }
       const result = await dispatch(updateCourse({ id, data }));
       if (updateCourse.fulfilled.match(result)) {
         return result.payload.data;
       }
       throw new Error(result.error?.message || 'Failed to update course');
     },
-    [dispatch, getCourseById],
+    [dispatch],
   );
 
   // Delete a course
