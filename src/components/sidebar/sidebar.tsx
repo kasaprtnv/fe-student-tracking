@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { List, ArrowRight } from 'lucide-react';
+import LogoBuu from './logobuu.png';
+import { ArrowRight } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
 import { useTranslations } from 'next-intl';
@@ -14,7 +15,6 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const ToggleIcon = List;
   const t = useTranslations();
 
   return (
@@ -39,7 +39,7 @@ export default function Sidebar() {
           {open ? (
             <div className="h-10 w-full max-w-[220px]">
               <Image
-                src="/logobuu.png"
+                src={LogoBuu}
                 alt="BUU Logo"
                 width={220}
                 height={40}
@@ -48,8 +48,6 @@ export default function Sidebar() {
             </div>
           ) : (
             <ArrowRight className="h-6 w-6" />
-          )}
-            <ToggleIcon className="ml-auto h-5 w-5 text-black opacity-80" />
           )}
         </div>
       </div>
