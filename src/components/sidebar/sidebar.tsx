@@ -76,8 +76,7 @@ export default function Sidebar() {
           );
         })}
       </nav>
-
-      <div className="p-3">
+      <div className="border-t-2 border-gray-200 p-3">
         <div
           role="button"
           tabIndex={0}
