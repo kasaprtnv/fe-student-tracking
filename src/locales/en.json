@@ -5,8 +5,7 @@
     "dashboard": "Dashboard",
     "graduateList": "List Student",
     "userManagement": "User Management"
-    "welcomeMessage": "Welcome to the Student Tracker Application!"
-  },
+   },
   "data-table": {
     "reset_filters": "Reset",
     "filter": "Filter",

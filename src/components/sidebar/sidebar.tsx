@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
-import { List } from 'lucide-react';
+import Image from 'next/image';
+import { List, ArrowRight } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
 import { useTranslations } from 'next-intl';
@@ -23,20 +24,34 @@ export default function Sidebar() {
         open ? 'w-64 bg-white' : 'w-20 bg-gray-50',
       )}
     >
-      <div className="p-2">
-        <Button
+      <div className="p-3">
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => setOpen(!open)}
-          variant="ghost"
-          aria-label={open ? 'ปิดเมนู' : 'เปิดเมนู'}
           className={cn(
-            'w-full justify-start rounded-xl font-medium transition-colors',
-            open ? 'px-4' : 'justify-center px-0',
-            'text-red-600 hover:text-red-700',
+            'flex cursor-pointer items-center rounded-xl p-3 transition-colors',
+            open
+              ? 'justify-start gap-3 bg-transparent text-black hover:bg-gray-100'
+              : 'justify-center bg-white text-black hover:bg-gray-100',
           )}
         >
-          <ToggleIcon className={cn('h-5 w-5', open && 'mr-3')} />
-          {open && t('homepage.title')}
-        </Button>
+          {open ? (
+            <div className="h-10 w-full max-w-[220px]">
+              <Image
+                src="/logobuu.png"
+                alt="BUU Logo"
+                width={220}
+                height={40}
+                className="object-contain"
+              />
+            </div>
+          ) : (
+            <ArrowRight className="h-6 w-6" />
+          )}
+            <ToggleIcon className="ml-auto h-5 w-5 text-black opacity-80" />
+          )}
+        </div>
       </div>
 
       <nav className="flex flex-1 flex-col gap-2 p-2">
