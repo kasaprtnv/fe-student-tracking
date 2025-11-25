@@ -26,8 +26,14 @@
   "column": {
     "name": "ชื่อ",
     "description": "คำอธิบาย",
+    "courseId": "รหัสคอร์ส",
+    "position": "ตำแหน่ง",
+    "deadlineDate": "วันที่กำหนดส่ง",
+    "Actions": "ตัวเลือก",
     "code": "รหัส",
     "is_active": "ใช้งานอยู่",
+    "active": "ใช้งาน",
+    "inactive": "ไม่ใช้งาน",
     "edit": "แก้ไข",
     "delete": "ลบ",
     "created_at": "สร้างเมื่อ",
@@ -105,6 +111,72 @@
     "delete": {
       "header": "ลบหลักสูตร",
       "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบหลักสูตรนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+    }
+  },
+  "milestone": {
+    "title": "Milestone",
+    "sub_title": "จัดการ Milestone ของคุณที่นี่",
+    "milestone-form": {
+      "header": {
+        "create": "สร้าง Milestone",
+        "edit": "แก้ไข Milestone"
+      },
+      "header_description": {
+        "create": "เพิ่ม Milestone ใหม่ในระบบ",
+        "edit": "แก้ไขข้อมูล Milestone"
+      },
+      "label": {
+        "name": "ชื่อ Milestone",
+        "courseId": "รหัสคอร์ส",
+        "description": "คำอธิบาย",
+        "deadlineDate": "วันที่กำหนดส่ง",
+        "notifyReceiverEmail": "อีเมลแจ้งเตือน",
+        "position": "ลำดับ",
+        "notifyBeforeDays": "แจ้งเตือนก่อน (วัน)"
+      },
+      "placeholder": {
+        "name": "กรอกชื่อ Milestone",
+        "courseId": "กรอก CourseId",
+        "description": "กรอกรายละเอียด Milestone",
+        "deadlineDate": "เลือกวันที่กำหนดส่ง",
+        "notifyReceiverEmail": "กรอกอีเมล@email.com",
+        "position": "ลำดับเช่น 1",
+        "notifyBeforeDays": "จำนวนวันก่อนแจ้งเตือน"
+      },
+      "toast": {
+        "created-successfully": "สร้าง Milestone เรียบร้อย!",
+        "creation-failed": "ไม่สามารถสร้าง Milestone ได้ กรุณาลองใหม่อีกครั้ง",
+        "updated-successfully": "อัปเดต Milestone สำเร็จ!",
+        "update-failed": "ไม่สามารถอัปเดต Milestone ได้ กรุณาลองใหม่อีกครั้ง",
+        "deleted-successfully": "ลบ Milestone สำเร็จ!",
+        "deletion-failed": "ไม่สามารถลบ Milestone ได้ กรุณาลองใหม่อีกครั้ง"
+      },
+      "errors": {
+        "code-duplicate": "รหัสหลักสูตรนี้มีอยู่แล้ว",
+        "courseId-required": "กรุณากรอก CourseId",
+        "courseId-duplicate": "CourseId นี้ถูกใช้แล้ว",
+        "name-required": "กรุณากรอกชื่อ Milestone",
+        "name-duplicate": "ชื่อ Milestone นี้มีอยู่แล้ว",
+        "description-required": "กรุณากรอกคำอธิบาย",
+
+        "position-integer": "ลำดับต้องเป็นตัวเลขเท่านั้น",
+        "position-nonnegative": "ลำดับต้องไม่เป็นค่าติดลบ",
+
+        "notifyReceiverEmail-required": "กรุณากรอกอีเมลแจ้งเตือน",
+        "notifyReceiverEmail-invalid": "รูปแบบอีเมลไม่ถูกต้อง",
+
+        "deadlineDate-required": "กรุณาเลือกวันที่กำหนดส่ง",
+        "deadlineDate-invalid": "รูปแบบวันที่ไม่ถูกต้อง",
+
+        "notifyBeforeDays-integer": "จำนวนวันต้องเป็นตัวเลข",
+        "notifyBeforeDays-min": "จำนวนวันต้องมากกว่าหรือเท่ากับ 0",
+        "notifyReceiverEmail-requried": "กรุณากรอกอีเมลแจ้งเตือน (สะกดผิดใน schema)",
+        "deadlineDate-requried": "กรุณากรอกวันที่กำหนดส่ง (สะกดผิดใน schema)"
+      }
+    },
+    "delete": {
+      "header": "ลบ Milestone",
+      "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบ Milestone นี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
     }
   }
 }
