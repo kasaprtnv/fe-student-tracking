@@ -5,6 +5,7 @@
     "dashboard": "Dashboard",
     "graduateList": "List Student",
     "userManagement": "User Management"
+   },
   },
   "data-table": {
     "reset_filters": "Reset",
