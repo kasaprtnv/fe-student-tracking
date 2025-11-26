@@ -22,7 +22,7 @@ export interface IMilestoneCreateDTO {
 
 export interface MilestoneState {
   // Data
-  milestonemap: Record<string, IMilestone>;
+  milestoneMap: Record<string, IMilestone>;
 
   // UI States
   searchQuery: string;

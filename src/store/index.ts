@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import studentReducer from './slices/student-slice.store';
 import courseReducer from './course/course.slice';
-import milestoneReducer from './slices/milestone-silce.store';
-import milestoneStepReducer from './milestoneStep/milestone-step.slice';
+import milestoneReducer from './milestone/milestone.slice';
+import milestoneStepReducer from './milestone-step/milestone-step.slice';
 
 export const store = configureStore({
   reducer: {

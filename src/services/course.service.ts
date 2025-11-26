@@ -1,6 +1,7 @@
 import { ICourse } from '@/types/course';
 import {
   IApiDeleteResponse,
+  IApiDeleteManyResponse,
   IApiGetResponse,
   IApiPatchResponse,
   IApiPostResponse,
@@ -61,7 +62,7 @@ class CourseService extends APIService {
 
   async deleteMultipleCourses(
     courseIds: string[],
-  ): Promise<IApiDeleteResponse> {
+  ): Promise<IApiDeleteManyResponse> {
     return this.delete('/courses/bulk-delete', { ids: courseIds })
       .then((response) => response?.data)
       .catch((error) => {

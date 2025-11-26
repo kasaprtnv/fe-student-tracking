@@ -107,7 +107,7 @@ const courseSlice = createSlice({
       })
       .addCase(deleteCourse.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        delete state.courseMap[action.meta.arg];
+        delete state.courseMap[action.payload.deletedId];
       })
       .addCase(deleteCourse.rejected, (state, action) => {
         state.storeAction = 'none';
@@ -122,7 +122,7 @@ const courseSlice = createSlice({
       })
       .addCase(deleteCourses.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        action.meta.arg.forEach((id: string) => {
+        action.payload.deletedIds.forEach((id: string) => {
           delete state.courseMap[id];
         });
       })
