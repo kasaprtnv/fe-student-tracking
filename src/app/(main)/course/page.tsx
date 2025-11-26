@@ -21,7 +21,7 @@ const CoursePage = () => {
     searchQuery,
     fetchAllCourses,
     getCourseById,
-    setSearchQuery,
+    setSearch: setSearchQuery,
     removeCourse,
     removeMultipleCourses,
     updateExistingCourse,

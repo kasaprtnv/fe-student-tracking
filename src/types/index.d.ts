@@ -22,6 +22,13 @@ export interface IApiPostResponse<T> {
 }
 
 export interface IApiDeleteResponse {
+  deletedId: string;
+  success: boolean;
+  message: string;
+}
+
+export interface IApiDeleteManyResponse {
+  deletedIds: string[];
   success: boolean;
   message: string;
 }

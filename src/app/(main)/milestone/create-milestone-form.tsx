@@ -42,7 +42,7 @@ export function CreateMilestoneFormSheet({
   const t = useTranslations('milestone.milestone-form');
   const tCommon = useTranslations('common');
 
-  const { createNewMilestone, storeAction, allMilestoneId, getMilestoneById } =
+  const { createNewMilestone, storeAction, allMilestoneIds, getMilestoneById } =
     useMilestone();
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
@@ -60,7 +60,7 @@ export function CreateMilestoneFormSheet({
   });
 
   const isDuplicateMilestoneName = (name: string) => {
-    return allMilestoneId.some(
+    return allMilestoneIds.some(
       (id) => getMilestoneById(id)?.name.toLowerCase() === name.toLowerCase(),
     );
   };
