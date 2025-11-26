@@ -56,7 +56,7 @@ export function UpdateMilestoneFormSheet({
   const {
     updateExistingMilestone,
     storeAction,
-    allMilestoneId,
+    allMilestoneIds,
     getMilestoneById,
   } = useMilestone();
 
@@ -91,7 +91,7 @@ export function UpdateMilestoneFormSheet({
   }, [milestone]);
 
   const isDuplicateMilestoneName = (name: string) => {
-    return allMilestoneId.some(
+    return allMilestoneIds.some(
       (id) =>
         getMilestoneById(id)?.name.toLowerCase() === name.toLowerCase() &&
         getMilestoneById(id)?.id !== milestone?.id,
