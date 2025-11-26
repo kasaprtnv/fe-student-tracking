@@ -9,19 +9,19 @@ import {
   createMilestoneStep,
   updateMilestoneStep,
   deleteMilestoneStep,
-} from '@/store/milestoneStep/milestone-step.thunks';
+} from '@/store/milestone-step/milestone-step.thunks';
 
 import {
   selectMilestoneStepMap,
   selectFilteredMilestoneStepIds,
   selectAllMilestoneStepIds,
   selectMilestoneStepState,
-} from '@/store/milestoneStep/milestone-step.selectors';
+} from '@/store/milestone-step/milestone-step.selectors';
 
 import {
   setSearchQuery,
   clearError,
-} from '@/store/milestoneStep/milestone-step.slice';
+} from '@/store/milestone-step/milestone-step.slice';
 
 import {
   IMilestoneStep,

@@ -134,8 +134,7 @@ const milestoneStepSlice = createSlice({
       })
       .addCase(deleteMilestoneStep.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        const id = action.meta.arg;
-        delete state.milestoneStepMap[id];
+        delete state.milestoneStepMap[action.payload.deletedId];
       })
       .addCase(deleteMilestoneStep.rejected, (state, action) => {
         state.storeAction = 'none';
