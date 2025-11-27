@@ -24,3 +24,36 @@ export interface Milestone {
 export interface UploadedFilesMap {
   [stepId: string]: string;
 }
+
+export interface IMilestone {
+  id: string;
+  courseId: string;
+  name: string;
+  description?: string;
+  position: number;
+  notifyReceiverEmail: string;
+  deadlineDate: Date;
+  notifyBeforeDays: number;
+  isActive: boolean;
+}
+
+export interface IMilestoneCreateDTO {
+  courseId: string;
+  name: string;
+  description?: string;
+  position: number;
+  notifyReceiverEmail: string;
+  deadlineDate: Date;
+  notifyBeforeDays: number;
+}
+
+export interface MilestoneState {
+  // Data
+  milestoneMap: Record<string, IMilestone>;
+
+  // UI States
+  searchQuery: string;
+  storeAction: StoreAction;
+  loader: boolean;
+  error: string | null;
+}

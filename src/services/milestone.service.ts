@@ -1,4 +1,3 @@
-import { ICourse } from '@/types/course';
 import {
   IApiDeleteResponse,
   IApiDeleteManyResponse,
@@ -7,63 +6,64 @@ import {
   IApiPostResponse,
 } from '@/types/index';
 import { APIService } from './api.service';
+import { IMilestone } from '@/types/milestone';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-class CourseService extends APIService {
+class MilestoneService extends APIService {
   constructor(baseURL?: string) {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAllCourses(): Promise<IApiGetResponse<ICourse>> {
-    return this.get('/courses')
+  async getAllMilestone(): Promise<IApiGetResponse<IMilestone>> {
+    return this.get('/milestones')
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async getCourseById(id: string): Promise<ICourse> {
-    return this.get(`/courses/${id}`)
+  async getMilestoneById(id: string): Promise<IMilestone> {
+    return this.get(`/milestones/${id}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async createCourse(
-    data: Partial<ICourse>,
-  ): Promise<IApiPostResponse<ICourse>> {
-    return this.post('/courses', data)
+  async createMilestone(
+    data: Partial<IMilestone>,
+  ): Promise<IApiPostResponse<IMilestone>> {
+    return this.post('/milestones', data)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async updateCourse(
+  async updateMilestone(
     id: string,
-    data: Partial<ICourse>,
-  ): Promise<IApiPatchResponse<ICourse>> {
-    return this.patch(`/courses/${id}`, data)
+    data: Partial<IMilestone>,
+  ): Promise<IApiPatchResponse<IMilestone>> {
+    return this.patch(`/milestones/${id}`, data)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async deleteCourse(id: string): Promise<IApiDeleteResponse> {
-    return this.delete(`/courses/${id}`)
+  async deleteMilestone(id: string): Promise<IApiDeleteResponse> {
+    return this.delete(`/milestones/${id}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async deleteMultipleCourses(
-    courseIds: string[],
+  async deleteMultipleMilestone(
+    milestoneId: string[],
   ): Promise<IApiDeleteManyResponse> {
-    return this.delete('/courses/bulk-delete', { ids: courseIds })
+    return this.delete('/milestones/bulk-delete', { ids: milestoneId })
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -71,4 +71,4 @@ class CourseService extends APIService {
   }
 }
 
-export const courseService = new CourseService();
+export const milestoneService = new MilestoneService();

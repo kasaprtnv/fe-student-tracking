@@ -84,7 +84,9 @@ export function DataTablePagination<TData>({
             }}
             className="w-12 appearance-none text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
-          <p className="m-0">of {table.getPageCount()}</p>
+          <p className="m-0">
+            {t('of')} {table.getPageCount()}
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
