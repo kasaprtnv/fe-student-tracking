@@ -36,6 +36,7 @@
     "inactive": "ไม่ใช้งาน",
     "edit": "แก้ไข",
     "delete": "ลบ",
+    "to-milestone-step": "ไปยังขั้นตอน Milestone",
     "created_at": "สร้างเมื่อ",
     "updated_at": "อัปเดตเมื่อ"
   },

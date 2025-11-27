@@ -12,6 +12,7 @@ import { CreateMilestoneFormSheet } from './create-milestone-form';
 import { UpdateMilestoneFormSheet } from './update-milestone-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { createMilestoneColumns } from './milestone-columns';
+import { useRouter } from 'next/router';
 
 const MilestonePage = () => {
   const tForm = useTranslations('milestone.milestone-form');
@@ -50,6 +51,7 @@ const MilestonePage = () => {
     isDeleting: boolean;
     milestoneId?: string[];
   }>({ isDeleting: false });
+  const router = useRouter();
 
   useSWR(
     'fetch-milestones',
@@ -105,6 +107,10 @@ const MilestonePage = () => {
     }
   };
 
+  const toMilestoneStepPage = (milestoneId: string) => {
+    router.push(`/milestone/${milestoneId}`);
+  };
+
   return (
     <>
       <div className="container mx-auto py-8">
@@ -119,6 +125,7 @@ const MilestonePage = () => {
           onAdd={() => setIsAdd(true)}
           onEdit={(m) => setIsEdit({ isEditing: true, milestone: m })}
           onDelete={onDeleteMilestone}
+          onLink={(m) => toMilestoneStepPage(m.id)}
           onMultiDelete={onDeleteMultipleMilestones}
           onActiveChange={onIsActiveChange}
           onSearch={onSearchChange}
