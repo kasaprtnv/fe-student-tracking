@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/collapsible';
 import { Milestone } from '@/types/milestone';
 import { useLocale, useTranslations } from 'next-intl';
+import { Spinner } from '../ui/spinner';
 
 type ViewMode = 'readonly' | 'upload' | 'edit';
 
@@ -39,6 +40,19 @@ interface MilestoneProgressProps {
   onToggleLock?: (id: string, type: 'milestone' | 'step') => void;
   uploadedFiles?: Record<string, string>;
 }
+
+// Utility: แปลง status เป็น completed/isActive
+const isStepCompleted = (status: string) => status === 'approved';
+const isStepDeclined = (status: string) => status === 'declined';
+const isStepPending = (status: string) => status === 'pending';
+const isAvailable = (status: string) => status === 'available';
+
+// Utility: สร้าง deadlineDate จาก created_at + dayPeriod
+const getStepDeadline = (milestoneCreatedAt: string, dayPeriod: number) => {
+  const date = new Date(milestoneCreatedAt);
+  date.setDate(date.getDate() + dayPeriod);
+  return date;
+};
 
 export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   milestones,
@@ -52,11 +66,12 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const [openMilestones, setOpenMilestones] = useState<Record<string, boolean>>(
     () => Object.fromEntries(milestones.map((m) => [m.id, true])),
   );
+  const allowedFileTypes = '.pdf,.docx';
 
   // Calculate overall progress
   const totalSteps = milestones.reduce((acc, ms) => acc + ms.steps.length, 0);
   const completedSteps = milestones.reduce(
-    (acc, ms) => acc + ms.steps.filter((s) => s.completed).length,
+    (acc, ms) => acc + ms.steps.filter((s) => isStepCompleted(s.status)).length,
     0,
   );
   const overallProgress =
@@ -65,7 +80,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   // Calculate milestone progress
   const getMilestoneProgress = (milestone: Milestone) => {
     const total = milestone.steps.length;
-    const completed = milestone.steps.filter((s) => s.completed).length;
+    const completed = milestone.steps.filter((s) =>
+      isStepCompleted(s.status),
+    ).length;
     return total > 0 ? Math.round((completed / total) * 100) : 0;
   };
 
@@ -86,9 +103,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (date: Date) => {
     const locale = language === 'th' ? 'th-TH' : 'en-US';
-    return new Date(dateString).toLocaleDateString(locale, {
+    return date.toLocaleDateString(locale, {
       month: 'long',
       day: 'numeric',
       year: 'numeric',
@@ -174,8 +191,12 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             {progress}%
                           </div>
                           <div className="text-muted-foreground text-xs">
-                            {milestone.steps.filter((s) => s.completed).length}/
-                            {milestone.steps.length}
+                            {
+                              milestone.steps.filter((s) =>
+                                isStepCompleted(s.status),
+                              ).length
+                            }
+                            /{milestone.steps.length}
                           </div>
                         </div>
                         <CollapsibleTrigger asChild>
@@ -195,127 +216,169 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
 
                   <CollapsibleContent className="mt-6">
                     <CardContent className="space-y-3">
-                      {milestone.steps.map((step) => (
-                        <Card
-                          key={step.id}
-                          className={cn(
-                            'border-2 transition-colors',
-                            step.completed && 'border-green-200 bg-green-50',
-                            !step.isActive && 'opacity-50',
-                          )}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-start gap-3">
-                              {/* Step Number */}
-                              <div
-                                className={cn(
-                                  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-semibold',
-                                  step.completed
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-muted text-muted-foreground',
-                                )}
-                              >
-                                {step.position}
-                              </div>
+                      {milestone.steps.map((step) => {
+                        const completed = isStepCompleted(step.status);
+                        const declined = isStepDeclined(step.status);
+                        const pending = isStepPending(step.status);
+                        const available = isAvailable(step.status);
+                        const isActive = step.isActive;
+                        const deadlineDate = getStepDeadline(
+                          milestone.created_at,
+                          step.dayPeriod,
+                        );
 
-                              <div className="min-w-0 flex-1">
-                                <div className="mb-1 flex items-center gap-2">
-                                  {step.completed ? (
-                                    <CheckCircle2 className="h-5 w-5 shrink-0 text-green-500" />
-                                  ) : (
-                                    <Circle className="text-muted-foreground h-5 w-5 shrink-0" />
+                        return (
+                          <Card
+                            key={step.id}
+                            className={cn(
+                              'border-2 transition-colors',
+                              completed && 'border-green-200 bg-green-50',
+                              declined && 'border-red-200 bg-red-50',
+                              pending && 'border-yellow-200 bg-yellow-50',
+                              !isActive && 'opacity-50',
+                            )}
+                          >
+                            <CardContent>
+                              <div className="flex items-start gap-3">
+                                {/* Step Number */}
+                                <div
+                                  className={cn(
+                                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-semibold',
+                                    completed
+                                      ? 'bg-green-500 text-white'
+                                      : declined
+                                        ? 'bg-red-500 text-white'
+                                        : pending
+                                          ? 'bg-yellow-500 text-white'
+                                          : 'bg-muted text-muted-foreground',
                                   )}
-                                  <h4 className="font-semibold">{step.name}</h4>
-                                  {step.requiresAttachment && (
-                                    <Paperclip className="text-muted-foreground h-4 w-4" />
-                                  )}
-                                  {mode === 'edit' && (
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="ml-auto h-6 w-6"
-                                      onClick={() =>
-                                        onToggleLock?.(step.id, 'step')
-                                      }
-                                    >
-                                      {step.isActive ? (
-                                        <Unlock className="h-3 w-3" />
-                                      ) : (
-                                        <Lock className="h-3 w-3" />
-                                      )}
-                                    </Button>
-                                  )}
+                                >
+                                  {step.position}
                                 </div>
 
-                                <p className="text-muted-foreground mb-2 text-sm">
-                                  {step.description}
-                                </p>
-
-                                <div className="text-muted-foreground flex items-center gap-4 text-xs">
-                                  <div className="flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    <span>{formatDate(step.deadlineDate)}</span>
-                                  </div>
-                                  {step.completed && (
-                                    <Badge
-                                      variant="secondary"
-                                      className="bg-green-100 text-green-700 hover:bg-green-100"
-                                    >
-                                      ✓ {t('completed')}
-                                    </Badge>
-                                  )}
-                                </div>
-
-                                {/* Upload Button */}
-                                {mode === 'upload' &&
-                                  step.requiresAttachment &&
-                                  !step.completed &&
-                                  step.isActive && (
-                                    <div className="mt-3">
+                                <div className="min-w-0 flex-1">
+                                  <div className="mb-1 flex items-center gap-2">
+                                    {completed ? (
+                                      <CheckCircle2 className="h-5 w-5 shrink-0 text-green-500" />
+                                    ) : declined ? (
+                                      <Circle className="h-5 w-5 shrink-0 text-red-500" />
+                                    ) : pending ? (
+                                      <Circle className="h-5 w-5 shrink-0 text-yellow-500" />
+                                    ) : (
+                                      <Circle className="text-muted-foreground h-5 w-5 shrink-0" />
+                                    )}
+                                    <h4 className="font-semibold">
+                                      {step.name}
+                                    </h4>
+                                    {step.requiresAttachment && (
+                                      <Paperclip className="text-muted-foreground h-4 w-4" />
+                                    )}
+                                    {mode === 'edit' && (
                                       <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className=""
+                                        variant="ghost"
+                                        size="icon"
+                                        className="ml-auto h-6 w-6"
                                         onClick={() =>
-                                          document
-                                            .getElementById(`file-${step.id}`)
-                                            ?.click()
+                                          onToggleLock?.(step.id, 'step')
                                         }
                                       >
-                                        <Upload className="mr-2 h-4 w-4" />
-                                        {t('upload_button')}
+                                        {isActive ? (
+                                          <Unlock className="h-3 w-3" />
+                                        ) : (
+                                          <Lock className="h-3 w-3" />
+                                        )}
                                       </Button>
-                                      <input
-                                        id={`file-${step.id}`}
-                                        type="file"
-                                        accept={step.allowedFileTypes}
-                                        onChange={(e) =>
-                                          handleFileChange(step.id, e)
-                                        }
-                                        className="hidden"
-                                      />
-                                      {step.allowedFileTypes && (
+                                    )}
+                                  </div>
+
+                                  <p className="text-muted-foreground mb-2 text-sm">
+                                    {step.description}
+                                  </p>
+
+                                  <div className="text-muted-foreground flex items-center gap-4 text-xs">
+                                    <div className="flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      <span>{formatDate(deadlineDate)}</span>
+                                    </div>
+                                    {completed && (
+                                      <Badge
+                                        variant="secondary"
+                                        className="bg-green-100 text-green-700 hover:bg-green-100"
+                                      >
+                                        ✓ {t('completed')}
+                                      </Badge>
+                                    )}
+                                    {declined && (
+                                      <Badge
+                                        variant="secondary"
+                                        className="bg-red-100 text-red-700 hover:bg-red-100"
+                                      >
+                                        X {t('declined')}
+                                      </Badge>
+                                    )}
+                                    {pending && (
+                                      <Badge
+                                        variant="secondary"
+                                        className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100"
+                                      >
+                                        <Spinner /> {t('pending')}
+                                      </Badge>
+                                    )}
+                                  </div>
+
+                                  {/* Upload Button */}
+                                  {mode === 'upload' &&
+                                    step.requiresAttachment &&
+                                    (available || declined) &&
+                                    isActive && (
+                                      <div className="mt-3">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className=""
+                                          onClick={() =>
+                                            document
+                                              .getElementById(`file-${step.id}`)
+                                              ?.click()
+                                          }
+                                        >
+                                          <Upload className="mr-2 h-4 w-4" />
+                                          {t('upload_button')}
+                                        </Button>
+                                        <input
+                                          id={`file-${step.id}`}
+                                          type="file"
+                                          accept={allowedFileTypes}
+                                          onChange={(e) =>
+                                            handleFileChange(step.id, e)
+                                          }
+                                          className="hidden"
+                                        />
                                         <p className="text-muted-foreground mt-1 text-xs">
                                           {t('accept_file_type')}
                                           {' : '}
-                                          {step.allowedFileTypes}
+                                          {allowedFileTypes}
                                         </p>
-                                      )}
-
-                                      {uploadedFiles?.[step.id] && (
-                                        <p className="mt-1 text-xs text-green-700">
-                                          {t('uploaded_file')}
-                                          {' : '}
-                                          {uploadedFiles[step.id]}
-                                        </p>
-                                      )}
-                                    </div>
-                                  )}
+                                        {uploadedFiles?.[step.id] && (
+                                          <p className="mt-1 text-xs text-green-700">
+                                            {t('uploaded_file')}
+                                            {' : '}
+                                            {uploadedFiles[step.id]}
+                                          </p>
+                                        )}
+                                        <div className="mt-2 flex justify-end">
+                                          <Button className="bg-green-600 text-white hover:bg-green-700">
+                                            ยืนยันการส่ง
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
+                                </div>
                               </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
                     </CardContent>
                   </CollapsibleContent>
                 </Collapsible>

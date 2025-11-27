@@ -1,4 +1,10 @@
 // Types
+export type MilestoneStepStatus =
+  | 'approved'
+  | 'pending'
+  | 'declined'
+  | 'available';
+
 export interface MilestoneStep {
   id: string;
   milestoneId: string;
@@ -6,10 +12,9 @@ export interface MilestoneStep {
   name: string;
   description: string;
   requiresAttachment: boolean;
-  allowedFileTypes?: string;
-  deadlineDate: string;
+  dayPeriod: number;
   isActive: boolean;
-  completed: boolean;
+  status: MilestoneStepStatus;
 }
 
 export interface Milestone {
@@ -32,7 +37,7 @@ export interface IMilestone {
   description?: string;
   position: number;
   notifyReceiverEmail: string;
-  deadlineDate: Date;
+  dayPeriod: number;
   notifyBeforeDays: number;
   isActive: boolean;
 }
@@ -43,7 +48,7 @@ export interface IMilestoneCreateDTO {
   description?: string;
   position: number;
   notifyReceiverEmail: string;
-  deadlineDate: Date;
+  dayPeriod: number;
   notifyBeforeDays: number;
 }
 

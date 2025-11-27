@@ -130,6 +130,8 @@
   },
   "milestone-progress": {
     "completed": "สำเร็จ",
+    "pending": "รอดำเนินการ",
+    "declined": "ถูกปฏิเสธ",
     "upload_button": "อัปโหลดไฟล์",
     "uploaded_file": "ไฟล์ที่อัปโหลด",
     "overall_progress": "ความคืบหน้า",
