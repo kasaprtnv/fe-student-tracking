@@ -80,7 +80,8 @@
       "errors": {
         "code-required": "Course code is required",
         "name-required": "Course name is required",
-        "code-duplicate": "Course code already exists"
+        "code-duplicate": "Course code already exists",
+        "code-too-long": "Course code must not exceed 10 characters"
       },
       "label": {
         "code": "Course Code",
