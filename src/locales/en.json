@@ -131,6 +131,8 @@
   },
   "milestone-progress": {
     "completed": "Completed",
+    "pending": "Pending",
+    "declined": "Declined",
     "upload_button": "Upload File",
     "uploaded_file": "Uploaded File",
     "overall_progress": "Overall Progress",
