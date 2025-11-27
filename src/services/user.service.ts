@@ -1,69 +1,64 @@
-import { ICourse } from '@/types/course';
 import {
-  IApiDeleteResponse,
-  IApiDeleteManyResponse,
   IApiGetResponse,
-  IApiPatchResponse,
   IApiPostResponse,
+  IApiPatchResponse,
+  IApiDeleteResponse,
 } from '@/types/index';
-import { APIService } from './api.service';
+import { APIService } from '@/services/api.service';
+import { User } from '@/types/user';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-class CourseService extends APIService {
+class UserService extends APIService {
   constructor(baseURL?: string) {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAllCourses(): Promise<IApiGetResponse<ICourse>> {
-    return this.get('/courses')
+  async getAll(): Promise<IApiGetResponse<User>> {
+    return this.get('/users')
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async getCourseById(id: string): Promise<ICourse> {
-    return this.get(`/courses/${id}`)
+  async getById(id: string): Promise<User> {
+    return this.get(`/users/${id}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async createCourse(
-    data: Partial<ICourse>,
-  ): Promise<IApiPostResponse<ICourse>> {
-    return this.post('/courses', data)
+  async create(data: Omit<User, 'id'>): Promise<IApiPostResponse<User>> {
+    return this.post('/users', data)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async updateCourse(
+  async update(
     id: string,
-    data: Partial<ICourse>,
-  ): Promise<IApiPatchResponse<ICourse>> {
-    return this.patch(`/courses/${id}`, data)
+    data: Partial<User>,
+  ): Promise<IApiPatchResponse<User>> {
+    return this.patch(`/users/${id}`, data)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async deleteCourse(id: string): Promise<IApiDeleteResponse> {
-    return this.delete(`/courses/${id}`)
+  async deleteById(id: string): Promise<IApiDeleteResponse> {
+    return this.delete(`/users/${id}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async deleteMultipleCourses(
-    courseIds: string[],
-  ): Promise<IApiDeleteManyResponse> {
-    return this.delete('/courses/bulk-delete', { ids: courseIds })
+  async deleteMultiple(ids: string[]): Promise<IApiDeleteResponse> {
+    return this.delete('/students/bulk-delete', ids)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -71,4 +66,4 @@ class CourseService extends APIService {
   }
 }
 
-export const courseService = new CourseService();
+export const userService = new UserService();

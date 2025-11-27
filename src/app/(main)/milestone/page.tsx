@@ -19,11 +19,11 @@ const MilestonePage = () => {
   const tMilestone = useTranslations('milestone');
 
   const {
-    filteredMilestoneId,
+    filteredMilestoneIds,
     searchQuery,
     fetchAllMilestones,
     getMilestoneById,
-    setSearchQuery,
+    setSearch: setSearchQuery,
     removeMilestone,
     removeMultipleMilestones,
     updateExistingMilestone,
@@ -59,7 +59,7 @@ const MilestonePage = () => {
     { revalidateOnFocus: false },
   );
 
-  const filteredMilestoneData = filteredMilestoneId
+  const filteredMilestoneData = filteredMilestoneIds
     .map((id) => getMilestoneById(id))
     .filter((m) => m !== undefined) as IMilestone[];
 

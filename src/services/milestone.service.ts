@@ -1,5 +1,6 @@
 import {
   IApiDeleteResponse,
+  IApiDeleteManyResponse,
   IApiGetResponse,
   IApiPatchResponse,
   IApiPostResponse,
@@ -61,7 +62,7 @@ class MilestoneService extends APIService {
 
   async deleteMultipleMilestone(
     milestoneId: string[],
-  ): Promise<IApiDeleteResponse> {
+  ): Promise<IApiDeleteManyResponse> {
     return this.delete('/milestones/bulk-delete', { ids: milestoneId })
       .then((response) => response?.data)
       .catch((error) => {
