@@ -1,4 +1,3 @@
-// Milestone Page rewritten to match CoursePage structure
 'use client';
 
 import { useMilestone } from '@/hooks/use-milestone';
@@ -12,9 +11,11 @@ import { CreateMilestoneFormSheet } from './create-milestone-form';
 import { UpdateMilestoneFormSheet } from './update-milestone-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { createMilestoneColumns } from './milestone-columns';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 const MilestonePage = () => {
+  const router = useRouter();
+
   const tForm = useTranslations('milestone.milestone-form');
   const tCol = useTranslations('column');
   const tMilestone = useTranslations('milestone');
@@ -51,7 +52,6 @@ const MilestonePage = () => {
     isDeleting: boolean;
     milestoneId?: string[];
   }>({ isDeleting: false });
-  const router = useRouter();
 
   useSWR(
     'fetch-milestones',
@@ -125,7 +125,7 @@ const MilestonePage = () => {
           onAdd={() => setIsAdd(true)}
           onEdit={(m) => setIsEdit({ isEditing: true, milestone: m })}
           onDelete={onDeleteMilestone}
-          onLink={(m) => toMilestoneStepPage(m.id)}
+          onLink={(m) => toMilestoneStepPage(m)}
           onMultiDelete={onDeleteMultipleMilestones}
           onActiveChange={onIsActiveChange}
           onSearch={onSearchChange}
