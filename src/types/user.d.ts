@@ -1,0 +1,31 @@
+import { StoreAction } from '@/types/index';
+
+export type UserRole = 'student' | 'teacher' | 'admin';
+
+export interface User {
+  id: string;
+  supabaseId?: string;
+  code: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  role: UserRole;
+  phone?: string;
+  degree?: string;
+  year?: string;
+  courseId?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UserState {
+  // Data
+  userMap: Record<string, User>;
+
+  // UI States
+  searchQuery: string;
+  storeAction: StoreAction;
+  loader: boolean;
+  error: string | null;
+}
