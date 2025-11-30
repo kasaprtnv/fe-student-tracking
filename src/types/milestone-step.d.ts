@@ -4,8 +4,8 @@ export interface IMilestoneStep {
   name: string;
   description?: string;
   position: number;
-  requireAttachment: boolean;
-  deadlineDate?: Date;
+  requiresAttachment: boolean;
+  dayPeriod: number;
   notifyBeforeDays?: number;
   isActive: boolean;
   createdAt: Date;
@@ -19,7 +19,7 @@ export interface IMilestoneStepCreateDTO {
   name: string;
   description?: string;
   position: number;
-  requireAttachment: boolean;
+  requiresAttachment: boolean;
   deadlineDate?: Date;
   notifyBeforeDays?: number;
 }
