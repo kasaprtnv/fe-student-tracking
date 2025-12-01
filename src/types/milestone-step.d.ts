@@ -4,14 +4,13 @@ export interface IMilestoneStep {
   name: string;
   description?: string;
   position: number;
-  requireAttachment: boolean;
-  deadlineDate?: Date;
+  requiresAttachment: boolean;
   notifyBeforeDays?: number;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-
   milestoneName?: string;
+  dayPeriod?: number;
 }
 
 export interface IMilestoneStepCreateDTO {
@@ -19,9 +18,10 @@ export interface IMilestoneStepCreateDTO {
   name: string;
   description?: string;
   position: number;
-  requireAttachment: boolean;
+  requiresAttachment: boolean;
   deadlineDate?: Date;
   notifyBeforeDays?: number;
+  isActive?: boolean;
 }
 
 export interface MilestoneStepState {
@@ -33,4 +33,16 @@ export interface MilestoneStepState {
   storeAction: StoreAction;
   loader: boolean;
   error: string | null;
+}
+
+export interface IMilestoneStepUpdateDTO {
+  parentStepId?: string | null;
+  name?: string;
+  description?: string | null;
+  position?: number;
+  requiresAttachment?: boolean;
+  allowedFileTypes?: string | null;
+  deadlineDate?: Date | null;
+  notifyBeforeDays?: number | null;
+  isActive?: boolean;
 }

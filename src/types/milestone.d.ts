@@ -40,6 +40,8 @@ export interface IMilestone {
   dayPeriod: number;
   notifyBeforeDays: number;
   isActive: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface IMilestoneCreateDTO {

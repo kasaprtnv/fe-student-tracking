@@ -4,7 +4,7 @@ import {
   IMilestoneStep,
   IMilestoneStepCreateDTO,
   IMilestoneStepUpdateDTO,
-} from '@/types/milestonestep';
+} from '@/types/milestone-step';
 
 // ----------------------------------------------------
 // ZOD SCHEMA (เหมือน milestone.ts แบบปรับ field)
@@ -34,14 +34,11 @@ export const getDefaultMilestoneStepForm = (
   milestoneId?: string,
 ): IMilestoneStepCreateDTO => ({
   milestoneId: milestoneId ?? '',
-  parentStepId: null,
   name: '',
   description: '',
   position: 1,
   requiresAttachment: false,
-  allowedFileTypes: null,
-  deadlineDate: null,
-  notifyBeforeDays: null,
+  notifyBeforeDays: 0,
   isActive: true,
 });
 
@@ -50,7 +47,6 @@ export const getDefaultMilestoneStepForm = (
 // ----------------------------------------------------
 export const formatMilestoneStep = (step: IMilestoneStep) => ({
   ...step,
-  deadlineDate: step.deadlineDate ? new Date(step.deadlineDate) : null,
   createdAt: new Date(step.createdAt),
   updatedAt: new Date(step.updatedAt),
 });
@@ -62,14 +58,11 @@ export const buildMilestoneStepCreate = (
   form: IMilestoneStepCreateDTO,
 ): IMilestoneStepCreateDTO => ({
   milestoneId: form.milestoneId,
-  parentStepId: form.parentStepId ?? null,
   name: form.name,
-  description: form.description ?? null,
+  description: form.description,
   position: form.position,
   requiresAttachment: form.requiresAttachment,
-  allowedFileTypes: form.allowedFileTypes ?? null,
-  deadlineDate: form.deadlineDate ?? null,
-  notifyBeforeDays: form.notifyBeforeDays ?? null,
+  notifyBeforeDays: form.notifyBeforeDays,
   isActive: form.isActive ?? true,
 });
 

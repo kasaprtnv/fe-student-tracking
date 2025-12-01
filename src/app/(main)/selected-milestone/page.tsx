@@ -35,11 +35,15 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useMilestone } from '@/hooks/use-milestone';
 import type { DragEndEvent } from '@dnd-kit/core';
-import { useMilestoneStep } from '@/hooks/use-milestonestep';
-import { IMilestoneStep } from '@/types/milestonestep';
+import { useMilestoneStep } from '@/hooks/use-milestone_step';
+import { IMilestoneStep } from '@/types/milestone-step';
+
+import MilestoneProgress from '@/components/milestone-progress/milestone-progress';
+import type { Milestone, MilestoneStep, IMilestone } from '@/types/milestone';
+import UnlockConditionModal from '@/components/lock-milestone/lock-milestone';
 
 export default function PageLayout() {
-  const { allMilestoneId, getMilestoneById, fetchAllMilestones } =
+  const { allMilestoneIds, getMilestoneById, fetchAllMilestones } =
     useMilestone();
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -53,7 +57,7 @@ export default function PageLayout() {
     });
   }, [fetchAllMilestones]);
 
-  const milestones = allMilestoneId
+  const milestones = allMilestoneIds
     .map((id) => getMilestoneById(id))
     .filter((ms) => ms !== undefined);
 
@@ -91,7 +95,7 @@ export default function PageLayout() {
     Record<string, IMilestoneStep[]>
   >({});
 
-  const { fetchStepsForMilestone } = useMilestoneStep();
+  const { fetchMilestoneStepsByMilestone } = useMilestoneStep();
 
   // เวลาเลือก milestone
   const handleSelect = async (id: string) => {
@@ -100,16 +104,61 @@ export default function PageLayout() {
     }
 
     // โหลด step ของ milestone นี้
-    const s = await fetchStepsForMilestone(id);
+    const s = await fetchMilestoneStepsByMilestone(id);
 
     console.log('📌 FETCHED STEPS FOR:', id, s);
 
     // เก็บลง map
     setStepsByMilestone((prev) => ({
       ...prev,
-      [id]: s,
+      [id]: s.data,
     }));
   };
+
+  const selectedMilestonesWithSteps: Milestone[] = selectedItems
+    .map((id) => {
+      const ms: IMilestone | undefined = getMilestoneById(id);
+      if (!ms) return null;
+
+      const steps: IMilestoneStep[] = stepsByMilestone[id] ?? [];
+
+      return {
+        id: ms.id,
+        name: ms.name,
+        description: ms.description ?? '',
+        created_at: ms.created_at,
+        updated_at: ms.updated_at,
+
+        steps: steps.map((step) => ({
+          id: step.id,
+          milestoneId: step.milestoneId,
+          position: step.position,
+          name: step.name,
+          description: step.description ?? '',
+          requiresAttachment: step.requiresAttachment,
+          isActive: step.isActive,
+          dayPeriod: step.dayPeriod ?? 0,
+
+          // IMilestoneStep ไม่มี status → ใส่ default ให้
+          status: 'available',
+        })),
+      };
+    })
+    .filter((ms): ms is Milestone => ms !== null);
+
+  const [lockModalOpen, setLockModalOpen] = useState(false);
+  const [targetLock, setTargetLock] = useState<{
+    type: 'milestone' | 'step';
+    id: string;
+    milestoneId?: string;
+  } | null>(null);
+
+  function findMilestoneIdByStepId(stepId: string) {
+    for (const [msId, steps] of Object.entries(stepsByMilestone)) {
+      if (steps.some((s) => s.id === stepId)) return msId;
+    }
+    return undefined;
+  }
 
   return (
     <div className="h-full w-full p-6">
@@ -119,7 +168,7 @@ export default function PageLayout() {
       >
         {/* LEFT PANEL */}
         <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
-          <div className="h-full space-y-4 overflow-auto bg-blue-50 p-4">
+          <div className="h-full space-y-4 overflow-auto p-4">
             {/* Dropdown */}
             <Select onValueChange={handleSelect}>
               <SelectTrigger className="h-12 w-full text-base">
@@ -176,45 +225,34 @@ export default function PageLayout() {
         <ResizableHandle />
 
         {/* RIGHT */}
-        <ResizablePanel defaultSize={60} minSize={40}>
-          <div className="h-full space-y-4 overflow-auto bg-purple-50 p-6">
-            {selectedItems.map((id) => {
-              const ms = getMilestoneById(id);
-              const steps = stepsByMilestone[id] || [];
+        <ResizablePanel defaultSize={60} minSize={40} className="h-full p-4">
+          <UnlockConditionModal
+            key={targetLock?.id} // ⭐ เพิ่ม key ตรงนี้
+            open={lockModalOpen}
+            onClose={() => setLockModalOpen(false)}
+            target={targetLock}
+            milestones={selectedMilestonesWithSteps}
+            onSave={(conditions) => {
+              console.log('Saved conditions:', conditions);
+              setLockModalOpen(false);
+            }}
+          />
 
-              return (
-                <div key={id} className="space-y-2">
-                  <div className="text-lg font-semibold text-gray-800">
-                    {ms?.name}
-                  </div>
+          <div className="h-full overflow-auto">
+            <MilestoneProgress
+              milestones={selectedMilestonesWithSteps}
+              mode="edit"
+              onToggleLock={(id, type) => {
+                setTargetLock({
+                  id,
+                  type,
+                  milestoneId:
+                    type === 'step' ? findMilestoneIdByStepId(id) : id,
+                });
 
-                  {steps.length === 0 && (
-                    <p className="text-sm text-gray-500">
-                      ไม่มี Step ใน Milestone นี้
-                    </p>
-                  )}
-
-                  {steps.map((step) => (
-                    <div
-                      key={step.id}
-                      className="rounded-md border bg-white p-4 shadow"
-                    >
-                      <div className="font-semibold text-gray-800">
-                        {step.name}
-                      </div>
-                      {step.description && (
-                        <div className="text-sm text-gray-600">
-                          {step.description}
-                        </div>
-                      )}
-                      <div className="mt-1 text-xs text-gray-400">
-                        ตำแหน่ง: {step.position}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+                setLockModalOpen(true);
+              }}
+            />
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
