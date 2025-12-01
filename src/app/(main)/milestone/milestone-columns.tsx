@@ -8,13 +8,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 import { formatDate } from '@/lib/format-date';
 
 interface ColumnActions {
   onEdit?: (data: IMilestone) => void;
   onDelete?: (id: string) => void;
   onActiveChange?: (id: string, isActive: boolean) => void;
+  onLink?: (id: string) => void;
   t?: (key: string) => string;
 }
 
@@ -51,7 +52,8 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
     size: 40,
     cell: ({ row, table }) => {
       const record = row.original;
-      const { onEdit, onDelete, t } = table.options.meta as ColumnActions;
+      const { onEdit, onDelete, t, onLink } = table.options
+        .meta as ColumnActions;
 
       return (
         <DropdownMenu>
@@ -82,6 +84,15 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
                 <div className="flex items-center gap-2">
                   <Trash2 size={14} color="#e7000b" />
                   {t?.('delete')}
+                </div>
+              </DropdownMenuItem>
+            )}
+
+            {onLink && (
+              <DropdownMenuItem onSelect={() => onLink(record.id)}>
+                <div className="flex items-center gap-2">
+                  <NotebookPen size={14} />
+                  {t?.('to-milestone-step')}
                 </div>
               </DropdownMenuItem>
             )}

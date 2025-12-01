@@ -33,7 +33,7 @@ class MilestoneStepService extends APIService {
   async getMilestoneStepsByMilestoneId(
     milestoneId: string,
   ): Promise<IApiGetResponse<IMilestoneStep>> {
-    return this.get(`/milestone-steps/by-milestone/${milestoneId}`)
+    return this.get(`/milestone-steps/milestone/${milestoneId}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
