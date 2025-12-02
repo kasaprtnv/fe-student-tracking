@@ -6,7 +6,8 @@
     "graduateList": "List Student",
     "studentManagement": "Student Management",
     "studentReport": "Student Report",
-    "progressVerify": "Progress Verify"
+    "progressVerify": "Progress Verify",
+    "logout": "Logout"
   },
   "data-table": {
     "reset_filters": "Reset",

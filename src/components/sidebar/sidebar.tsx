@@ -7,10 +7,15 @@ import { useRouter, usePathname } from 'next/navigation';
 import { setLocale } from '@/actions/setLocale';
 import Image from 'next/image';
 import LogoBuu from './logobuu.png';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LogOut } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
 import { useTranslations, useLocale } from 'next-intl';
+import { useAuth } from '@/hooks/use-auth';
+
+// หน้าที่ไม่ต้องการแสดง Sidebar
+const hiddenRoutes = ['/login', '/signup'];
+
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const router = useRouter();
@@ -19,6 +24,16 @@ export default function Sidebar() {
 
   const t = useTranslations();
   const locale = useLocale();
+  const { logoutUser } = useAuth();
+
+  const handleLogout = () => {
+    logoutUser();
+    router.push('/login');
+  };
+
+  if (hiddenRoutes.includes(pathname)) {
+    return null;
+  }
 
   function changeLanguage(newLocale: string) {
     startTransition(async () => {
@@ -85,7 +100,21 @@ export default function Sidebar() {
             </Button>
           );
         })}
+
+        {/* Logout Button */}
+        <Button
+          variant="ghost"
+          className={cn(
+            'w-full justify-start rounded-xl font-medium text-red-600 transition-colors hover:bg-red-100 hover:text-red-700',
+            open ? 'px-4' : 'justify-center px-0',
+          )}
+          onClick={handleLogout}
+        >
+          <LogOut className={cn('h-5 w-5', open && 'mr-3')} />
+          {open && t('homepage.logout')}
+        </Button>
       </nav>
+
       <div className={cn('flex justify-center pb-3', open ? 'px-3' : '')}>
         {open ? (
           <div

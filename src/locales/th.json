@@ -6,7 +6,8 @@
     "graduateList": "รายชื่อบัณฑิต",
     "studentManagement": "จัดการข้อมูลบัณฑิต",
     "studentReport": "รายงานบัณฑิต",
-    "progressVerify": "ตรวจสอบหลักฐาน"
+    "progressVerify": "ตรวจสอบหลักฐาน",
+    "logout": "ออกจากระบบ"
   },
   "data-table": {
     "reset_filters": "รีเซ็ต",
