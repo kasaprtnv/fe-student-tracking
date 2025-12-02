@@ -1,3 +1,17 @@
+// Types
+export type MilestoneStepStatus =
+  | 'approved'
+  | 'pending'
+  | 'declined'
+  | 'available'
+  | 'locked';
+
+export interface UploadedFilesMap {
+  [stepId: string]: string;
+}
+
+export type ViewMode = 'readonly' | 'upload' | 'edit';
+
 export interface IMilestone {
   id: string;
   courseId: string;
@@ -5,9 +19,22 @@ export interface IMilestone {
   description?: string;
   position: number;
   notifyReceiverEmail: string;
-  deadlineDate: Date;
+  dayPeriod: number;
   notifyBeforeDays: number;
   isActive: boolean;
+  steps?: MilestoneStep[];
+}
+
+export interface MilestoneStep {
+  id: string;
+  milestoneId: string;
+  position: number;
+  name: string;
+  description: string;
+  requiresAttachment: boolean;
+  dayPeriod: number;
+  isActive: boolean;
+  status: MilestoneStepStatus;
 }
 
 export interface IMilestoneCreateDTO {
@@ -16,13 +43,13 @@ export interface IMilestoneCreateDTO {
   description?: string;
   position: number;
   notifyReceiverEmail: string;
-  deadlineDate: Date;
+  dayPeriod: number;
   notifyBeforeDays: number;
 }
 
 export interface MilestoneState {
   // Data
-  milestonemap: Record<string, IMilestone>;
+  milestoneMap: Record<string, IMilestone>;
 
   // UI States
   searchQuery: string;

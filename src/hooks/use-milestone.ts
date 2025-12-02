@@ -1,23 +1,26 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '@/store';
 import { useCallback } from 'react';
+import { AppDispatch } from '@/store';
+
 import {
-  fetchMilestones,
   fetchMilestoneById,
+  fetchMilestones,
   addMilestone,
   updateMilestone,
   deleteMilestone,
   deleteMilestones,
-  addMilestoneToMap,
-  removeMilestoneFromMap,
-  updateMilestoneInMap,
-  setMilestoneSearchQuery,
-  clearError,
+  fetchMilestonesWithStatusByCourseId,
+} from '@/store/milestone/milestone.thunks';
+
+import {
   selectMilestoneMap,
-  selectFilteredMilestoneId,
-  selectAllMilestoneId,
+  selectFilteredMilestoneIds,
+  selectAllMilestoneIds,
   selectMilestoneState,
-} from '@/store/slices/milestone-silce.store';
+} from '@/store/milestone/milestone.selectors';
+
+import { setSearchQuery, clearError } from '@/store/milestone/milestone.slice';
+
 import { IMilestone, IMilestoneCreateDTO } from '@/types/milestone';
 
 export const useMilestone = () => {
@@ -25,8 +28,8 @@ export const useMilestone = () => {
 
   // Selectors
   const milestoneMap = useSelector(selectMilestoneMap);
-  const filteredMilestoneId = useSelector(selectFilteredMilestoneId);
-  const allMilestoneId = useSelector(selectAllMilestoneId);
+  const filteredMilestoneIds = useSelector(selectFilteredMilestoneIds);
+  const allMilestoneIds = useSelector(selectAllMilestoneIds);
   const { searchQuery, storeAction, loader, error } =
     useSelector(selectMilestoneState);
 
@@ -39,117 +42,58 @@ export const useMilestone = () => {
     [milestoneMap],
   );
 
-  // Fetch all milestone
-  const fetchAllMilestones = useCallback(async (): Promise<IMilestone[]> => {
-    const result = await dispatch(fetchMilestones());
-    if (fetchMilestones.fulfilled.match(result)) {
-      return result.payload.data;
-    }
-    throw new Error(result.error?.message || 'Failed to fetch milestones');
+  const fetchAllMilestones = useCallback(() => {
+    return dispatch(fetchMilestones()).unwrap();
   }, [dispatch]);
 
-  // Fetch milestone details
   const fetchMilestoneDetails = useCallback(
-    async (milestoneId: string): Promise<IMilestone> => {
-      if (milestoneMap[milestoneId]) {
-        return milestoneMap[milestoneId];
-      }
-
-      const result = await dispatch(fetchMilestoneById(milestoneId));
-      if (fetchMilestoneById.fulfilled.match(result)) {
-        return result.payload;
-      }
-      throw new Error(
-        result.error?.message || 'Failed to fetch milestone details',
-      );
+    (milestoneId: string) => {
+      return dispatch(fetchMilestoneById(milestoneId)).unwrap();
     },
-    [dispatch, milestoneMap],
+    [dispatch],
   );
 
-  // Create a new milestone
+  const fetchMilestonesWithStatus = useCallback(
+    (courseId: string, userId: string) => {
+      return dispatch(
+        fetchMilestonesWithStatusByCourseId({ courseId, userId }),
+      ).unwrap();
+    },
+    [dispatch],
+  );
+
   const createNewMilestone = useCallback(
-    async (data: IMilestoneCreateDTO): Promise<IMilestone> => {
-      const result = await dispatch(addMilestone(data));
-      if (addMilestone.fulfilled.match(result)) {
-        return result.payload.receivedData;
-      }
-      throw new Error(result.error?.message || 'Failed to create milestone');
+    (data: IMilestoneCreateDTO) => {
+      return dispatch(addMilestone(data)).unwrap();
     },
     [dispatch],
   );
 
-  // Update an existing milestone
   const updateExistingMilestone = useCallback(
-    async (
-      id: string,
-      data: Partial<IMilestone>,
-    ): Promise<Partial<IMilestone>> => {
-      const currentMilestone = getMilestoneById(id);
-      if (currentMilestone) {
-        dispatch(updateMilestoneInMap({ id, data }));
-      }
-      const result = await dispatch(updateMilestone({ id, data }));
-      if (updateMilestone.fulfilled.match(result)) {
-        return result.payload.data;
-      }
-      throw new Error(result.error?.message || 'Failed to update milestone');
-    },
-    [dispatch, getMilestoneById],
-  );
-
-  // Delete a course
-  const removeMilestone = useCallback(
-    async (id: string): Promise<boolean> => {
-      const result = await dispatch(deleteMilestone(id));
-      if (deleteMilestone.fulfilled.match(result)) {
-        return true;
-      }
-      throw new Error(result.error?.message || 'Failed to delete milestone');
-    },
-    [dispatch],
-  );
-
-  // Delete multiple courses
-  const removeMultipleMilestones = useCallback(
-    async (ids: string[]): Promise<boolean> => {
-      const result = await dispatch(deleteMilestones(ids));
-      if (deleteMilestones.fulfilled.match(result)) {
-        return true;
-      }
-
-      throw new Error(
-        result.error?.message || 'Failed to delete multiple milestones',
-      );
-    },
-    [dispatch],
-  );
-
-  // Manual cache management
-  const addMilestoneToCache = useCallback(
-    (course: IMilestone) => {
-      dispatch(addMilestoneToMap(course));
-    },
-    [dispatch],
-  );
-
-  const removeMilestoneFromCache = useCallback(
-    (id: string) => {
-      dispatch(removeMilestoneFromMap(id));
-    },
-    [dispatch],
-  );
-
-  const updateMilestoneInCache = useCallback(
     (id: string, data: Partial<IMilestone>) => {
-      dispatch(updateMilestoneInMap({ id, data }));
+      return dispatch(updateMilestone({ id, data })).unwrap();
+    },
+    [dispatch],
+  );
+
+  const removeMilestone = useCallback(
+    (id: string) => {
+      return dispatch(deleteMilestone(id)).unwrap();
+    },
+    [dispatch],
+  );
+
+  const removeMultipleMilestones = useCallback(
+    (ids: string[]) => {
+      return dispatch(deleteMilestones(ids)).unwrap();
     },
     [dispatch],
   );
 
   // UI state management
-  const setSearchQuery = useCallback(
+  const setSearch = useCallback(
     (query: string) => {
-      dispatch(setMilestoneSearchQuery(query));
+      dispatch(setSearchQuery(query));
     },
     [dispatch],
   );
@@ -161,35 +105,27 @@ export const useMilestone = () => {
   return {
     // Data
     milestoneMap,
-    filteredMilestoneId,
-    allMilestoneId,
-
-    // UI State
+    filteredMilestoneIds,
+    allMilestoneIds,
     searchQuery,
     storeAction,
     loader,
     error,
 
-    // Computed-like functions
+    // Methods
     getMilestoneById,
 
-    // Fetch actions
+    // CRUD Operations
     fetchAllMilestones,
     fetchMilestoneDetails,
-
-    // CRUD actions
+    fetchMilestonesWithStatus,
     createNewMilestone,
     updateExistingMilestone,
     removeMilestone,
     removeMultipleMilestones,
 
-    // Cache management
-    addMilestoneToCache,
-    removeMilestoneFromCache,
-    updateMilestoneInCache,
-
-    // UI actions
-    setSearchQuery,
+    // UI State Methods
+    setSearch,
     clearCourseError,
   };
 };

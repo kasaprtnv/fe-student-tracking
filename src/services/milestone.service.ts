@@ -1,8 +1,10 @@
 import {
   IApiDeleteResponse,
+  IApiDeleteManyResponse,
   IApiGetResponse,
   IApiPatchResponse,
   IApiPostResponse,
+  IApiGetByIdResponse,
 } from '@/types/index';
 import { APIService } from './api.service';
 import { IMilestone } from '@/types/milestone';
@@ -22,8 +24,19 @@ class MilestoneService extends APIService {
       });
   }
 
-  async getMilestoneById(id: string): Promise<IMilestone> {
+  async getMilestoneById(id: string): Promise<IApiGetByIdResponse<IMilestone>> {
     return this.get(`/milestones/${id}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async getMilestonesWithStatusByCourseId(
+    courseId: string,
+    userId: string,
+  ): Promise<IApiGetResponse<IMilestone>> {
+    return this.get(`/milestones/course/${courseId}/user/${userId}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -61,7 +74,7 @@ class MilestoneService extends APIService {
 
   async deleteMultipleMilestone(
     milestoneId: string[],
-  ): Promise<IApiDeleteResponse> {
+  ): Promise<IApiDeleteManyResponse> {
     return this.delete('/milestones/bulk-delete', { ids: milestoneId })
       .then((response) => response?.data)
       .catch((error) => {

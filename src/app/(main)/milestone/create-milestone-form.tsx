@@ -1,12 +1,12 @@
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { useMilestone } from '@/hooks/use-milestone';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
@@ -38,11 +38,11 @@ import React from 'react';
 
 export function CreateMilestoneFormSheet({
   ...props
-}: React.ComponentPropsWithRef<typeof Sheet>) {
+}: React.ComponentPropsWithRef<typeof Dialog>) {
   const t = useTranslations('milestone.milestone-form');
   const tCommon = useTranslations('common');
 
-  const { createNewMilestone, storeAction, allMilestoneId, getMilestoneById } =
+  const { createNewMilestone, storeAction, allMilestoneIds, getMilestoneById } =
     useMilestone();
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
@@ -60,7 +60,7 @@ export function CreateMilestoneFormSheet({
   });
 
   const isDuplicateMilestoneName = (name: string) => {
-    return allMilestoneId.some(
+    return allMilestoneIds.some(
       (id) => getMilestoneById(id)?.name.toLowerCase() === name.toLowerCase(),
     );
   };
@@ -95,16 +95,16 @@ export function CreateMilestoneFormSheet({
   };
 
   return (
-    <Sheet {...props} onOpenChange={handleOpenChange}>
-      <SheetContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
-        <SheetHeader className="text-left">
-          <SheetTitle className="text-xl font-semibold text-gray-800">
+    <Dialog {...props} onOpenChange={handleOpenChange}>
+      <DialogContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-xl font-semibold text-gray-800">
             {t('header.create')}
-          </SheetTitle>
-          <SheetDescription className="text-sm text-gray-600">
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
             {t('header_description.create')}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         <Form {...form}>
           <form
@@ -286,9 +286,9 @@ export function CreateMilestoneFormSheet({
               )}
             />
 
-            <SheetFooter className="px-0">
+            <DialogFooter className="px-0">
               <div className="flex flex-1 justify-end space-x-2">
-                <SheetClose asChild>
+                <DialogClose asChild>
                   <Button
                     type="button"
                     variant="outline"
@@ -296,7 +296,7 @@ export function CreateMilestoneFormSheet({
                   >
                     {tCommon('cancel')}
                   </Button>
-                </SheetClose>
+                </DialogClose>
 
                 <Button
                   disabled={storeAction === 'creating'}
@@ -310,10 +310,10 @@ export function CreateMilestoneFormSheet({
                   {tCommon('submit')}
                 </Button>
               </div>
-            </SheetFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

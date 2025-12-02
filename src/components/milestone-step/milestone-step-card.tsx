@@ -1,0 +1,120 @@
+'use client';
+import React from 'react';
+import { IMilestoneStep } from '@/types/milestone-step';
+import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
+
+import { GripVertical, MoreVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
+import { Badge } from '../ui/badge';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+
+interface IMilestoneStepCardProps {
+  step: IMilestoneStep;
+  dragHandleProps?: DraggableProvidedDragHandleProps;
+  onEdit: (step: IMilestoneStep) => void;
+  onDelete: (step: IMilestoneStep) => void;
+}
+
+const MilestoneStepCard = ({
+  step,
+  dragHandleProps,
+  onEdit,
+  onDelete,
+}: IMilestoneStepCardProps) => {
+  const t = useTranslations('milestone-step');
+  const tCommon = useTranslations('common');
+
+  return (
+    <div className="flex w-full items-center gap-4 rounded-xl border bg-white px-4 py-6 shadow-sm">
+      <div
+        {...dragHandleProps}
+        className="cursor-grab p-2 text-gray-500 select-none hover:text-gray-700"
+      >
+        <GripVertical size={22} />
+      </div>
+
+      {/* Position (เลขลำดับ) */}
+      <div className="flex min-h-10 min-w-10 items-center justify-center rounded-full border border-gray-300 bg-white text-sm font-semibold text-gray-400">
+        {step.position}
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col">
+        <div className="flex items-center gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <h2 className="truncate text-base font-semibold sm:max-w-[400px] lg:max-w-[700px]">
+                {step.name}
+              </h2>
+            </TooltipTrigger>
+            {step.name.length > 50 && (
+              <TooltipContent className="max-w-md border border-gray-200 bg-white px-4 py-2.5 text-sm break-words text-gray-900 shadow-lg">
+                {step.name}
+              </TooltipContent>
+            )}
+          </Tooltip>
+
+          <Badge
+            className={cn(
+              'px-2 py-0.5 text-xs',
+              step.requiresAttachment
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800',
+            )}
+          >
+            {step.requiresAttachment
+              ? t('requires-attachment')
+              : t('no-attachment-required')}
+          </Badge>
+        </div>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <p className="mt-1 truncate text-sm text-gray-600 sm:max-w-[400px] lg:max-w-[700px]">
+              {step.description}
+            </p>
+          </TooltipTrigger>
+          {(step?.description?.length ?? 0) > 100 && (
+            <TooltipContent className="max-w-md border border-gray-200 bg-white px-4 py-2.5 text-sm break-words text-gray-900 shadow-lg">
+              {step.description}
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </div>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="rounded-md p-2 hover:bg-gray-100" variant="ghost">
+            <MoreVertical size={18} />
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="w-36">
+          <DropdownMenuItem onClick={() => onEdit(step)}>
+            {tCommon('edit')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-red-600 focus:text-red-600"
+            onClick={() => onDelete(step)}
+          >
+            {tCommon('delete')}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};
+
+export default MilestoneStepCard;

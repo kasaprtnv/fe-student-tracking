@@ -1,6 +1,7 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useCallback } from 'react';
 import { AppDispatch } from '@/store';
+
 import {
   fetchCourses,
   fetchCourseById,
@@ -8,16 +9,16 @@ import {
   updateCourse,
   deleteCourse,
   deleteCourses,
-  addCourseToMap,
-  removeCourseFromMap,
-  updateCourseInMap,
-  setCourseSearchQuery,
-  clearError,
+} from '@/store/course/course.thunks';
+
+import {
   selectCourseMap,
   selectFilteredCoursesId,
   selectAllCourseId,
   selectCourseState,
-} from '@/store/slices/course-slice.store';
+} from '@/store/course/course.selectors';
+
+import { setSearchQuery, clearError } from '@/store/course/course.slice';
 import { ICourse, ICourseCreateDTO } from '@/types/course';
 
 export const useCourse = () => {
@@ -27,167 +28,88 @@ export const useCourse = () => {
   const courseMap = useSelector(selectCourseMap);
   const filteredCoursesId = useSelector(selectFilteredCoursesId);
   const allCourseId = useSelector(selectAllCourseId);
-  const { searchQuery, storeAction, loader, error } =
+  const { searchQuery, loader, storeAction, error } =
     useSelector(selectCourseState);
 
-  // Get course by ID
   const getCourseById = useCallback(
-    (courseId: string | undefined | null): ICourse | undefined => {
-      if (!courseId) return undefined;
-      return courseMap[courseId];
+    (id?: string | null): ICourse | undefined => {
+      return id ? courseMap[id] : undefined;
     },
     [courseMap],
   );
 
   // Fetch all courses
-  const fetchAllCourses = useCallback(async (): Promise<ICourse[]> => {
-    const result = await dispatch(fetchCourses());
-    if (fetchCourses.fulfilled.match(result)) {
-      return result.payload;
-    }
-    throw new Error(result.error?.message || 'Failed to fetch courses');
+  const fetchAllCourses = useCallback(() => {
+    return dispatch(fetchCourses()).unwrap();
   }, [dispatch]);
 
-  // Fetch course details
+  // Fetch course by ID
   const fetchCourseDetails = useCallback(
-    async (courseId: string): Promise<ICourse> => {
-      if (courseMap[courseId]) {
-        return courseMap[courseId];
-      }
-
-      const result = await dispatch(fetchCourseById(courseId));
-      if (fetchCourseById.fulfilled.match(result)) {
-        return result.payload;
-      }
-      throw new Error(
-        result.error?.message || 'Failed to fetch course details',
-      );
+    (id: string) => {
+      if (courseMap[id]) return courseMap[id];
+      return dispatch(fetchCourseById(id)).unwrap();
     },
     [dispatch, courseMap],
   );
 
   // Create a new course
   const createNewCourse = useCallback(
-    async (data: ICourseCreateDTO): Promise<ICourse> => {
-      const result = await dispatch(createCourse(data));
-      if (createCourse.fulfilled.match(result)) {
-        return result.payload.receivedData;
-      }
-      throw new Error(result.error?.message || 'Failed to create course');
-    },
+    (data: ICourseCreateDTO) => dispatch(createCourse(data)).unwrap(),
     [dispatch],
   );
 
   // Update an existing course
   const updateExistingCourse = useCallback(
-    async (id: string, data: Partial<ICourse>): Promise<Partial<ICourse>> => {
-      const currentCourse = getCourseById(id);
-      if (currentCourse) {
-        dispatch(updateCourseInMap({ id, data }));
-      }
-      const result = await dispatch(updateCourse({ id, data }));
-      if (updateCourse.fulfilled.match(result)) {
-        return result.payload.data;
-      }
-      throw new Error(result.error?.message || 'Failed to update course');
-    },
-    [dispatch, getCourseById],
+    (id: string, data: Partial<ICourse>) =>
+      dispatch(updateCourse({ id, data })).unwrap(),
+    [dispatch],
   );
 
   // Delete a course
   const removeCourse = useCallback(
-    async (id: string): Promise<boolean> => {
-      const result = await dispatch(deleteCourse(id));
-      if (deleteCourse.fulfilled.match(result)) {
-        return true;
-      }
-      throw new Error(result.error?.message || 'Failed to delete course');
-    },
+    (id: string) => dispatch(deleteCourse(id)).unwrap(),
     [dispatch],
   );
 
   // Delete multiple courses
   const removeMultipleCourses = useCallback(
-    async (ids: string[]): Promise<boolean> => {
-      const result = await dispatch(deleteCourses(ids));
-      console.log('result', result);
-      if (deleteCourses.fulfilled.match(result)) {
-        return true;
-      }
-
-      throw new Error(
-        result.error?.message || 'Failed to delete multiple courses',
-      );
-    },
+    (ids: string[]) => dispatch(deleteCourses(ids)).unwrap(),
     [dispatch],
   );
 
-  // Manual cache management
-  const addCourseToCache = useCallback(
-    (course: ICourse) => {
-      dispatch(addCourseToMap(course));
-    },
-    [dispatch],
-  );
-
-  const removeCourseFromCache = useCallback(
-    (id: string) => {
-      dispatch(removeCourseFromMap(id));
-    },
-    [dispatch],
-  );
-
-  const updateCourseInCache = useCallback(
-    (id: string, data: Partial<ICourse>) => {
-      dispatch(updateCourseInMap({ id, data }));
-    },
-    [dispatch],
-  );
-
-  // UI state management
-  const setSearchQuery = useCallback(
+  // UI actions
+  const setSearch = useCallback(
     (query: string) => {
-      dispatch(setCourseSearchQuery(query));
+      dispatch(setSearchQuery(query));
     },
     [dispatch],
   );
 
-  const clearCourseError = useCallback(() => {
+  const clearErr = useCallback(() => {
     dispatch(clearError());
   }, [dispatch]);
 
   return {
-    // Data
+    // State
     courseMap,
     filteredCoursesId,
     allCourseId,
-
-    // UI State
     searchQuery,
-    storeAction,
     loader,
+    storeAction,
     error,
-
-    // Computed-like functions
     getCourseById,
 
-    // Fetch actions
+    // Async Actions
     fetchAllCourses,
     fetchCourseDetails,
-
-    // CRUD actions
     createNewCourse,
     updateExistingCourse,
     removeCourse,
     removeMultipleCourses,
 
-    // Cache management
-    addCourseToCache,
-    removeCourseFromCache,
-    updateCourseInCache,
-
-    // UI actions
-    setSearchQuery,
-    clearCourseError,
+    // UI Actions
+    setSearch,
+    clearErr,
   };
 };

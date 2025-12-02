@@ -55,6 +55,13 @@ export function CreateCourseFormSheet({
 
   const onSubmit = async (data: CreateCourseFormData) => {
     try {
+      if (data.code.length > 10) {
+        form.setError('code', {
+          type: 'manual',
+          message: t('errors.code-too-long'),
+        });
+        return;
+      }
       if (isDuplicateCode(data.code)) {
         form.setError('code', {
           type: 'manual',
