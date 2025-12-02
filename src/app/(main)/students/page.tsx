@@ -9,19 +9,20 @@ import { useUser } from '@/hooks/use-user';
 export default function StudentPage() {
   const {
     // Data
-    getFilteredUsers,
+    userMap,
+    filteredUserIds,
 
     // Actions
     fetchStudents,
 
     // UI State
     searchQuery,
-    updateSearchQuery,
+    setSearch,
 
     // Status
     loader,
     error,
-    clearUserError,
+    clearErr,
   } = useUser();
 
   // SWR for data fetching
@@ -37,7 +38,12 @@ export default function StudentPage() {
     },
   );
 
-  const filteredStudents = getFilteredUsers();
+  // Filter students from filteredUserIds
+  const filteredStudents = React.useMemo(() => {
+    return filteredUserIds
+      .map((id) => userMap[id])
+      .filter((user) => user?.role === 'student');
+  }, [filteredUserIds, userMap]);
 
   if (loader) {
     return (
@@ -57,7 +63,7 @@ export default function StudentPage() {
           <p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>
           <p className="text-sm">{error || 'กรุณาลองใหม่อีกครั้ง'}</p>
           <button
-            onClick={clearUserError}
+            onClick={clearErr}
             className="mt-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
           >
             ลองใหม่
@@ -87,7 +93,7 @@ export default function StudentPage() {
           { id: 'degree', header: 'ระดับการศึกษา', accessorKey: 'degree' },
           { id: 'year', header: 'ชั้นปี', accessorKey: 'year' },
         ]}
-        onSearch={updateSearchQuery}
+        onSearch={setSearch}
         searchQuery={searchQuery}
         enabledMultiSelect={false}
       />

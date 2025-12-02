@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table/data-table';
 import { useUser } from '@/hooks/use-user';
+import { useCourse } from '@/hooks/use-course';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -188,22 +189,29 @@ export default function UsersPage() {
   const [isStudentFormOpen, setIsStudentFormOpen] = React.useState(false);
   const [isTeacherFormOpen, setIsTeacherFormOpen] = React.useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
+  const [isMultiDeleteOpen, setIsMultiDeleteOpen] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
+  const [selectedUsersToDelete, setSelectedUsersToDelete] = React.useState<
+    User[]
+  >([]);
   const [formMode, setFormMode] = React.useState<'create' | 'edit'>('create');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const {
-    getAllFromCache,
+    userMap,
     fetchAllUsers,
     createNewUser,
     updateExistingUser,
     deleteExistingUser,
     deleteExistingUsers,
+    updateUserInCache,
     loader,
     error,
-    clearUserError,
+    clearErr,
     storeAction,
   } = useUser();
+
+  const { getCourseById } = useCourse();
 
   // SWR for data fetching
   useSWR(
@@ -219,7 +227,7 @@ export default function UsersPage() {
     },
   );
 
-  const allUsers = getAllFromCache();
+  const allUsers = Object.values(userMap);
 
   // Filter users - exclude admin
   const allUsersExceptAdmin = React.useMemo(
@@ -305,11 +313,21 @@ export default function UsersPage() {
   const handleFormSubmit = async (data: Partial<User>) => {
     setIsSubmitting(true);
     try {
+      // Get courseName from course store
+      const course = data.courseId ? getCourseById(data.courseId) : null;
+      const courseName = course?.name || '';
+
       if (formMode === 'edit' && selectedUser) {
         await updateExistingUser(selectedUser.id, data);
+        // Update cache with courseName
+        updateUserInCache(selectedUser.id, { ...data, courseName });
         toast.success('แก้ไขข้อมูลผู้ใช้สำเร็จ');
       } else {
-        await createNewUser(data);
+        const response = await createNewUser(data);
+        // Add courseName to the new user in cache
+        if (response?.receivedData?.id) {
+          updateUserInCache(response.receivedData.id, { courseName });
+        }
         toast.success('เพิ่มผู้ใช้สำเร็จ');
       }
       setIsStudentFormOpen(false);
@@ -343,14 +361,25 @@ export default function UsersPage() {
     console.log('Import file');
   };
 
-  const handleMultiDelete = async (selectedUsers: User[]) => {
+  const handleMultiDelete = (selectedUsers: User[]) => {
     if (selectedUsers.length === 0) return;
+    setSelectedUsersToDelete(selectedUsers);
+    setIsMultiDeleteOpen(true);
+  };
+
+  const handleMultiDeleteConfirm = async () => {
+    if (selectedUsersToDelete.length === 0) return;
+    setIsSubmitting(true);
     try {
-      const ids = selectedUsers.map((u) => u.id);
+      const ids = selectedUsersToDelete.map((u) => u.id);
       await deleteExistingUsers(ids);
-      toast.success(`ลบผู้ใช้ ${selectedUsers.length} คนสำเร็จ`);
+      toast.success(`ลบผู้ใช้ ${selectedUsersToDelete.length} คนสำเร็จ`);
+      setIsMultiDeleteOpen(false);
+      setSelectedUsersToDelete([]);
     } catch {
       toast.error('ลบผู้ใช้ไม่สำเร็จ');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -383,7 +412,7 @@ export default function UsersPage() {
           <p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>
           <p className="text-sm">{error}</p>
           <button
-            onClick={clearUserError}
+            onClick={clearErr}
             className="mt-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
           >
             ลองใหม่
@@ -519,6 +548,21 @@ export default function UsersPage() {
         title="delete-user-title"
         description="delete-user-description"
         translationKey="user"
+      />
+
+      {/* Multi-Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={isMultiDeleteOpen}
+        onClose={() => {
+          setIsMultiDeleteOpen(false);
+          setSelectedUsersToDelete([]);
+        }}
+        onConfirm={handleMultiDeleteConfirm}
+        isLoading={isSubmitting || storeAction === 'deleting'}
+        title="delete-users-title"
+        description="delete-users-description"
+        translationKey="user"
+        count={selectedUsersToDelete.length}
       />
     </div>
   );

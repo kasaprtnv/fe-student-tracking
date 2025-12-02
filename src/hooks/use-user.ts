@@ -1,6 +1,7 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useCallback } from 'react';
 import { AppDispatch } from '@/store';
+
 import {
   fetchUsers,
   fetchStudentUsers,
@@ -9,16 +10,22 @@ import {
   updateUser,
   deleteUser,
   deleteMultipleUsers,
-  addToCache,
-  removeFromCache,
-  updateCache,
-  clearError,
-  setSearchQuery,
+} from '@/store/user/user.thunks';
+
+import {
   selectUserMap,
   selectFilteredUserIds,
   selectAllUserIds,
   selectUserState,
   selectStudentUsers,
+} from '@/store/user/user.selectors';
+
+import {
+  addToCache,
+  removeFromCache,
+  updateCache,
+  clearError,
+  setSearchQuery,
 } from '@/store/user/user.slice';
 import { User } from '@/types/user';
 
@@ -33,179 +40,111 @@ export const useUser = () => {
   const { searchQuery, storeAction, loader, error } =
     useSelector(selectUserState);
 
-  // Get user by ID
   const getUserById = useCallback(
-    (userId: string | undefined | null): User | undefined => {
-      if (!userId) return undefined;
-      return userMap[userId];
+    (id?: string | null): User | undefined => {
+      return id ? userMap[id] : undefined;
     },
     [userMap],
   );
 
-  // Get all users from cache
-  const getAllFromCache = useCallback((): User[] => {
-    return Object.values(userMap);
-  }, [userMap]);
+  // Fetch all users
+  const fetchAllUsers = useCallback(
+    () => dispatch(fetchUsers()).unwrap(),
+    [dispatch],
+  );
 
-  // Get filtered users
-  const getFilteredUsers = useCallback((): User[] => {
-    return filteredUserIds?.map((id) => userMap[id]).filter(Boolean) || [];
-  }, [filteredUserIds, userMap]);
+  // Fetch student users
+  const fetchStudents = useCallback(
+    () => dispatch(fetchStudentUsers()).unwrap(),
+    [dispatch],
+  );
 
-  // Get student users only
-  const getStudentUsers = useCallback((): User[] => {
-    return studentUsers;
-  }, [studentUsers]);
-
-  // Fetch actions
-  const fetchAllUsers = useCallback(async (): Promise<User[]> => {
-    const result = await dispatch(fetchUsers());
-    if (fetchUsers.fulfilled.match(result)) {
-      return result.payload;
-    }
-    throw new Error('Failed to fetch users');
-  }, [dispatch]);
-
-  const fetchStudents = useCallback(async (): Promise<User[]> => {
-    const result = await dispatch(fetchStudentUsers());
-    if (fetchStudentUsers.fulfilled.match(result)) {
-      return result.payload;
-    }
-    throw new Error('Failed to fetch student users');
-  }, [dispatch]);
-
+  // Fetch user by ID
   const fetchUserDetails = useCallback(
-    async (userId: string): Promise<User> => {
-      // Check cache first
-      if (userMap[userId]) {
-        return userMap[userId];
-      }
-
-      const result = await dispatch(fetchUserById(userId));
-      if (fetchUserById.fulfilled.match(result)) {
-        return result.payload;
-      }
-      throw new Error('Failed to fetch user details');
+    (id: string) => {
+      if (userMap[id]) return userMap[id];
+      return dispatch(fetchUserById(id)).unwrap();
     },
     [dispatch, userMap],
   );
 
-  // CRUD actions
+  // Create a new user
   const createNewUser = useCallback(
-    async (data: Partial<User>): Promise<User> => {
-      const result = await dispatch(createUser(data));
-      if (createUser.fulfilled.match(result)) {
-        return result.payload;
-      }
-      throw new Error('Failed to create user');
-    },
+    (data: Partial<User>) => dispatch(createUser(data)).unwrap(),
     [dispatch],
   );
 
+  // Update an existing user
   const updateExistingUser = useCallback(
-    async (id: string, data: Partial<User>): Promise<User> => {
-      const result = await dispatch(updateUser({ id, data }));
-      if (updateUser.fulfilled.match(result)) {
-        return result.payload;
-      }
-      throw new Error('Failed to update user');
-    },
+    (id: string, data: Partial<User>) =>
+      dispatch(updateUser({ id, data })).unwrap(),
     [dispatch],
   );
 
+  // Delete a user
   const deleteExistingUser = useCallback(
-    async (id: string): Promise<string> => {
-      const result = await dispatch(deleteUser(id));
-      if (deleteUser.fulfilled.match(result)) {
-        return result.payload;
-      }
-      throw new Error('Failed to delete user');
-    },
+    (id: string) => dispatch(deleteUser(id)).unwrap(),
     [dispatch],
   );
 
+  // Delete multiple users
   const deleteExistingUsers = useCallback(
-    async (ids: string[]): Promise<string[]> => {
-      const result = await dispatch(deleteMultipleUsers(ids));
-      if (deleteMultipleUsers.fulfilled.match(result)) {
-        return result.payload;
-      }
-      throw new Error('Failed to delete users');
-    },
+    (ids: string[]) => dispatch(deleteMultipleUsers(ids)).unwrap(),
     [dispatch],
   );
 
-  // Manual cache management
+  // Cache management
   const addUserToCache = useCallback(
-    (user: User) => {
-      dispatch(addToCache(user));
-    },
+    (user: User) => dispatch(addToCache(user)),
     [dispatch],
   );
 
   const removeUserFromCache = useCallback(
-    (id: string) => {
-      dispatch(removeFromCache(id));
-    },
+    (id: string) => dispatch(removeFromCache(id)),
     [dispatch],
   );
 
   const updateUserInCache = useCallback(
-    (id: string, data: Partial<User>) => {
-      dispatch(updateCache({ id, data }));
-    },
+    (id: string, data: Partial<User>) => dispatch(updateCache({ id, data })),
     [dispatch],
   );
 
-  // UI state management
-  const updateSearchQuery = useCallback(
-    (query: string) => {
-      dispatch(setSearchQuery(query));
-    },
+  // UI actions
+  const setSearch = useCallback(
+    (query: string) => dispatch(setSearchQuery(query)),
     [dispatch],
   );
 
-  const clearUserError = useCallback(() => {
-    dispatch(clearError());
-  }, [dispatch]);
+  const clearErr = useCallback(() => dispatch(clearError()), [dispatch]);
 
   return {
-    // Data
+    // State
     userMap,
     filteredUserIds,
     allUserIds,
     studentUsers,
-
-    // UI State
     searchQuery,
     storeAction,
     loader,
     error,
-
-    // Computed-like functions
     getUserById,
-    getAllFromCache,
-    getFilteredUsers,
-    getStudentUsers,
 
-    // Fetch actions
+    // Async Actions
     fetchAllUsers,
     fetchStudents,
     fetchUserDetails,
-
-    // CRUD actions
     createNewUser,
     updateExistingUser,
     deleteExistingUser,
     deleteExistingUsers,
 
-    // Cache management
+    // Cache Actions
     addUserToCache,
     removeUserFromCache,
     updateUserInCache,
 
-    // UI actions
-    updateSearchQuery,
-    clearUserError,
+    // UI Actions
+    setSearch,
+    clearErr,
   };
 };

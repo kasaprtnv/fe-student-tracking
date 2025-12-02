@@ -24,8 +24,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  AreaChart,
-  Area,
 } from 'recharts';
 import {
   Users,
@@ -65,22 +63,6 @@ const studentsByDegreeData = [
   { name: 'ปริญญาเอก', value: 51, color: '#f59e0b' },
 ];
 
-// Mock data for student enrollment trend area chart
-const enrollmentTrendData = [
-  { month: 'ม.ค.', newStudents: 15, graduated: 5 },
-  { month: 'ก.พ.', newStudents: 12, graduated: 8 },
-  { month: 'มี.ค.', newStudents: 18, graduated: 10 },
-  { month: 'เม.ย.', newStudents: 8, graduated: 12 },
-  { month: 'พ.ค.', newStudents: 22, graduated: 15 },
-  { month: 'มิ.ย.', newStudents: 25, graduated: 8 },
-  { month: 'ก.ค.', newStudents: 30, graduated: 6 },
-  { month: 'ส.ค.', newStudents: 28, graduated: 10 },
-  { month: 'ก.ย.', newStudents: 20, graduated: 12 },
-  { month: 'ต.ค.', newStudents: 16, graduated: 18 },
-  { month: 'พ.ย.', newStudents: 14, graduated: 20 },
-  { month: 'ธ.ค.', newStudents: 10, graduated: 15 },
-];
-
 // Chart configs
 const milestoneStatusConfig = {
   passed: { label: 'ผ่านแล้ว', color: '#22c55e' },
@@ -102,11 +84,6 @@ const milestoneByYearConfig = {
 const studentsByDegreeConfig = {
   master: { label: 'ปริญญาโท', color: '#8b5cf6' },
   doctoral: { label: 'ปริญญาเอก', color: '#f59e0b' },
-} satisfies ChartConfig;
-
-const enrollmentTrendConfig = {
-  newStudents: { label: 'นักศึกษาใหม่', color: '#3b82f6' },
-  graduated: { label: 'สำเร็จการศึกษา', color: '#22c55e' },
 } satisfies ChartConfig;
 
 const DashboardPage = () => {
@@ -263,7 +240,7 @@ const DashboardPage = () => {
                   paddingAngle={2}
                   dataKey="value"
                   nameKey="name"
-                  label={({ name, value }) => `${value} คน`}
+                  label={({ value }) => `${value} คน`}
                   labelLine={false}
                 >
                   {studentsByDegreeData.map((entry, index) => (

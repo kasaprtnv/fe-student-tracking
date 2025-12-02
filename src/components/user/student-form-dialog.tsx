@@ -246,6 +246,7 @@ const StudentFormDialog = ({
                     <Input
                       type="email"
                       placeholder={t('email-placeholder')}
+                      disabled={mode === 'edit'}
                       {...field}
                     />
                   </FormControl>
