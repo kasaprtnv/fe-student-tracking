@@ -37,7 +37,7 @@ export const sidebarItems = [
   {
     title: 'homepage.studentManagement',
     icon: UserCog,
-    route: '/student',
+    route: '/users',
   },
   {
     title: 'homepage.progressVerify',
