@@ -33,6 +33,7 @@
     "Actions": "Actions",
     "code": "Code",
     "is_active": "Is Active",
+    "is_used": "Is Used",
     "active": "Active",
     "inactive": "Inactive",
     "edit": "Edit",
@@ -80,18 +81,21 @@
       "errors": {
         "code-required": "Course code is required",
         "name-required": "Course name is required",
+        "degree-required": "Degree is required",
         "code-duplicate": "Course code already exists",
         "code-too-long": "Course code must not exceed 10 characters"
       },
       "label": {
         "code": "Course Code",
         "name": "Course Name",
-        "description": "Course Description"
+        "description": "Course Description",
+        "degree": "Degree"
       },
       "placeholder": {
         "code": "Enter course code",
         "name": "Enter course name",
-        "description": "Enter course description"
+        "description": "Enter course description",
+        "degree": "Enter degree"
       },
       "toast": {
         "created-successfully": "Course created successfully!",

@@ -7,8 +7,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Switch } from '@/components/ui/switch';
+// import { Switch } from '@/components/ui/switch';
 import { formatDate } from '@/lib/format-date';
+import { cn } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import { ColumnDef } from '@tanstack/react-table';
 import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
@@ -49,30 +50,31 @@ export const createCourseColumns = (): ColumnDef<ICourse>[] => {
       },
     },
     {
-      accessorKey: 'isActive',
-      header: 'is_active',
+      accessorKey: 'isUsed',
+      header: 'is_used',
       size: 110,
-      cell: ({ row, table }) => {
+      cell: ({ row }) => {
         const record = row.original;
-        const { onActiveChange } = table.options.meta as ColumnActions;
 
         return (
           <div className="flex w-[110px] items-center justify-center">
-            {onActiveChange ? (
-              <Switch
-                checked={record.isActive}
-                onCheckedChange={(value) => {
-                  onActiveChange(record.id, value);
-                }}
-              />
-            ) : (
-              <Badge variant={record.isActive ? 'destructive' : 'default'}>
-                {record.isActive ? 'Yes' : 'No'}
-              </Badge>
-            )}
+            <Badge
+              className={cn(
+                'px-2 py-0.5 text-xs',
+                record.isUsed
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800',
+              )}
+            >
+              {record.isUsed ? 'Yes' : 'No'}
+            </Badge>
           </div>
         );
       },
+      // filterFn: (row, columnId, filterValues) => {
+      //   if (!filterValues.length) return true; // No filter applied, show all
+      //   return filterValues.includes(row.getValue(columnId)); // Match any selected value
+      // },
     },
   ];
   columns.push({

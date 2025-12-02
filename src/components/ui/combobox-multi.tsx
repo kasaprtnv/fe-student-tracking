@@ -3,14 +3,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-export interface Option {
-  label: string;
-  value: string;
-}
+import { SelectOption } from '@/types';
+import { Button } from './button';
 
 interface MultiSelectProps {
-  options: Option[];
+  options: SelectOption[];
   value: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
@@ -34,8 +31,10 @@ export function MultiSelect({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Filter options based on search term
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredOptions = options.filter(
+    (option) =>
+      option.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      option?.description?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Get selected options
@@ -109,13 +108,12 @@ export function MultiSelect({
               >
                 {option.label}
                 {!disabled && (
-                  <button
-                    type="button"
+                  <Button
                     onClick={(e) => removeItem(option.value, e)}
                     className="hover:bg-secondary-foreground/20 ml-1 h-3 w-3 rounded-sm"
                   >
                     <X className="h-2 w-2" />
-                  </button>
+                  </Button>
                 )}
               </span>
             ))
@@ -135,7 +133,7 @@ export function MultiSelect({
 
         {/* Clear All Button */}
         {selectedOptions.length > 0 && !disabled && (
-          <button
+          <Button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
@@ -144,7 +142,7 @@ export function MultiSelect({
             className="hover:bg-secondary mr-2 h-4 w-4 rounded-sm"
           >
             <X className="h-3 w-3" />
-          </button>
+          </Button>
         )}
 
         {/* Dropdown Arrow */}
@@ -190,7 +188,14 @@ export function MultiSelect({
                     )}
                     onClick={() => handleOptionSelect(option.value)}
                   >
-                    <span className="flex-1">{option.label}</span>
+                    <div className="flex-1 space-y-1">
+                      <div className="leading-tight font-medium">
+                        {option.label}
+                      </div>
+                      <div className="text-muted-foreground text-xs leading-relaxed">
+                        {option.description}
+                      </div>
+                    </div>
                     {isSelected && <Check className="text-primary h-4 w-4" />}
                   </div>
                 );

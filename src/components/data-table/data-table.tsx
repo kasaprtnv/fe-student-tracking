@@ -14,7 +14,7 @@ import { DataTableFilterField } from './types';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { DataTableFilter } from './data-table-filter';
-import { DataTableFacetedFilter } from './data-table-facted-filter';
+import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { Button } from '../ui/button';
 import { ArrowDown, ArrowDownUp, ArrowUp, Plus, Trash2, X } from 'lucide-react';
 import { DataTableViewOptions } from './data-table-view-options';
@@ -200,7 +200,7 @@ export function DataTable<TData, TValue>({
                 <>
                   {filterColumns.map(
                     (column) =>
-                      table.getColumn(column.id) && (
+                      table.getColumn(column.id ? String(column.id) : '') && (
                         <DataTableFacetedFilter
                           key={String(column.id)}
                           column={table.getColumn(

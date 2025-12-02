@@ -8,9 +8,11 @@ import useSWR from 'swr';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/data-table/data-table';
 import { ICourse } from '@/types/course';
-import { CreateCourseFormSheet } from './create-course-form';
-import { UpdateCourseFormSheet } from './update-course-form';
+import { CreateCourseFormDialog } from './create-course-form';
+import { UpdateCourseFormDialog } from './update-course-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
+import { useCourseStaff } from '@/hooks/use-course_staff';
+// import { DataTableFilterField } from '@/components/data-table/types';
 
 const CoursePage = () => {
   const tForm = useTranslations('course.course-form');
@@ -24,8 +26,8 @@ const CoursePage = () => {
     setSearch: setSearchQuery,
     removeCourse,
     removeMultipleCourses,
-    updateExistingCourse,
   } = useCourse();
+  const { fetchAllCourseStaff } = useCourseStaff();
 
   const courseColumns = createCourseColumns().map((column) => {
     if (typeof column.header === 'string') {
@@ -52,9 +54,10 @@ const CoursePage = () => {
   });
 
   useSWR(
-    'fetch-courses',
+    'fetch-courses and-course-staff',
     async () => {
       await fetchAllCourses();
+      await fetchAllCourseStaff();
     },
     {
       revalidateOnFocus: false,
@@ -102,14 +105,22 @@ const CoursePage = () => {
     setSearchQuery(value);
   };
 
-  const onIsActiveChange = async (id: string, isActive: boolean) => {
-    try {
-      await updateExistingCourse(id, { isActive });
-    } catch (error) {
-      console.error('Error updating course active status:', error);
-      toast.error(tForm('toast.update-failed'));
-    }
-  };
+  // const filterColumns: DataTableFilterField<ICourse>[] = [
+  //   {
+  //     id: 'isActive',
+  //     label: 'Status',
+  //     options: filteredCoursesId
+  //       .map((id) => {
+  //         const course = getCourseById(id);
+  //         if (!course) return undefined;
+  //         return {
+  //           label: course.isActive ? tCol('active') : tCol('inactive'),
+  //           value: course.isActive,
+  //         };
+  //       })
+  //       .filter((option) => option !== undefined),
+  //   },
+  // ];
 
   return (
     <>
@@ -125,17 +136,17 @@ const CoursePage = () => {
           onEdit={(course) => setIsEdit({ isEditing: true, course: course })}
           onDelete={onDeleteCourse}
           onMultiDelete={onDeleteMultipleCourses}
-          onActiveChange={onIsActiveChange}
+          // filterColumns={filterColumns}
           onSearch={onSearchChange}
           searchQuery={searchQuery}
         />
-        <CreateCourseFormSheet
+        <CreateCourseFormDialog
           open={isAdd}
           onOpenChange={() => {
             setIsAdd(false);
           }}
         />
-        <UpdateCourseFormSheet
+        <UpdateCourseFormDialog
           open={isEdit.isEditing && isEdit.course !== undefined}
           course={isEdit.course}
           onOpenChange={() => {

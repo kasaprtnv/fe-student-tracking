@@ -1,14 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Option } from '@/components/ui/combobox';
-import {
-  MultiSelectWithDescription,
-  OptionWithDescription,
-} from '@/components/ui/combobox-desc';
 import { MultiSelect } from '@/components/ui/combobox-multi';
+import { SelectOption } from '@/types';
 
-const fruits: Option[] = [
+const fruits: SelectOption[] = [
   { label: 'แอปเปิ้ล', value: 'apple' },
   { label: 'กล้วย', value: 'banana' },
   { label: 'ส้ม', value: 'orange' },
@@ -21,7 +17,7 @@ const fruits: Option[] = [
   { label: 'ลิ้นจี่', value: 'lychee' },
 ];
 
-const courses: OptionWithDescription[] = [
+const courses: SelectOption[] = [
   {
     label: 'React Development',
     value: 'react',
@@ -62,7 +58,6 @@ const courses: OptionWithDescription[] = [
 
 export default function TestComboboxPage() {
   const [selectedFruits, setSelectedFruits] = useState<string[]>([]);
-  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
 
   return (
     <div className="container mx-auto space-y-12 p-8">
@@ -92,35 +87,6 @@ export default function TestComboboxPage() {
               <strong>ผลไม้ที่เลือก:</strong>{' '}
               {selectedFruits.length > 0
                 ? selectedFruits.join(', ')
-                : 'ยังไม่ได้เลือก'}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ============ MultiSelectWithDescription ============ */}
-      <section className="rounded-lg bg-green-50 p-6">
-        <h2 className="mb-6 text-2xl font-bold text-green-700">
-          📝 MultiSelectWithDescription (แบบมี Description)
-        </h2>
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">
-            2. เลือกคอร์สเรียน (มี Description)
-          </h3>
-          <MultiSelectWithDescription
-            options={courses}
-            value={selectedCourses}
-            onChange={setSelectedCourses}
-            placeholder="เลือกคอร์สที่สนใจ..."
-            maxDisplayItems={3}
-            searchInDescription={true}
-          />
-          <div className="rounded border-l-4 border-green-400 bg-white p-3">
-            <p className="text-sm">
-              <strong>คอร์สที่เลือก ({selectedCourses.length}):</strong>{' '}
-              {selectedCourses.length > 0
-                ? selectedCourses.join(', ')
                 : 'ยังไม่ได้เลือก'}
             </p>
           </div>

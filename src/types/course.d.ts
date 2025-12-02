@@ -2,8 +2,9 @@ export interface ICourse {
   id: string;
   code: string;
   name: string;
+  degree: string;
   description?: string;
-  isActive: boolean;
+  isUsed: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -11,6 +12,7 @@ export interface ICourse {
 export interface ICourseCreateDTO {
   code: string;
   name: string;
+  degree: string;
   description?: string;
 }
 
