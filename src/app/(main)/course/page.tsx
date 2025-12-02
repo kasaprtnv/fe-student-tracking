@@ -11,11 +11,13 @@ import { ICourse } from '@/types/course';
 import { CreateCourseFormSheet } from './create-course-form';
 import { UpdateCourseFormSheet } from './update-course-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
+import { useRouter } from 'next/navigation';
 
 const CoursePage = () => {
   const tForm = useTranslations('course.course-form');
   const tCol = useTranslations('column');
   const tCourse = useTranslations('course');
+  const router = useRouter();
   const {
     filteredCoursesId,
     searchQuery,
@@ -111,6 +113,10 @@ const CoursePage = () => {
     }
   };
 
+  const toSelectMilestonePage = (milestoneId: string) => {
+    router.push(`/selected-milestone/${milestoneId}`);
+  };
+
   return (
     <>
       <div className="container mx-auto py-8">
@@ -124,6 +130,7 @@ const CoursePage = () => {
           onAdd={() => setIsAdd(true)}
           onEdit={(course) => setIsEdit({ isEditing: true, course: course })}
           onDelete={onDeleteCourse}
+          onLink={(m) => toSelectMilestonePage(m)}
           onMultiDelete={onDeleteMultipleCourses}
           onActiveChange={onIsActiveChange}
           onSearch={onSearchChange}

@@ -27,7 +27,7 @@ export default function UnlockConditionModal({
   milestones,
   onSave,
 }: UnlockConditionModalProps) {
-  const [selected, setSelected] = useState<UnlockCondition[]>([]);
+  const [selected, setSelected] = useState<UnlockCondition[]>(() => []);
 
   if (!open || !target) return null;
 
@@ -45,12 +45,21 @@ export default function UnlockConditionModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="max-h-[85vh] w-[500px] overflow-auto rounded-xl bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-xl font-semibold">ตั้งค่าเงื่อนไข Unlock</h2>
-
         {/* Milestones */}
         <h3 className="mb-2 text-sm font-medium">Milestone ทั้งหมด</h3>
         <div className="mb-6 space-y-2">
           {milestones
-            .filter((ms) => ms.id !== target.id)
+            .filter((ms) => {
+              if (target.type === 'milestone') {
+                return ms.id !== target.id;
+              }
+
+              if (target.type === 'step') {
+                return ms.id !== target.milestoneId;
+              }
+
+              return true;
+            })
             .map((ms) => (
               <div
                 key={ms.id}
@@ -68,13 +77,21 @@ export default function UnlockConditionModal({
               </div>
             ))}
         </div>
-
-        {/* Steps */}
         <h3 className="mb-2 text-sm font-medium">Step เฉพาะ</h3>
         <div className="space-y-2">
           {milestones.map((ms) =>
             ms.steps
-              .filter((step) => step.id !== target.id)
+              .filter((step) => {
+                if (target.type === 'milestone') {
+                  return ms.id !== target.id;
+                }
+
+                if (target.type === 'step') {
+                  return step.id !== target.id;
+                }
+
+                return true;
+              })
               .map((step) => (
                 <div
                   key={step.id}
@@ -91,7 +108,6 @@ export default function UnlockConditionModal({
               )),
           )}
         </div>
-
         <div className="mt-6 flex justify-end gap-3">
           <button className="rounded-lg border px-4 py-2" onClick={onClose}>
             ยกเลิก

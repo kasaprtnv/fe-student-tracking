@@ -39,6 +39,7 @@ interface MilestoneProgressProps {
   onFileUpload?: (stepId: string, file: File) => void;
   onToggleLock?: (id: string, type: 'milestone' | 'step') => void;
   uploadedFiles?: Record<string, string>;
+  lockedItems?: Record<string, boolean>;
 }
 
 // Utility: แปลง status เป็น completed/isActive
@@ -60,6 +61,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   onFileUpload,
   onToggleLock,
   uploadedFiles,
+  lockedItems = {},
 }) => {
   const t = useTranslations('milestone-progress');
   const language = useLocale();
@@ -115,32 +117,35 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   return (
     <div className="w-full space-y-6">
       {/* Overall Progress Card */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="text-primary h-5 w-5" />
-              <span className="font-semibold">{t('overall_progress')}</span>
-            </div>
-            <div className="text-right">
-              <div className="text-primary text-3xl font-bold">
-                {overallProgress}%
+      {mode !== 'edit' && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="text-primary h-5 w-5" />
+                <span className="font-semibold">{t('overall_progress')}</span>
               </div>
-              <div className="text-muted-foreground text-xs">
-                {t('progress_count', {
-                  completed: completedSteps,
-                  total: totalSteps,
-                })}
+              <div className="text-right">
+                <div className="text-primary text-3xl font-bold">
+                  {overallProgress}%
+                </div>
+                <div className="text-muted-foreground text-xs">
+                  {t('progress_count', {
+                    completed: completedSteps,
+                    total: totalSteps,
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-          <Progress value={overallProgress} className="h-2" />
-        </CardContent>
-      </Card>
+            <Progress value={overallProgress} className="h-2" />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Milestones */}
       <div className="relative space-y-6">
         {milestones.map((milestone, index) => {
+          const milestoneLocked = lockedItems[milestone.id];
           const progress = getMilestoneProgress(milestone);
           const isOpen = openMilestones[milestone.id] ?? true;
           const isLastMilestone = index === milestones.length - 1;
@@ -172,12 +177,16 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8"
+                              className={`h-8 w-8 ${milestoneLocked ? 'text-red-500' : ''}`}
                               onClick={() =>
                                 onToggleLock?.(milestone.id, 'milestone')
                               }
                             >
-                              <Settings className="h-4 w-4" />
+                              {milestoneLocked ? (
+                                <Lock className="h-4 w-4 text-red-500" />
+                              ) : (
+                                <Unlock className="h-4 w-4" />
+                              )}
                             </Button>
                           )}
                         </div>
@@ -217,6 +226,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                   <CollapsibleContent className="mt-6">
                     <CardContent className="space-y-3">
                       {milestone.steps.map((step) => {
+                        const stepLocked = lockedItems[step.id];
                         const completed = isStepCompleted(step.status);
                         const declined = isStepDeclined(step.status);
                         const pending = isStepPending(step.status);
@@ -282,10 +292,10 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           onToggleLock?.(step.id, 'step')
                                         }
                                       >
-                                        {isActive ? (
-                                          <Unlock className="h-3 w-3" />
+                                        {stepLocked ? (
+                                          <Lock className="h-3 w-3 text-red-500" />
                                         ) : (
-                                          <Lock className="h-3 w-3" />
+                                          <Unlock className="h-3 w-3" />
                                         )}
                                       </Button>
                                     )}

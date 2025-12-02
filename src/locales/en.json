@@ -22,7 +22,8 @@
     "delete": "Delete",
     "add": "Add",
     "delete_selected": "{count} item(s) selected",
-    "to-milestone-step": "To Milestone Steps"
+    "to-milestone-step": "To Milestone Steps",
+    "select-milestone": "Select Milestone"
   },
   "column": {
     "name": "Name",
@@ -38,6 +39,7 @@
     "edit": "Edit",
     "delete": "Delete",
     "to-milestone-step": "To Milestone Steps",
+    "select-milestone": "Select Milestone",
     "created_at": "Created At",
     "updated_at": "Updated At"
   },
