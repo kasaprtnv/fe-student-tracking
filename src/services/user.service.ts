@@ -33,10 +33,7 @@ class UserService extends APIService {
 
   async getAll(): Promise<IApiGetResponse<User>> {
     return this.get('/users')
-      .then((response) => {
-        console.log('Response', response);
-        return response?.data;
-      })
+      .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
@@ -44,13 +41,7 @@ class UserService extends APIService {
 
   async getByRole(role: UserRole): Promise<IApiGetResponse<User>> {
     return this.get(`/users?role=${role}`)
-      .then((response) => {
-        const users = response?.data || [];
-        console.log(
-          `[UserService] getByRole(${role}) - Total: ${users.length}`,
-        );
-        return users;
-      })
+      .then((response) => response?.data || [])
       .catch((error) => {
         throw error?.response?.data;
       });
@@ -130,15 +121,9 @@ class UserService extends APIService {
     // Convert to snake_case for API
     const snakeCaseData = toSnakeCase(filteredData);
 
-    console.log('Update User - Sending data:', snakeCaseData);
-
     return this.patch(`/users/${id}`, snakeCaseData)
-      .then((response) => {
-        console.log('Update User - Response:', response?.data);
-        return response?.data;
-      })
+      .then((response) => response?.data)
       .catch((error) => {
-        console.error('Update User - Error:', error?.response?.data);
         throw error?.response?.data;
       });
   }

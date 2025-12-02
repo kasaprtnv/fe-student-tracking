@@ -28,6 +28,7 @@ import {
   setSearchQuery,
 } from '@/store/user/user.slice';
 import { User } from '@/types/user';
+import { fetchUserProfile } from '@/store/auth/auth.thunks';
 
 export const useUser = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -67,6 +68,11 @@ export const useUser = () => {
     },
     [dispatch, userMap],
   );
+
+  // Get user profile
+  const getUserProfile = useCallback(() => {
+    dispatch(fetchUserProfile());
+  }, [dispatch]);
 
   // Create a new user
   const createNewUser = useCallback(
@@ -133,6 +139,7 @@ export const useUser = () => {
     fetchAllUsers,
     fetchStudents,
     fetchUserDetails,
+    getUserProfile,
     createNewUser,
     updateExistingUser,
     deleteExistingUser,

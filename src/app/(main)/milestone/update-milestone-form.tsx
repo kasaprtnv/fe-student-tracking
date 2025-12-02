@@ -1,14 +1,14 @@
 'use client';
 
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useMilestone } from '@/hooks/use-milestone';
 import { useTranslations } from 'next-intl';
 import { useForm, type SubmitHandler } from 'react-hook-form';
@@ -41,7 +41,7 @@ import { useEffect } from 'react';
 import React from 'react';
 
 interface UpdateMilestoneFormSheetProps
-  extends React.ComponentPropsWithRef<typeof Sheet> {
+  extends React.ComponentPropsWithRef<typeof Dialog> {
   milestone?: IMilestone | null;
 }
 
@@ -123,16 +123,16 @@ export function UpdateMilestoneFormSheet({
   };
 
   return (
-    <Sheet {...props} onOpenChange={(open) => onOpenChange?.(open)}>
-      <SheetContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
-        <SheetHeader className="text-left">
-          <SheetTitle className="text-xl font-semibold text-gray-800">
+    <Dialog {...props} onOpenChange={(open) => onOpenChange?.(open)}>
+      <DialogContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-xl font-semibold text-gray-800">
             {t('header.edit')}
-          </SheetTitle>
-          <SheetDescription className="text-sm text-gray-600">
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
             {t('header_description.edit')}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         <Form {...form}>
           <form
@@ -301,11 +301,11 @@ export function UpdateMilestoneFormSheet({
             />
 
             {/* footer */}
-            <SheetFooter>
+            <DialogFooter>
               <div className="flex w-full justify-end gap-2">
-                <SheetClose asChild>
+                <DialogClose asChild>
                   <Button variant="outline">{tCommon('cancel')}</Button>
-                </SheetClose>
+                </DialogClose>
 
                 <Button type="submit" disabled={storeAction === 'updating'}>
                   {storeAction === 'updating' && (
@@ -314,10 +314,10 @@ export function UpdateMilestoneFormSheet({
                   {tCommon('save')}
                 </Button>
               </div>
-            </SheetFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

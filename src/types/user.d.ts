@@ -1,6 +1,6 @@
 import { StoreAction } from '@/types/index';
 
-export type UserRole = 'student' | 'teacher' | 'admin';
+export type UserRole = 'admin' | 'teacher' | 'student';
 
 export interface User {
   id: string;

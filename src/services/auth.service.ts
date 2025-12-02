@@ -1,6 +1,7 @@
 import { IApiPostResponse } from '@/types';
 import { APIService } from './api.service';
 import { SignUp } from '@/types/auth';
+import { User } from '@/types/user';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -12,7 +13,7 @@ class AuthService extends APIService {
   async login(
     email: string,
     password: string,
-  ): Promise<IApiPostResponse<{ token: string }>> {
+  ): Promise<IApiPostResponse<User>> {
     return this.post('/auth/login', { email, password })
       .then((response) => response?.data)
       .catch((error) => {

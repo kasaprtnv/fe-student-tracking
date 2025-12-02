@@ -28,13 +28,7 @@ export const selectFilteredMilestoneIds = createSelector(
       (milestone) =>
         milestone.name?.toLowerCase().includes(lowerSearchQuery) ||
         milestone.description?.toLowerCase().includes(lowerSearchQuery) ||
-        milestone.notifyReceiverEmail
-          ?.toLowerCase()
-          .includes(lowerSearchQuery) ||
-        milestone.deadlineDate
-          ?.toISOString()
-          .toLowerCase()
-          .includes(lowerSearchQuery),
+        milestone.notifyReceiverEmail?.toLowerCase().includes(lowerSearchQuery),
     );
     return filtered.map((milestone) => milestone.id);
   },
