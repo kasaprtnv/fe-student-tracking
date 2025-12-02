@@ -7,6 +7,8 @@ export interface ICourse {
   isUsed: boolean;
   createdAt: Date;
   updatedAt: Date;
+
+  staffIds?: string[];
 }
 
 export interface ICourseCreateDTO {
@@ -14,6 +16,7 @@ export interface ICourseCreateDTO {
   name: string;
   degree: string;
   description?: string;
+  staffIds?: string[];
 }
 
 export interface CourseState {

@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogFooter,
@@ -30,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
+import { MultiSelect } from '@/components/ui/combobox-multi';
 
 export function CreateCourseFormDialog({
   open,
@@ -184,6 +184,29 @@ export function CreateCourseFormDialog({
                   <FormMessage />
                 </FormItem>
               )}
+            />
+            <FormField
+              control={form.control}
+              name="staffIds"
+              render={({ field }) => {
+                const value = field.value ?? [];
+                return (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      {t('label.staffIds')}
+                    </FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={[]}
+                        value={value}
+                        placeholder={t('placeholder.staffIds')}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             <DialogFooter className="px-0">
               <div className="flex flex-1 justify-end space-x-2">

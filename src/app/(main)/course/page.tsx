@@ -14,6 +14,7 @@ import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { useCourseStaff } from '@/hooks/use-course_staff';
 // import { DataTableFilterField } from '@/components/data-table/types';
 import { useRouter } from 'next/navigation';
+import { PageHeader } from '../../../components/page-header';
 
 const CoursePage = () => {
   const tForm = useTranslations('course.course-form');
@@ -130,6 +131,7 @@ const CoursePage = () => {
 
   return (
     <>
+      <PageHeader breadcrumbs={[{ label: tCourse('title'), isPage: true }]} />
       <div className="container mx-auto py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">{tCourse('title')}</h1>

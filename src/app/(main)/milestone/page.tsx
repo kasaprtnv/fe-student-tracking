@@ -12,6 +12,7 @@ import { UpdateMilestoneFormSheet } from './update-milestone-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { createMilestoneColumns } from './milestone-columns';
 import { useRouter } from 'next/navigation';
+import { PageHeader } from '../../../components/page-header';
 
 const MilestonePage = () => {
   const router = useRouter();
@@ -113,6 +114,9 @@ const MilestonePage = () => {
 
   return (
     <>
+      <PageHeader
+        breadcrumbs={[{ label: tMilestone('title'), isPage: true }]}
+      ></PageHeader>
       <div className="container mx-auto py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">{tMilestone('title')}</h1>

@@ -47,6 +47,21 @@ export const createCourse = createAsyncThunk(
   },
 );
 
+export const createCourseWithStaff = createAsyncThunk(
+  'course/createWithStaff',
+  async (payload: ICourseCreateDTO, { rejectWithValue }) => {
+    try {
+      const res = await courseService.createCourseWithStaff(payload);
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to create course with staff');
+    }
+  },
+);
+
 export const updateCourse = createAsyncThunk(
   'course/update',
   async (

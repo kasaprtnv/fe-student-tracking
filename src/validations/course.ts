@@ -6,6 +6,7 @@ export const createCourseSchema = (t: (key: string) => string) =>
     name: z.string().nonempty(t('errors.name-required')),
     degree: z.string().nonempty(t('errors.degree-required')),
     description: z.string().optional(),
+    staffIds: z.array(z.string()).optional(),
   });
 
 export const updateCourseSchema = (t: (key: string) => string) =>
@@ -14,6 +15,7 @@ export const updateCourseSchema = (t: (key: string) => string) =>
     name: z.string().nonempty(t('errors.name-required')),
     degree: z.string().nonempty(t('errors.degree-required')),
     description: z.string().optional(),
+    staffIds: z.array(z.string()).optional(),
   });
 
 export type CreateCourseFormData = z.infer<

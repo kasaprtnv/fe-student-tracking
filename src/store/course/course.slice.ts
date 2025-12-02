@@ -3,6 +3,7 @@ import {
   fetchCourses,
   fetchCourseById,
   createCourse,
+  createCourseWithStaff,
   updateCourse,
   deleteCourse,
   deleteCourses,
@@ -74,6 +75,22 @@ const courseSlice = createSlice({
           action.payload.receivedData;
       })
       .addCase(createCourse.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.error = action.payload as string;
+      });
+
+    // Craete course with staff
+    builder
+      .addCase(createCourseWithStaff.pending, (state) => {
+        state.storeAction = 'creating';
+        state.error = null;
+      })
+      .addCase(createCourseWithStaff.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+        state.courseMap[action.payload.receivedData.id] =
+          action.payload.receivedData;
+      })
+      .addCase(createCourseWithStaff.rejected, (state, action) => {
         state.storeAction = 'none';
         state.error = action.payload as string;
       });
