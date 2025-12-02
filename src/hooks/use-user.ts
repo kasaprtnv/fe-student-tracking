@@ -5,6 +5,10 @@ import {
   fetchUsers,
   fetchStudentUsers,
   fetchUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+  deleteMultipleUsers,
   addToCache,
   removeFromCache,
   updateCache,
@@ -86,6 +90,51 @@ export const useUser = () => {
     [dispatch, userMap],
   );
 
+  // CRUD actions
+  const createNewUser = useCallback(
+    async (data: Partial<User>): Promise<User> => {
+      const result = await dispatch(createUser(data));
+      if (createUser.fulfilled.match(result)) {
+        return result.payload;
+      }
+      throw new Error('Failed to create user');
+    },
+    [dispatch],
+  );
+
+  const updateExistingUser = useCallback(
+    async (id: string, data: Partial<User>): Promise<User> => {
+      const result = await dispatch(updateUser({ id, data }));
+      if (updateUser.fulfilled.match(result)) {
+        return result.payload;
+      }
+      throw new Error('Failed to update user');
+    },
+    [dispatch],
+  );
+
+  const deleteExistingUser = useCallback(
+    async (id: string): Promise<string> => {
+      const result = await dispatch(deleteUser(id));
+      if (deleteUser.fulfilled.match(result)) {
+        return result.payload;
+      }
+      throw new Error('Failed to delete user');
+    },
+    [dispatch],
+  );
+
+  const deleteExistingUsers = useCallback(
+    async (ids: string[]): Promise<string[]> => {
+      const result = await dispatch(deleteMultipleUsers(ids));
+      if (deleteMultipleUsers.fulfilled.match(result)) {
+        return result.payload;
+      }
+      throw new Error('Failed to delete users');
+    },
+    [dispatch],
+  );
+
   // Manual cache management
   const addUserToCache = useCallback(
     (user: User) => {
@@ -143,6 +192,12 @@ export const useUser = () => {
     fetchAllUsers,
     fetchStudents,
     fetchUserDetails,
+
+    // CRUD actions
+    createNewUser,
+    updateExistingUser,
+    deleteExistingUser,
+    deleteExistingUsers,
 
     // Cache management
     addUserToCache,

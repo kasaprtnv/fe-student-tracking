@@ -4,12 +4,12 @@ export const sidebarItems = [
   {
     title: 'homepage.dashboard',
     icon: LayoutDashboard,
-    route: '/',
+    route: '/dashboard',
   },
   {
     title: 'homepage.graduateList',
     icon: User,
-    route: '/graduates',
+    route: '/students',
   },
   {
     title: 'homepage.userManagement',

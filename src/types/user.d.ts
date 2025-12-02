@@ -14,6 +14,8 @@ export interface User {
   degree?: string;
   year?: string;
   courseId?: string;
+  courseName?: string;
+  enrollDate?: string;
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;

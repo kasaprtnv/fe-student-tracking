@@ -26,7 +26,39 @@ export const fetchUserById = createAsyncThunk(
   'users/fetchById',
   async (id: string) => {
     const response = await userService.getById(id);
-    return response;
+    return response.data;
+  },
+);
+
+export const createUser = createAsyncThunk(
+  'users/create',
+  async (data: Partial<User>) => {
+    const response = await userService.createUser(data);
+    return response.receivedData;
+  },
+);
+
+export const updateUser = createAsyncThunk(
+  'users/update',
+  async ({ id, data }: { id: string; data: Partial<User> }) => {
+    const response = await userService.updateUser(id, data);
+    return { id, updatedFields: response.updatedFields };
+  },
+);
+
+export const deleteUser = createAsyncThunk(
+  'users/delete',
+  async (id: string) => {
+    const response = await userService.deleteUser(id);
+    return response.deletedId;
+  },
+);
+
+export const deleteMultipleUsers = createAsyncThunk(
+  'users/deleteMultiple',
+  async (ids: string[]) => {
+    const response = await userService.deleteMultipleUsers(ids);
+    return response.deletedIds;
   },
 );
 
@@ -121,6 +153,65 @@ const userSlice = createSlice({
       .addCase(fetchUserById.rejected, (state, action) => {
         state.loader = false;
         state.error = action.error.message || 'Failed to fetch user';
+      })
+
+      // Create User
+      .addCase(createUser.pending, (state) => {
+        state.storeAction = 'creating';
+        state.error = null;
+      })
+      .addCase(createUser.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+        state.userMap[action.payload.id] = action.payload;
+      })
+      .addCase(createUser.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.error = action.error.message || 'Failed to create user';
+      })
+
+      // Update User
+      .addCase(updateUser.pending, (state) => {
+        state.storeAction = 'updating';
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+        const { id, updatedFields } = action.payload;
+        state.userMap[id] = { ...state.userMap[id], ...updatedFields };
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.error = action.error.message || 'Failed to update user';
+      })
+
+      // Delete User
+      .addCase(deleteUser.pending, (state) => {
+        state.storeAction = 'deleting';
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+        delete state.userMap[action.payload];
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.error = action.error.message || 'Failed to delete user';
+      })
+
+      // Delete Multiple Users
+      .addCase(deleteMultipleUsers.pending, (state) => {
+        state.storeAction = 'deleting';
+        state.error = null;
+      })
+      .addCase(deleteMultipleUsers.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+        action.payload.forEach((id) => {
+          delete state.userMap[id];
+        });
+      })
+      .addCase(deleteMultipleUsers.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.error = action.error.message || 'Failed to delete users';
       });
   },
 });
