@@ -9,8 +9,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { House } from 'lucide-react';
-
-import Link from 'next/link';
 import React from 'react';
 
 // Define the shape of each breadcrumb item
@@ -32,10 +30,10 @@ export const PageHeader = ({ breadcrumbs }: BaseHeaderProps) => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink asChild></BreadcrumbLink>
-              <Link href="/">
+              <BreadcrumbLink href="/">
+                {' '}
                 <House size={16} />
-              </Link>
+              </BreadcrumbLink>
               <BreadcrumbSeparator />
             </BreadcrumbItem>
             {breadcrumbs.map((breadcrumb, index) => (
@@ -43,8 +41,8 @@ export const PageHeader = ({ breadcrumbs }: BaseHeaderProps) => {
                 {breadcrumb.isPage ? (
                   <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
                 ) : breadcrumb.href ? (
-                  <BreadcrumbLink asChild>
-                    <Link href={breadcrumb.href}>{breadcrumb.label}</Link>
+                  <BreadcrumbLink href={breadcrumb.href}>
+                    {breadcrumb.label}
                   </BreadcrumbLink>
                 ) : (
                   <span>{breadcrumb.label}</span>
