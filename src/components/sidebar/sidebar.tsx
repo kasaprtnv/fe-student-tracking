@@ -1,21 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
+import { setLocale } from '@/actions/setLocale';
 import Image from 'next/image';
 import LogoBuu from './logobuu.png';
 import { ArrowRight } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const [, startTransition] = useTransition();
 
   const t = useTranslations();
+  const locale = useLocale();
+
+  function changeLanguage(newLocale: string) {
+    startTransition(async () => {
+      await setLocale(newLocale);
+      router.refresh();
+    });
+  }
 
   return (
     <div
@@ -76,6 +86,58 @@ export default function Sidebar() {
           );
         })}
       </nav>
+      <div className={cn('flex justify-center pb-3', open ? 'px-3' : '')}>
+        {open ? (
+          <div
+            className={cn(
+              'inline-flex rounded-full bg-gray-100 p-1',
+              open && 'w-full',
+            )}
+          >
+            <button
+              onClick={() => changeLanguage('en')}
+              className={cn(
+                'flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-sm font-medium transition-colors',
+                locale === 'en' ? 'bg-white shadow-sm' : 'hover:bg-white/50',
+              )}
+            >
+              <Image
+                src="https://flagcdn.com/w40/gb.png"
+                alt="EN"
+                width={27}
+                height={14}
+              />
+              EN
+            </button>
+            <button
+              onClick={() => changeLanguage('th')}
+              className={cn(
+                'flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-sm font-medium transition-colors',
+                locale === 'th' ? 'bg-white shadow-sm' : 'hover:bg-white/50',
+              )}
+            >
+              <Image
+                src="https://flagcdn.com/w40/th.png"
+                alt="TH"
+                width={21}
+                height={14}
+              />
+              TH
+            </button>
+          </div>
+        ) : (
+          <Image
+            src={
+              locale === 'th'
+                ? 'https://flagcdn.com/w40/th.png'
+                : 'https://flagcdn.com/w40/gb.png'
+            }
+            alt={locale === 'th' ? 'TH' : 'EN'}
+            width={locale === 'th' ? 21 : 27}
+            height={14}
+          />
+        )}
+      </div>
       <div className="border-t-2 border-gray-200 p-3">
         <div
           role="button"

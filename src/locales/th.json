@@ -4,7 +4,9 @@
     "welcomeMessage": "ยินดีต้อนรับสู่แอปพลิเคชันตัวติดตามนักเรียน!",
     "dashboard": "แดชบอร์ด",
     "graduateList": "รายชื่อบัณฑิต",
-    "userManagement": "จัดการข้อมูลผู้ใช้งาน"
+    "studentManagement": "จัดการข้อมูลบัณฑิต",
+    "studentReport": "รายงานบัณฑิต",
+    "progressVerify": "ตรวจสอบหลักฐาน"
   },
   "data-table": {
     "reset_filters": "รีเซ็ต",

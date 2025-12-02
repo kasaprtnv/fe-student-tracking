@@ -4,8 +4,9 @@
     "welcomeMessage": "Welcome to the Student Tracker Application!",
     "dashboard": "Dashboard",
     "graduateList": "List Student",
-    "userManagement": "User Management"
-   },
+    "studentManagement": "Student Management",
+    "studentReport": "Student Report",
+    "progressVerify": "Progress Verify"
   },
   "data-table": {
     "reset_filters": "Reset",
