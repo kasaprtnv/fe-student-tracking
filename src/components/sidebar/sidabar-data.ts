@@ -1,4 +1,11 @@
-import { LayoutDashboard, User, Users } from 'lucide-react';
+import {
+  LayoutDashboard,
+  ClipboardList,
+  UserCog,
+  BookOpen,
+  ListOrdered,
+  ClipboardCheck,
+} from 'lucide-react';
 
 export const sidebarItems = [
   {
@@ -7,13 +14,28 @@ export const sidebarItems = [
     route: '/',
   },
   {
-    title: 'homepage.graduateList',
-    icon: User,
-    route: '/graduates',
+    title: 'homepage.studentReport',
+    icon: ClipboardList,
+    route: '/report',
   },
   {
-    title: 'homepage.userManagement',
-    icon: Users,
-    route: '/users',
+    title: 'course.title',
+    icon: BookOpen,
+    route: '/course',
+  },
+  {
+    title: 'milestone.title',
+    icon: ListOrdered,
+    route: '/milestone',
+  },
+  {
+    title: 'homepage.studentManagement',
+    icon: UserCog,
+    route: '/student',
+  },
+  {
+    title: 'homepage.progressVerify',
+    icon: ClipboardCheck,
+    route: '/progress-verify',
   },
 ];
