@@ -5,6 +5,7 @@ export interface IMilestoneStep {
   description?: string;
   position: number;
   requiresAttachment: boolean;
+  dayPeriod: number;
   notifyBeforeDays?: number;
   isActive: boolean;
   createdAt: Date;

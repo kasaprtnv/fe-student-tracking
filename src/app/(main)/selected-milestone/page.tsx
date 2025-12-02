@@ -41,12 +41,23 @@ import { IMilestoneStep } from '@/types/milestone-step';
 import MilestoneProgress from '@/components/milestone-progress/milestone-progress';
 import type { Milestone, MilestoneStep, IMilestone } from '@/types/milestone';
 import UnlockConditionModal from '@/components/lock-milestone/lock-milestone';
+import { Button } from '@/components/ui/button';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useCourse } from '@/hooks/use-course';
 
-export default function PageLayout() {
+export default function PageLayout({ courseId }: { courseId?: string }) {
   const { allMilestoneIds, getMilestoneById, fetchAllMilestones } =
     useMilestone();
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [pendingMilestone, setPendingMilestone] = useState<string | null>(null);
 
   // -----------------------------
   // Load milestones once
@@ -73,6 +84,22 @@ export default function PageLayout() {
       const copy = { ...prev };
       delete copy[id];
       return copy;
+    });
+
+    // ⭐ ล้าง lock ทั้ง milestone และ step ของ milestone นั้น
+    setLockedItems((prev) => {
+      const updated = { ...prev };
+
+      // ลบ lock ของ milestone เอง
+      delete updated[id];
+
+      // ลบ lock ของทุก step ใน milestone นี้
+      const steps = stepsByMilestone[id] ?? [];
+      steps.forEach((step) => {
+        delete updated[step.id];
+      });
+
+      return updated;
     });
   };
 
@@ -160,8 +187,34 @@ export default function PageLayout() {
     return undefined;
   }
 
+  const { getCourseById, fetchAllCourses } = useCourse();
+
+  useEffect(() => {
+    fetchAllCourses();
+  }, [fetchAllCourses]);
+
+  const course = getCourseById(courseId);
+
+  const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
+
   return (
-    <div className="h-full w-full p-6">
+    <div className="h-full w-full p-6 pb-25">
+      <div className="mb-2 flex items-center gap-2 text-sm">
+        <Link href="/course" className="text-black hover:underline">
+          course
+        </Link>
+        <span>-</span>
+        <div className="text-black hover:underline">milestone</div>
+      </div>
+      <div className="mb-2 text-2xl font-bold">Select Milestone</div>
+      {course && (
+        <div>
+          <div className="mb-2 text-gray-600">Course name : {course.name}</div>
+          <div className="mb-2 text-gray-600">
+            Description : {course.description}
+          </div>
+        </div>
+      )}
       <ResizablePanelGroup
         direction="horizontal"
         className="h-full w-full rounded-lg border"
@@ -169,8 +222,14 @@ export default function PageLayout() {
         {/* LEFT PANEL */}
         <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
           <div className="h-full space-y-4 overflow-auto p-4">
+            <div className="mb-3"> ขั้นตอนการศึกษา </div>
             {/* Dropdown */}
-            <Select onValueChange={handleSelect}>
+            <Select
+              value={pendingMilestone ?? ''}
+              onValueChange={(value) => {
+                setPendingMilestone(value);
+              }}
+            >
               <SelectTrigger className="h-12 w-full text-base">
                 <SelectValue placeholder="เลือก Milestone" />
               </SelectTrigger>
@@ -221,19 +280,41 @@ export default function PageLayout() {
             </DndContext>
           </div>
         </ResizablePanel>
+        <Button
+          className="mt-13 mr-4 flex"
+          disabled={!pendingMilestone}
+          onClick={() => {
+            if (!pendingMilestone) return;
+
+            handleSelect(pendingMilestone);
+            setPendingMilestone(null);
+          }}
+        >
+          เพิ่ม
+        </Button>
 
         <ResizableHandle />
 
         {/* RIGHT */}
         <ResizablePanel defaultSize={60} minSize={40} className="h-full p-4">
           <UnlockConditionModal
-            key={targetLock?.id} // ⭐ เพิ่ม key ตรงนี้
+            key={
+              lockModalOpen ? `${targetLock?.type}-${targetLock?.id}` : 'closed'
+            }
             open={lockModalOpen}
             onClose={() => setLockModalOpen(false)}
             target={targetLock}
             milestones={selectedMilestonesWithSteps}
             onSave={(conditions) => {
-              console.log('Saved conditions:', conditions);
+              setLockedItems((prev) => {
+                const updated = { ...prev };
+                if (conditions.length === 0) {
+                  delete updated[targetLock!.id];
+                } else {
+                  updated[targetLock!.id] = true;
+                }
+                return updated;
+              });
               setLockModalOpen(false);
             }}
           />
@@ -241,6 +322,7 @@ export default function PageLayout() {
           <div className="h-full overflow-auto">
             <MilestoneProgress
               milestones={selectedMilestonesWithSteps}
+              lockedItems={lockedItems}
               mode="edit"
               onToggleLock={(id, type) => {
                 setTargetLock({

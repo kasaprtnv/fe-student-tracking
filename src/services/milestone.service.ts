@@ -4,6 +4,7 @@ import {
   IApiGetResponse,
   IApiPatchResponse,
   IApiPostResponse,
+  IApiGetByIdResponse,
 } from '@/types/index';
 import { APIService } from './api.service';
 import { IMilestone } from '@/types/milestone';
@@ -23,8 +24,19 @@ class MilestoneService extends APIService {
       });
   }
 
-  async getMilestoneById(id: string): Promise<IMilestone> {
+  async getMilestoneById(id: string): Promise<IApiGetByIdResponse<IMilestone>> {
     return this.get(`/milestones/${id}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async getMilestonesWithStatusByCourseId(
+    courseId: string,
+    userId: string,
+  ): Promise<IApiGetResponse<IMilestone>> {
+    return this.get(`/milestones/course/${courseId}/user/${userId}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

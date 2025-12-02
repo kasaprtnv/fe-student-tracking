@@ -21,7 +21,9 @@
     "edit": "แก้ไข",
     "delete": "ลบ",
     "add": "เพิ่ม",
-    "delete_selected": "เลือก {count} รายการ"
+    "delete_selected": "เลือก {count} รายการ",
+    "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
+    "select-milestone": "ไปยังขั้นตอนการศึกษา"
   },
   "column": {
     "name": "ชื่อ",
@@ -37,6 +39,8 @@
     "inactive": "ไม่ใช้งาน",
     "edit": "แก้ไข",
     "delete": "ลบ",
+    "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
+    "select-milestone": "ไปยังขั้นตอนการศึกษา",
     "created_at": "สร้างเมื่อ",
     "updated_at": "อัปเดตเมื่อ"
   },
@@ -47,7 +51,8 @@
     "create": "สร้าง",
     "delete": "ลบ",
     "confirm": "ยืนยัน",
-    "close": "ปิด"
+    "close": "ปิด",
+    "edit": "แก้ไข"
   },
   "student-form": {
     "label": {
@@ -136,6 +141,7 @@
     "completed": "สำเร็จ",
     "pending": "รอดำเนินการ",
     "declined": "ถูกปฏิเสธ",
+    "locked": "ไม่สามารถทำได้",
     "upload_button": "อัปโหลดไฟล์",
     "uploaded_file": "ไฟล์ที่อัปโหลด",
     "overall_progress": "ความคืบหน้า",
@@ -143,19 +149,19 @@
     "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน"
   },
   "milestone": {
-    "title": "Milestone",
-    "sub_title": "จัดการ Milestone ของคุณที่นี่",
+    "title": "ขั้นตอนการศึกษา",
+    "sub_title": "จัดการขั้นตอนการศึกษาของคุณที่นี่",
     "milestone-form": {
       "header": {
-        "create": "สร้าง Milestone",
-        "edit": "แก้ไข Milestone"
+        "create": "สร้างขั้นตอนการศึกษา",
+        "edit": "แก้ไขขั้นตอนการศึกษา"
       },
       "header_description": {
-        "create": "เพิ่ม Milestone ใหม่ในระบบ",
-        "edit": "แก้ไขข้อมูล Milestone"
+        "create": "เพิ่มขั้นตอนการศึกษาใหม่ในระบบ",
+        "edit": "แก้ไขข้อมูลขั้นตอนการศึกษา"
       },
       "label": {
-        "name": "ชื่อ Milestone",
+        "name": "ชื่อขั้นตอนการศึกษา",
         "courseId": "รหัสคอร์ส",
         "description": "คำอธิบาย",
         "deadlineDate": "วันที่กำหนดส่ง",
@@ -164,28 +170,28 @@
         "notifyBeforeDays": "แจ้งเตือนก่อน (วัน)"
       },
       "placeholder": {
-        "name": "กรอกชื่อ Milestone",
+        "name": "กรอกชื่อขั้นตอนการศึกษา",
         "courseId": "กรอก CourseId",
-        "description": "กรอกรายละเอียด Milestone",
+        "description": "กรอกรายละเอียดขั้นตอนการศึกษา",
         "deadlineDate": "เลือกวันที่กำหนดส่ง",
         "notifyReceiverEmail": "กรอกอีเมล@email.com",
         "position": "ลำดับเช่น 1",
         "notifyBeforeDays": "จำนวนวันก่อนแจ้งเตือน"
       },
       "toast": {
-        "created-successfully": "สร้าง Milestone เรียบร้อย!",
-        "creation-failed": "ไม่สามารถสร้าง Milestone ได้ กรุณาลองใหม่อีกครั้ง",
-        "updated-successfully": "อัปเดต Milestone สำเร็จ!",
-        "update-failed": "ไม่สามารถอัปเดต Milestone ได้ กรุณาลองใหม่อีกครั้ง",
-        "deleted-successfully": "ลบ Milestone สำเร็จ!",
-        "deletion-failed": "ไม่สามารถลบ Milestone ได้ กรุณาลองใหม่อีกครั้ง"
+        "created-successfully": "สร้างขั้นตอนการศึกษาเรียบร้อย!",
+        "creation-failed": "ไม่สามารถสร้างขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง",
+        "updated-successfully": "อัปเดตขั้นตอนการศึกษาสำเร็จ!",
+        "update-failed": "ไม่สามารถอัปเดตขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง",
+        "deleted-successfully": "ลบขั้นตอนการศึกษาสำเร็จ!",
+        "deletion-failed": "ไม่สามารถลบขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง"
       },
       "errors": {
         "code-duplicate": "รหัสหลักสูตรนี้มีอยู่แล้ว",
         "courseId-required": "กรุณากรอก CourseId",
         "courseId-duplicate": "CourseId นี้ถูกใช้แล้ว",
-        "name-required": "กรุณากรอกชื่อ Milestone",
-        "name-duplicate": "ชื่อ Milestone นี้มีอยู่แล้ว",
+        "name-required": "กรุณากรอกชื่อขั้นตอนการศึกษา",
+        "name-duplicate": "ชื่อขั้นตอนการศึกษานี้มีอยู่แล้ว",
         "description-required": "กรุณากรอกคำอธิบาย",
 
         "position-integer": "ลำดับต้องเป็นตัวเลขเท่านั้น",
@@ -204,8 +210,68 @@
       }
     },
     "delete": {
-      "header": "ลบ Milestone",
-      "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบ Milestone นี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+      "header": "ลบขั้นตอนการศึกษา",
+      "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบขั้นตอนการศึกษานี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+    }
+  },
+  "milestone-step": {
+    "milestone": "ขั้นตอนการศึกษา",
+    "description": "คำอธิบาย",
+    "title": "ขั้นตอนการศึกษาย่อย",
+    "sub_title": "จัดการขั้นตอนการศึกษาย่อยของคุณที่นี่",
+    "add-step": "เพิ่มขั้นตอนการศึกษาย่อย",
+    "requires-attachment": "ต้องการไฟล์แนบ",
+    "no-attachment-required": "ไม่ต้องการไฟล์แนบ",
+    "milestone-step-form": {
+      "header": {
+        "create": "สร้างขั้นตอนการศึกษาย่อย",
+        "edit": "แก้ไขขั้นตอนการศึกษาย่อย"
+      },
+      "header_description": {
+        "create": "เพิ่มขั้นตอนการศึกษาย่อยใหม่ในระบบ",
+        "edit": "แก้ไขรายละเอียดขั้นตอนการศึกษาย่อย"
+      },
+      "label": {
+        "name": "ชื่อขั้นตอนการศึกษาย่อย",
+        "description": "คำอธิบาย",
+        "position": "ลำดับ",
+        "requiresAttachment": "ต้องการไฟล์แนบ",
+        "dayPeriod": "ช่วงเวลา (วัน)",
+        "notifyBeforeDays": "แจ้งเตือนล่วงหน้า (วัน)",
+        "isActive": "ใช้งานอยู่",
+        "confirm-position": "ยืนยันลำดับ"
+      },
+      "placeholder": {
+        "name": "กรอกชื่อขั้นตอนการศึกษาย่อย",
+        "description": "กรอกคำอธิบายขั้นตอน",
+        "position": "เช่น 1",
+        "dayPeriod": "จำนวนวันในช่วงเวลา",
+        "notifyBeforeDays": "จำนวนวันก่อนแจ้งเตือน"
+      },
+      "toast": {
+        "created-successfully": "สร้างขั้นตอนการศึกษาย่อยสำเร็จ!",
+        "creation-failed": "ไม่สามารถสร้างขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง",
+        "updated-successfully": "อัปเดตขั้นตอนการศึกษาย่อยสำเร็จ!",
+        "update-failed": "ไม่สามารถอัปเดตขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง",
+        "deleted-successfully": "ลบขั้นตอนการศึกษาย่อยสำเร็จ!",
+        "deletion-failed": "ไม่สามารถลบขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง"
+      },
+      "errors": {
+        "name-required": "กรุณากรอกชื่อขั้นตอนการศึกษาย่อย",
+        "name-duplicate": "ชื่อขั้นตอนการศึกษาย่อยนี้มีอยู่แล้ว",
+        "description-required": "กรุณากรอกคำอธิบาย",
+
+        "position-integer": "ลำดับต้องเป็นตัวเลข",
+        "position-min": "ลำดับต้องมีค่าอย่างน้อย 1",
+
+        "dayPeriod-integer": "ช่วงเวลาต้องเป็นตัวเลข",
+
+        "notifyBeforeDays-integer": "จำนวนวันก่อนแจ้งเตือนต้องเป็นตัวเลข"
+      }
+    },
+    "delete": {
+      "header": "ลบขั้นตอนการศึกษาย่อย",
+      "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบขั้นตอนการศึกษาย่อยนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
     }
   }
 }

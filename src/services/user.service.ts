@@ -3,9 +3,10 @@ import {
   IApiPostResponse,
   IApiPatchResponse,
   IApiDeleteResponse,
+  IApiGetByIdResponse,
 } from '@/types/index';
 import { APIService } from '@/services/api.service';
-import { User } from '@/types/user';
+import { User } from '@/types/user.dใts';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -24,6 +25,22 @@ class UserService extends APIService {
 
   async getById(id: string): Promise<User> {
     return this.get(`/users/${id}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async getProfile(): Promise<User> {
+    return this.get('/users/profile')
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async getProfileByToken(): Promise<IApiGetByIdResponse<User>> {
+    return this.get('/users/profile/with-token')
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

@@ -10,8 +10,10 @@ import { ArrowRight } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
 import { useTranslations } from 'next-intl';
+import { useAuth } from '@/hooks/use-auth';
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
+  const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -84,16 +86,18 @@ export default function Sidebar() {
             'flex cursor-pointer items-center rounded-lg p-2 transition-colors hover:bg-gray-100',
             open ? 'justify-start gap-3' : 'justify-center',
           )}
-          onClick={() => router.push('/profile')}
+          onClick={() => router.push(`/profile/${user?.id}`)}
         >
           <Avatar className={cn('h-10 w-10', open ? '' : 'mx-auto')}>
             <AvatarImage src="/avatar.png" alt="Avatar" />
-            <AvatarFallback>สม</AvatarFallback>
+            <AvatarFallback>{`${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`}</AvatarFallback>
           </Avatar>
           {open && (
             <div className="flex flex-col">
-              <span className="text-sm font-medium">สมชาย ใจดี</span>
-              <span className="text-muted-foreground text-xs">ผู้ดูแลระบบ</span>
+              <span className="text-sm font-medium">{`${user?.firstName} ${user?.lastName}`}</span>
+              <span className="text-muted-foreground text-xs">
+                {user?.role}
+              </span>
             </div>
           )}
         </div>

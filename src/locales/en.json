@@ -5,8 +5,7 @@
     "dashboard": "Dashboard",
     "graduateList": "List Student",
     "userManagement": "User Management"
-   },
-
+  },
   "data-table": {
     "reset_filters": "Reset",
     "filter": "Filter",
@@ -22,7 +21,9 @@
     "edit": "Edit",
     "delete": "Delete",
     "add": "Add",
-    "delete_selected": "{count} item(s) selected"
+    "delete_selected": "{count} item(s) selected",
+    "to-milestone-step": "To Milestone Steps",
+    "select-milestone": "Select Milestone"
   },
   "column": {
     "name": "Name",
@@ -38,6 +39,8 @@
     "inactive": "Inactive",
     "edit": "Edit",
     "delete": "Delete",
+    "to-milestone-step": "To Milestone Steps",
+    "select-milestone": "Select Milestone",
     "created_at": "Created At",
     "updated_at": "Updated At"
   },
@@ -48,7 +51,8 @@
     "create": "Create",
     "delete": "Delete",
     "confirm": "Confirm",
-    "close": "Close"
+    "close": "Close",
+    "edit": "Edit"
   },
   "student-form": {
     "label": {
@@ -137,6 +141,7 @@
     "completed": "Completed",
     "pending": "Pending",
     "declined": "Declined",
+    "locked": "Locked",
     "upload_button": "Upload File",
     "uploaded_file": "Uploaded File",
     "overall_progress": "Overall Progress",
@@ -207,6 +212,66 @@
     "delete": {
       "header": "Delete Milestone",
       "confirm": "Are you sure you want to delete this milestone? This action cannot be undone."
+    }
+  },
+  "milestone-step": {
+    "milestone": "Milestones",
+    "description": "Description",
+    "title": "Milestone Steps",
+    "sub_title": "Manage your milestone steps here.",
+    "add-step": "Add Milestone Step",
+    "requires-attachment": "Requires Attachment",
+    "no-attachment-required": "No Attachment Required",
+    "milestone-step-form": {
+      "header": {
+        "create": "Create Milestone Step",
+        "edit": "Edit Milestone Step"
+      },
+      "header_description": {
+        "create": "Add a new milestone step to the system",
+        "edit": "Edit milestone step details"
+      },
+      "label": {
+        "name": "Step Name",
+        "description": "Description",
+        "position": "Position",
+        "requiresAttachment": "Require Attachment",
+        "dayPeriod": "Day Period",
+        "notifyBeforeDays": "Notify Before (Days)",
+        "isActive": "Is Active",
+        "confirm-position": "Confirm Position"
+      },
+      "placeholder": {
+        "name": "Enter step name",
+        "description": "Enter step description",
+        "position": "e.g. 1",
+        "dayPeriod": "Number of days for the period",
+        "notifyBeforeDays": "Number of days before notification"
+      },
+      "toast": {
+        "created-successfully": "Milestone step created successfully!",
+        "creation-failed": "Failed to create milestone step. Please try again.",
+        "updated-successfully": "Milestone step updated successfully!",
+        "update-failed": "Failed to update milestone step. Please try again.",
+        "deleted-successfully": "Milestone step deleted successfully!",
+        "deletion-failed": "Failed to delete milestone step. Please try again."
+      },
+      "errors": {
+        "name-required": "Step name is required",
+        "name-duplicate": "Step name already exists",
+        "description-required": "Description is required",
+
+        "position-integer": "Position must be a number",
+        "position-min": "Position must be at least 1",
+
+        "dayPeriod-integer": "Day period must be a number",
+
+        "notifyBeforeDays-integer": "Notify-before-days must be a number"
+      }
+    },
+    "delete": {
+      "header": "Delete Milestone Step",
+      "confirm": "Are you sure you want to delete this milestone step? This action cannot be undone."
     }
   }
 }

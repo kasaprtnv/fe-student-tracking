@@ -54,7 +54,7 @@ interface DataTableProps<TData, TValue> {
   onView?: (id: string) => void;
   onDelete?: (id: string) => void;
   onDeleteData?: (data: TData) => void;
-  onLink?: (data: TData) => void;
+  onLink?: (data: string) => void;
   onMultiDelete?: (data: TData[]) => void;
   onMultiDeleteIds?: (ids: string[]) => void;
   onActiveChange?: (id: string, inactive: boolean) => void;

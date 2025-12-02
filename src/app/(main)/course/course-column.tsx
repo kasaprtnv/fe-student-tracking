@@ -12,12 +12,13 @@ import { formatDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import { ColumnDef } from '@tanstack/react-table';
-import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 
 interface ColumnActions {
   onEdit?: (data: ICourse) => void;
   onDelete?: (id: string) => void;
   onActiveChange?: (id: string, isActive: boolean) => void;
+  onLink?: (id: string) => void;
   t?: (key: string) => string;
 }
 
@@ -82,7 +83,8 @@ export const createCourseColumns = (): ColumnDef<ICourse>[] => {
     size: 40,
     cell: ({ row, table }) => {
       const record = row.original;
-      const { onEdit, onDelete, t } = table.options.meta as ColumnActions;
+      const { onEdit, onDelete, t, onLink } = table.options
+        .meta as ColumnActions;
 
       return (
         <DropdownMenu>
@@ -113,6 +115,15 @@ export const createCourseColumns = (): ColumnDef<ICourse>[] => {
                 <div className="flex items-center gap-2">
                   <Trash2 size={14} color="#e7000b" />
                   {t?.('delete')}
+                </div>
+              </DropdownMenuItem>
+            )}
+
+            {onLink && (
+              <DropdownMenuItem onSelect={() => onLink(record.id)}>
+                <div className="flex items-center gap-2">
+                  <NotebookPen size={14} />
+                  {t?.('select-milestone')}
                 </div>
               </DropdownMenuItem>
             )}
