@@ -13,8 +13,7 @@ import { sidebarItems } from './sidabar-data';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/use-auth';
 
-// หน้าที่ไม่ต้องการแสดง Sidebar
-const hiddenRoutes = ['/login', '/signup'];
+const hiddenRoutes = ['/login'];
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
@@ -100,8 +99,6 @@ export default function Sidebar() {
             </Button>
           );
         })}
-
-        {/* Logout Button */}
         <Button
           variant="ghost"
           className={cn(
@@ -114,7 +111,6 @@ export default function Sidebar() {
           {open && t('homepage.logout')}
         </Button>
       </nav>
-
       <div className={cn('flex justify-center pb-3', open ? 'px-3' : '')}>
         {open ? (
           <div
