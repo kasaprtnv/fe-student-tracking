@@ -1,4 +1,4 @@
-import { User } from './user';
+import { User } from './user.dใts';
 
 export interface SignUp {
   email: string;
@@ -13,4 +13,5 @@ export interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  initialized: boolean;
 }

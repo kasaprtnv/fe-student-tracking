@@ -6,7 +6,7 @@ import {
   IApiGetByIdResponse,
 } from '@/types/index';
 import { APIService } from '@/services/api.service';
-import { User } from '@/types/user';
+import { User } from '@/types/user.dใts';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 

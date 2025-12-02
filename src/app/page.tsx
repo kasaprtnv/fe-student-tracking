@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useUser } from '@/hooks/use-user';
 import { useAuth } from '@/hooks/use-auth';
-import { useEffect } from 'react';
 
 export default function HomePage() {
   const t = useTranslations();

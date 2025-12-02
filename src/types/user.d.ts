@@ -1,3 +1,4 @@
+export type UserRole = 'admin' | 'teacher' | 'student';
 export interface User {
   id: string;
   email: string;
@@ -10,10 +11,4 @@ export interface User {
   year: string;
   courseId: string;
   enrollDate: Date;
-}
-
-export enum UserRole {
-  ADMIN = 'admin',
-  STUDENT = 'student',
-  TEACHER = 'teacher',
 }

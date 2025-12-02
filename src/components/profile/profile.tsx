@@ -8,7 +8,7 @@ interface ProfilePageProps {
 
 export const ProfileComponent: React.FC<ProfilePageProps> = ({ user }) => {
   const t = useTranslations('profile');
-  const role = user?.role === 'user' ? 'student' : user?.role;
+  const role = user?.role === 'student' ? 'student' : user?.role;
   return (
     <div>
       <div className="flex flex-row items-center gap-8">
