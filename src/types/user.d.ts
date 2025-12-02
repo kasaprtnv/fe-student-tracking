@@ -10,5 +10,5 @@ export interface User {
   code: string;
   year: string;
   courseId: string;
-  enrollDate: Date;
+  enrollDate: string;
 }
