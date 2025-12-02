@@ -55,6 +55,7 @@ export default function ProfilePage() {
           <MilestoneComponent
             milestones={Object.values(milestoneMap)}
             mode={mode}
+            enrollDate={user?.enrollDate}
             onFileUpload={handleFileUpload}
             uploadedFiles={uploadedFiles}
           ></MilestoneComponent>

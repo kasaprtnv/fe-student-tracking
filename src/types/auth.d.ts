@@ -1,4 +1,4 @@
-import { User } from './user.dใts';
+import { User } from './user';
 
 export interface SignUp {
   email: string;
