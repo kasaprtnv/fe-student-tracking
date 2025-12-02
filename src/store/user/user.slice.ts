@@ -11,6 +11,7 @@ import { RootState } from '@/store';
 // Async thunks
 export const fetchUsers = createAsyncThunk('users/fetchAll', async () => {
   const response = await userService.getAll();
+  console.log('fetchUsers response:', response);
   return response;
 });
 
@@ -108,9 +109,10 @@ const userSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loader = false;
-        const sortedUsers = action.payload.sort((a, b) =>
+        const sortedUsers = action.payload.data.sort((a, b) =>
           a.firstName.localeCompare(b.firstName),
         );
+        console.log('Fetched Users:', action.payload);
         state.userMap = {};
         sortedUsers.forEach((user) => {
           state.userMap[user.id] = user;
@@ -128,7 +130,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchStudentUsers.fulfilled, (state, action) => {
         state.loader = false;
-        const sortedUsers = action.payload.sort((a, b) =>
+        const sortedUsers = action.payload.data.sort((a, b) =>
           a.firstName.localeCompare(b.firstName),
         );
         state.userMap = {};

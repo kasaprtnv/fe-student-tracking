@@ -1,6 +1,7 @@
 import { User, UserRole } from '@/types/user';
 import { APIService } from '@/services/api.service';
 import {
+  IApiGetResponse,
   IApiDeleteResponse,
   IApiDeleteManyResponse,
   IApiPatchResponse,
@@ -30,19 +31,18 @@ class UserService extends APIService {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAll(): Promise<User[]> {
+  async getAll(): Promise<IApiGetResponse<User>> {
     return this.get('/users')
       .then((response) => {
-        const users = response?.data || [];
-        console.log(`[UserService] getAll - Total users: ${users.length}`);
-        return users;
+        console.log('Response', response);
+        return response?.data;
       })
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async getByRole(role: UserRole): Promise<User[]> {
+  async getByRole(role: UserRole): Promise<IApiGetResponse<User>> {
     return this.get(`/users?role=${role}`)
       .then((response) => {
         const users = response?.data || [];
@@ -56,11 +56,11 @@ class UserService extends APIService {
       });
   }
 
-  async getStudents(): Promise<User[]> {
+  async getStudents(): Promise<IApiGetResponse<User>> {
     return this.getByRole('student');
   }
 
-  async getTeachers(): Promise<User[]> {
+  async getTeachers(): Promise<IApiGetResponse<User>> {
     return this.getByRole('teacher');
   }
 
