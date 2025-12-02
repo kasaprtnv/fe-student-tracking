@@ -5,21 +5,12 @@ import LanguageSwitcher from '@/components/language-switcher';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/hooks/use-user';
 import { useAuth } from '@/hooks/use-auth';
-import { useEffect } from 'react';
 
 export default function HomePage() {
   const t = useTranslations();
   const router = useRouter();
-  const { getUserProfile } = useUser();
-  const { user, logoutUser } = useAuth();
-
-  useEffect(() => {
-    if (!user) {
-      getUserProfile();
-    }
-  }, [user, getUserProfile]);
+  const { logoutUser } = useAuth();
 
   const logout = async () => {
     logoutUser();

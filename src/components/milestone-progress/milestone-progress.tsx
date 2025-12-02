@@ -143,30 +143,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
           </CardContent>
         </Card>
       )}
-      {mode !== 'edit' && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="text-primary h-5 w-5" />
-                <span className="font-semibold">{t('overall_progress')}</span>
-              </div>
-              <div className="text-right">
-                <div className="text-primary text-3xl font-bold">
-                  {overallProgress}%
-                </div>
-                <div className="text-muted-foreground text-xs">
-                  {t('progress_count', {
-                    completed: completedSteps,
-                    total: totalSteps,
-                  })}
-                </div>
-              </div>
-            </div>
-            <Progress value={overallProgress} className="h-2" />
-          </CardContent>
-        </Card>
-      )}
 
       {/* Milestones */}
       <div className="relative space-y-6">

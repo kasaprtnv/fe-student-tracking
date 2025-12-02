@@ -1,13 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchUserProfile, login, logout, validateToken } from './auth.thunks';
-import { User } from '@/types/user';
 import { AuthState } from '@/types/auth';
+import { User } from '@/types/user';
 
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   loading: false,
   error: null,
+  initialized: false,
 };
 
 const authSlice = createSlice({
@@ -37,10 +38,12 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.receivedData;
         state.error = null;
+        state.initialized = true;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Login failed';
+        state.initialized = true;
       });
     builder
       .addCase(logout.pending, (state) => {
@@ -60,9 +63,11 @@ const authSlice = createSlice({
     builder
       .addCase(validateToken.fulfilled, (state, action) => {
         state.isAuthenticated = action.payload.success;
+        state.initialized = true;
       })
       .addCase(validateToken.rejected, (state) => {
         state.isAuthenticated = false;
+        state.initialized = true;
       });
     builder
       .addCase(fetchUserProfile.pending, (state) => {
@@ -74,10 +79,12 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.loading = false;
         state.error = null;
+        state.initialized = true;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch user profile';
+        state.initialized = true;
       });
   },
 });
