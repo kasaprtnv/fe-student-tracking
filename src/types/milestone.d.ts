@@ -3,32 +3,14 @@ export type MilestoneStepStatus =
   | 'approved'
   | 'pending'
   | 'declined'
-  | 'available';
-
-export interface MilestoneStep {
-  id: string;
-  milestoneId: string;
-  position: number;
-  name: string;
-  description: string;
-  requiresAttachment: boolean;
-  dayPeriod: number;
-  isActive: boolean;
-  status: MilestoneStepStatus;
-}
-
-export interface Milestone {
-  id: string;
-  name: string;
-  description: string;
-  created_at: string;
-  updated_at: string;
-  steps: MilestoneStep[];
-}
+  | 'available'
+  | 'locked';
 
 export interface UploadedFilesMap {
   [stepId: string]: string;
 }
+
+export type ViewMode = 'readonly' | 'upload' | 'edit';
 
 export interface IMilestone {
   id: string;
@@ -40,6 +22,19 @@ export interface IMilestone {
   dayPeriod: number;
   notifyBeforeDays: number;
   isActive: boolean;
+  steps?: MilestoneStep[];
+}
+
+export interface MilestoneStep {
+  id: string;
+  milestoneId: string;
+  position: number;
+  name: string;
+  description: string;
+  requiresAttachment: boolean;
+  dayPeriod: number;
+  isActive: boolean;
+  status: MilestoneStepStatus;
 }
 
 export interface IMilestoneCreateDTO {

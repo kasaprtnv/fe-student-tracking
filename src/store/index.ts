@@ -3,6 +3,7 @@ import studentReducer from './slices/student-slice.store';
 import courseReducer from './course/course.slice';
 import milestoneReducer from './milestone/milestone.slice';
 import milestoneStepReducer from './milestone-step/milestone-step.slice';
+import authReducer from './auth/auth.slice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     courses: courseReducer,
     milestones: milestoneReducer,
     milestoneSteps: milestoneStepReducer,
+    auth: authReducer,
   },
 });
 

@@ -27,14 +27,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { Milestone } from '@/types/milestone';
+import { IMilestone, ViewMode } from '@/types/milestone';
 import { useLocale, useTranslations } from 'next-intl';
 import { Spinner } from '../ui/spinner';
 
-type ViewMode = 'readonly' | 'upload' | 'edit';
-
 interface MilestoneProgressProps {
-  milestones: Milestone[];
+  milestones: IMilestone[];
   mode?: ViewMode;
   onFileUpload?: (stepId: string, file: File) => void;
   onToggleLock?: (id: string, type: 'milestone' | 'step') => void;
@@ -46,10 +44,11 @@ const isStepCompleted = (status: string) => status === 'approved';
 const isStepDeclined = (status: string) => status === 'declined';
 const isStepPending = (status: string) => status === 'pending';
 const isAvailable = (status: string) => status === 'available';
+const isLocked = (status: string) => status === 'locked';
 
 // Utility: สร้าง deadlineDate จาก created_at + dayPeriod
-const getStepDeadline = (milestoneCreatedAt: string, dayPeriod: number) => {
-  const date = new Date(milestoneCreatedAt);
+const getStepDeadline = (dayPeriod: number) => {
+  const date = new Date();
   date.setDate(date.getDate() + dayPeriod);
   return date;
 };
@@ -69,20 +68,23 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const allowedFileTypes = '.pdf,.docx';
 
   // Calculate overall progress
-  const totalSteps = milestones.reduce((acc, ms) => acc + ms.steps.length, 0);
+  const totalSteps = milestones.reduce(
+    (acc, ms) => acc + (ms.steps?.length ?? 0),
+    0,
+  );
   const completedSteps = milestones.reduce(
-    (acc, ms) => acc + ms.steps.filter((s) => isStepCompleted(s.status)).length,
+    (acc, ms) =>
+      acc + (ms.steps?.filter((s) => isStepCompleted(s.status)).length ?? 0),
     0,
   );
   const overallProgress =
     totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
   // Calculate milestone progress
-  const getMilestoneProgress = (milestone: Milestone) => {
-    const total = milestone.steps.length;
-    const completed = milestone.steps.filter((s) =>
-      isStepCompleted(s.status),
-    ).length;
+  const getMilestoneProgress = (milestone: IMilestone) => {
+    const total = milestone.steps?.length ?? 0;
+    const completed =
+      milestone.steps?.filter((s) => isStepCompleted(s.status)).length ?? 0;
     return total > 0 ? Math.round((completed / total) * 100) : 0;
   };
 
@@ -115,28 +117,30 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   return (
     <div className="w-full space-y-6">
       {/* Overall Progress Card */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="text-primary h-5 w-5" />
-              <span className="font-semibold">{t('overall_progress')}</span>
-            </div>
-            <div className="text-right">
-              <div className="text-primary text-3xl font-bold">
-                {overallProgress}%
+      {mode !== 'edit' && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="text-primary h-5 w-5" />
+                <span className="font-semibold">{t('overall_progress')}</span>
               </div>
-              <div className="text-muted-foreground text-xs">
-                {t('progress_count', {
-                  completed: completedSteps,
-                  total: totalSteps,
-                })}
+              <div className="text-right">
+                <div className="text-primary text-3xl font-bold">
+                  {overallProgress}%
+                </div>
+                <div className="text-muted-foreground text-xs">
+                  {t('progress_count', {
+                    completed: completedSteps,
+                    total: totalSteps,
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-          <Progress value={overallProgress} className="h-2" />
-        </CardContent>
-      </Card>
+            <Progress value={overallProgress} className="h-2" />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Milestones */}
       <div className="relative space-y-6">
@@ -191,12 +195,10 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             {progress}%
                           </div>
                           <div className="text-muted-foreground text-xs">
-                            {
-                              milestone.steps.filter((s) =>
-                                isStepCompleted(s.status),
-                              ).length
-                            }
-                            /{milestone.steps.length}
+                            {milestone.steps?.filter((s) =>
+                              isStepCompleted(s.status),
+                            ).length ?? 0}
+                            /{milestone.steps?.length ?? 0}
                           </div>
                         </div>
                         <CollapsibleTrigger asChild>
@@ -216,16 +218,14 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
 
                   <CollapsibleContent className="mt-6">
                     <CardContent className="space-y-3">
-                      {milestone.steps.map((step) => {
+                      {milestone.steps?.map((step) => {
                         const completed = isStepCompleted(step.status);
                         const declined = isStepDeclined(step.status);
                         const pending = isStepPending(step.status);
                         const available = isAvailable(step.status);
+                        const locked = isLocked(step.status);
                         const isActive = step.isActive;
-                        const deadlineDate = getStepDeadline(
-                          milestone.created_at,
-                          step.dayPeriod,
-                        );
+                        const deadlineDate = getStepDeadline(step.dayPeriod);
 
                         return (
                           <Card
@@ -235,6 +235,8 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                               completed && 'border-green-200 bg-green-50',
                               declined && 'border-red-200 bg-red-50',
                               pending && 'border-yellow-200 bg-yellow-50',
+                              locked &&
+                                'border-muted bg-muted text-muted-foreground opacity-70',
                               !isActive && 'opacity-50',
                             )}
                           >
@@ -322,6 +324,15 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100"
                                       >
                                         <Spinner /> {t('pending')}
+                                      </Badge>
+                                    )}
+                                    {locked && (
+                                      <Badge
+                                        variant="secondary"
+                                        className="bg-muted text-muted-foreground hover:bg-muted"
+                                      >
+                                        <Lock className="mr-1 h-3 w-3" />
+                                        {t('locked')}
                                       </Badge>
                                     )}
                                   </div>

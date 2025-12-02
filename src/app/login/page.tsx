@@ -2,33 +2,28 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/auth.service';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function LoginPage() {
+  const { loginUser, validateToken, error } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const router = useRouter();
 
   useEffect(() => {
-    const validateToken = async () => {
-      const res = await authService.validateToken();
-      if (res.success) {
-        router.push('/');
-      }
-    };
     validateToken();
-  });
+  }, [validateToken]);
 
   const handleLogin = async () => {
-    const res = await authService.login(email, password);
-    if (res?.success) {
+    try {
+      await loginUser(email, password).unwrap();
       setMessage('Login successful!');
       setTimeout(() => {
         router.push('/');
-      }, 2000);
-    } else {
-      setMessage(`Login failed: ${res?.message || 'Unknown error'}`);
+      }, 1000);
+    } catch {
+      setMessage(error || 'Login failed');
     }
   };
 

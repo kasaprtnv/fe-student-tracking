@@ -135,6 +135,7 @@
     "completed": "Completed",
     "pending": "Pending",
     "declined": "Declined",
+    "locked": "Locked",
     "upload_button": "Upload File",
     "uploaded_file": "Uploaded File",
     "overall_progress": "Overall Progress",

@@ -7,6 +7,7 @@ import {
   updateMilestone,
   deleteMilestone,
   deleteMilestones,
+  fetchMilestonesWithStatusByCourseId,
 } from './milestone.thunks';
 
 const initialState: MilestoneState = {
@@ -58,12 +59,39 @@ const milestoneSlice = createSlice({
       })
       .addCase(fetchMilestoneById.fulfilled, (state, action) => {
         state.loader = false;
-        state.milestoneMap[action.payload.id] = action.payload;
+        state.milestoneMap[action.payload.data.id] = action.payload.data;
       })
       .addCase(fetchMilestoneById.rejected, (state, action) => {
         state.loader = false;
         state.error = action.error.message || 'Failed to fetch milestone';
       });
+
+    builder
+      .addCase(fetchMilestonesWithStatusByCourseId.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchMilestonesWithStatusByCourseId.fulfilled,
+        (state, action) => {
+          state.loader = false;
+          state.milestoneMap = {};
+          const sortedMilestones = action.payload.data.sort((a, b) =>
+            a.name.localeCompare(b.name),
+          );
+          sortedMilestones.forEach((milestone) => {
+            state.milestoneMap[milestone.id] = milestone;
+          });
+        },
+      )
+      .addCase(
+        fetchMilestonesWithStatusByCourseId.rejected,
+        (state, action) => {
+          state.loader = false;
+          state.error =
+            action.error.message || 'Failed to fetch milestones with status';
+        },
+      );
 
     // Add milestone
     builder
