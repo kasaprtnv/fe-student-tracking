@@ -22,7 +22,8 @@
     "delete": "ลบ",
     "add": "เพิ่ม",
     "delete_selected": "เลือก {count} รายการ",
-    "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย"
+    "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
+    "select-milestone": "ไปยังขั้นตอนการศึกษา"
   },
   "column": {
     "name": "ชื่อ",
@@ -38,6 +39,7 @@
     "edit": "แก้ไข",
     "delete": "ลบ",
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
+    "select-milestone": "ไปยังขั้นตอนการศึกษา",
     "created_at": "สร้างเมื่อ",
     "updated_at": "อัปเดตเมื่อ"
   },
@@ -116,6 +118,30 @@
       "header": "ลบหลักสูตร",
       "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบหลักสูตรนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
     }
+  },
+  "profile": {
+    "personal_information": {
+      "title": "ข้อมูลส่วนตัว",
+      "name": "ชื่อ-นามสกุล",
+      "email": "อีเมล",
+      "phone": "เบอร์โทรศัพท์",
+      "year": "ปีที่เข้าศึกษา",
+      "student_id": "รหัสนักศึกษา",
+      "department": "สาขาวิชา",
+      "faculty": "คณะ",
+      "degree": "หลักสูตร"
+    },
+    "progress_title": "ความคืบหน้าของบัณฑิตศึกษา"
+  },
+  "milestone-progress": {
+    "completed": "สำเร็จ",
+    "pending": "รอดำเนินการ",
+    "declined": "ถูกปฏิเสธ",
+    "upload_button": "อัปโหลดไฟล์",
+    "uploaded_file": "ไฟล์ที่อัปโหลด",
+    "overall_progress": "ความคืบหน้า",
+    "accept_file_type": "รองรับไฟล์ประเภท",
+    "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน"
   },
   "milestone": {
     "title": "ขั้นตอนการศึกษา",

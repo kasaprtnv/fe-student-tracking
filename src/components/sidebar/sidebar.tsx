@@ -84,6 +84,7 @@ export default function Sidebar() {
             'flex cursor-pointer items-center rounded-lg p-2 transition-colors hover:bg-gray-100',
             open ? 'justify-start gap-3' : 'justify-center',
           )}
+          onClick={() => router.push('/profile')}
         >
           <Avatar className={cn('h-10 w-10', open ? '' : 'mx-auto')}>
             <AvatarImage src="/avatar.png" alt="Avatar" />

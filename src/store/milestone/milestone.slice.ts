@@ -58,7 +58,7 @@ const milestoneSlice = createSlice({
       })
       .addCase(fetchMilestoneById.fulfilled, (state, action) => {
         state.loader = false;
-        state.milestoneMap[action.payload.id] = action.payload;
+        state.milestoneMap[action.payload.data.id] = action.payload.data;
       })
       .addCase(fetchMilestoneById.rejected, (state, action) => {
         state.loader = false;

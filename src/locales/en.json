@@ -22,7 +22,8 @@
     "delete": "Delete",
     "add": "Add",
     "delete_selected": "{count} item(s) selected",
-    "to-milestone-step": "To Milestone Steps"
+    "to-milestone-step": "To Milestone Steps",
+    "select-milestone": "Select Milestone"
   },
   "column": {
     "name": "Name",
@@ -38,6 +39,7 @@
     "edit": "Edit",
     "delete": "Delete",
     "to-milestone-step": "To Milestone Steps",
+    "select-milestone": "Select Milestone",
     "created_at": "Created At",
     "updated_at": "Updated At"
   },
@@ -116,6 +118,30 @@
       "header": "Delete Course",
       "confirm": "Are you sure you want to delete this course? This action cannot be undone."
     }
+  },
+  "profile": {
+    "personal_information": {
+      "title": "Personal Information",
+      "name": "Name",
+      "email": "Email",
+      "address": "Address",
+      "year": "Year of Enrollment",
+      "student_id": "Student ID",
+      "department": "Department",
+      "faculty": "Faculty",
+      "degree": "Degree"
+    },
+    "progress_title": "Graduate Progress"
+  },
+  "milestone-progress": {
+    "completed": "Completed",
+    "pending": "Pending",
+    "declined": "Declined",
+    "upload_button": "Upload File",
+    "uploaded_file": "Uploaded File",
+    "overall_progress": "Overall Progress",
+    "accept_file_type": "Accept File Type",
+    "progress_count": "completed {completed} out of {total} steps"
   },
   "milestone": {
     "title": "Milestones",
