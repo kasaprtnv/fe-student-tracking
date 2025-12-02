@@ -32,6 +32,27 @@ export const fetchMilestoneById = createAsyncThunk(
   },
 );
 
+export const fetchMilestonesWithStatusByCourseId = createAsyncThunk(
+  'milestones/fetchWithStatusByCourseId',
+  async (
+    { courseId, userId }: { courseId: string; userId: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await milestoneService.getMilestonesWithStatusByCourseId(
+        courseId,
+        userId,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to fetch milestones with status');
+    }
+  },
+);
+
 export const addMilestone = createAsyncThunk(
   'milestones/add',
   async (data: IMilestoneCreateDTO, { rejectWithValue }) => {

@@ -1,12 +1,14 @@
 import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { User } from '@/types/user';
 
 interface ProfilePageProps {
-  role: 'student' | 'teacher' | 'admin';
+  user: User | null;
 }
 
-export const ProfileComponent: React.FC<ProfilePageProps> = ({ role }) => {
+export const ProfileComponent: React.FC<ProfilePageProps> = ({ user }) => {
   const t = useTranslations('profile');
+  const role = user?.role === 'user' ? 'student' : user?.role;
   return (
     <div>
       <div className="flex flex-row items-center gap-8">
@@ -25,13 +27,15 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({ role }) => {
                 <div className="mr-2 text-xl">
                   {t('personal_information.name')} :
                 </div>
-                <div className="text-xl">นางสาวนภพร เพ็ญบุตดี</div>
+                <div className="text-xl">
+                  {`${user?.firstName} ${user?.lastName}`}
+                </div>
               </div>
               <div className="flex">
                 <div className="mr-2 text-xl">
                   {t('personal_information.student_id')} :
                 </div>
-                <div className="text-xl">65160339</div>
+                <div className="text-xl">{user?.code}</div>
               </div>
               <div className="flex">
                 <div className="mr-2 text-xl">
@@ -49,19 +53,19 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({ role }) => {
                 <div className="mr-2 text-xl">
                   {t('personal_information.year')} :
                 </div>
-                <div className="text-xl">2565</div>
+                <div className="text-xl">{user?.year}</div>
               </div>
               <div className="flex">
                 <div className="mr-2 text-xl">
                   {t('personal_information.email')} :
                 </div>
-                <div className="text-xl">65160222@g.go.buu.ac.th</div>
+                <div className="text-xl">{user?.email}</div>
               </div>
               <div className="flex">
                 <div className="mr-2 text-xl">
                   {t('personal_information.degree')} :
                 </div>
-                <div className="text-xl">ปรัชญาดุษฎีบัณฑิต</div>
+                <div className="text-xl">{user?.degree}</div>
               </div>
             </div>
           </div>
