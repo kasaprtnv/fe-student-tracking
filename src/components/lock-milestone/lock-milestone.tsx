@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { Milestone } from '@/types/milestone';
 
 interface UnlockCondition {
@@ -17,6 +17,7 @@ interface UnlockConditionModalProps {
     milestoneId?: string;
   } | null;
   milestones: Milestone[];
+  initialSelected?: UnlockCondition[];
   onSave: (conditions: UnlockCondition[]) => void;
 }
 
@@ -25,13 +26,16 @@ export default function UnlockConditionModal({
   onClose,
   target,
   milestones,
+  initialSelected,
   onSave,
 }: UnlockConditionModalProps) {
-  const [selected, setSelected] = useState<UnlockCondition[]>(() => []);
+  const [selected, setSelected] = useState<UnlockCondition[]>(
+    initialSelected ?? [],
+  );
 
   if (!open || !target) return null;
 
-  const toggle = (type: 'milestone' | 'step', id: string) => {
+  const toggle = (type: UnlockCondition['type'], id: string) => {
     setSelected((prev) =>
       prev.some((x) => x.id === id)
         ? prev.filter((x) => x.id !== id)
@@ -41,25 +45,39 @@ export default function UnlockConditionModal({
 
   const isSelected = (id: string) => selected.some((s) => s.id === id);
 
+  /** -------------------------
+   *  FILTER LOGIC
+   *  -------------------------
+   */
+
+  // ซ่อน milestone เฉพาะเมื่อ:
+  // 1) target = milestone → ซ่อน milestone ตัวเอง
+  // 2) target = step → ซ่อน milestone เจ้าของ step
+  const hiddenMilestoneId =
+    target.type === 'milestone'
+      ? target.id
+      : target.type === 'step'
+        ? target.milestoneId
+        : null;
+
+  // ซ่อน step เฉพาะเมื่อ:
+  // 1) target = milestone → ซ่อนทุก step ของ milestone นั้น
+  // 2) target = step → ซ่อน step ตัวเอง
+  const hiddenStepId = target.type === 'step' ? target.id : null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="max-h-[85vh] w-[500px] overflow-auto rounded-xl bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-xl font-semibold">ตั้งค่าเงื่อนไข Unlock</h2>
-        {/* Milestones */}
+
+        {/* -------------------- */}
+        {/* MILESTONES LIST */}
+        {/* -------------------- */}
         <h3 className="mb-2 text-sm font-medium">Milestone ทั้งหมด</h3>
+
         <div className="mb-6 space-y-2">
           {milestones
-            .filter((ms) => {
-              if (target.type === 'milestone') {
-                return ms.id !== target.id;
-              }
-
-              if (target.type === 'step') {
-                return ms.id !== target.milestoneId;
-              }
-
-              return true;
-            })
+            .filter((ms) => ms.id !== hiddenMilestoneId)
             .map((ms) => (
               <div
                 key={ms.id}
@@ -77,37 +95,38 @@ export default function UnlockConditionModal({
               </div>
             ))}
         </div>
+
+        {/* -------------------- */}
+        {/* STEP LIST */}
+        {/* -------------------- */}
         <h3 className="mb-2 text-sm font-medium">Step เฉพาะ</h3>
+
         <div className="space-y-2">
-          {milestones.map((ms) =>
-            ms.steps
-              .filter((step) => {
-                if (target.type === 'milestone') {
-                  return ms.id !== target.id;
-                }
-
-                if (target.type === 'step') {
-                  return step.id !== target.id;
-                }
-
-                return true;
-              })
-              .map((step) => (
-                <div
-                  key={step.id}
-                  className={`cursor-pointer rounded-lg border p-3 ${
-                    isSelected(step.id)
-                      ? 'border-purple-500 bg-purple-50'
-                      : 'border-gray-200'
-                  }`}
-                  onClick={() => toggle('step', step.id)}
-                >
-                  <p className="font-medium">{step.name}</p>
-                  <p className="text-xs text-gray-500">จาก: {ms.name}</p>
-                </div>
-              )),
-          )}
+          {milestones
+            .filter((ms) => ms.id !== hiddenMilestoneId)
+            .flatMap((ms) =>
+              ms.steps
+                .filter((step) => step.id !== hiddenStepId)
+                .map((step) => (
+                  <div
+                    key={step.id}
+                    className={`cursor-pointer rounded-lg border p-3 ${
+                      isSelected(step.id)
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200'
+                    }`}
+                    onClick={() => toggle('step', step.id)}
+                  >
+                    <p className="font-medium">{step.name}</p>
+                    <p className="text-xs text-gray-500">จาก: {ms.name}</p>
+                  </div>
+                )),
+            )}
         </div>
+
+        {/* -------------------- */}
+        {/* ACTION BUTTONS */}
+        {/* -------------------- */}
         <div className="mt-6 flex justify-end gap-3">
           <button className="rounded-lg border px-4 py-2" onClick={onClose}>
             ยกเลิก

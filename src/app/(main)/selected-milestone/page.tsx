@@ -37,20 +37,17 @@ import { useMilestone } from '@/hooks/use-milestone';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { useMilestoneStep } from '@/hooks/use-milestone_step';
 import { IMilestoneStep } from '@/types/milestone-step';
-
 import MilestoneProgress from '@/components/milestone-progress/milestone-progress';
-import type { Milestone, MilestoneStep, IMilestone } from '@/types/milestone';
+import type { Milestone, IMilestone } from '@/types/milestone';
 import UnlockConditionModal from '@/components/lock-milestone/lock-milestone';
 import { Button } from '@/components/ui/button';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { useCourse } from '@/hooks/use-course';
+
+interface UnlockCondition {
+  type: 'milestone' | 'step';
+  id: string;
+}
 
 export default function PageLayout({ courseId }: { courseId?: string }) {
   const { allMilestoneIds, getMilestoneById, fetchAllMilestones } =
@@ -75,6 +72,8 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   // DND sensors
   const sensors = useSensors(useSensor(PointerSensor));
 
+  const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
+
   const handleRemove = (id: string) => {
     // remove จากซ้าย
     setSelectedItems(selectedItems.filter((x) => x !== id));
@@ -85,8 +84,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       delete copy[id];
       return copy;
     });
-
-    // ⭐ ล้าง lock ทั้ง milestone และ step ของ milestone นั้น
+    // ลบ lock ของ milestone และ step ที่เกี่ยวข้อง
     setLockedItems((prev) => {
       const updated = { ...prev };
 
@@ -133,7 +131,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     // โหลด step ของ milestone นี้
     const s = await fetchMilestoneStepsByMilestone(id);
 
-    console.log('📌 FETCHED STEPS FOR:', id, s);
+    console.log('FETCHED STEPS FOR:', id, s);
 
     // เก็บลง map
     setStepsByMilestone((prev) => ({
@@ -141,6 +139,10 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       [id]: s.data,
     }));
   };
+
+  const [prerequisites, setPrerequisites] = useState<
+    Record<string, UnlockCondition[]>
+  >({});
 
   const selectedMilestonesWithSteps: Milestone[] = selectedItems
     .map((id) => {
@@ -194,8 +196,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   }, [fetchAllCourses]);
 
   const course = getCourseById(courseId);
-
-  const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
 
   return (
     <div className="h-full w-full p-6 pb-25">
@@ -305,16 +305,20 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
             onClose={() => setLockModalOpen(false)}
             target={targetLock}
             milestones={selectedMilestonesWithSteps}
+            initialSelected={
+              targetLock ? (prerequisites[targetLock.id] ?? []) : []
+            }
             onSave={(conditions) => {
-              setLockedItems((prev) => {
-                const updated = { ...prev };
-                if (conditions.length === 0) {
-                  delete updated[targetLock!.id];
-                } else {
-                  updated[targetLock!.id] = true;
-                }
-                return updated;
-              });
+              setPrerequisites((prev) => ({
+                ...prev,
+                [targetLock!.id]: conditions,
+              }));
+
+              setLockedItems((prev) => ({
+                ...prev,
+                [targetLock!.id]: conditions.length > 0,
+              }));
+
               setLockModalOpen(false);
             }}
           />
@@ -375,8 +379,6 @@ function SortableItem({
       >
         <GripVertical size={16} />
       </div>
-
-      {/* ⭐ ตรงนี้แหละที่ตัดข้อความแล้วเติม … */}
       <span className="flex-1 truncate overflow-hidden text-ellipsis whitespace-nowrap">
         {label}
       </span>
