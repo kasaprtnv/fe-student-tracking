@@ -9,8 +9,7 @@ import { useUser } from '@/hooks/use-user';
 export default function StudentPage() {
   const {
     // Data
-    userMap,
-    filteredUserIds,
+    studentUsers,
 
     // Actions
     fetchStudents,
@@ -25,7 +24,7 @@ export default function StudentPage() {
     clearErr,
   } = useUser();
 
-  // SWR for data fetching
+  // SWR for data fetching - ดึง users ที่มี role เป็น student
   useSWR(
     'USERS_STUDENTS',
     async () => {
@@ -38,19 +37,28 @@ export default function StudentPage() {
     },
   );
 
-  // Filter students from filteredUserIds
+  // Filter students by search query
   const filteredStudents = React.useMemo(() => {
-    return filteredUserIds
-      .map((id) => userMap[id])
-      .filter((user) => user?.role === 'student');
-  }, [filteredUserIds, userMap]);
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return studentUsers;
+
+    return studentUsers.filter((student) => {
+      return (
+        student.firstName?.toLowerCase().includes(query) ||
+        student.lastName?.toLowerCase().includes(query) ||
+        student.code?.toLowerCase().includes(query) ||
+        student.email?.toLowerCase().includes(query) ||
+        student.phone?.toLowerCase().includes(query)
+      );
+    });
+  }, [studentUsers, searchQuery]);
 
   if (loader) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
           <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin" />
-          <p>กำลังโหลดข้อมูลนิสิต...</p>
+          <p>กำลังโหลดข้อมูลบัณฑิต...</p>
         </div>
       </div>
     );
@@ -76,10 +84,8 @@ export default function StudentPage() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold">รายชื่อนิสิต</h1>
-        <p className="text-muted-foreground">
-          แสดงข้อมูล User ที่มี Role เป็น Student
-        </p>
+        <h1 className="mb-2 text-3xl font-bold">รายชื่อบัณฑิต</h1>
+        <p className="text-muted-foreground">แสดงข้อมูลบัณฑิตทั้งหมดในระบบ</p>
       </div>
 
       <DataTable

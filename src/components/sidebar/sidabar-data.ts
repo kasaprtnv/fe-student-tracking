@@ -35,7 +35,7 @@ export const sidebarItems = [
     route: '/milestone',
   },
   {
-    title: 'homepage.studentManagement',
+    title: 'homepage.userManagement',
     icon: UserCog,
     route: '/users',
   },
