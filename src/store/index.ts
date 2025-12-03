@@ -3,6 +3,7 @@ import courseReducer from './course/course.slice';
 import milestoneReducer from './milestone/milestone.slice';
 import milestoneStepReducer from './milestone-step/milestone-step.slice';
 import courseStaffReducer from './course-staff/course-staff.slice';
+import MilestonePrerequisiteReducer from './milestone-prerequisite/milestone-prerequisite.slice';
 import userReducer from './user/user.slice';
 import authReducer from './auth/auth.slice';
 
@@ -12,6 +13,7 @@ export const store = configureStore({
     milestones: milestoneReducer,
     milestoneSteps: milestoneStepReducer,
     courseStaffs: courseStaffReducer,
+    milestonePrerequisites: MilestonePrerequisiteReducer,
     users: userReducer,
     auth: authReducer,
   },

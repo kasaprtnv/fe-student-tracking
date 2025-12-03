@@ -1,6 +1,6 @@
 'use client';
 
-import PageLayout from '../page'; // ใช้หน้าเดิม
+import PageLayout from '../page';
 import { useParams } from 'next/navigation';
 
 export default function SelectedMilestoneByIdPage() {
