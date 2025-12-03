@@ -3,9 +3,8 @@ import React from 'react';
 import ReduxProvider from '@/providers/ReduxProvider';
 import SWRProvider from '@/providers/SwrProvider';
 import { Toaster } from '@/components/ui/sonner';
+import MainLayout from '@/components/layout/main-layout';
 import './globals.css';
-import Sidebar from '@/components/sidebar/sidebar';
-import AuthProvider from '@/providers/AuthProvider';
 
 type Props = {
   children: React.ReactNode;
@@ -17,18 +16,10 @@ export default async function RootLayout({ children }: Props) {
       <body>
         <ReduxProvider>
           <SWRProvider>
-            <AuthProvider>
-              <NextIntlClientProvider>
-                <div className="flex h-screen">
-                  <Sidebar />
-                  <main className="flex-1 overflow-auto p-6">
-                    {children}
-                    <Toaster />
-                  </main>
-                </div>
-                <Toaster />
-              </NextIntlClientProvider>
-            </AuthProvider>
+            <NextIntlClientProvider>
+              <MainLayout>{children}</MainLayout>
+              <Toaster />
+            </NextIntlClientProvider>
           </SWRProvider>
         </ReduxProvider>
       </body>

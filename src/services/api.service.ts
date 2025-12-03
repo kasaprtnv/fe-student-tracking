@@ -1,5 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
+// Temporary token for development
+
 export abstract class APIService {
   protected baseURL: string;
   private axiosInstance: AxiosInstance;

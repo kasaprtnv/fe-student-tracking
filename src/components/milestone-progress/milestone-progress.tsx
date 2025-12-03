@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -34,6 +34,7 @@ import { Spinner } from '../ui/spinner';
 interface MilestoneProgressProps {
   milestones: IMilestone[];
   mode?: ViewMode;
+  enrollDate?: string;
   onFileUpload?: (stepId: string, file: File) => void;
   onToggleLock?: (id: string, type: 'milestone' | 'step') => void;
   uploadedFiles?: Record<string, string>;
@@ -47,13 +48,6 @@ const isStepPending = (status: string) => status === 'pending';
 const isAvailable = (status: string) => status === 'available';
 const isLocked = (status: string) => status === 'locked';
 
-// Utility: สร้าง deadlineDate จาก created_at + dayPeriod
-const getStepDeadline = (dayPeriod: number) => {
-  const date = new Date();
-  date.setDate(date.getDate() + dayPeriod);
-  return date;
-};
-
 export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   milestones,
   mode = 'readonly',
@@ -61,6 +55,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   onToggleLock,
   uploadedFiles,
   lockedItems = {},
+  enrollDate,
 }) => {
   const t = useTranslations('milestone-progress');
   const language = useLocale();
@@ -68,6 +63,21 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     () => Object.fromEntries(milestones.map((m) => [m.id, true])),
   );
   const allowedFileTypes = '.pdf,.docx';
+  const stepDeadlineMap = useMemo(() => {
+    if (!enrollDate) return {};
+    const map: Record<string, Date> = {};
+    let lastDeadline = new Date(enrollDate);
+
+    milestones.forEach((milestone) => {
+      milestone.steps?.forEach((step) => {
+        const deadlineDate = new Date(lastDeadline);
+        deadlineDate.setDate(deadlineDate.getDate() + step.dayPeriod);
+        map[step.id] = deadlineDate;
+        lastDeadline = deadlineDate;
+      });
+    });
+    return map;
+  }, [milestones, enrollDate]);
 
   // Calculate overall progress
   const totalSteps = milestones.reduce(
@@ -226,6 +236,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                   <CollapsibleContent className="mt-6">
                     <CardContent className="space-y-3">
                       {milestone.steps?.map((step) => {
+                        const deadline = stepDeadlineMap[step.id];
                         const stepLocked = lockedItems[step.id];
                         const completed = isStepCompleted(step.status);
                         const declined = isStepDeclined(step.status);
@@ -233,7 +244,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                         const available = isAvailable(step.status);
                         const locked = isLocked(step.status);
                         const isActive = step.isActive;
-                        const deadlineDate = getStepDeadline(step.dayPeriod);
 
                         return (
                           <Card
@@ -308,7 +318,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                   <div className="text-muted-foreground flex items-center gap-4 text-xs">
                                     <div className="flex items-center gap-1">
                                       <Calendar className="h-3 w-3" />
-                                      <span>{formatDate(deadlineDate)}</span>
+                                      <span>{formatDate(deadline)}</span>
                                     </div>
                                     {completed && (
                                       <Badge
@@ -386,9 +396,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           </p>
                                         )}
                                         <div className="mt-2 flex justify-end">
-                                          <Button className="bg-green-600 text-white hover:bg-green-700">
-                                            ยืนยันการส่ง
-                                          </Button>
+                                          <Button>ยืนยันการส่ง</Button>
                                         </div>
                                       </div>
                                     )}

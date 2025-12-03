@@ -1,14 +1,33 @@
+import { StoreAction } from '@/types/index';
+
 export type UserRole = 'admin' | 'teacher' | 'student';
+
 export interface User {
   id: string;
-  email: string;
+  supabaseId?: string;
+  code: string;
   firstName: string;
   lastName: string;
+  email?: string;
   role: UserRole;
-  phone: string;
-  degree: string;
-  code: string;
-  year: string;
-  courseId: string;
-  enrollDate: Date;
+  phone?: string;
+  degree?: string;
+  year?: string;
+  courseId?: string;
+  courseName?: string;
+  enrollDate?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UserState {
+  // Data
+  userMap: Record<string, User>;
+
+  // UI States
+  searchQuery: string;
+  storeAction: StoreAction;
+  loader: boolean;
+  error: string | null;
 }
