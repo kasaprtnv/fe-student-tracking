@@ -29,7 +29,6 @@ const MilestonePage = () => {
     setSearch: setSearchQuery,
     removeMilestone,
     removeMultipleMilestones,
-    updateExistingMilestone,
   } = useMilestone();
 
   const milestoneColumns = createMilestoneColumns().map((column) => {
