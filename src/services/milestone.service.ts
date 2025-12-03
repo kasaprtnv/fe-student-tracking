@@ -64,6 +64,16 @@ class MilestoneService extends APIService {
       });
   }
 
+  async reorderMilestones(
+    payload: { id: string; position: number; courseId: string }[],
+  ): Promise<{ success: boolean }> {
+    return this.patch('/milestones/reorder', payload)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async deleteMilestone(id: string): Promise<IApiDeleteResponse> {
     return this.delete(`/milestones/${id}`)
       .then((response) => response?.data)

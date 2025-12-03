@@ -86,6 +86,24 @@ export const updateMilestone = createAsyncThunk(
   },
 );
 
+export const reorderMilestones = createAsyncThunk(
+  'milestones/reorder',
+  async (
+    payload: { id: string; position: number; courseId: string }[],
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await milestoneService.reorderMilestones(payload);
+      return { payload, res }; // ส่งทั้ง position ใหม่ + res
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to reorder milestones');
+    }
+  },
+);
+
 export const deleteMilestone = createAsyncThunk(
   'milestones/delete',
   async (id: string, { rejectWithValue }) => {

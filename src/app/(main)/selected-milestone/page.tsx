@@ -65,8 +65,12 @@ interface UnlockCondition {
 export default function PageLayout({ courseId }: { courseId?: string }) {
   const tSelectedMilestone = useTranslations('selected-milestone');
 
-  const { allMilestoneIds, getMilestoneById, fetchAllMilestones } =
-    useMilestone();
+  const {
+    allMilestoneIds,
+    getMilestoneById,
+    fetchAllMilestones,
+    reorderPositions,
+  } = useMilestone();
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [pendingMilestone, setPendingMilestone] = useState<string | null>(null);
@@ -200,6 +204,13 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
 
   const handleConfirmSave = async () => {
     try {
+      const positionPayload = selectedItems.map((milestoneId, index) => ({
+        id: milestoneId,
+        position: index + 1,
+        courseId: courseId || '',
+      }));
+
+      await reorderPositions(positionPayload);
       const dto = buildPrerequisiteDTO();
       console.log('DTO TO SEND:', dto);
 
@@ -211,7 +222,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       console.error('Error saving prerequisites', err);
     }
   };
-
   interface PrerequisiteDTO {
     targetMilestoneId?: string;
     targetStepId?: string;

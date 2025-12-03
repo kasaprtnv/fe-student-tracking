@@ -54,7 +54,7 @@ export interface IMilestoneCreateDTO {
 export interface MilestoneState {
   // Data
   milestoneMap: Record<string, IMilestone>;
-
+  allMilestoneIds: string[];
   // UI States
   searchQuery: string;
   storeAction: StoreAction;
