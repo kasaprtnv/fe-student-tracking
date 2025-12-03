@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { Milestone } from '@/types/milestone';
+import type { IMilestone } from '@/types/milestone';
 import { useTranslations } from 'next-intl';
 
 interface UnlockCondition {
@@ -54,7 +54,7 @@ export default function UnlockConditionModal({
   }).length;
 
   const stepCount = milestones.flatMap((ms) =>
-    ms.steps.filter((step) => {
+    (ms.steps ?? []).filter((step) => {
       if (target.type === 'milestone') return ms.id !== target.id;
       if (target.type === 'step') return step.id !== target.id;
       return true;
@@ -118,7 +118,7 @@ export default function UnlockConditionModal({
 
             <div className="space-y-2">
               {milestones.map((ms) =>
-                ms.steps
+                (ms.steps ?? [])
                   .filter((step) => {
                     if (target.type === 'milestone') return ms.id !== target.id;
                     if (target.type === 'step') return step.id !== target.id;
