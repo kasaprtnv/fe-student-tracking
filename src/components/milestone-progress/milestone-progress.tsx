@@ -243,6 +243,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                         const pending = isStepPending(step.status);
                         const available = isAvailable(step.status);
                         const locked = isLocked(step.status);
+                        const isUsed = step.isUsed;
 
                         return (
                           <Card

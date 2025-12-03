@@ -8,10 +8,12 @@ import {
   deleteMilestone,
   deleteMilestones,
   fetchMilestonesWithStatusByCourseId,
+  reorderMilestones,
 } from './milestone.thunks';
 
 const initialState: MilestoneState = {
   milestoneMap: {},
+  allMilestoneIds: [],
   searchQuery: '',
   storeAction: 'none',
   loader: false,
@@ -45,6 +47,7 @@ const milestoneSlice = createSlice({
         sortedMilestones.forEach((milestone) => {
           state.milestoneMap[milestone.id] = milestone;
         });
+        state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
       })
       .addCase(fetchMilestones.rejected, (state, action) => {
         state.loader = false;
@@ -82,6 +85,7 @@ const milestoneSlice = createSlice({
           sortedMilestones.forEach((milestone) => {
             state.milestoneMap[milestone.id] = milestone;
           });
+          state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
         },
       )
       .addCase(
@@ -128,6 +132,34 @@ const milestoneSlice = createSlice({
       .addCase(updateMilestone.rejected, (state, action) => {
         state.storeAction = 'none';
         state.error = action.error.message || 'Failed to update milestone';
+      });
+
+    builder
+      .addCase(reorderMilestones.pending, (state) => {
+        state.loader = true;
+        state.storeAction = 'reorder';
+      })
+      .addCase(reorderMilestones.fulfilled, (state, action) => {
+        state.loader = false;
+        state.storeAction = null;
+
+        // Update local state ordering
+        const updates = action.payload.payload;
+        updates.forEach(({ id, position }) => {
+          if (state.milestoneMap[id]) {
+            state.milestoneMap[id].position = position;
+          }
+        });
+
+        state.allMilestoneIds = Object.keys(state.milestoneMap).sort((a, b) => {
+          const posA = state.milestoneMap[a].position ?? 999999;
+          const posB = state.milestoneMap[b].position ?? 999999;
+          return posA - posB;
+        });
+      })
+      .addCase(reorderMilestones.rejected, (state, action) => {
+        state.loader = false;
+        state.error = action.payload as string;
       });
 
     // Delete milestone

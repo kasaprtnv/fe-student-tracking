@@ -37,9 +37,11 @@ export const selectFilteredMilestoneIds = createSelector(
 export const selectAllMilestoneIds = createSelector(
   [selectMilestoneMap],
   (milestoneMap) => {
-    const sortedMilestones = Object.values(milestoneMap).sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
+    const sortedMilestones = Object.values(milestoneMap).sort((a, b) => {
+      const posA = a.position ?? 999999;
+      const posB = b.position ?? 999999;
+      return posA - posB;
+    });
     return sortedMilestones.map((milestone) => milestone.id);
   },
 );
