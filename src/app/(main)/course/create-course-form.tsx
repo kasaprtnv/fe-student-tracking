@@ -29,7 +29,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
-import { MultiSelect } from '@/components/ui/combobox-multi';
 import { SelectOption } from '@/types';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 
