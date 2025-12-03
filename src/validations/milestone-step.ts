@@ -4,7 +4,6 @@ export const createMilestoneStepSchema = (t: (key: string) => string) =>
   z.object({
     name: z.string().nonempty(t('errors.name-required')),
     description: z.string().optional(),
-    // position: z.number().int().min(1, t('errors.position-min')),
     requiresAttachment: z.boolean(),
     dayPeriod: z.number().int().optional(),
     notifyBeforeDays: z.number().int().optional(),

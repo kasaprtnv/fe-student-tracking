@@ -52,8 +52,8 @@ const CreateMilestoneStepForm = ({
       name: '',
       description: '',
       requiresAttachment: false,
-      dayPeriod: undefined,
-      notifyBeforeDays: undefined,
+      dayPeriod: 0,
+      notifyBeforeDays: 0,
     },
   });
 
