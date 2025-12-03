@@ -95,8 +95,6 @@ const CoursePage = () => {
     })
     .filter((option) => option !== undefined);
 
-  console.log('Teacher Options:', teacherOptions);
-
   const onDeleteCourse = (id: string) => {
     setIsDelete({ isDeleting: true, courseId: [id] });
   };
