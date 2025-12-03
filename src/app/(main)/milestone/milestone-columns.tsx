@@ -9,6 +9,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface ColumnActions {
   onEdit?: (data: IMilestone) => void;
@@ -29,12 +31,35 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
       header: 'description',
     },
     {
-      accessorKey: 'courseId',
-      header: 'courseId',
+      accessorKey: 'dayPeriod',
+      header: 'day-period',
     },
     {
-      accessorKey: 'position',
-      header: 'position',
+      accessorKey: 'notifyReceiverEmail',
+      header: 'notify-receiver-email',
+    },
+    {
+      accessorKey: 'isUsed',
+      header: 'is_used',
+      size: 110,
+      cell: ({ row }) => {
+        const record = row.original;
+
+        return (
+          <div className="flex w-[110px] items-center justify-center">
+            <Badge
+              className={cn(
+                'px-2 py-0.5 text-xs',
+                record.isUsed
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800',
+              )}
+            >
+              {record.isUsed ? 'Yes' : 'No'}
+            </Badge>
+          </div>
+        );
+      },
     },
   ];
 

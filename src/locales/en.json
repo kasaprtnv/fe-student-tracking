@@ -43,6 +43,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "staff": "Staff",
+    "day-period": "Day Period",
+    "notify-receiver-email": "Notify Receiver Email",
     "to-milestone-step": "To Milestone Steps",
     "select-milestone": "Select Milestone",
     "created_at": "Created At",

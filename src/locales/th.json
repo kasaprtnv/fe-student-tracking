@@ -43,6 +43,8 @@
     "edit": "แก้ไข",
     "delete": "ลบ",
     "staff": "ผู้รับผิดชอบหลักสูตร",
+    "day-period": "ช่วงเวลา (วัน)",
+    "notify-receiver-email": "อีเมลแจ้งเตือน",
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
     "select-milestone": "ไปยังขั้นตอนการศึกษา",
     "created_at": "สร้างเมื่อ",
@@ -175,7 +177,8 @@
         "deadlineDate": "วันที่กำหนดส่ง",
         "notifyReceiverEmail": "อีเมลแจ้งเตือน",
         "position": "ลำดับ",
-        "notifyBeforeDays": "แจ้งเตือนก่อน (วัน)"
+        "notifyBeforeDays": "แจ้งเตือนก่อน (วัน)",
+        "dayPeriod": "ช่วงเวลา (วัน)"
       },
       "placeholder": {
         "name": "กรอกชื่อขั้นตอนการศึกษา",

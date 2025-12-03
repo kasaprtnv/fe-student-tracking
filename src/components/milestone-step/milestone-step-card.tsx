@@ -3,7 +3,7 @@ import React from 'react';
 import { IMilestoneStep } from '@/types/milestone-step';
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 
-import { GripVertical, MoreVertical } from 'lucide-react';
+import { GripVertical, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -103,12 +103,14 @@ const MilestoneStepCard = ({
 
         <DropdownMenuContent align="end" className="w-36">
           <DropdownMenuItem onClick={() => onEdit(step)}>
+            <Pencil size={14} />
             {tCommon('edit')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-red-600 focus:text-red-600"
             onClick={() => onDelete(step)}
           >
+            <Trash2 size={14} color="#e7000b" />
             {tCommon('delete')}
           </DropdownMenuItem>
         </DropdownMenuContent>

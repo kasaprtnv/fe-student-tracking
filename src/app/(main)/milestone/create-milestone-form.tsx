@@ -215,11 +215,7 @@ export function CreateMilestoneFormSheet({
                   </Button>
                 </DialogClose>
 
-                <Button
-                  disabled={storeAction === 'creating'}
-                  type="submit"
-                  className="bg-blue-600 text-white hover:bg-blue-700"
-                >
+                <Button disabled={storeAction === 'creating'} type="submit">
                   {storeAction === 'creating' && (
                     <Loader className="mr-2 size-4 animate-spin" />
                   )}
