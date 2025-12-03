@@ -26,12 +26,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -52,7 +47,6 @@ export function UpdateMilestoneFormSheet({
 }: UpdateMilestoneFormSheetProps) {
   const t = useTranslations('milestone.milestone-form');
   const tCommon = useTranslations('common');
-  const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   const {
     updateExistingMilestone,
     storeAction,
@@ -64,11 +58,9 @@ export function UpdateMilestoneFormSheet({
     resolver: zodResolver(updateMilestoneSchema(t)),
     defaultValues: {
       name: milestone?.name || '',
-      courseId: milestone?.courseId || '',
       description: milestone?.description || '',
-      position: milestone?.position || 1,
+      dayPeriod: milestone?.dayPeriod || 0,
       notifyReceiverEmail: milestone?.notifyReceiverEmail || '',
-      deadlineDate: milestone?.deadlineDate || undefined,
       notifyBeforeDays: milestone?.notifyBeforeDays || 0,
     },
   });
@@ -78,14 +70,10 @@ export function UpdateMilestoneFormSheet({
 
     form.reset({
       name: milestone.name ?? '',
-      courseId: milestone.courseId ?? '',
       description: milestone.description ?? '',
-      position: milestone.position ?? 1,
+      dayPeriod: milestone.dayPeriod ?? 0,
       notifyReceiverEmail: milestone.notifyReceiverEmail ?? '',
       notifyBeforeDays: milestone.notifyBeforeDays ?? 0,
-      deadlineDate: milestone.deadlineDate
-        ? new Date(milestone.deadlineDate)
-        : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [milestone]);
@@ -109,7 +97,6 @@ export function UpdateMilestoneFormSheet({
         return;
       } else {
         await updateExistingMilestone(milestone.id, {
-          position: Number(data.position),
           notifyBeforeDays: Number(data.notifyBeforeDays),
         });
       }
@@ -154,21 +141,6 @@ export function UpdateMilestoneFormSheet({
               )}
             />
 
-            {/* courseId */}
-            <FormField
-              control={form.control}
-              name="courseId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('label.courseId')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('placeholder.courseId')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* description */}
             <FormField
               control={form.control}
@@ -187,64 +159,6 @@ export function UpdateMilestoneFormSheet({
               )}
             />
 
-            {/* deadline */}
-            <FormField
-              control={form.control}
-              name="deadlineDate"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.deadlineDate')}
-                    </FormLabel>
-                    <FormControl>
-                      <Popover
-                        open={isPopoverOpen}
-                        onOpenChange={setIsPopoverOpen}
-                      >
-                        <PopoverTrigger asChild>
-                          <Input
-                            readOnly
-                            value={
-                              field.value
-                                ? new Date(field.value).toLocaleDateString()
-                                : t('placeholder.deadlineDate')
-                            }
-                            placeholder={t('placeholder.deadlineDate')}
-                            className="cursor-pointer border-gray-300 text-left"
-                          />
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(date) => {
-                              if (date) {
-                                const utcDate = new Date(
-                                  Date.UTC(
-                                    date.getFullYear(),
-                                    date.getMonth(),
-                                    date.getDate(),
-                                  ),
-                                );
-                                field.onChange(utcDate);
-                                form.setValue('deadlineDate', utcDate);
-                              } else {
-                                field.onChange(date);
-                              }
-                              setIsPopoverOpen(false);
-                            }}
-                            captionLayout="dropdown"
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-
             {/* notifyReceiverEmail */}
             <FormField
               control={form.control}
@@ -254,26 +168,6 @@ export function UpdateMilestoneFormSheet({
                   <FormLabel>{t('label.notifyReceiverEmail')}</FormLabel>
                   <FormControl>
                     <Input placeholder="example@mail.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* position */}
-            <FormField
-              control={form.control}
-              name="position"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('label.position')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      min={1}
-                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

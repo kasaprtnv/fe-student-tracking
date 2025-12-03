@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
-import { formatDate } from '@/lib/format-date';
 
 interface ColumnActions {
   onEdit?: (data: IMilestone) => void;
@@ -36,14 +35,6 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
     {
       accessorKey: 'position',
       header: 'position',
-    },
-    {
-      accessorKey: 'deadlineDate',
-      header: 'deadlineDate',
-      cell: ({ row }) => {
-        const deadlineDate = row.original.deadlineDate;
-        return formatDate(deadlineDate);
-      },
     },
   ];
 

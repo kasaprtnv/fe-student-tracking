@@ -45,10 +45,8 @@ export interface MilestoneStep {
 }
 
 export interface IMilestoneCreateDTO {
-  courseId: string;
   name: string;
   description?: string;
-  position: number;
   notifyReceiverEmail: string;
   dayPeriod: number;
   notifyBeforeDays: number;
