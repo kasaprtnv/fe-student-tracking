@@ -14,13 +14,13 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({ user }) => {
       <div className="flex flex-row items-center gap-8">
         {/* Profile Image */}
         <div>
-          <Avatar className="h-60 w-60">
+          <Avatar className="h-60 w-60 bg-white">
             <AvatarImage src="/profile.png" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
         {/* Information */}
-        {role === 'student' && (
+        {role === 'student' ? (
           <div className="flex-1">
             <div className="grid grid-cols-3 gap-x-2 gap-y-4">
               <div className="flex">
@@ -69,7 +69,20 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({ user }) => {
               </div>
             </div>
           </div>
-        )}
+        ) : role === 'teacher' ? (
+          <div className="flex-1">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-4">
+              <div className="flex">
+                <div className="mr-2 text-xl">
+                  {t('personal_information.name')} :
+                </div>
+                <div className="text-xl">
+                  {`${user?.firstName} ${user?.lastName}`}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

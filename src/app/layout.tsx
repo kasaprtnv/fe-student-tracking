@@ -5,6 +5,7 @@ import SWRProvider from '@/providers/SwrProvider';
 import { Toaster } from '@/components/ui/sonner';
 import MainLayout from '@/components/layout/main-layout';
 import './globals.css';
+import AuthProvider from '@/providers/AuthProvider';
 
 type Props = {
   children: React.ReactNode;
@@ -16,10 +17,12 @@ export default async function RootLayout({ children }: Props) {
       <body>
         <ReduxProvider>
           <SWRProvider>
-            <NextIntlClientProvider>
-              <MainLayout>{children}</MainLayout>
-              <Toaster />
-            </NextIntlClientProvider>
+            <AuthProvider>
+              <NextIntlClientProvider>
+                <MainLayout>{children}</MainLayout>
+                <Toaster />
+              </NextIntlClientProvider>
+            </AuthProvider>
           </SWRProvider>
         </ReduxProvider>
       </body>

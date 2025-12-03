@@ -117,7 +117,9 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserById.fulfilled, (state, action) => {
         state.loader = false;
-        state.userMap[action.payload.id] = action.payload;
+        if (action.payload && action.payload.id) {
+          state.userMap[action.payload.id] = action.payload;
+        }
       })
       .addCase(fetchUserById.rejected, (state, action) => {
         state.loader = false;

@@ -22,13 +22,12 @@ export default function AuthProvider({
       validateToken();
       didValidateRef.current = true;
     }
-  });
-
-  useEffect(() => {
-    if (initialized && isAuthenticated && !user) {
+    if (initialized && !user && isAuthenticated) {
       getUserProfile();
     }
-  }, [initialized, isAuthenticated, user, getUserProfile]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialized, isAuthenticated, user]);
 
   useEffect(() => {
     if (initialized && !isAuthenticated) {

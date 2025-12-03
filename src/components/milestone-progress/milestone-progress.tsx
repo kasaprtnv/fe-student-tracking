@@ -116,7 +116,8 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     }
   };
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date?: Date) => {
+    if (!date) return '-';
     const locale = language === 'th' ? 'th-TH' : 'en-US';
     return date.toLocaleDateString(locale, {
       month: 'long',
