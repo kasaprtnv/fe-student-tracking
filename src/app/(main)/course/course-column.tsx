@@ -1,3 +1,5 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarGroup } from '@/components/ui/avatar/avatar-group';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,10 +9,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { getAvatarFallbackName } from '@/lib/avatar-fallback-name';
 // import { Switch } from '@/components/ui/switch';
 import { formatDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import { ICourse } from '@/types/course';
+import { User } from '@/types/user';
 import { ColumnDef } from '@tanstack/react-table';
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 
@@ -31,6 +40,59 @@ export const createCourseColumns = (): ColumnDef<ICourse>[] => {
     {
       accessorKey: 'description',
       header: 'description',
+      cell: (info) => {
+        const description = info.getValue<string>();
+        const isShowTooltip = description && description.length > 100;
+        return (
+          <Tooltip>
+            <TooltipTrigger>
+              <span className="max-w-[200px] truncate">
+                {description || '-'}
+              </span>
+            </TooltipTrigger>
+            {isShowTooltip && (
+              <TooltipContent>
+                <span>{description}</span>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
+    },
+    {
+      accessorKey: 'users',
+      header: 'staff',
+      cell: (info) => {
+        const users = info.getValue<User[] | undefined>();
+        return (
+          <div className="flex items-center gap-2">
+            {users && users.length > 0 ? (
+              <AvatarGroup max={3} className="align-start">
+                {users.map((user) => (
+                  <Avatar
+                    key={user.id}
+                    className="-ml-2 cursor-pointer first:ml-0"
+                    title={`${user.firstName} ${user.lastName || ''}`}
+                  >
+                    <AvatarImage
+                      src={'https://github.com/shadcn.png'}
+                      alt={user.firstName}
+                    />
+                    <AvatarFallback className="bg-indigo-500 text-white">
+                      {getAvatarFallbackName(
+                        user.firstName,
+                        user.lastName || '',
+                      )}
+                    </AvatarFallback>
+                  </Avatar>
+                ))}
+              </AvatarGroup>
+            ) : (
+              <span className="text-left">-</span>
+            )}
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'createdAt',

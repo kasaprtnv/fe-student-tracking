@@ -42,6 +42,7 @@
     "inactive": "Inactive",
     "edit": "Edit",
     "delete": "Delete",
+    "staff": "Staff",
     "to-milestone-step": "To Milestone Steps",
     "select-milestone": "Select Milestone",
     "created_at": "Created At",
@@ -96,13 +97,17 @@
         "code": "Course Code",
         "name": "Course Name",
         "description": "Course Description",
-        "degree": "Degree"
+        "degree": "Degree",
+        "staffIds": "Staff Members"
       },
       "placeholder": {
         "code": "Enter course code",
         "name": "Enter course name",
         "description": "Enter course description",
-        "degree": "Enter degree"
+        "degree": "Enter degree",
+        "staffIds": "Select staff members",
+        "search-staff": "Search staff",
+        "no-staff-found": "No staff found"
       },
       "toast": {
         "created-successfully": "Course created successfully!",

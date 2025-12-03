@@ -1,3 +1,4 @@
+import { User } from './user';
 export interface ICourse {
   id: string;
   code: string;
@@ -9,6 +10,7 @@ export interface ICourse {
   updatedAt: Date;
 
   staffIds?: string[];
+  users?: User[];
 }
 
 export interface ICourseCreateDTO {

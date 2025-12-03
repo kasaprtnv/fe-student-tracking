@@ -19,7 +19,7 @@ export default function MainLayout({ children }: Props) {
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <main className="flex-1 overflow-auto bg-gray-100 p-6">{children}</main>
+      <main className="flex-1 overflow-auto bg-white p-6">{children}</main>
     </div>
   );
 }

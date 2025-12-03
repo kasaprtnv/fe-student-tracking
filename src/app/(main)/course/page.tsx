@@ -15,6 +15,8 @@ import { useCourseStaff } from '@/hooks/use-course_staff';
 // import { DataTableFilterField } from '@/components/data-table/types';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '../../../components/page-header';
+import { useUser } from '@/hooks/use-user';
+import { SelectOption } from '@/types';
 
 const CoursePage = () => {
   const tForm = useTranslations('course.course-form');
@@ -31,6 +33,7 @@ const CoursePage = () => {
     removeMultipleCourses,
   } = useCourse();
   const { fetchAllCourseStaff } = useCourseStaff();
+  const { fetchTeachers, allUserIds, getUserById } = useUser();
 
   const courseColumns = createCourseColumns().map((column) => {
     if (typeof column.header === 'string') {
@@ -61,6 +64,7 @@ const CoursePage = () => {
     async () => {
       await fetchAllCourses();
       await fetchAllCourseStaff();
+      await fetchTeachers();
     },
     {
       revalidateOnFocus: false,
@@ -71,9 +75,27 @@ const CoursePage = () => {
     .map((id) => {
       const course = getCourseById(id);
       if (!course) return;
+
+      if (course.staffIds && course.staffIds.length > 0) {
+        const users = course.staffIds
+          .map((userId) => getUserById(userId))
+          .filter((user) => user !== undefined);
+        return { ...course, users };
+      }
+
       return course;
     })
     .filter((course) => course !== undefined);
+
+  const teacherOptions: SelectOption[] = allUserIds
+    .map((id) => {
+      const user = getUserById(id);
+      if (!user || user.role !== 'teacher') return undefined;
+      return { label: `${user.firstName} ${user.lastName}`, value: user.id };
+    })
+    .filter((option) => option !== undefined);
+
+  console.log('Teacher Options:', teacherOptions);
 
   const onDeleteCourse = (id: string) => {
     setIsDelete({ isDeleting: true, courseId: [id] });
@@ -154,6 +176,7 @@ const CoursePage = () => {
           onOpenChange={() => {
             setIsAdd(false);
           }}
+          teacherOptions={teacherOptions}
         />
         <UpdateCourseFormDialog
           open={isEdit.isEditing && isEdit.course !== undefined}
@@ -161,6 +184,7 @@ const CoursePage = () => {
           onOpenChange={() => {
             setIsEdit({ isEditing: false });
           }}
+          // teacherOptions={teacherOptions}
         />
         <DeleteConfirmationDialog
           open={isDelete.isDeleting}
@@ -172,6 +196,7 @@ const CoursePage = () => {
           title="header"
           description="confirm"
           translationKey="course.delete"
+          count={isDelete.courseId?.length}
         />
       </div>
     </>

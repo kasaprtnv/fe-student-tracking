@@ -30,18 +30,29 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/combobox-multi';
+import { SelectOption } from '@/types';
+import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
+
+interface CreateCourseFormDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  teacherOptions: SelectOption[];
+}
 
 export function CreateCourseFormDialog({
   open,
   onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
+  teacherOptions,
+}: CreateCourseFormDialogProps) {
   const t = useTranslations('course.course-form');
   const tCommon = useTranslations('common');
-  const { createNewCourse, storeAction, allCourseId, getCourseById } =
-    useCourse();
+  const {
+    createNewCourse,
+    storeAction,
+    allCourseId,
+    getCourseById,
+    createNewCourseWithStaff,
+  } = useCourse();
   const form = useForm<CreateCourseFormData>({
     resolver: zodResolver(createCourseSchema(t)),
     defaultValues: {
@@ -74,12 +85,15 @@ export function CreateCourseFormDialog({
           message: t('errors.code-duplicate'),
         });
         return;
-      } else {
-        await createNewCourse(data);
-        form.reset();
-        onOpenChange(false);
-        toast.success(t('toast.created-successfully'));
       }
+      if (data.staffIds?.length === 0) {
+        await createNewCourse(data);
+      } else {
+        await createNewCourseWithStaff(data);
+      }
+      form.reset();
+      onOpenChange(false);
+      toast.success(t('toast.created-successfully'));
     } catch (error) {
       console.error('Error creating course:', error);
       toast.error(t('toast.creation-failed'));
@@ -189,17 +203,17 @@ export function CreateCourseFormDialog({
               control={form.control}
               name="staffIds"
               render={({ field }) => {
-                const value = field.value ?? [];
                 return (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700">
                       {t('label.staffIds')}
                     </FormLabel>
                     <FormControl>
-                      <MultiSelect
-                        options={[]}
-                        value={value}
+                      <MultiCombobox
                         placeholder={t('placeholder.staffIds')}
+                        placeholderSearch={t('placeholder.search-staff')}
+                        placeholderEmpty={t('placeholder.no-staff-found')}
+                        options={teacherOptions}
                         onChange={field.onChange}
                       />
                     </FormControl>
