@@ -39,15 +39,15 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({ user }) => {
               </div>
               <div className="flex">
                 <div className="mr-2 text-xl">
-                  {t('personal_information.department')} :
+                  {t('personal_information.faculty')} :
                 </div>
-                <div className="text-xl">วิชาการบริหารงานยุติธรรมและสังคม</div>
+                <div className="text-xl">รัฐศาสตร์</div>
               </div>
               <div className="flex">
                 <div className="mr-2 text-xl">
-                  {t('personal_information.faculty')} :
+                  {t('personal_information.department')} :
                 </div>
-                <div className="text-xl">วิทยาศาสตร์และเทคโนโลยี</div>
+                <div className="text-xl">วิชาการบริหารงานยุติธรรมและสังคม</div>
               </div>
               <div className="flex">
                 <div className="mr-2 text-xl">
