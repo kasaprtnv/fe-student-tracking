@@ -9,6 +9,7 @@ import {
   updateMilestone,
   deleteMilestone,
   deleteMilestones,
+  fetchMilestonesWithStatusByCourseId,
 } from '@/store/milestone/milestone.thunks';
 
 import {
@@ -48,6 +49,15 @@ export const useMilestone = () => {
   const fetchMilestoneDetails = useCallback(
     (milestoneId: string) => {
       return dispatch(fetchMilestoneById(milestoneId)).unwrap();
+    },
+    [dispatch],
+  );
+
+  const fetchMilestonesWithStatus = useCallback(
+    (courseId: string, userId: string) => {
+      return dispatch(
+        fetchMilestonesWithStatusByCourseId({ courseId, userId }),
+      ).unwrap();
     },
     [dispatch],
   );
@@ -108,6 +118,7 @@ export const useMilestone = () => {
     // CRUD Operations
     fetchAllMilestones,
     fetchMilestoneDetails,
+    fetchMilestonesWithStatus,
     createNewMilestone,
     updateExistingMilestone,
     removeMilestone,
