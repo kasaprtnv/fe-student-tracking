@@ -1,14 +1,30 @@
+import { User, UserRole } from '@/types/user';
+import { APIService } from '@/services/api.service';
 import {
   IApiGetResponse,
-  IApiPostResponse,
-  IApiPatchResponse,
   IApiDeleteResponse,
+  IApiDeleteManyResponse,
+  IApiPatchResponse,
+  IApiPostResponse,
   IApiGetByIdResponse,
 } from '@/types/index';
-import { APIService } from '@/services/api.service';
-import { User } from '@/types/user.dใts';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+// Helper function to convert camelCase to snake_case
+function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const snakeKey = key.replace(
+        /[A-Z]/g,
+        (letter) => `_${letter.toLowerCase()}`,
+      );
+      result[snakeKey] = obj[key];
+    }
+  }
+  return result;
+}
 
 class UserService extends APIService {
   constructor(baseURL?: string) {
@@ -23,7 +39,23 @@ class UserService extends APIService {
       });
   }
 
-  async getById(id: string): Promise<User> {
+  async getByRole(role: UserRole): Promise<IApiGetResponse<User>> {
+    return this.get(`/users?role=${role}`)
+      .then((response) => response?.data || [])
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async getStudents(): Promise<IApiGetResponse<User>> {
+    return this.getByRole('student');
+  }
+
+  async getTeachers(): Promise<IApiGetResponse<User>> {
+    return this.getByRole('teacher');
+  }
+
+  async getById(id: string): Promise<IApiGetByIdResponse<User>> {
     return this.get(`/users/${id}`)
       .then((response) => response?.data)
       .catch((error) => {
@@ -31,7 +63,7 @@ class UserService extends APIService {
       });
   }
 
-  async getProfile(): Promise<User> {
+  async getProfile(): Promise<IApiGetByIdResponse<User>> {
     return this.get('/users/profile')
       .then((response) => response?.data)
       .catch((error) => {
@@ -39,7 +71,7 @@ class UserService extends APIService {
       });
   }
 
-  async getProfileByToken(): Promise<IApiGetByIdResponse<User>> {
+  async getProfileWithToken(): Promise<IApiGetByIdResponse<User | null>> {
     return this.get('/users/profile/with-token')
       .then((response) => response?.data)
       .catch((error) => {
@@ -47,26 +79,56 @@ class UserService extends APIService {
       });
   }
 
-  async create(data: Omit<User, 'id'>): Promise<IApiPostResponse<User>> {
-    return this.post('/users', data)
+  async createUser(data: Partial<User>): Promise<IApiPostResponse<User>> {
+    return this.post('/users/create', data)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async update(
+  async updateUser(
     id: string,
     data: Partial<User>,
   ): Promise<IApiPatchResponse<User>> {
-    return this.patch(`/users/${id}`, data)
+    // Determine allowed fields based on role
+    const isTeacher = data.role === 'teacher';
+
+    // Teachers don't have courseId, students do
+    const allowedFields = isTeacher
+      ? ['firstName', 'lastName', 'email', 'phone', 'role']
+      : [
+          'code',
+          'firstName',
+          'lastName',
+          'email',
+          'phone',
+          'degree',
+          'year',
+          'role',
+          'courseId',
+        ];
+
+    const filteredData: Record<string, unknown> = {};
+    for (const key of allowedFields) {
+      const value = data[key as keyof User];
+      // Only include fields that have actual values (not undefined, not null, not empty string)
+      if (value !== undefined && value !== null && value !== '') {
+        filteredData[key] = value;
+      }
+    }
+
+    // Convert to snake_case for API
+    const snakeCaseData = toSnakeCase(filteredData);
+
+    return this.patch(`/users/${id}`, snakeCaseData)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  async deleteById(id: string): Promise<IApiDeleteResponse> {
+  async deleteUser(id: string): Promise<IApiDeleteResponse> {
     return this.delete(`/users/${id}`)
       .then((response) => response?.data)
       .catch((error) => {
@@ -74,8 +136,20 @@ class UserService extends APIService {
       });
   }
 
-  async deleteMultiple(ids: string[]): Promise<IApiDeleteResponse> {
-    return this.delete('/students/bulk-delete', ids)
+  async deleteMultipleUsers(
+    userIds: string[],
+  ): Promise<IApiDeleteManyResponse> {
+    return this.delete('/users/bulk-delete', { ids: userIds })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async importUsers(file: File): Promise<IApiPostResponse<User[]>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.post('/users/import', formData)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

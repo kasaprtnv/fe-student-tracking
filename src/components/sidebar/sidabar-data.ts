@@ -5,13 +5,19 @@ import {
   BookOpen,
   ListOrdered,
   ClipboardCheck,
+  User,
 } from 'lucide-react';
 
 export const sidebarItems = [
   {
     title: 'homepage.dashboard',
     icon: LayoutDashboard,
-    route: '/',
+    route: '/dashboard',
+  },
+  {
+    title: 'homepage.graduateList',
+    icon: User,
+    route: '/students',
   },
   {
     title: 'homepage.studentReport',
@@ -29,9 +35,9 @@ export const sidebarItems = [
     route: '/milestone',
   },
   {
-    title: 'homepage.studentManagement',
+    title: 'homepage.userManagement',
     icon: UserCog,
-    route: '/student',
+    route: '/users',
   },
   {
     title: 'homepage.progressVerify',

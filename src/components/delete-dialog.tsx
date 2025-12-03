@@ -22,6 +22,7 @@ interface DeleteConfirmationDialogProps {
   title: string;
   description: string;
   translationKey: string;
+  count?: number;
 }
 
 const DeleteConfirmationDialog = ({
@@ -32,6 +33,7 @@ const DeleteConfirmationDialog = ({
   title,
   description,
   translationKey,
+  count,
 }: DeleteConfirmationDialogProps) => {
   const t = useTranslations(translationKey);
   const tCommon = useTranslations('common');
@@ -40,7 +42,9 @@ const DeleteConfirmationDialog = ({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t(title)}</AlertDialogTitle>
-          <AlertDialogDescription>{t(description)}</AlertDialogDescription>
+          <AlertDialogDescription>
+            {count ? t(description, { count }) : t(description)}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>
