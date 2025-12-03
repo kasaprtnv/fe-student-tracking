@@ -255,7 +255,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                               pending && 'border-yellow-200 bg-yellow-50',
                               locked &&
                                 'border-muted bg-muted text-muted-foreground opacity-70',
-                              !isActive && 'opacity-50',
                             )}
                           >
                             <CardContent>
@@ -358,8 +357,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                   {/* Upload Button */}
                                   {mode === 'upload' &&
                                     step.requiresAttachment &&
-                                    (available || declined) &&
-                                    isActive && (
+                                    (available || declined) && (
                                       <div className="mt-3">
                                         <Button
                                           variant="outline"

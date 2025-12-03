@@ -21,7 +21,7 @@ export interface IMilestone {
   notifyReceiverEmail: string;
   dayPeriod: number;
   notifyBeforeDays: number;
-  isActive: boolean;
+  isUsed: boolean;
   updatedAt: Date;
   createdAt: Date;
   steps?: MilestoneStep[];
@@ -36,7 +36,7 @@ export interface MilestoneStep {
   requiresAttachment: boolean;
   dayPeriod: number;
   notifyBeforeDays?: number;
-  isActive: boolean;
+  isUsed: boolean;
   createdAt: Date;
   updatedAt: Date;
   milestoneName?: string;
