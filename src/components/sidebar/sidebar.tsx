@@ -176,9 +176,11 @@ export default function Sidebar() {
             {open && (
               <div className="flex flex-col">
                 <span className="text-sm font-medium">{`${user?.firstName} ${user?.lastName}`}</span>
-                <span className="text-muted-foreground text-xs">
-                  {user?.role}
-                </span>
+                {user?.role && (
+                  <span className="text-xs text-gray-500">
+                    {t(`role.${user.role}`)}
+                  </span>
+                )}
               </div>
             )}
           </div>
