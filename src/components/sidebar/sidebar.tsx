@@ -100,17 +100,6 @@ export default function Sidebar() {
             </Button>
           );
         })}
-        <Button
-          variant="ghost"
-          className={cn(
-            'w-full justify-start rounded-xl font-medium text-red-600 transition-colors hover:bg-red-100 hover:text-red-700',
-            open ? 'px-4' : 'justify-center px-0',
-          )}
-          onClick={handleLogout}
-        >
-          <LogOut className={cn('h-5 w-5', open && 'mr-3')} />
-          {open && t('homepage.logout')}
-        </Button>
       </nav>
       <div className={cn('flex justify-center pb-3', open ? 'px-3' : '')}>
         {open ? (
@@ -166,26 +155,40 @@ export default function Sidebar() {
       </div>
       <div className="border-t-2 border-gray-200 p-3">
         <div
-          role="button"
-          tabIndex={0}
           className={cn(
-            'flex cursor-pointer items-center rounded-lg p-2 transition-colors hover:bg-gray-100',
-            open ? 'justify-start gap-3' : 'justify-center',
+            'flex items-center rounded-lg p-2',
+            open ? 'justify-between' : 'flex-col gap-2',
           )}
-          onClick={() => router.push(`/profile/${user?.id}`)}
         >
-          <Avatar className={cn('h-10 w-10', open ? '' : 'mx-auto')}>
-            <AvatarImage src="/avatar.png" alt="Avatar" />
-            <AvatarFallback>{`${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`}</AvatarFallback>
-          </Avatar>
-          {open && (
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{`${user?.firstName} ${user?.lastName}`}</span>
-              <span className="text-muted-foreground text-xs">
-                {user?.role}
-              </span>
-            </div>
-          )}
+          <div
+            role="button"
+            tabIndex={0}
+            className={cn(
+              'flex cursor-pointer items-center rounded-lg transition-colors hover:bg-gray-100',
+              open ? 'gap-3 pr-2' : 'justify-center p-1',
+            )}
+            onClick={() => router.push(`/profile/${user?.id}`)}
+          >
+            <Avatar className="h-10 w-10">
+              <AvatarImage src="/avatar.png" alt="Avatar" />
+              <AvatarFallback>{`${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`}</AvatarFallback>
+            </Avatar>
+            {open && (
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{`${user?.firstName} ${user?.lastName}`}</span>
+                <span className="text-muted-foreground text-xs">
+                  {user?.role}
+                </span>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={handleLogout}
+            className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-100 hover:text-red-700"
+            title={t('homepage.logout')}
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
         </div>
       </div>
     </div>

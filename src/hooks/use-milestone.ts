@@ -10,6 +10,7 @@ import {
   deleteMilestone,
   deleteMilestones,
   fetchMilestonesWithStatusByCourseId,
+  reorderMilestones,
 } from '@/store/milestone/milestone.thunks';
 
 import {
@@ -76,6 +77,13 @@ export const useMilestone = () => {
     [dispatch],
   );
 
+  const reorderPositions = useCallback(
+    (payload: { id: string; position: number; courseId: string }[]) => {
+      return dispatch(reorderMilestones(payload)).unwrap();
+    },
+    [dispatch],
+  );
+
   const removeMilestone = useCallback(
     (id: string) => {
       return dispatch(deleteMilestone(id)).unwrap();
@@ -123,7 +131,7 @@ export const useMilestone = () => {
     updateExistingMilestone,
     removeMilestone,
     removeMultipleMilestones,
-
+    reorderPositions,
     // UI State Methods
     setSearch,
     clearCourseError,
