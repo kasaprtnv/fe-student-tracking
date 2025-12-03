@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import type { Milestone } from '@/types/milestone';
+import type { IMilestone } from '@/types/milestone';
 
 interface UnlockCondition {
   type: 'milestone' | 'step';
@@ -16,7 +16,7 @@ interface UnlockConditionModalProps {
     id: string;
     milestoneId?: string;
   } | null;
-  milestones: Milestone[];
+  milestones: IMilestone[];
   onSave: (conditions: UnlockCondition[]) => void;
 }
 
@@ -46,7 +46,7 @@ export default function UnlockConditionModal({
       <div className="max-h-[85vh] w-[500px] overflow-auto rounded-xl bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-xl font-semibold">ตั้งค่าเงื่อนไข Unlock</h2>
         {/* Milestones */}
-        <h3 className="mb-2 text-sm font-medium">Milestone ทั้งหมด</h3>
+        <h3 className="mb-2 text-sm font-medium">IMilestone ทั้งหมด</h3>
         <div className="mb-6 space-y-2">
           {milestones
             .filter((ms) => {
@@ -80,32 +80,34 @@ export default function UnlockConditionModal({
         <h3 className="mb-2 text-sm font-medium">Step เฉพาะ</h3>
         <div className="space-y-2">
           {milestones.map((ms) =>
-            ms.steps
-              .filter((step) => {
-                if (target.type === 'milestone') {
-                  return ms.id !== target.id;
-                }
+            ms?.steps
+              ? ms.steps
+                  .filter((step) => {
+                    if (target.type === 'milestone') {
+                      return ms.id !== target.id;
+                    }
 
-                if (target.type === 'step') {
-                  return step.id !== target.id;
-                }
+                    if (target.type === 'step') {
+                      return step.id !== target.id;
+                    }
 
-                return true;
-              })
-              .map((step) => (
-                <div
-                  key={step.id}
-                  className={`cursor-pointer rounded-lg border p-3 ${
-                    isSelected(step.id)
-                      ? 'border-purple-500 bg-purple-50'
-                      : 'border-gray-200'
-                  }`}
-                  onClick={() => toggle('step', step.id)}
-                >
-                  <p className="font-medium">{step.name}</p>
-                  <p className="text-xs text-gray-500">จาก: {ms.name}</p>
-                </div>
-              )),
+                    return true;
+                  })
+                  .map((step) => (
+                    <div
+                      key={step.id}
+                      className={`cursor-pointer rounded-lg border p-3 ${
+                        isSelected(step.id)
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200'
+                      }`}
+                      onClick={() => toggle('step', step.id)}
+                    >
+                      <p className="font-medium">{step.name}</p>
+                      <p className="text-xs text-gray-500">จาก: {ms.name}</p>
+                    </div>
+                  ))
+              : null,
           )}
         </div>
         <div className="mt-6 flex justify-end gap-3">

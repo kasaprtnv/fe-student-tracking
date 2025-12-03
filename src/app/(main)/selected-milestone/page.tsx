@@ -39,17 +39,10 @@ import { useMilestoneStep } from '@/hooks/use-milestone_step';
 import { IMilestoneStep } from '@/types/milestone-step';
 
 import MilestoneProgress from '@/components/milestone-progress/milestone-progress';
-import type { Milestone, MilestoneStep, IMilestone } from '@/types/milestone';
+import type { IMilestone, MilestoneStepStatus } from '@/types/milestone';
 import UnlockConditionModal from '@/components/lock-milestone/lock-milestone';
 import { Button } from '@/components/ui/button';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { useCourse } from '@/hooks/use-course';
 
 export default function PageLayout({ courseId }: { courseId?: string }) {
@@ -142,36 +135,23 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     }));
   };
 
-  const selectedMilestonesWithSteps: Milestone[] = selectedItems
+  const selectedMilestonesWithSteps: IMilestone[] = selectedItems
     .map((id) => {
-      const ms: IMilestone | undefined = getMilestoneById(id);
-      if (!ms) return null;
+      const ms = getMilestoneById(id);
+      if (!ms) return undefined;
 
       const steps: IMilestoneStep[] = stepsByMilestone[id] ?? [];
 
       return {
-        id: ms.id,
-        name: ms.name,
-        description: ms.description ?? '',
-        created_at: ms.created_at,
-        updated_at: ms.updated_at,
-
+        ...ms,
         steps: steps.map((step) => ({
-          id: step.id,
-          milestoneId: step.milestoneId,
-          position: step.position,
-          name: step.name,
-          description: step.description ?? '',
-          requiresAttachment: step.requiresAttachment,
-          isActive: step.isActive,
-          dayPeriod: step.dayPeriod ?? 0,
-
+          ...step,
           // IMilestoneStep ไม่มี status → ใส่ default ให้
-          status: 'available',
+          status: 'available' as MilestoneStepStatus,
         })),
       };
     })
-    .filter((ms): ms is Milestone => ms !== null);
+    .filter((ms) => ms !== undefined);
 
   const [lockModalOpen, setLockModalOpen] = useState(false);
   const [targetLock, setTargetLock] = useState<{
@@ -376,12 +356,11 @@ function SortableItem({
         <GripVertical size={16} />
       </div>
 
-      {/* ⭐ ตรงนี้แหละที่ตัดข้อความแล้วเติม … */}
       <span className="flex-1 truncate overflow-hidden text-ellipsis whitespace-nowrap">
         {label}
       </span>
 
-      <button
+      <Button
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -390,7 +369,7 @@ function SortableItem({
         className="text-gray-600 hover:text-red-500"
       >
         <X size={14} />
-      </button>
+      </Button>
     </div>
   );
 }

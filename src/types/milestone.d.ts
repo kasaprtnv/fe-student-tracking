@@ -22,18 +22,25 @@ export interface IMilestone {
   dayPeriod: number;
   notifyBeforeDays: number;
   isActive: boolean;
+  updatedAt: Date;
+  createdAt: Date;
   steps?: MilestoneStep[];
 }
 
 export interface MilestoneStep {
   id: string;
   milestoneId: string;
-  position: number;
   name: string;
-  description: string;
+  description?: string;
+  position: number;
   requiresAttachment: boolean;
   dayPeriod: number;
+  notifyBeforeDays?: number;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  milestoneName?: string;
+  dayPeriod?: number;
   status: MilestoneStepStatus;
 }
 
