@@ -175,12 +175,14 @@
         "deadlineDate": "Deadline Date",
         "notifyReceiverEmail": "Notification Email",
         "position": "Position",
-        "notifyBeforeDays": "Notify Before (Days)"
+        "notifyBeforeDays": "Notify Before (Days)",
+        "dayPeriod": "Day Period"
       },
       "placeholder": {
         "name": "Enter milestone name",
         "courseId": "Enter course ID",
         "description": "Enter milestone description",
+        "dayPeriod": "Number of days for the period",
         "deadlineDate": "Select deadline date",
         "notifyReceiverEmail": "example@email.com",
         "position": "e.g. 1",
@@ -212,6 +214,8 @@
         "deadlineDate-invalid": "Invalid date format",
 
         "notifyBeforeDays-integer": "Notify-before-days must be a number",
+        "dayPeriod-integer": "DayPeriod must be a number",
+        "dayPeriod-min": "DayPeriod must be greater than or equal to 0",
         "notifyBeforeDays-min": "Notify-before-days must be greater than or equal to 0",
         "notifyReceiverEmail-requried": "Notification email is required (schema typo)",
         "deadlineDate-requried": "Deadline date is required (schema typo)"

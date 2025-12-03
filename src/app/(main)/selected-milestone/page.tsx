@@ -475,6 +475,7 @@ function SortableItem({
           e.preventDefault();
           onRemove();
         }}
+        variant="ghost"
         className="text-gray-600 hover:text-red-500"
       >
         <X size={14} />

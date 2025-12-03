@@ -182,6 +182,7 @@
         "courseId": "กรอก CourseId",
         "description": "กรอกรายละเอียดขั้นตอนการศึกษา",
         "deadlineDate": "เลือกวันที่กำหนดส่ง",
+        "dayPeriod": "จำนวนวันในช่วงเวลา",
         "notifyReceiverEmail": "กรอกอีเมล@email.com",
         "position": "ลำดับเช่น 1",
         "notifyBeforeDays": "จำนวนวันก่อนแจ้งเตือน"
@@ -211,8 +212,10 @@
         "deadlineDate-required": "กรุณาเลือกวันที่กำหนดส่ง",
         "deadlineDate-invalid": "รูปแบบวันที่ไม่ถูกต้อง",
 
+        "dayPeriod-integer": "ช่วงเวลาต้องเป็นตัวเลข",
         "notifyBeforeDays-integer": "จำนวนวันต้องเป็นตัวเลข",
         "notifyBeforeDays-min": "จำนวนวันต้องมากกว่าหรือเท่ากับ 0",
+        "dayPeriod-min": "ช่วงเวลาต้องมากกว่าหรือเท่ากับ 0",
         "notifyReceiverEmail-requried": "กรุณากรอกอีเมลแจ้งเตือน (สะกดผิดใน schema)",
         "deadlineDate-requried": "กรุณากรอกวันที่กำหนดส่ง (สะกดผิดใน schema)"
       }

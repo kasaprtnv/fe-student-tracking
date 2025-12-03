@@ -97,6 +97,7 @@ export function UpdateMilestoneFormSheet({
         return;
       } else {
         await updateExistingMilestone(milestone.id, {
+          ...data,
           notifyBeforeDays: Number(data.notifyBeforeDays),
         });
       }

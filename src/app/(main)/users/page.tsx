@@ -464,7 +464,7 @@ export default function UsersPage() {
           </TabsTrigger>
           <TabsTrigger value="students">บัณฑิต ({students.length})</TabsTrigger>
           <TabsTrigger value="teachers">
-            ผู้รับผิดชอบหลักสูตร ({teachers.length})
+            อาจารย์ ({teachers.length})
           </TabsTrigger>
         </TabsList>
 

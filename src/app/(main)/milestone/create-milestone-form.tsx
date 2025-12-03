@@ -152,9 +152,11 @@ export function CreateMilestoneFormSheet({
                   </FormLabel>
                   <FormControl>
                     <Input
+                      type="number"
                       placeholder={t('placeholder.dayPeriod')}
                       className="resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))} // แปลงค่าเป็น number
                     />
                   </FormControl>
                   <FormMessage />
