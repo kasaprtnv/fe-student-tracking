@@ -37,31 +37,42 @@ import { useMilestone } from '@/hooks/use-milestone';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { useMilestoneStep } from '@/hooks/use-milestone_step';
 import { IMilestoneStep } from '@/types/milestone-step';
-
 import MilestoneProgress from '@/components/milestone-progress/milestone-progress';
-import type { Milestone, MilestoneStep, IMilestone } from '@/types/milestone';
+import type { Milestone, IMilestone } from '@/types/milestone';
 import UnlockConditionModal from '@/components/lock-milestone/lock-milestone';
 import { Button } from '@/components/ui/button';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { useCourse } from '@/hooks/use-course';
+import { useMilestonePrerequisite } from '@/hooks/use-milestone-prerequisite';
+import { useTranslations } from 'next-intl';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+interface UnlockCondition {
+  type: 'milestone' | 'step';
+  id: string;
+}
 
 export default function PageLayout({ courseId }: { courseId?: string }) {
+  const tSelectedMilestone = useTranslations('selected-milestone');
+
   const { allMilestoneIds, getMilestoneById, fetchAllMilestones } =
     useMilestone();
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [pendingMilestone, setPendingMilestone] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const { createMany, fetchAll, loader, error } = useMilestonePrerequisite();
 
-  // -----------------------------
-  // Load milestones once
-  // -----------------------------
   useEffect(() => {
     fetchAllMilestones().then((data) => {
       console.log('📌 Loaded milestones:', data);
@@ -75,6 +86,8 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   // DND sensors
   const sensors = useSensors(useSensor(PointerSensor));
 
+  const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
+
   const handleRemove = (id: string) => {
     // remove จากซ้าย
     setSelectedItems(selectedItems.filter((x) => x !== id));
@@ -85,8 +98,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       delete copy[id];
       return copy;
     });
-
-    // ⭐ ล้าง lock ทั้ง milestone และ step ของ milestone นั้น
+    // ลบ lock ของ milestone และ step ที่เกี่ยวข้อง
     setLockedItems((prev) => {
       const updated = { ...prev };
 
@@ -133,7 +145,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     // โหลด step ของ milestone นี้
     const s = await fetchMilestoneStepsByMilestone(id);
 
-    console.log('📌 FETCHED STEPS FOR:', id, s);
+    console.log('FETCHED STEPS FOR:', id, s);
 
     // เก็บลง map
     setStepsByMilestone((prev) => ({
@@ -141,6 +153,10 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       [id]: s.data,
     }));
   };
+
+  const [prerequisites, setPrerequisites] = useState<
+    Record<string, UnlockCondition[]>
+  >({});
 
   const selectedMilestonesWithSteps: Milestone[] = selectedItems
     .map((id) => {
@@ -195,21 +211,70 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
 
   const course = getCourseById(courseId);
 
-  const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
+  const handleConfirmSave = async () => {
+    try {
+      const dto = buildPrerequisiteDTO();
+      console.log('DTO TO SEND:', dto);
+
+      await createMany(dto);
+
+      setConfirmOpen(false);
+      // toast.success("บันทึกสำเร็จ");
+    } catch (err) {
+      console.error('Error saving prerequisites', err);
+    }
+  };
+
+  interface PrerequisiteDTO {
+    targetMilestoneId?: string;
+    targetStepId?: string;
+    requiredMilestoneId?: string;
+    requiredStepId?: string;
+  }
+
+  function detectTargetType(targetId: string): 'milestone' | 'step' {
+    if (selectedItems.includes(targetId)) return 'milestone';
+    return 'step';
+  }
+
+  const buildPrerequisiteDTO = (): PrerequisiteDTO[] => {
+    const result: PrerequisiteDTO[] = [];
+
+    Object.entries(prerequisites).forEach(([targetId, conditions]) => {
+      const targetType = detectTargetType(targetId);
+
+      conditions.forEach((cond) => {
+        result.push({
+          targetMilestoneId: targetType === 'milestone' ? targetId : undefined,
+          targetStepId: targetType === 'step' ? targetId : undefined,
+
+          requiredMilestoneId: cond.type === 'milestone' ? cond.id : undefined,
+
+          requiredStepId: cond.type === 'step' ? cond.id : undefined,
+        });
+      });
+    });
+
+    return result;
+  };
 
   return (
-    <div className="h-full w-full p-6 pb-25">
+    <div className="h-full w-full p-6 pb-50">
       <div className="mb-2 flex items-center gap-2 text-sm">
         <Link href="/course" className="text-black hover:underline">
           course
         </Link>
         <span>-</span>
-        <div className="text-black hover:underline">milestone</div>
+        <div className="text-black">milestone</div>
       </div>
-      <div className="mb-2 text-2xl font-bold">Select Milestone</div>
+      <div className="mb-2 text-2xl font-bold">
+        {tSelectedMilestone('header.title')}
+      </div>
       {course && (
         <div>
-          <div className="mb-2 text-gray-600">Course name : {course.name}</div>
+          <div className="mb-2 text-xl text-gray-600">
+            Course name : {course.name}
+          </div>
           <div className="mb-2 text-gray-600">
             Description : {course.description}
           </div>
@@ -222,7 +287,9 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
         {/* LEFT PANEL */}
         <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
           <div className="h-full space-y-4 overflow-auto p-4">
-            <div className="mb-3"> ขั้นตอนการศึกษา </div>
+            <div className="mb-3">
+              {tSelectedMilestone('milestone.milestone')}
+            </div>
             {/* Dropdown */}
             <Select
               value={pendingMilestone ?? ''}
@@ -231,7 +298,11 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
               }}
             >
               <SelectTrigger className="h-12 w-full text-base">
-                <SelectValue placeholder="เลือก Milestone" />
+                <SelectValue
+                  placeholder={tSelectedMilestone(
+                    'milestone.select-placeholder',
+                  )}
+                />
               </SelectTrigger>
 
               <SelectContent>
@@ -290,7 +361,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
             setPendingMilestone(null);
           }}
         >
-          เพิ่ม
+          {tSelectedMilestone('milestone.add')}
         </Button>
 
         <ResizableHandle />
@@ -305,16 +376,20 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
             onClose={() => setLockModalOpen(false)}
             target={targetLock}
             milestones={selectedMilestonesWithSteps}
+            initialSelected={
+              targetLock ? (prerequisites[targetLock.id] ?? []) : []
+            }
             onSave={(conditions) => {
-              setLockedItems((prev) => {
-                const updated = { ...prev };
-                if (conditions.length === 0) {
-                  delete updated[targetLock!.id];
-                } else {
-                  updated[targetLock!.id] = true;
-                }
-                return updated;
-              });
+              setPrerequisites((prev) => ({
+                ...prev,
+                [targetLock!.id]: conditions,
+              }));
+
+              setLockedItems((prev) => ({
+                ...prev,
+                [targetLock!.id]: conditions.length > 0,
+              }));
+
               setLockModalOpen(false);
             }}
           />
@@ -338,13 +413,41 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
+
+      <div className="mt-4 flex justify-end">
+        <Button
+          onClick={() => setConfirmOpen(true)}
+          disabled={selectedItems.length === 0}
+        >
+          {tSelectedMilestone('milestone.next')}
+        </Button>
+      </div>
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {tSelectedMilestone('confirm-save.title')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {tSelectedMilestone('confirm-save.description')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {tSelectedMilestone('confirm-save.cancel')}
+            </AlertDialogCancel>
+
+            <AlertDialogAction onClick={handleConfirmSave}>
+              {tSelectedMilestone('confirm-save.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
 
-// ------------------------------------------
-// Sortable Item Component
-// ------------------------------------------
 function SortableItem({
   id,
   label,
@@ -375,8 +478,6 @@ function SortableItem({
       >
         <GripVertical size={16} />
       </div>
-
-      {/* ⭐ ตรงนี้แหละที่ตัดข้อความแล้วเติม … */}
       <span className="flex-1 truncate overflow-hidden text-ellipsis whitespace-nowrap">
         {label}
       </span>
