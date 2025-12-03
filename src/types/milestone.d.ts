@@ -40,7 +40,6 @@ export interface MilestoneStep {
   createdAt: Date;
   updatedAt: Date;
   milestoneName?: string;
-  dayPeriod?: number;
   status: MilestoneStepStatus;
 }
 
