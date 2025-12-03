@@ -291,7 +291,9 @@
   "selected-milestone": {
     "header": {
       "title": "Select Milestone",
-      "breadcrumb": "Milestone Prerequisites"
+      "breadcrumb": "Milestone Prerequisites",
+      "course-name": "Course name",
+      "course-description": "Description"
     },
 
     "course": {
@@ -316,7 +318,7 @@
       "no-conditions": "No unlock conditions yet",
       "cancel": "Cancel",
       "save": "Save",
-      "form": "form"
+      "from": "form"
     },
 
     "confirm-save": {

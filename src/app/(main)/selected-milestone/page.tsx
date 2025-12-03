@@ -45,6 +45,7 @@ import Link from 'next/link';
 import { useCourse } from '@/hooks/use-course';
 import { useMilestonePrerequisite } from '@/hooks/use-milestone-prerequisite';
 import { useTranslations } from 'next-intl';
+import { PageHeader } from '../../../components/page-header';
 
 import {
   AlertDialog,
@@ -168,14 +169,16 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       if (!ms) return undefined;
 
       const steps: IMilestoneStep[] = stepsByMilestone[id] ?? [];
+      const sortedSteps = steps
+        .map((step) => ({
+          ...step,
+          status: 'available' as MilestoneStepStatus,
+        }))
+        .sort((a, b) => (a.position ?? 9999) - (b.position ?? 9999));
 
       return {
         ...ms,
-        steps: steps.map((step) => ({
-          ...step,
-          // IMilestoneStep ไม่มี status → ใส่ default ให้
-          status: 'available' as MilestoneStepStatus,
-        })),
+        steps: sortedSteps,
       };
     })
     .filter((ms) => ms !== undefined);
@@ -234,6 +237,29 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     return 'step';
   }
 
+  function willCauseLoop(targetId: string, requiredId: string): boolean {
+    if (!targetId || !requiredId) return false;
+
+    // depth-first search
+    const visit = (current: string, visited = new Set<string>()): boolean => {
+      if (visited.has(current)) return false;
+      visited.add(current);
+
+      const conditions = prerequisites[current];
+      if (!conditions) return false;
+
+      // ถ้าพบว่า current → target = loop
+      if (conditions.some((c) => c.id === targetId)) {
+        return true;
+      }
+
+      // เดินต่อในกราฟ
+      return conditions.some((c) => visit(c.id, visited));
+    };
+
+    return visit(requiredId);
+  }
+
   const buildPrerequisiteDTO = (): PrerequisiteDTO[] => {
     const result: PrerequisiteDTO[] = [];
 
@@ -251,196 +277,203 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
         });
       });
     });
-
     return result;
   };
 
   return (
-    <div className="h-full w-full p-6 pb-50">
-      <div className="mb-2 flex items-center gap-2 text-sm">
-        <Link href="/course" className="text-black hover:underline">
-          course
-        </Link>
-        <span>-</span>
-        <div className="text-black">milestone</div>
-      </div>
-      <div className="mb-2 text-2xl font-bold">
-        {tSelectedMilestone('header.title')}
-      </div>
-      {course && (
-        <div>
-          <div className="mb-2 text-xl text-gray-600">
-            Course name : {course.name}
-          </div>
-          <div className="mb-2 text-gray-600">
-            Description : {course.description}
-          </div>
+    <div className="h-full w-full pb-45">
+      <PageHeader
+        breadcrumbs={[
+          { label: 'Course', href: '/course' },
+          { label: 'Select Milestone', isPage: true },
+        ]}
+      />
+      <div className="h-full w-full p-6">
+        <div className="mb-2 text-3xl font-bold">
+          {tSelectedMilestone('header.title')}
         </div>
-      )}
-      <ResizablePanelGroup
-        direction="horizontal"
-        className="h-full w-full rounded-lg border"
-      >
-        {/* LEFT PANEL */}
-        <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
-          <div className="h-full space-y-4 overflow-auto p-4">
-            <div className="mb-3">
-              {tSelectedMilestone('milestone.milestone')}
+        {course && (
+          <div>
+            <div className="mb-2 text-xl text-gray-600">
+              {tSelectedMilestone('header.course-name')} : {course.name}
             </div>
-            {/* Dropdown */}
-            <Select
-              value={pendingMilestone ?? ''}
-              onValueChange={(value) => {
-                setPendingMilestone(value);
-              }}
-            >
-              <SelectTrigger className="h-12 w-full text-base">
-                <SelectValue
-                  placeholder={tSelectedMilestone(
-                    'milestone.select-placeholder',
-                  )}
-                />
-              </SelectTrigger>
-
-              <SelectContent>
-                {milestones.map((ms) => {
-                  const isSelected = selectedItems.includes(ms.id);
-                  return (
-                    <SelectItem
-                      key={ms.id}
-                      value={ms.id}
-                      disabled={isSelected}
-                      className={`w-full truncate overflow-hidden text-ellipsis whitespace-nowrap ${isSelected ? 'pointer-events-none opacity-50' : ''} `}
-                    >
-                      {ms.name}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-
-            {/* label */}
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={selectedItems}
-                strategy={verticalListSortingStrategy}
+            <div className="mb-2 text-gray-600">
+              {tSelectedMilestone('header.course-description')} :{' '}
+              {course.description}
+            </div>
+          </div>
+        )}
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="h-full w-full rounded-lg border"
+        >
+          {/* LEFT PANEL */}
+          <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
+            <div className="h-full space-y-4 overflow-auto p-4">
+              <div className="mb-3">
+                {tSelectedMilestone('milestone.milestone')}
+              </div>
+              {/* Dropdown */}
+              <Select
+                value={pendingMilestone ?? ''}
+                onValueChange={(value) => {
+                  setPendingMilestone(value);
+                }}
               >
-                <div className="flex flex-col gap-2">
-                  {selectedItems.map((id) => {
-                    const ms = getMilestoneById(id);
-                    if (!ms) return null;
+                <SelectTrigger className="h-12 w-full text-base">
+                  <SelectValue
+                    placeholder={tSelectedMilestone(
+                      'milestone.select-placeholder',
+                    )}
+                  />
+                </SelectTrigger>
 
+                <SelectContent>
+                  {milestones.map((ms) => {
+                    const isSelected = selectedItems.includes(ms.id);
                     return (
-                      <SortableItem
+                      <SelectItem
                         key={ms.id}
-                        id={ms.id}
-                        label={ms.name}
-                        onRemove={() => handleRemove(ms.id)}
-                      />
+                        value={ms.id}
+                        disabled={isSelected}
+                        className={`w-full truncate overflow-hidden text-ellipsis whitespace-nowrap ${isSelected ? 'pointer-events-none opacity-50' : ''} `}
+                      >
+                        {ms.name}
+                      </SelectItem>
                     );
                   })}
-                </div>
-              </SortableContext>
-            </DndContext>
-          </div>
-        </ResizablePanel>
-        <Button
-          className="mt-13 mr-4 flex"
-          disabled={!pendingMilestone}
-          onClick={() => {
-            if (!pendingMilestone) return;
+                </SelectContent>
+              </Select>
 
-            handleSelect(pendingMilestone);
-            setPendingMilestone(null);
-          }}
-        >
-          {tSelectedMilestone('milestone.add')}
-        </Button>
+              {/* label */}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={selectedItems}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="flex flex-col gap-2">
+                    {selectedItems.map((id) => {
+                      const ms = getMilestoneById(id);
+                      if (!ms) return null;
 
-        <ResizableHandle />
+                      return (
+                        <SortableItem
+                          key={ms.id}
+                          id={ms.id}
+                          label={ms.name}
+                          onRemove={() => handleRemove(ms.id)}
+                        />
+                      );
+                    })}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            </div>
+          </ResizablePanel>
+          <Button
+            className="mt-13 mr-4 flex"
+            disabled={!pendingMilestone}
+            onClick={() => {
+              if (!pendingMilestone) return;
 
-        {/* RIGHT */}
-        <ResizablePanel defaultSize={60} minSize={40} className="h-full p-4">
-          <UnlockConditionModal
-            key={
-              lockModalOpen ? `${targetLock?.type}-${targetLock?.id}` : 'closed'
-            }
-            open={lockModalOpen}
-            onClose={() => setLockModalOpen(false)}
-            target={targetLock}
-            milestones={selectedMilestonesWithSteps}
-            initialSelected={
-              targetLock ? (prerequisites[targetLock.id] ?? []) : []
-            }
-            onSave={(conditions) => {
-              setPrerequisites((prev) => ({
-                ...prev,
-                [targetLock!.id]: conditions,
-              }));
-
-              setLockedItems((prev) => ({
-                ...prev,
-                [targetLock!.id]: conditions.length > 0,
-              }));
-
-              setLockModalOpen(false);
+              handleSelect(pendingMilestone);
+              setPendingMilestone(null);
             }}
-          />
+          >
+            {tSelectedMilestone('milestone.add')}
+          </Button>
 
-          <div className="h-full overflow-auto">
-            <MilestoneProgress
+          <ResizableHandle />
+
+          {/* RIGHT */}
+          <ResizablePanel defaultSize={60} minSize={40} className="h-full p-4">
+            <UnlockConditionModal
+              key={
+                lockModalOpen
+                  ? `${targetLock?.type}-${targetLock?.id}`
+                  : 'closed'
+              }
+              open={lockModalOpen}
+              onClose={() => setLockModalOpen(false)}
+              target={targetLock}
               milestones={selectedMilestonesWithSteps}
-              lockedItems={lockedItems}
-              mode="edit"
-              onToggleLock={(id, type) => {
-                setTargetLock({
-                  id,
-                  type,
-                  milestoneId:
-                    type === 'step' ? findMilestoneIdByStepId(id) : id,
-                });
+              isLoop={(requiredId) => {
+                if (!targetLock) return false;
+                return willCauseLoop(targetLock.id, requiredId);
+              }}
+              initialSelected={
+                targetLock ? (prerequisites[targetLock.id] ?? []) : []
+              }
+              onSave={(conditions) => {
+                setPrerequisites((prev) => ({
+                  ...prev,
+                  [targetLock!.id]: conditions,
+                }));
 
-                setLockModalOpen(true);
+                setLockedItems((prev) => ({
+                  ...prev,
+                  [targetLock!.id]: conditions.length > 0,
+                }));
+
+                setLockModalOpen(false);
               }}
             />
-          </div>
-        </ResizablePanel>
-      </ResizablePanelGroup>
 
-      <div className="mt-4 flex justify-end">
-        <Button
-          onClick={() => setConfirmOpen(true)}
-          disabled={selectedItems.length === 0}
-        >
-          {tSelectedMilestone('milestone.next')}
-        </Button>
+            <div className="h-full overflow-auto">
+              <MilestoneProgress
+                milestones={selectedMilestonesWithSteps}
+                lockedItems={lockedItems}
+                mode="edit"
+                onToggleLock={(id, type) => {
+                  setTargetLock({
+                    id,
+                    type,
+                    milestoneId:
+                      type === 'step' ? findMilestoneIdByStepId(id) : id,
+                  });
+
+                  setLockModalOpen(true);
+                }}
+              />
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+
+        <div className="mt-4 flex justify-end">
+          <Button
+            onClick={() => setConfirmOpen(true)}
+            disabled={selectedItems.length === 0}
+          >
+            {tSelectedMilestone('milestone.next')}
+          </Button>
+        </div>
+        <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {tSelectedMilestone('confirm-save.title')}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {tSelectedMilestone('confirm-save.description')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>
+                {tSelectedMilestone('confirm-save.cancel')}
+              </AlertDialogCancel>
+
+              <AlertDialogAction onClick={handleConfirmSave}>
+                {tSelectedMilestone('confirm-save.confirm')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
-      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {tSelectedMilestone('confirm-save.title')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {tSelectedMilestone('confirm-save.description')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>
-              {tSelectedMilestone('confirm-save.cancel')}
-            </AlertDialogCancel>
-
-            <AlertDialogAction onClick={handleConfirmSave}>
-              {tSelectedMilestone('confirm-save.confirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

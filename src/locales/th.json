@@ -291,7 +291,9 @@
   "selected-milestone": {
     "header": {
       "title": "เลือกขั้นตอนการศึกษา",
-      "breadcrumb": "ตั้งค่าเงื่อนไขการปลดล็อก"
+      "breadcrumb": "ตั้งค่าเงื่อนไขการปลดล็อก",
+      "course-name": "ชื่อหลักสูตร",
+      "course-description": "คำอธิบายหลักสูตร"
     },
 
     "course": {
@@ -316,7 +318,7 @@
       "no-conditions": "ยังไม่มีเงื่อนไขการปลดล็อก",
       "cancel": "ยกเลิก",
       "save": "บันทึก",
-      "form": "จาก"
+      "from": "จาก"
     },
 
     "confirm-save": {
