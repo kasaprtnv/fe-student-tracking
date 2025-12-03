@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { Milestone } from '@/types/milestone';
+import { useTranslations } from 'next-intl';
 
 interface UnlockCondition {
   type: 'milestone' | 'step';
@@ -17,8 +18,8 @@ interface UnlockConditionModalProps {
     milestoneId?: string;
   } | null;
   milestones: Milestone[];
-  initialSelected?: UnlockCondition[];
   onSave: (conditions: UnlockCondition[]) => void;
+  initialSelected?: UnlockCondition[];
 }
 
 export default function UnlockConditionModal({
@@ -26,16 +27,17 @@ export default function UnlockConditionModal({
   onClose,
   target,
   milestones,
-  initialSelected,
   onSave,
+  initialSelected,
 }: UnlockConditionModalProps) {
   const [selected, setSelected] = useState<UnlockCondition[]>(
     initialSelected ?? [],
   );
+  const tSelectedMilestone = useTranslations('selected-milestone');
 
   if (!open || !target) return null;
 
-  const toggle = (type: UnlockCondition['type'], id: string) => {
+  const toggle = (type: 'milestone' | 'step', id: string) => {
     setSelected((prev) =>
       prev.some((x) => x.id === id)
         ? prev.filter((x) => x.id !== id)
@@ -45,98 +47,114 @@ export default function UnlockConditionModal({
 
   const isSelected = (id: string) => selected.some((s) => s.id === id);
 
-  /** -------------------------
-   *  FILTER LOGIC
-   *  -------------------------
-   */
+  const milestoneCount = milestones.filter((ms) => {
+    if (target.type === 'milestone') return ms.id !== target.id;
+    if (target.type === 'step') return ms.id !== target.milestoneId;
+    return true;
+  }).length;
 
-  // ซ่อน milestone เฉพาะเมื่อ:
-  // 1) target = milestone → ซ่อน milestone ตัวเอง
-  // 2) target = step → ซ่อน milestone เจ้าของ step
-  const hiddenMilestoneId =
-    target.type === 'milestone'
-      ? target.id
-      : target.type === 'step'
-        ? target.milestoneId
-        : null;
+  const stepCount = milestones.flatMap((ms) =>
+    ms.steps.filter((step) => {
+      if (target.type === 'milestone') return ms.id !== target.id;
+      if (target.type === 'step') return step.id !== target.id;
+      return true;
+    }),
+  ).length;
 
-  // ซ่อน step เฉพาะเมื่อ:
-  // 1) target = milestone → ซ่อนทุก step ของ milestone นั้น
-  // 2) target = step → ซ่อน step ตัวเอง
-  const hiddenStepId = target.type === 'step' ? target.id : null;
+  const hasNoData = milestoneCount === 0 && stepCount === 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="max-h-[85vh] w-[500px] overflow-auto rounded-xl bg-white p-6 shadow-lg">
-        <h2 className="mb-4 text-xl font-semibold">ตั้งค่าเงื่อนไข Unlock</h2>
+        <h2 className="mb-4 text-xl font-semibold">
+          {tSelectedMilestone('unlock-condition.title')}
+        </h2>
+        {/* No data */}
+        {hasNoData && (
+          <p className="py-8 text-center text-gray-500">
+            {tSelectedMilestone('unlock-condition.no-conditions')}
+          </p>
+        )}
+        {/* Milestones */}
+        {!hasNoData && milestoneCount > 0 && (
+          <>
+            <h3 className="mb-2 text-sm font-medium">
+              {tSelectedMilestone('unlock-condition.milestone-section')}
+            </h3>
 
-        {/* -------------------- */}
-        {/* MILESTONES LIST */}
-        {/* -------------------- */}
-        <h3 className="mb-2 text-sm font-medium">Milestone ทั้งหมด</h3>
-
-        <div className="mb-6 space-y-2">
-          {milestones
-            .filter((ms) => ms.id !== hiddenMilestoneId)
-            .map((ms) => (
-              <div
-                key={ms.id}
-                className={`cursor-pointer rounded-lg border p-3 ${
-                  isSelected(ms.id)
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200'
-                }`}
-                onClick={() => toggle('milestone', ms.id)}
-              >
-                <p className="font-medium">{ms.name}</p>
-                <p className="text-xs text-gray-500">
-                  ต้องทำ Step ทั้งหมดของ milestone นี้
-                </p>
-              </div>
-            ))}
-        </div>
-
-        {/* -------------------- */}
-        {/* STEP LIST */}
-        {/* -------------------- */}
-        <h3 className="mb-2 text-sm font-medium">Step เฉพาะ</h3>
-
-        <div className="space-y-2">
-          {milestones
-            .filter((ms) => ms.id !== hiddenMilestoneId)
-            .flatMap((ms) =>
-              ms.steps
-                .filter((step) => step.id !== hiddenStepId)
-                .map((step) => (
+            <div className="mb-6 space-y-2">
+              {milestones
+                .filter((ms) => {
+                  if (target.type === 'milestone') {
+                    return ms.id !== target.id;
+                  }
+                  if (target.type === 'step') {
+                    return ms.id !== target.milestoneId;
+                  }
+                  return true;
+                })
+                .map((ms) => (
                   <div
-                    key={step.id}
+                    key={ms.id}
                     className={`cursor-pointer rounded-lg border p-3 ${
-                      isSelected(step.id)
+                      isSelected(ms.id)
                         ? 'border-purple-500 bg-purple-50'
                         : 'border-gray-200'
                     }`}
-                    onClick={() => toggle('step', step.id)}
+                    onClick={() => toggle('milestone', ms.id)}
                   >
-                    <p className="font-medium">{step.name}</p>
-                    <p className="text-xs text-gray-500">จาก: {ms.name}</p>
+                    <p className="font-medium">{ms.name}</p>
                   </div>
-                )),
-            )}
-        </div>
+                ))}
+            </div>
+          </>
+        )}
+        {/* Steps */}
+        {!hasNoData && stepCount > 0 && (
+          <>
+            <h3 className="mb-2 text-sm font-medium">
+              {tSelectedMilestone('unlock-condition.step-section')}
+            </h3>
 
-        {/* -------------------- */}
-        {/* ACTION BUTTONS */}
-        {/* -------------------- */}
+            <div className="space-y-2">
+              {milestones.map((ms) =>
+                ms.steps
+                  .filter((step) => {
+                    if (target.type === 'milestone') return ms.id !== target.id;
+                    if (target.type === 'step') return step.id !== target.id;
+                    return true;
+                  })
+                  .map((step) => (
+                    <div
+                      key={step.id}
+                      className={`cursor-pointer rounded-lg border p-3 ${
+                        isSelected(step.id)
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200'
+                      }`}
+                      onClick={() => toggle('step', step.id)}
+                    >
+                      <p className="font-medium">{step.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {' '}
+                        {tSelectedMilestone('unlock-condition.form')}: {ms.name}
+                      </p>
+                    </div>
+                  )),
+              )}
+            </div>
+          </>
+        )}
         <div className="mt-6 flex justify-end gap-3">
           <button className="rounded-lg border px-4 py-2" onClick={onClose}>
-            ยกเลิก
+            {tSelectedMilestone('unlock-condition.cancel')}
           </button>
 
           <button
             className="rounded-lg bg-purple-600 px-4 py-2 text-white"
             onClick={() => onSave(selected)}
           >
-            บันทึก
+            {tSelectedMilestone('unlock-condition.save')}
           </button>
         </div>
       </div>

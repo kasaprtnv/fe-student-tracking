@@ -177,7 +177,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className={`h-8 w-8 ${milestoneLocked ? 'text-red-500' : ''}`}
+                              className={`h-8 w-8 ${milestoneLocked ? 'bg-red-300 text-red-500' : ''}`}
                               onClick={() =>
                                 onToggleLock?.(milestone.id, 'milestone')
                               }
@@ -287,7 +287,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="ml-auto h-6 w-6"
+                                        className={`ml-auto h-6 w-6 ${stepLocked ? 'bg-red-300 text-red-500' : ''}`}
                                         onClick={() =>
                                           onToggleLock?.(step.id, 'step')
                                         }
