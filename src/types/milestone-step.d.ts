@@ -7,7 +7,7 @@ export interface IMilestoneStep {
   requiresAttachment: boolean;
   dayPeriod: number;
   notifyBeforeDays?: number;
-  isActive: boolean;
+  isUsed: boolean;
   createdAt: Date;
   updatedAt: Date;
   milestoneName?: string;
