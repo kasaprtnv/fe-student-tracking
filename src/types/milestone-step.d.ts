@@ -11,7 +11,6 @@ export interface IMilestoneStep {
   createdAt: Date;
   updatedAt: Date;
   milestoneName?: string;
-  dayPeriod?: number;
 }
 
 export interface IMilestoneStepCreateDTO {
