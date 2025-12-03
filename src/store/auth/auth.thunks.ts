@@ -53,7 +53,7 @@ export const fetchUserProfile = createAsyncThunk(
   'auth/fetchUserProfile',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await userService.getProfileByToken();
+      const res = await userService.getProfileWithToken();
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {

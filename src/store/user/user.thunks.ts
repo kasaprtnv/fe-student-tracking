@@ -32,6 +32,21 @@ export const fetchStudentUsers = createAsyncThunk(
   },
 );
 
+export const fetchTeacherUsers = createAsyncThunk(
+  'users/fetchTeachers',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await userService.getTeachers();
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to fetch teacher users');
+    }
+  },
+);
+
 export const fetchUserById = createAsyncThunk(
   'users/fetchById',
   async (id: string, { rejectWithValue }) => {

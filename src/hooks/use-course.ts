@@ -6,6 +6,7 @@ import {
   fetchCourses,
   fetchCourseById,
   createCourse,
+  createCourseWithStaff,
   updateCourse,
   deleteCourse,
   deleteCourses,
@@ -58,6 +59,12 @@ export const useCourse = () => {
     [dispatch],
   );
 
+  // Create a new course with staff
+  const createNewCourseWithStaff = useCallback(
+    (data: ICourseCreateDTO) => dispatch(createCourseWithStaff(data)).unwrap(),
+    [dispatch],
+  );
+
   // Update an existing course
   const updateExistingCourse = useCallback(
     (id: string, data: Partial<ICourse>) =>
@@ -104,6 +111,7 @@ export const useCourse = () => {
     fetchAllCourses,
     fetchCourseDetails,
     createNewCourse,
+    createNewCourseWithStaff,
     updateExistingCourse,
     removeCourse,
     removeMultipleCourses,

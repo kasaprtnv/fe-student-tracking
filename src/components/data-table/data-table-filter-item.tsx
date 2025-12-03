@@ -17,12 +17,12 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check, PlusCircle } from 'lucide-react';
 import { Badge } from '../ui/badge';
 
 interface DataTableFilterItemProps<TData, TValue> {
-  column: Column<TData, TValue>;
-  title: string;
+  column?: Column<TData, TValue>;
+  title?: string;
   options: Option[];
 }
 
@@ -32,7 +32,7 @@ export function DataTableFilterItem<TData, TValue>({
   options,
 }: DataTableFilterItemProps<TData, TValue>) {
   const t = useTranslations('data-table');
-  const unknownValue = column.getFilterValue();
+  const unknownValue = column?.getFilterValue();
   const selectedValues = new Set(
     Array.isArray(unknownValue) ? unknownValue : [],
   );
@@ -47,6 +47,7 @@ export function DataTableFilterItem<TData, TValue>({
               size="sm"
               className="h-8 w-full justify-start border-none"
             >
+              <PlusCircle className="mr-2 size-4" />
               {title}
             </Button>
           </PopoverTrigger>
@@ -58,7 +59,7 @@ export function DataTableFilterItem<TData, TValue>({
               <CommandInput placeholder={title} />
               <CommandList className="max-h-full">
                 <CommandEmpty>{t('no_results')}</CommandEmpty>
-                <CommandGroup>
+                <CommandGroup className="max-h-[18.75rem] overflow-x-hidden overflow-y-auto">
                   {options.map((option, index) => {
                     const isSelected = selectedValues.has(option.value);
                     return (
@@ -71,7 +72,8 @@ export function DataTableFilterItem<TData, TValue>({
                             selectedValues.add(option.value);
                           }
                           const filteredValue = Array.from(selectedValues);
-                          column.setFilterValue(
+                          console.log('Filtered Value:', filteredValue);
+                          column?.setFilterValue(
                             filteredValue.length ? filteredValue : undefined,
                           );
                         }}
@@ -111,7 +113,8 @@ export function DataTableFilterItem<TData, TValue>({
                     <CommandSeparator />
                     <CommandGroup>
                       <CommandItem
-                        onSelect={() => column.setFilterValue(undefined)}
+                        onSelect={() => column?.setFilterValue(undefined)}
+                        className="justify-center text-center"
                       >
                         {t('clear_filters')}
                       </CommandItem>

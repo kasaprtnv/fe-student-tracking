@@ -37,10 +37,12 @@
     "Actions": "Actions",
     "code": "Code",
     "is_active": "Is Active",
+    "is_used": "Is Used",
     "active": "Active",
     "inactive": "Inactive",
     "edit": "Edit",
     "delete": "Delete",
+    "staff": "Staff",
     "to-milestone-step": "To Milestone Steps",
     "select-milestone": "Select Milestone",
     "created_at": "Created At",
@@ -87,18 +89,25 @@
       "errors": {
         "code-required": "Course code is required",
         "name-required": "Course name is required",
+        "degree-required": "Degree is required",
         "code-duplicate": "Course code already exists",
         "code-too-long": "Course code must not exceed 10 characters"
       },
       "label": {
         "code": "Course Code",
         "name": "Course Name",
-        "description": "Course Description"
+        "description": "Course Description",
+        "degree": "Degree",
+        "staffIds": "Staff Members"
       },
       "placeholder": {
         "code": "Enter course code",
         "name": "Enter course name",
-        "description": "Enter course description"
+        "description": "Enter course description",
+        "degree": "Enter degree",
+        "staffIds": "Select staff members",
+        "search-staff": "Search staff",
+        "no-staff-found": "No staff found"
       },
       "toast": {
         "created-successfully": "Course created successfully!",
@@ -321,6 +330,7 @@
       "targetId-required": "Target item is missing.",
       "condition-required": "At least one unlock condition is required."
     }
+  },
   "user": {
     "add-user": "Add User",
     "edit-user": "Edit User",

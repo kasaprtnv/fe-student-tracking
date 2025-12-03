@@ -5,6 +5,7 @@ import { AppDispatch } from '@/store';
 import {
   fetchUsers,
   fetchStudentUsers,
+  fetchTeacherUsers,
   fetchUserById,
   createUser,
   updateUser,
@@ -57,6 +58,11 @@ export const useUser = () => {
   // Fetch student users
   const fetchStudents = useCallback(
     () => dispatch(fetchStudentUsers()).unwrap(),
+    [dispatch],
+  );
+
+  const fetchTeachers = useCallback(
+    () => dispatch(fetchTeacherUsers()).unwrap(),
     [dispatch],
   );
 
@@ -138,6 +144,7 @@ export const useUser = () => {
     // Async Actions
     fetchAllUsers,
     fetchStudents,
+    fetchTeachers,
     fetchUserDetails,
     getUserProfile,
     createNewUser,

@@ -3,6 +3,7 @@ import {
   fetchUsers,
   fetchStudentUsers,
   fetchUserById,
+  fetchTeacherUsers,
   createUser,
   updateUser,
   deleteUser,
@@ -83,6 +84,27 @@ const userSlice = createSlice({
         });
       })
       .addCase(fetchStudentUsers.rejected, (state, action) => {
+        state.loader = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch teacher users
+    builder
+      .addCase(fetchTeacherUsers.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(fetchTeacherUsers.fulfilled, (state, action) => {
+        state.loader = false;
+        state.userMap = {};
+        const sortedUsers = action.payload.data.sort((a, b) =>
+          a.firstName.localeCompare(b.firstName),
+        );
+        sortedUsers.forEach((user: User) => {
+          state.userMap[user.id] = user;
+        });
+      })
+      .addCase(fetchTeacherUsers.rejected, (state, action) => {
         state.loader = false;
         state.error = action.payload as string;
       });

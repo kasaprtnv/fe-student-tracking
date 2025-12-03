@@ -38,7 +38,7 @@ import type { DragEndEvent } from '@dnd-kit/core';
 import { useMilestoneStep } from '@/hooks/use-milestone_step';
 import { IMilestoneStep } from '@/types/milestone-step';
 import MilestoneProgress from '@/components/milestone-progress/milestone-progress';
-import type { Milestone, IMilestone } from '@/types/milestone';
+import type { IMilestone, MilestoneStepStatus } from '@/types/milestone';
 import UnlockConditionModal from '@/components/lock-milestone/lock-milestone';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -71,7 +71,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [pendingMilestone, setPendingMilestone] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const { createMany, fetchAll, loader, error } = useMilestonePrerequisite();
+  const { createMany } = useMilestonePrerequisite();
 
   useEffect(() => {
     fetchAllMilestones().then((data) => {
@@ -158,36 +158,23 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     Record<string, UnlockCondition[]>
   >({});
 
-  const selectedMilestonesWithSteps: Milestone[] = selectedItems
+  const selectedMilestonesWithSteps: IMilestone[] = selectedItems
     .map((id) => {
-      const ms: IMilestone | undefined = getMilestoneById(id);
-      if (!ms) return null;
+      const ms = getMilestoneById(id);
+      if (!ms) return undefined;
 
       const steps: IMilestoneStep[] = stepsByMilestone[id] ?? [];
 
       return {
-        id: ms.id,
-        name: ms.name,
-        description: ms.description ?? '',
-        created_at: ms.created_at,
-        updated_at: ms.updated_at,
-
+        ...ms,
         steps: steps.map((step) => ({
-          id: step.id,
-          milestoneId: step.milestoneId,
-          position: step.position,
-          name: step.name,
-          description: step.description ?? '',
-          requiresAttachment: step.requiresAttachment,
-          isActive: step.isActive,
-          dayPeriod: step.dayPeriod ?? 0,
-
+          ...step,
           // IMilestoneStep ไม่มี status → ใส่ default ให้
-          status: 'available',
+          status: 'available' as MilestoneStepStatus,
         })),
       };
     })
-    .filter((ms): ms is Milestone => ms !== null);
+    .filter((ms) => ms !== undefined);
 
   const [lockModalOpen, setLockModalOpen] = useState(false);
   const [targetLock, setTargetLock] = useState<{
@@ -482,7 +469,7 @@ function SortableItem({
         {label}
       </span>
 
-      <button
+      <Button
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -491,7 +478,7 @@ function SortableItem({
         className="text-gray-600 hover:text-red-500"
       >
         <X size={14} />
-      </button>
+      </Button>
     </div>
   );
 }

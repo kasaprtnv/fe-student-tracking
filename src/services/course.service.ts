@@ -1,4 +1,4 @@
-import { ICourse } from '@/types/course';
+import { ICourse, ICourseCreateDTO } from '@/types/course';
 import {
   IApiDeleteResponse,
   IApiDeleteManyResponse,
@@ -32,9 +32,19 @@ class CourseService extends APIService {
   }
 
   async createCourse(
-    data: Partial<ICourse>,
+    data: ICourseCreateDTO,
   ): Promise<IApiPostResponse<ICourse>> {
     return this.post('/courses', data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async createCourseWithStaff(
+    data: ICourseCreateDTO,
+  ): Promise<IApiPostResponse<ICourse>> {
+    return this.post('/courses/with-staff', data)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

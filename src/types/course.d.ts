@@ -1,17 +1,24 @@
+import { User } from './user';
 export interface ICourse {
   id: string;
   code: string;
   name: string;
+  degree: string;
   description?: string;
-  isActive: boolean;
+  isUsed: boolean;
   createdAt: Date;
   updatedAt: Date;
+
+  staffIds?: string[];
+  users?: User[];
 }
 
 export interface ICourseCreateDTO {
   code: string;
   name: string;
+  degree: string;
   description?: string;
+  staffIds?: string[];
 }
 
 export interface CourseState {

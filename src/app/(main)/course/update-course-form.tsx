@@ -1,12 +1,12 @@
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -31,15 +31,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 
-interface UpdateCourseFormSheetProps
-  extends React.ComponentPropsWithRef<typeof Sheet> {
+interface UpdateCourseFormDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   course: ICourse | undefined;
 }
 
-export function UpdateCourseFormSheet({
+export function UpdateCourseFormDialog({
+  open,
+  onOpenChange,
   course,
-  ...props
-}: UpdateCourseFormSheetProps) {
+}: UpdateCourseFormDialogProps) {
   const t = useTranslations('course.course-form');
   const tCommon = useTranslations('common');
   const { updateExistingCourse, storeAction, allCourseId, getCourseById } =
@@ -51,6 +53,7 @@ export function UpdateCourseFormSheet({
       code: course?.code || '',
       name: course?.name || '',
       description: course?.description || '',
+      degree: course?.degree || '',
     },
   });
 
@@ -60,6 +63,7 @@ export function UpdateCourseFormSheet({
       return existingCourse?.code === code && existingCourse?.id !== course?.id;
     });
   };
+
   const onSubmit = async (data: UpdateCourseFormData) => {
     if (!course?.id || !data) return;
     try {
@@ -79,7 +83,7 @@ export function UpdateCourseFormSheet({
       } else {
         await updateExistingCourse(course.id, data);
         form.reset();
-        props.onOpenChange?.(false);
+        onOpenChange(false);
         toast.success(t('toast.updated-successfully'));
       }
     } catch (error) {
@@ -93,20 +97,21 @@ export function UpdateCourseFormSheet({
       code: course?.code || '',
       name: course?.name || '',
       description: course?.description || '',
+      degree: course?.degree || '',
     });
   }, [course, form]);
 
   return (
-    <Sheet {...props}>
-      <SheetContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
-        <SheetHeader className="text-left">
-          <SheetTitle className="text-xl font-semibold text-gray-800">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold text-gray-800">
             {t('header.edit')}
-          </SheetTitle>
-          <SheetDescription className="text-sm text-gray-600">
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
             {t('header_description.edit')}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -169,9 +174,28 @@ export function UpdateCourseFormSheet({
                 </FormItem>
               )}
             />
-            <SheetFooter className="px-0">
+            <FormField
+              control={form.control}
+              name="degree"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.degree')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('placeholder.code')}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter className="px-0">
               <div className="flex flex-1 justify-end space-x-2">
-                <SheetClose asChild>
+                <DialogClose asChild>
                   <Button
                     type="button"
                     variant="outline"
@@ -179,12 +203,8 @@ export function UpdateCourseFormSheet({
                   >
                     {tCommon('cancel')}
                   </Button>
-                </SheetClose>
-                <Button
-                  disabled={storeAction === 'updating'}
-                  type="submit"
-                  className="bg-blue-600 text-white hover:bg-blue-700"
-                >
+                </DialogClose>
+                <Button disabled={storeAction === 'updating'} type="submit">
                   {storeAction === 'updating' && (
                     <Loader
                       className="mr-2 size-4 animate-spin"
@@ -194,10 +214,10 @@ export function UpdateCourseFormSheet({
                   {tCommon('save')}
                 </Button>
               </div>
-            </SheetFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

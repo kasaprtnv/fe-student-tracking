@@ -17,6 +17,7 @@ import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { IMilestone } from '@/types/milestone';
 import { IMilestoneStep } from '@/types/milestone-step';
 import MilestoneStepCard from '@/components/milestone-step/milestone-step-card';
+import { PageHeader } from '@/components/page-header';
 
 const MilestoneStepPage = () => {
   const { milestoneId } = useParams();
@@ -138,78 +139,88 @@ const MilestoneStepPage = () => {
   }, [steps, originalSteps]);
 
   return (
-    <div className="container mx-auto space-y-4 py-8">
-      <div>
-        <h1 className="text-2xl font-bold">
-          {t('milestone')} : {milestone?.name}
-        </h1>
-        <p className="mt-2 break-words text-gray-600 sm:max-w-[500px] lg:max-w-[750px]">
-          {t('description')}: {milestone?.description}
-        </p>
-      </div>
-      <div className="flex justify-end">
-        <Button onClick={() => setIsAdd(true)} className="mb-4">
-          {t('add-step')}
-        </Button>
-      </div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="milestone-steps">
-          {(provided) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className="space-y-4"
-            >
-              {steps.map((step, index) => (
-                <Draggable key={step.id} draggableId={step.id} index={index}>
-                  {(provided) => (
-                    <div ref={provided.innerRef} {...provided.draggableProps}>
-                      <MilestoneStepCard
-                        step={step}
-                        dragHandleProps={provided.dragHandleProps ?? undefined}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-      {hasPositionChanged && ( // Show button only if positions have changed
-        <Button
-          onClick={confirmUpdatePositions}
-          disabled={isUpdatingPositions}
-          className="mt-4"
-        >
-          {isUpdatingPositions ? 'Updating...' : 'Confirm Positions'}
-        </Button>
-      )}
+    <>
+      <PageHeader
+        breadcrumbs={[
+          { label: 'Milestones', href: '/milestone' },
+          { label: milestone?.name || '', isPage: true },
+        ]}
+      />
+      <div className="container mx-auto space-y-4 py-8">
+        <div>
+          <h1 className="text-2xl font-bold">
+            {t('milestone')} : {milestone?.name}
+          </h1>
+          <p className="mt-2 break-words text-gray-600 sm:max-w-[500px] lg:max-w-[750px]">
+            {t('description')}: {milestone?.description}
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <Button onClick={() => setIsAdd(true)} className="mb-4">
+            {t('add-step')}
+          </Button>
+        </div>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="milestone-steps">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="space-y-4"
+              >
+                {steps.map((step, index) => (
+                  <Draggable key={step.id} draggableId={step.id} index={index}>
+                    {(provided) => (
+                      <div ref={provided.innerRef} {...provided.draggableProps}>
+                        <MilestoneStepCard
+                          step={step}
+                          dragHandleProps={
+                            provided.dragHandleProps ?? undefined
+                          }
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+        {hasPositionChanged && ( // Show button only if positions have changed
+          <Button
+            onClick={confirmUpdatePositions}
+            disabled={isUpdatingPositions}
+            className="mt-4"
+          >
+            {isUpdatingPositions ? 'Updating...' : 'Confirm Positions'}
+          </Button>
+        )}
 
-      <CreateMilestoneStepForm
-        isOpen={isAdd}
-        onClose={() => setIsAdd(false)}
-        milestoneId={milestoneIdString}
-        stepsLength={steps.length}
-      />
-      <UpdateMilestoneStepForm
-        isOpen={isEdit}
-        onClose={() => setIsEdit(false)}
-        milestoneStep={selectedStep}
-      />
-      <DeleteConfirmationDialog
-        open={isDelete}
-        onClose={() => setIsDelete(false)}
-        onConfirm={confirmDelete}
-        isLoading={isDeleting}
-        title="delete.header"
-        description="delete.confirm"
-        translationKey="milestone-step"
-      />
-    </div>
+        <CreateMilestoneStepForm
+          isOpen={isAdd}
+          onClose={() => setIsAdd(false)}
+          milestoneId={milestoneIdString}
+          stepsLength={steps.length}
+        />
+        <UpdateMilestoneStepForm
+          isOpen={isEdit}
+          onClose={() => setIsEdit(false)}
+          milestoneStep={selectedStep}
+        />
+        <DeleteConfirmationDialog
+          open={isDelete}
+          onClose={() => setIsDelete(false)}
+          onConfirm={confirmDelete}
+          isLoading={isDeleting}
+          title="delete.header"
+          description="delete.confirm"
+          translationKey="milestone-step"
+        />
+      </div>
+    </>
   );
 };
 

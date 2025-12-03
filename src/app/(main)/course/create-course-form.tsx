@@ -1,12 +1,12 @@
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { useCourse } from '@/hooks/use-course';
 import { useTranslations } from 'next-intl';
 import React from 'react';
@@ -29,20 +29,36 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
+import { SelectOption } from '@/types';
+import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 
-export function CreateCourseFormSheet({
-  ...props
-}: React.ComponentPropsWithRef<typeof Sheet>) {
+interface CreateCourseFormDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  teacherOptions: SelectOption[];
+}
+
+export function CreateCourseFormDialog({
+  open,
+  onOpenChange,
+  teacherOptions,
+}: CreateCourseFormDialogProps) {
   const t = useTranslations('course.course-form');
   const tCommon = useTranslations('common');
-  const { createNewCourse, storeAction, allCourseId, getCourseById } =
-    useCourse();
+  const {
+    createNewCourse,
+    storeAction,
+    allCourseId,
+    getCourseById,
+    createNewCourseWithStaff,
+  } = useCourse();
   const form = useForm<CreateCourseFormData>({
     resolver: zodResolver(createCourseSchema(t)),
     defaultValues: {
       code: '',
       name: '',
       description: '',
+      degree: '',
     },
   });
 
@@ -68,36 +84,39 @@ export function CreateCourseFormSheet({
           message: t('errors.code-duplicate'),
         });
         return;
-      } else {
-        await createNewCourse(data);
-        form.reset();
-        props.onOpenChange?.(false);
-        toast.success(t('toast.created-successfully'));
       }
+      if (data.staffIds?.length === 0) {
+        await createNewCourse(data);
+      } else {
+        await createNewCourseWithStaff(data);
+      }
+      form.reset();
+      onOpenChange(false);
+      toast.success(t('toast.created-successfully'));
     } catch (error) {
       console.error('Error creating course:', error);
       toast.error(t('toast.creation-failed'));
     }
   };
+
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      // Reset form when closing the Sheet
-      form.reset();
+      form.reset(); // Reset form when closing the Dialog
     }
-    props.onOpenChange?.(open);
+    onOpenChange(open);
   };
 
   return (
-    <Sheet {...props} onOpenChange={handleOpenChange}>
-      <SheetContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
-        <SheetHeader className="text-left">
-          <SheetTitle className="text-xl font-semibold text-gray-800">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold text-gray-800">
             {t('header.create')}
-          </SheetTitle>
-          <SheetDescription className="text-sm text-gray-600">
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
             {t('header_description.create')}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -160,9 +179,51 @@ export function CreateCourseFormSheet({
                 </FormItem>
               )}
             />
-            <SheetFooter className="px-0">
+            <FormField
+              control={form.control}
+              name="degree"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.degree')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('placeholder.degree')}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="staffIds"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      {t('label.staffIds')}
+                    </FormLabel>
+                    <FormControl>
+                      <MultiCombobox
+                        placeholder={t('placeholder.staffIds')}
+                        placeholderSearch={t('placeholder.search-staff')}
+                        placeholderEmpty={t('placeholder.no-staff-found')}
+                        options={teacherOptions}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <DialogFooter className="px-0">
               <div className="flex flex-1 justify-end space-x-2">
-                <SheetClose asChild>
+                <DialogClose asChild>
                   <Button
                     type="button"
                     variant="outline"
@@ -170,12 +231,8 @@ export function CreateCourseFormSheet({
                   >
                     {tCommon('cancel')}
                   </Button>
-                </SheetClose>
-                <Button
-                  disabled={storeAction === 'creating'}
-                  type="submit"
-                  className="bg-blue-600 text-white hover:bg-blue-700"
-                >
+                </DialogClose>
+                <Button disabled={storeAction === 'creating'} type="submit">
                   {storeAction === 'creating' && (
                     <Loader
                       className="mr-2 size-4 animate-spin"
@@ -185,10 +242,10 @@ export function CreateCourseFormSheet({
                   {tCommon('submit')}
                 </Button>
               </div>
-            </SheetFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

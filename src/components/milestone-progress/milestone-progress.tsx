@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -18,7 +18,6 @@ import {
   Paperclip,
   Lock,
   Unlock,
-  Settings,
   TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';

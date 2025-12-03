@@ -46,7 +46,7 @@ const MilestoneStepCard = ({
       </div>
 
       {/* Position (เลขลำดับ) */}
-      <div className="flex min-h-10 min-w-10 items-center justify-center rounded-full border border-gray-300 bg-white text-sm font-semibold text-gray-400">
+      <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-300 bg-red-700 text-sm font-semibold text-white">
         {step.position}
       </div>
 
