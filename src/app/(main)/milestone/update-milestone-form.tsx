@@ -175,6 +175,26 @@ export function UpdateMilestoneFormSheet({
               )}
             />
 
+            {/* dayPeriod */}
+            <FormField
+              control={form.control}
+              name="dayPeriod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('label.dayPeriod')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      min={0}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* notifyBeforeDays */}
             <FormField
               control={form.control}
