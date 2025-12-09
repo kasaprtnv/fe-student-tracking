@@ -153,10 +153,20 @@
     "declined": "ถูกปฏิเสธ",
     "locked": "ไม่สามารถทำได้",
     "upload_button": "อัปโหลดไฟล์",
+    "uploading": "กำลังอัปโหลด...",
     "uploaded_file": "ไฟล์ที่อัปโหลด",
+    "submitting": "กำลังส่ง...",
+    "submit_button": "ยืนยันการส่ง",
     "overall_progress": "ความคืบหน้า",
     "accept_file_type": "รองรับไฟล์ประเภท",
-    "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน"
+    "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน",
+    "confirm_submit_title": "ยืนยันการส่ง",
+    "confirm_submit_description": "คุณต้องการยืนยันการส่งไฟล์นี้หรือไม่?",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "submit_success_title": "ส่งสำเร็จ",
+    "submit_success_description": "ไฟล์ของคุณถูกส่งเรียบร้อยแล้ว",
+    "ok": "ตกลง"
   },
   "milestone": {
     "title": "ขั้นตอนการศึกษา",
