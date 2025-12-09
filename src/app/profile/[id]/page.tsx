@@ -72,6 +72,7 @@ export default function ProfilePage() {
             enrollDate={user?.enrollDate}
             onFileUpload={handleFileUpload}
             uploadedFiles={uploadedFiles}
+            userId={user?.id}
           ></MilestoneComponent>
         </div>
       ) : !isOwnProfile && userMap[id ?? '']?.role === 'student' ? (

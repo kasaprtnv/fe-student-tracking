@@ -10,6 +10,16 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   CheckCircle2,
   Circle,
   Upload,
@@ -29,15 +39,22 @@ import {
 import { IMilestone, ViewMode } from '@/types/milestone';
 import { useLocale, useTranslations } from 'next-intl';
 import { Spinner } from '../ui/spinner';
+import { uploadService } from '@/services/upload.service';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
   mode?: ViewMode;
   enrollDate?: string;
   onFileUpload?: (stepId: string, file: File) => void;
+  onSubmit?: (stepId: string) => void;
+  onSubmitSuccess?: (stepId: string) => void;
   onToggleLock?: (id: string, type: 'milestone' | 'step') => void;
   uploadedFiles?: Record<string, string>;
   lockedItems?: Record<string, boolean>;
+  isUploading?: Record<string, boolean>;
+  isSubmitting?: Record<string, boolean>;
+  stepProgressMap?: Record<string, string>;
+  userId?: string;
 }
 
 // Utility: แปลง status เป็น completed/isActive
@@ -51,16 +68,34 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   milestones,
   mode = 'readonly',
   onFileUpload,
+  onSubmit,
+  onSubmitSuccess,
   onToggleLock,
   uploadedFiles,
   lockedItems = {},
   enrollDate,
+  isUploading,
+  isSubmitting,
+  stepProgressMap = {},
+  userId,
 }) => {
   const t = useTranslations('milestone-progress');
   const language = useLocale();
   const [openMilestones, setOpenMilestones] = useState<Record<string, boolean>>(
     () => Object.fromEntries(milestones.map((m) => [m.id, true])),
   );
+
+  const [internalFiles, setInternalFiles] = useState<Record<string, File>>({});
+  const [internalFileNames, setInternalFileNames] = useState<
+    Record<string, string>
+  >({});
+  const [internalSubmitting, setInternalSubmitting] = useState<
+    Record<string, boolean>
+  >({});
+
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [pendingStepId, setPendingStepId] = useState<string | null>(null);
   const allowedFileTypes = '.pdf,.docx';
   const stepDeadlineMap = useMemo(() => {
     if (!enrollDate) return {};
@@ -112,12 +147,71 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   ) => {
     const file = event.target.files?.[0];
     if (file && onFileUpload) {
-      onFileUpload(stepId, file);
+    if (file) {
+      setInternalFiles((prev) => ({ ...prev, [stepId]: file }));
+      setInternalFileNames((prev) => ({ ...prev, [stepId]: file.name }));
+
+      if (onFileUpload) {
+        onFileUpload(stepId, file);
+      }
     }
   };
 
-  const formatDate = (date?: Date) => {
-    if (!date) return '-';
+  const openConfirmModal = (stepId: string) => {
+    setPendingStepId(stepId);
+    setConfirmModalOpen(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    if (!pendingStepId) return;
+
+    const stepId = pendingStepId;
+    const file = internalFiles[stepId];
+
+    setConfirmModalOpen(false);
+
+    if (!file) {
+      console.error('Missing file');
+      return;
+    }
+
+    setInternalSubmitting((prev) => ({ ...prev, [stepId]: true }));
+
+    try {
+      const progressId = stepProgressMap[stepId] || stepId;
+      const response = await uploadService.createAttachment(
+        progressId,
+        file,
+        userId,
+      );
+
+      if (response.success) {
+        setSuccessModalOpen(true);
+        onSubmitSuccess?.(stepId);
+        setInternalFiles((prev) => {
+          const newFiles = { ...prev };
+          delete newFiles[stepId];
+          return newFiles;
+        });
+        setInternalFileNames((prev) => {
+          const newNames = { ...prev };
+          delete newNames[stepId];
+          return newNames;
+        });
+      } else {
+        console.error('Upload failed:', response.error);
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+    } finally {
+      setInternalSubmitting((prev) => ({ ...prev, [stepId]: false }));
+      setPendingStepId(null);
+    }
+
+    onSubmit?.(stepId);
+  };
+
+  const formatDate = (date: Date) => {
     const locale = language === 'th' ? 'th-TH' : 'en-US';
     return date.toLocaleDateString(locale, {
       month: 'long',
@@ -362,15 +456,21 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          className=""
+                                          disabled={isUploading?.[step.id]}
                                           onClick={() =>
                                             document
                                               .getElementById(`file-${step.id}`)
                                               ?.click()
                                           }
                                         >
-                                          <Upload className="mr-2 h-4 w-4" />
-                                          {t('upload_button')}
+                                          {isUploading?.[step.id] ? (
+                                            <Spinner className="mr-2 h-4 w-4" />
+                                          ) : (
+                                            <Upload className="mr-2 h-4 w-4" />
+                                          )}
+                                          {isUploading?.[step.id]
+                                            ? t('uploading')
+                                            : t('upload_button')}
                                         </Button>
                                         <input
                                           id={`file-${step.id}`}
@@ -386,15 +486,38 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           {' : '}
                                           {allowedFileTypes}
                                         </p>
-                                        {uploadedFiles?.[step.id] && (
+                                        {(uploadedFiles?.[step.id] ||
+                                          internalFileNames[step.id]) && (
                                           <p className="mt-1 text-xs text-green-700">
                                             {t('uploaded_file')}
                                             {' : '}
-                                            {uploadedFiles[step.id]}
+                                            {uploadedFiles?.[step.id] ||
+                                              internalFileNames[step.id]}
                                           </p>
                                         )}
                                         <div className="mt-2 flex justify-end">
-                                          <Button>ยืนยันการส่ง</Button>
+                                          <Button
+                                            className="bg-green-600 text-white hover:bg-green-700"
+                                            disabled={
+                                              (!uploadedFiles?.[step.id] &&
+                                                !internalFiles[step.id]) ||
+                                              isSubmitting?.[step.id] ||
+                                              internalSubmitting[step.id]
+                                            }
+                                            onClick={() =>
+                                              openConfirmModal(step.id)
+                                            }
+                                          >
+                                            {isSubmitting?.[step.id] ||
+                                            internalSubmitting[step.id] ? (
+                                              <>
+                                                <Spinner className="mr-2 h-4 w-4" />
+                                                {t('submitting')}
+                                              </>
+                                            ) : (
+                                              t('submit_button')
+                                            )}
+                                          </Button>
                                         </div>
                                       </div>
                                     )}
@@ -412,6 +535,50 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
           );
         })}
       </div>
+
+      {/* Confirmation Modal */}
+      <AlertDialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('confirm_submit_title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('confirm_submit_description')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmSubmit}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {t('confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Success Modal */}
+      <AlertDialog open={successModalOpen} onOpenChange={setSuccessModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-green-600">
+              <CheckCircle2 className="h-5 w-5" />
+              {t('submit_success_title')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('submit_success_description')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => setSuccessModalOpen(false)}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {t('ok')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

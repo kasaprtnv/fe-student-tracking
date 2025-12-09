@@ -153,10 +153,20 @@
     "declined": "Declined",
     "locked": "Locked",
     "upload_button": "Upload File",
+    "uploading": "Uploading...",
     "uploaded_file": "Uploaded File",
+    "submitting": "Submitting...",
+    "submit_button": "Confirm Submission",
     "overall_progress": "Overall Progress",
     "accept_file_type": "Accept File Type",
-    "progress_count": "completed {completed} out of {total} steps"
+    "progress_count": "completed {completed} out of {total} steps",
+    "confirm_submit_title": "Confirm Submission",
+    "confirm_submit_description": "Are you sure you want to submit this file?",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "submit_success_title": "Submission Successful",
+    "submit_success_description": "Your file has been submitted successfully.",
+    "ok": "OK"
   },
   "milestone": {
     "title": "Milestones",
