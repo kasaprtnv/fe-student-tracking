@@ -146,7 +146,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
-    if (file && onFileUpload) {
     if (file) {
       setInternalFiles((prev) => ({ ...prev, [stepId]: file }));
       setInternalFileNames((prev) => ({ ...prev, [stepId]: file.name }));
