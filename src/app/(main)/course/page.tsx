@@ -95,8 +95,6 @@ const CoursePage = () => {
     })
     .filter((option) => option !== undefined);
 
-  console.log('Teacher Options:', teacherOptions);
-
   const onDeleteCourse = (id: string) => {
     setIsDelete({ isDeleting: true, courseId: [id] });
   };
@@ -184,7 +182,7 @@ const CoursePage = () => {
           onOpenChange={() => {
             setIsEdit({ isEditing: false });
           }}
-          // teacherOptions={teacherOptions}
+          teacherOptions={teacherOptions}
         />
         <DeleteConfirmationDialog
           open={isDelete.isDeleting}
