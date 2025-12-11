@@ -3,7 +3,7 @@ import { createTeacherColumns } from './create-teacher-column';
 import { User } from '@/types/user';
 import React from 'react';
 import { DataTable } from '../../../components/data-table/data-table';
-import { CreateCourseFormDialog } from '../course/create-course-form';
+import { CreateUserFormDialog } from './create-user-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
 
 interface TeacherTableProps {
@@ -65,12 +65,11 @@ export const TeacherTable = ({ userData }: TeacherTableProps) => {
           console.log('delete multiple users', user);
         }}
       />
-      <CreateCourseFormDialog
+      <CreateUserFormDialog
         open={isAdd}
-        onOpenChange={() => {
-          setIsAdd(false);
-        }}
-        teacherOptions={[]}
+        onOpenChange={setIsAdd}
+        courseOptions={[]}
+        defaultRole="teacher"
       />
       <DeleteConfirmationDialog
         open={isDelete.isDeleting}
