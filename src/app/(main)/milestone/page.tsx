@@ -29,7 +29,6 @@ const MilestonePage = () => {
     setSearch: setSearchQuery,
     removeMilestone,
     removeMultipleMilestones,
-    updateExistingMilestone,
   } = useMilestone();
 
   const milestoneColumns = createMilestoneColumns().map((column) => {
@@ -99,15 +98,6 @@ const MilestonePage = () => {
     setSearchQuery(value);
   };
 
-  const onIsActiveChange = async (id: string, isActive: boolean) => {
-    try {
-      await updateExistingMilestone(id, { isActive });
-    } catch (error) {
-      console.error('Error updating milestone active status:', error);
-      toast.error(tForm('toast.update-failed'));
-    }
-  };
-
   const toMilestoneStepPage = (milestoneId: string) => {
     router.push(`/milestone/${milestoneId}`);
   };
@@ -131,7 +121,6 @@ const MilestonePage = () => {
           onDelete={onDeleteMilestone}
           onLink={(m) => toMilestoneStepPage(m)}
           onMultiDelete={onDeleteMultipleMilestones}
-          onActiveChange={onIsActiveChange}
           onSearch={onSearchChange}
           searchQuery={searchQuery}
         />

@@ -182,7 +182,7 @@ const CoursePage = () => {
           onOpenChange={() => {
             setIsEdit({ isEditing: false });
           }}
-          // teacherOptions={teacherOptions}
+          teacherOptions={teacherOptions}
         />
         <DeleteConfirmationDialog
           open={isDelete.isDeleting}

@@ -29,7 +29,6 @@ import { useMilestoneStep } from '@/hooks/use-milestone_step';
 import { useTranslations } from 'next-intl';
 import { IMilestoneStep } from '@/types/milestone-step';
 import { toast } from 'sonner';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 interface UpdateMilestoneStepFormProps {
@@ -55,7 +54,6 @@ const UpdateMilestoneStepForm = ({
       requiresAttachment: milestoneStep?.requiresAttachment || false,
       dayPeriod: milestoneStep?.dayPeriod || undefined,
       notifyBeforeDays: milestoneStep?.notifyBeforeDays || undefined,
-      isActive: milestoneStep?.isActive || true,
     },
   });
 
@@ -67,7 +65,6 @@ const UpdateMilestoneStepForm = ({
         requiresAttachment: milestoneStep.requiresAttachment || false,
         dayPeriod: milestoneStep.dayPeriod || undefined,
         notifyBeforeDays: milestoneStep.notifyBeforeDays || undefined,
-        isActive: milestoneStep.isActive || true,
       });
     }
   }, [milestoneStep, form]);
@@ -124,19 +121,6 @@ const UpdateMilestoneStepForm = ({
             />
             <FormField
               control={form.control}
-              name="requiresAttachment"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                  <FormLabel>{tForm('label.requiresAttachment')}</FormLabel>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="dayPeriod"
               render={({ field }) => (
                 <FormItem>
@@ -175,15 +159,14 @@ const UpdateMilestoneStepForm = ({
             />
             <FormField
               control={form.control}
-              name="isActive"
+              name="requiresAttachment"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2">
-                  <Switch
+                  <Checkbox
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
-                    className=""
                   />
-                  <FormLabel>{tForm('label.isActive')}</FormLabel>
+                  <FormLabel>{tForm('label.requiresAttachment')}</FormLabel>
                 </FormItem>
               )}
             />

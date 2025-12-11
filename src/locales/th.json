@@ -43,6 +43,8 @@
     "edit": "แก้ไข",
     "delete": "ลบ",
     "staff": "ผู้รับผิดชอบหลักสูตร",
+    "day-period": "ช่วงเวลา (วัน)",
+    "notify-receiver-email": "อีเมลแจ้งเตือน",
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
     "select-milestone": "ไปยังขั้นตอนการศึกษา",
     "created_at": "สร้างเมื่อ",
@@ -151,10 +153,20 @@
     "declined": "ถูกปฏิเสธ",
     "locked": "ไม่สามารถทำได้",
     "upload_button": "อัปโหลดไฟล์",
+    "uploading": "กำลังอัปโหลด...",
     "uploaded_file": "ไฟล์ที่อัปโหลด",
+    "submitting": "กำลังส่ง...",
+    "submit_button": "ยืนยันการส่ง",
     "overall_progress": "ความคืบหน้า",
     "accept_file_type": "รองรับไฟล์ประเภท",
-    "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน"
+    "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน",
+    "confirm_submit_title": "ยืนยันการส่ง",
+    "confirm_submit_description": "คุณต้องการยืนยันการส่งไฟล์นี้หรือไม่?",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "submit_success_title": "ส่งสำเร็จ",
+    "submit_success_description": "ไฟล์ของคุณถูกส่งเรียบร้อยแล้ว",
+    "ok": "ตกลง"
   },
   "milestone": {
     "title": "ขั้นตอนการศึกษา",
@@ -175,7 +187,8 @@
         "deadlineDate": "วันที่กำหนดส่ง",
         "notifyReceiverEmail": "อีเมลแจ้งเตือน",
         "position": "ลำดับ",
-        "notifyBeforeDays": "แจ้งเตือนก่อน (วัน)"
+        "notifyBeforeDays": "แจ้งเตือนก่อน (วัน)",
+        "dayPeriod": "ช่วงเวลา (วัน)"
       },
       "placeholder": {
         "name": "กรอกชื่อขั้นตอนการศึกษา",
@@ -288,7 +301,9 @@
   "selected-milestone": {
     "header": {
       "title": "เลือกขั้นตอนการศึกษา",
-      "breadcrumb": "ตั้งค่าเงื่อนไขการปลดล็อก"
+      "breadcrumb": "ตั้งค่าเงื่อนไขการปลดล็อก",
+      "course-name": "ชื่อหลักสูตร",
+      "course-description": "คำอธิบายหลักสูตร"
     },
 
     "course": {
@@ -313,7 +328,7 @@
       "no-conditions": "ยังไม่มีเงื่อนไขการปลดล็อก",
       "cancel": "ยกเลิก",
       "save": "บันทึก",
-      "form": "จาก"
+      "from": "จาก"
     },
 
     "confirm-save": {
@@ -380,5 +395,10 @@
     "delete-user-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
     "delete-users-title": "ยืนยันการลบผู้ใช้หลายคน",
     "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน? การกระทำนี้ไม่สามารถย้อนกลับได้"
+  },
+  "role": {
+    "admin": "ผู้ดูแลระบบ",
+    "student": "นักศึกษา",
+    "teacher": "อาจารย์"
   }
 }

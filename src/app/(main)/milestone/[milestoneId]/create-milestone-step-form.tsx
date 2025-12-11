@@ -110,19 +110,6 @@ const CreateMilestoneStepForm = ({
             />
             <FormField
               control={form.control}
-              name="requiresAttachment"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                  <FormLabel>{tForm('label.requiresAttachment')}</FormLabel>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="dayPeriod"
               render={({ field }) => (
                 <FormItem>
@@ -156,6 +143,19 @@ const CreateMilestoneStepForm = ({
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="requiresAttachment"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                  <FormLabel>{tForm('label.requiresAttachment')}</FormLabel>
                 </FormItem>
               )}
             />

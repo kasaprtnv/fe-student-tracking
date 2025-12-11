@@ -59,6 +59,7 @@ export function CreateCourseFormDialog({
       name: '',
       description: '',
       degree: '',
+      staffIds: [],
     },
   });
 

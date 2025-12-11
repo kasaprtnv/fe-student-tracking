@@ -56,30 +56,29 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <div className="mb-4 text-2xl font-bold">
-        {t('personal_information.title')}
-      </div>
       <ProfileComponent
         user={isOwnProfile ? (user ?? null) : (userMap[id ?? ''] ?? null)}
       />
-      <Separator className="my-6" />
-      <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+
       {isOwnProfile && user?.role === 'admin' ? (
-        <div>
-          <label className="mr-4 font-medium">admin</label>
-        </div>
+        <div></div>
       ) : isOwnProfile && user?.role === 'student' ? (
         <div>
+          <Separator className="my-6" />
+          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
           <MilestoneComponent
             milestones={Object.values(milestoneMap)}
             mode={mode}
             enrollDate={user?.enrollDate}
             onFileUpload={handleFileUpload}
             uploadedFiles={uploadedFiles}
+            userId={user?.id}
           ></MilestoneComponent>
         </div>
       ) : !isOwnProfile && userMap[id ?? '']?.role === 'student' ? (
         <div>
+          <Separator className="my-6" />
+          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
           <MilestoneComponent
             milestones={Object.values(milestoneMap)}
             mode={mode}
@@ -90,10 +89,14 @@ export default function ProfilePage() {
         </div>
       ) : isOwnProfile && user?.role === 'teacher' ? (
         <div>
+          <Separator className="my-6" />
+          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
           <label className="mr-4 font-medium">teacher</label>
         </div>
       ) : !isOwnProfile && userMap[id ?? '']?.role === 'teacher' ? (
         <div>
+          <Separator className="my-6" />
+          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
           <label className="mr-4 font-medium">teacher</label>
         </div>
       ) : null}

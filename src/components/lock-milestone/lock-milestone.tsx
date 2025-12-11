@@ -20,6 +20,7 @@ interface UnlockConditionModalProps {
   milestones: IMilestone[];
   onSave: (conditions: UnlockCondition[]) => void;
   initialSelected?: UnlockCondition[];
+  isLoop: (requiredId: string) => boolean;
 }
 
 export default function UnlockConditionModal({
@@ -29,6 +30,7 @@ export default function UnlockConditionModal({
   milestones,
   onSave,
   initialSelected,
+  isLoop,
 }: UnlockConditionModalProps) {
   const [selected, setSelected] = useState<UnlockCondition[]>(
     initialSelected ?? [],
@@ -63,6 +65,19 @@ export default function UnlockConditionModal({
 
   const hasNoData = milestoneCount === 0 && stepCount === 0;
 
+  const isDisabled = (type: 'milestone' | 'step', id: string) => {
+    // ห้ามเลือกตัวเอง
+    if (id === target.id) return true;
+
+    // ห้ามเลือกของเดิม (initialSelected)
+    if (initialSelected?.some((c) => c.id === id)) return true;
+
+    // ❗ ห้ามเลือกสิ่งที่จะทำให้เกิด loop
+    if (isLoop(id)) return true;
+
+    return false;
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="max-h-[85vh] w-[500px] overflow-auto rounded-xl bg-white p-6 shadow-lg">
@@ -96,12 +111,17 @@ export default function UnlockConditionModal({
                 .map((ms) => (
                   <div
                     key={ms.id}
+                    onClick={() =>
+                      !isDisabled('milestone', ms.id) &&
+                      toggle('milestone', ms.id)
+                    }
                     className={`cursor-pointer rounded-lg border p-3 ${
-                      isSelected(ms.id)
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200'
+                      isDisabled('milestone', ms.id)
+                        ? 'cursor-not-allowed opacity-40'
+                        : isSelected(ms.id)
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200'
                     }`}
-                    onClick={() => toggle('milestone', ms.id)}
                   >
                     <p className="font-medium">{ms.name}</p>
                   </div>
@@ -127,17 +147,21 @@ export default function UnlockConditionModal({
                   .map((step) => (
                     <div
                       key={step.id}
+                      onClick={() =>
+                        !isDisabled('step', step.id) && toggle('step', step.id)
+                      }
                       className={`cursor-pointer rounded-lg border p-3 ${
-                        isSelected(step.id)
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200'
+                        isDisabled('step', step.id)
+                          ? 'cursor-not-allowed opacity-40'
+                          : isSelected(step.id)
+                            ? 'border-purple-500 bg-purple-50'
+                            : 'border-gray-200'
                       }`}
-                      onClick={() => toggle('step', step.id)}
                     >
                       <p className="font-medium">{step.name}</p>
                       <p className="text-xs text-gray-500">
                         {' '}
-                        {tSelectedMilestone('unlock-condition.form')}: {ms.name}
+                        {tSelectedMilestone('unlock-condition.from')}: {ms.name}
                       </p>
                     </div>
                   )),
