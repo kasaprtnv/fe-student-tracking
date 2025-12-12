@@ -48,7 +48,17 @@
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
     "select-milestone": "ไปยังขั้นตอนการศึกษา",
     "created_at": "สร้างเมื่อ",
-    "updated_at": "อัปเดตเมื่อ"
+    "updated_at": "อัปเดตเมื่อ",
+    "full-name": "ชื่อ-นามสกุล",
+    "email": "อีเมล",
+    "phone": "เบอร์โทร",
+    "role": "บทบาท",
+    "education-level": "ระดับการศึกษา",
+    "year": "ปี",
+    "course-name": "ชื่อหลักสูตร",
+    "enroll-date": "วันที่ลงทะเบียน",
+    "course": "หลักสูตร",
+    "academic-year": "ปีการศึกษา"
   },
   "common": {
     "submit": "ส่ง",
@@ -354,14 +364,14 @@
     "edit-user": "แก้ไขผู้ใช้",
     "add-student": "เพิ่มบัณฑิต",
     "edit-student": "แก้ไขข้อมูลบัณฑิต",
-    "add-teacher": "เพิ่มผู้รับผิดชอบหลักสูตร",
-    "edit-teacher": "แก้ไขข้อมูลผู้รับผิดชอบหลักสูตร",
+    "add-teacher": "เพิ่มผู้ดูแลหลักสูตร",
+    "edit-teacher": "แก้ไขข้อมูลผู้ดูแลหลักสูตร",
     "code": "รหัส",
     "code-placeholder": "กรอกรหัส",
     "role": "ตำแหน่ง",
     "select-role": "เลือกตำแหน่ง",
     "student": "นักศึกษา",
-    "teacher": "ผู้รับผิดชอบหลักสูตร",
+    "teacher": "ผู้ดูแลหลักสูตร",
     "first-name": "ชื่อ",
     "first-name-placeholder": "กรอกชื่อ",
     "last-name": "นามสกุล",
@@ -372,8 +382,8 @@
     "phone-placeholder": "กรอกเบอร์โทร",
     "degree": "ระดับการศึกษา",
     "degree-placeholder": "กรอกระดับการศึกษา",
-    "year": "ระดับชั้นปี",
-    "year-placeholder": "กรอกระดับชั้นปี",
+    "year": "ปี",
+    "year-placeholder": "กรอกปี",
     "code-required": "กรุณากรอกรหัส",
     "first-name-required": "กรุณากรอกชื่อ",
     "first-name-min": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
@@ -394,11 +404,119 @@
     "delete-user-title": "ยืนยันการลบผู้ใช้",
     "delete-user-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
     "delete-users-title": "ยืนยันการลบผู้ใช้หลายคน",
-    "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน? การกระทำนี้ไม่สามารถย้อนกลับได้"
+    "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "toast": {
+      "deleted-successfully": "ลบผู้ใช้สำเร็จ",
+      "deleted-multiple-successfully": "ลบผู้ใช้หลายคนสำเร็จ",
+      "delete-failed": "ลบผู้ใช้ไม่สำเร็จ"
+    },
+    "user-form": {
+      "header": {
+        "create": "เพิ่มผู้ใช้งาน",
+        "create-student": "เพิ่มบัณฑิต",
+        "create-teacher": "เพิ่มผู้ดูแลหลักสูตร",
+        "edit": "แก้ไขผู้ใช้งาน"
+      },
+      "header_description": {
+        "create": "กรอกข้อมูลเพื่อเพิ่มผู้ใช้งานใหม่",
+        "create-student": "กรอกข้อมูลเพื่อเพิ่มบัณฑิตใหม่",
+        "create-teacher": "กรอกข้อมูลเพื่อเพิ่มผู้ดูแลหลักสูตรใหม่",
+        "edit": "แก้ไขข้อมูลผู้ใช้งาน"
+      },
+      "label": {
+        "role": "บทบาท",
+        "code": "รหัส",
+        "course": "หลักสูตร",
+        "first-name": "ชื่อ",
+        "last-name": "นามสกุล",
+        "email": "อีเมล",
+        "phone": "เบอร์โทร",
+        "degree": "ระดับการศึกษา",
+        "year": "ปี",
+        "enroll-date": "วันที่ลงทะเบียน",
+        "is-active": "สถานะการใช้งาน"
+      },
+      "placeholder": {
+        "role": "เลือกประเภทผู้ใช้",
+        "code": "กรอกรหัส",
+        "course": "เลือกหลักสูตร",
+        "first-name": "กรอกชื่อ",
+        "last-name": "กรอกนามสกุล",
+        "email": "กรอกอีเมล",
+        "phone": "กรอกเบอร์โทร",
+        "degree": "กรอกระดับการศึกษา",
+        "year": "กรอกปี",
+        "enroll-date": "เลือกวันที่ลงทะเบียน"
+      },
+      "role": {
+        "student": "บัณฑิต",
+        "teacher": "ผู้ดูแลหลักสูตร"
+      },
+      "education-level": {
+        "masters": "ปริญญาโท",
+        "doctoral": "ปริญญาเอก"
+      },
+      "errors": {
+        "first-name-required": "กรุณากรอกชื่อ",
+        "first-name-min": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
+        "first-name-max": "ชื่อต้องไม่เกิน 50 ตัวอักษร",
+        "last-name-required": "กรุณากรอกนามสกุล",
+        "last-name-min": "นามสกุลต้องมีอย่างน้อย 2 ตัวอักษร",
+        "last-name-max": "นามสกุลต้องไม่เกิน 50 ตัวอักษร",
+        "email-required": "กรุณากรอกอีเมล",
+        "email-invalid": "รูปแบบอีเมลไม่ถูกต้อง",
+        "email-exists": "อีเมลนี้มีอยู่ในระบบแล้ว",
+        "phone-required": "กรุณากรอกเบอร์โทร",
+        "phone-max": "เบอร์โทรต้องไม่เกิน 20 ตัวอักษร",
+        "code-required": "กรุณากรอกรหัส",
+        "degree-required": "กรุณากรอกระดับการศึกษา",
+        "degree-max": "ระดับการศึกษาต้องไม่เกิน 100 ตัวอักษร",
+        "year-required": "กรุณากรอกปี",
+        "year-max": "ปีต้องไม่เกิน 10 ตัวอักษร",
+        "course-required": "กรุณาเลือกหลักสูตร"
+      },
+      "toast": {
+        "created-successfully": "เพิ่มผู้ใช้สำเร็จ",
+        "creation-failed": "เพิ่มผู้ใช้ไม่สำเร็จ",
+        "updated-successfully": "แก้ไขผู้ใช้สำเร็จ",
+        "update-failed": "แก้ไขผู้ใช้ไม่สำเร็จ"
+      }
+    },
+    "import-dialog": {
+      "title": "นำเข้าผู้ใช้จากไฟล์ Excel",
+      "description": "อัปโหลดไฟล์ Excel เพื่อนำเข้าผู้ใช้หลายคนพร้อมกัน",
+      "drag-drop-text": "ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
+      "file-format": "รองรับไฟล์ .xlsx และ .xls (สูงสุด 5MB)",
+      "upload-button": "อัปโหลด",
+      "errors": {
+        "invalid-file-type": "กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls)",
+        "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด"
+      },
+      "toast": {
+        "import-success": "นำเข้าผู้ใช้สำเร็จ {count} คน",
+        "import-partial": "นำเข้าไม่สำเร็จ {failed} คน",
+        "import-failed": "นำเข้าผู้ใช้ไม่สำเร็จ"
+      }
+    }
   },
   "role": {
     "admin": "ผู้ดูแลระบบ",
-    "student": "นักศึกษา",
-    "teacher": "อาจารย์"
+    "student": "บัณฑิต",
+    "teacher": "ผู้ดูแลหลักสูตร"
+  },
+  "user-page": {
+    "title": "จัดการผู้ใช้งาน",
+    "description": "จัดการผู้ใช้งานในระบบ",
+    "import-button": "อัปโหลดไฟล์",
+    "tabs": {
+      "all": "ผู้ใช้ทั้งหมด",
+      "students": "นิสิต",
+      "teachers": "อาจารย์"
+    }
+  },
+  "student-page": {
+    "title": "รายชื่อบัณฑิต",
+    "description": "แสดงข้อมูลบัณฑิตทั้งหมดในระบบ คลิกที่ชื่อหรือแถวเพื่อดูโปรไฟล์",
+    "export-button": "ส่งออกข้อมูล"
   }
 }

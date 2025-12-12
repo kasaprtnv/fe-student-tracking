@@ -1,72 +1,74 @@
 import { z } from 'zod';
 
+export type UserRole = 'student' | 'teacher';
+
+// Base schema for common fields
+const baseSchema = (t: (key: string) => string) =>
+  z.object({
+    role: z.enum(['student', 'teacher']),
+    firstName: z
+      .string()
+      .min(1, t('errors.first-name-required'))
+      .min(2, t('errors.first-name-min'))
+      .max(50, t('errors.first-name-max')),
+    lastName: z
+      .string()
+      .min(1, t('errors.last-name-required'))
+      .min(2, t('errors.last-name-min'))
+      .max(50, t('errors.last-name-max')),
+    email: z
+      .string()
+      .min(1, t('errors.email-required'))
+      .email(t('errors.email-invalid')),
+    phone: z
+      .string()
+      .min(1, t('errors.phone-required'))
+      .max(20, t('errors.phone-max')),
+  });
+
+// Student-specific schema
+const studentSchema = (t: (key: string) => string) =>
+  baseSchema(t).extend({
+    role: z.literal('student'),
+    code: z.string().min(1, t('errors.code-required')),
+    degree: z
+      .string()
+      .min(1, t('errors.degree-required'))
+      .max(100, t('errors.degree-max')),
+    year: z
+      .string()
+      .min(1, t('errors.year-required'))
+      .max(10, t('errors.year-max')),
+    courseId: z.string().min(1, t('errors.course-required')),
+    enrollDate: z.string().optional(),
+  });
+
+// Teacher-specific schema
+const teacherSchema = (t: (key: string) => string) =>
+  baseSchema(t).extend({
+    role: z.literal('teacher'),
+    courseId: z.string().min(1, t('errors.course-required')),
+  });
+
+// Combined schema using discriminated union
 export const createUserSchema = (t: (key: string) => string) =>
-  z
-    .object({
-      code: z.string().min(1, t('code-required')),
-      firstName: z
-        .string()
-        .min(1, t('first-name-required'))
-        .min(2, t('first-name-min'))
-        .max(50, t('first-name-max')),
-      lastName: z
-        .string()
-        .min(1, t('last-name-required'))
-        .min(2, t('last-name-min'))
-        .max(50, t('last-name-max')),
-      email: z.string().email(t('email-invalid')),
-      phone: z.string().max(20, t('phone-max')).optional().or(z.literal('')),
-      degree: z.string().max(100, t('degree-max')).optional().or(z.literal('')),
-      year: z.string().max(10, t('year-max')).optional().or(z.literal('')),
-      role: z.enum(['student', 'teacher', 'admin']),
-      courseId: z.string().optional().or(z.literal('')),
-    })
-    .refine(
-      (data) => {
-        if (data.role === 'student' || data.role === 'teacher') {
-          return data.courseId && data.courseId.trim() !== '';
-        }
-        return true;
-      },
-      {
-        message: t('course-required-for-student'),
-        path: ['courseId'],
-      },
-    );
+  z.discriminatedUnion('role', [studentSchema(t), teacherSchema(t)]);
 
 export const updateUserSchema = (t: (key: string) => string) =>
-  z
-    .object({
-      code: z.string().min(1, t('code-required')),
-      firstName: z
-        .string()
-        .min(1, t('first-name-required'))
-        .min(2, t('first-name-min'))
-        .max(50, t('first-name-max')),
-      lastName: z
-        .string()
-        .min(1, t('last-name-required'))
-        .min(2, t('last-name-min'))
-        .max(50, t('last-name-max')),
-      email: z.string().email(t('email-invalid')).optional().or(z.literal('')),
-      phone: z.string().max(20, t('phone-max')).optional().or(z.literal('')),
-      degree: z.string().max(100, t('degree-max')).optional().or(z.literal('')),
-      year: z.string().max(10, t('year-max')).optional().or(z.literal('')),
-      role: z.enum(['student', 'teacher', 'admin']),
-      courseId: z.string().optional().or(z.literal('')),
-    })
-    .refine(
-      (data) => {
-        if (data.role === 'student' || data.role === 'teacher') {
-          return data.courseId && data.courseId.trim() !== '';
-        }
-        return true;
-      },
-      {
-        message: t('course-required-for-student'),
-        path: ['courseId'],
-      },
-    );
+  z.discriminatedUnion('role', [studentSchema(t), teacherSchema(t)]);
 
 export type CreateUserFormData = z.infer<ReturnType<typeof createUserSchema>>;
 export type UpdateUserFormData = z.infer<ReturnType<typeof updateUserSchema>>;
+
+export interface UserFormValues {
+  role: UserRole;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  courseId: string;
+  code?: string;
+  degree?: string;
+  year?: string;
+  enrollDate?: string;
+}
