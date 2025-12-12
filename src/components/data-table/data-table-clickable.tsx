@@ -358,9 +358,12 @@ export function DataTableClickable<TData, TValue>({
 
                       // Try to find an ID. Assuming TData has an id property or similar.
                       // Since we can't be sure of TData shape, we cast to any.
-                      const entity = row.original as any;
-                      if (entity && (entity.id || entity._id)) {
-                        onView(entity.id || entity._id);
+                      const entity = row.original as Record<string, unknown>;
+                      const entityId = (entity?.id ?? entity?._id) as
+                        | string
+                        | undefined;
+                      if (entityId) {
+                        onView(entityId);
                       }
                     }}
                   >

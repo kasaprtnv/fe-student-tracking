@@ -21,6 +21,15 @@ interface ImportUsersDialogProps {
   onImportSuccess?: () => void;
 }
 
+interface ImportResult {
+  success: boolean;
+  message?: string;
+  data?: {
+    success?: number;
+    failed?: number;
+  };
+}
+
 export function ImportUsersDialog({
   open,
   onOpenChange,
@@ -85,7 +94,9 @@ export function ImportUsersDialog({
 
     setIsUploading(true);
     try {
-      const result: any = await userService.importUsers(file);
+      const result = (await userService.importUsers(
+        file,
+      )) as unknown as ImportResult;
 
       if (result.success) {
         const successCount = result.data?.success || 0;

@@ -30,7 +30,7 @@ import { Loader } from 'lucide-react';
 import { EnrollDateInput } from '@/components/enroll-date-input';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
 import { toast } from 'sonner';
@@ -102,7 +102,7 @@ export function UpdateUserFormDialog({
   }, [user, userRole]);
 
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(updateUserSchema(t)) as any,
+    resolver: zodResolver(updateUserSchema(t)) as Resolver<UserFormValues>,
     defaultValues: getDefaultValues(),
   });
 
@@ -144,11 +144,12 @@ export function UpdateUserFormDialog({
       form.reset();
       onOpenChange(false);
       toast.success(t('toast.updated-successfully'));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating user:', error);
 
       // Check if it's a Supabase email already exists error
-      const errorMessage = error?.message || '';
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       if (
         errorMessage.includes('email address has already been registered') ||
         errorMessage.includes('User already registered') ||
