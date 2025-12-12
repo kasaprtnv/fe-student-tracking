@@ -2,11 +2,6 @@ import { formatDate } from '@/lib/format-date';
 import { User } from '@/types/user';
 import { ColumnDef } from '@tanstack/react-table';
 
-interface ColumnActions {
-  onView?: (id: string) => void;
-  t?: (key: string) => string;
-}
-
 export const createStudentColumns = (
   t: (key: string) => string,
 ): ColumnDef<User>[] => {
@@ -24,7 +19,8 @@ export const createStudentColumns = (
       accessorFn: (row) =>
         `${row.firstName || ''} ${row.lastName || ''}`.trim() || '-',
       cell: ({ row }) => {
-        const fullName = `${row.original.firstName || ''} ${row.original.lastName || ''}`.trim();
+        const fullName =
+          `${row.original.firstName || ''} ${row.original.lastName || ''}`.trim();
         return <span>{fullName || '-'}</span>;
       },
     },
@@ -94,4 +90,3 @@ export const createStudentColumns = (
 
   return columns;
 };
-

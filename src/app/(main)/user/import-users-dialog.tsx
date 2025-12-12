@@ -28,7 +28,7 @@ export function ImportUsersDialog({
 }: ImportUsersDialogProps) {
   const t = useTranslations('user.import-dialog');
   const tCommon = useTranslations('common');
-  
+
   const [file, setFile] = React.useState<File | null>(null);
   const [isDragging, setIsDragging] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
@@ -86,17 +86,17 @@ export function ImportUsersDialog({
     setIsUploading(true);
     try {
       const result: any = await userService.importUsers(file);
-      
+
       if (result.success) {
         const successCount = result.data?.success || 0;
         const failedCount = result.data?.failed || 0;
-        
+
         toast.success(t('toast.import-success', { count: successCount }));
-        
+
         if (failedCount > 0) {
           toast.warning(t('toast.import-partial', { failed: failedCount }));
         }
-        
+
         setFile(null);
         onOpenChange(false);
         onImportSuccess?.();
@@ -140,15 +140,11 @@ export function ImportUsersDialog({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`
-              relative flex cursor-pointer flex-col items-center justify-center
-              rounded-lg border-2 border-dashed p-8 transition-colors
-              ${
-                isDragging
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-              }
-            `}
+            className={`relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors ${
+              isDragging
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+            } `}
           >
             <Upload className="mb-4 h-12 w-12 text-gray-400" />
             <p className="mb-2 text-sm font-medium text-gray-700">
@@ -205,9 +201,7 @@ export function ImportUsersDialog({
             onClick={handleUpload}
             disabled={!file || isUploading}
           >
-            {isUploading && (
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isUploading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
             {t('upload-button')}
           </Button>
         </DialogFooter>

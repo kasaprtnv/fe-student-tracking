@@ -21,7 +21,13 @@ export default function StudentPage() {
   const tColumn = useTranslations('column');
 
   const { fetchAllCourses, allCourseId, courseMap } = useCourse();
-  const { fetchStudents, studentUsers, loader: isLoading, error, clearErr } = useUser();
+  const {
+    fetchStudents,
+    studentUsers,
+    loader: isLoading,
+    error,
+    clearErr,
+  } = useUser();
 
   const [searchQuery, setSearch] = useState('');
 
@@ -31,17 +37,19 @@ export default function StudentPage() {
   }, [fetchStudents, fetchAllCourses]);
 
   const allCourses = useMemo(() => {
-    return allCourseId.map(id => courseMap[id]).filter(Boolean);
+    return allCourseId.map((id) => courseMap[id]).filter(Boolean);
   }, [allCourseId, courseMap]);
 
   // Create courses list for filter options, only unique names
   const courseOptions = useMemo(() => {
-     if (!allCourses) return [];
-     const uniqueCourseNames = Array.from(new Set(allCourses.map(c => c.name)));
-     return uniqueCourseNames.map(name => ({
-        label: name,
-        value: name 
-     }));
+    if (!allCourses) return [];
+    const uniqueCourseNames = Array.from(
+      new Set(allCourses.map((c) => c.name)),
+    );
+    return uniqueCourseNames.map((name) => ({
+      label: name,
+      value: name,
+    }));
   }, [allCourses]);
 
   const enrichedStudents = useMemo(() => {
@@ -63,7 +71,8 @@ export default function StudentPage() {
             const yearStr = (date.getFullYear() + 543).toString();
             years.add(yearStr);
           }
-        } catch (e) {
+        } catch (error) {
+          console.log(error);
           // ignore invalid date
         }
       }
@@ -74,14 +83,15 @@ export default function StudentPage() {
   }, [enrichedStudents]);
 
   const displayStudents = useMemo(() => {
-      if (!searchQuery) return enrichedStudents;
-      const lowerQuery = searchQuery.toLowerCase();
-      return enrichedStudents.filter(student => 
+    if (!searchQuery) return enrichedStudents;
+    const lowerQuery = searchQuery.toLowerCase();
+    return enrichedStudents.filter(
+      (student) =>
         student.firstName?.toLowerCase().includes(lowerQuery) ||
         student.lastName?.toLowerCase().includes(lowerQuery) ||
         student.code?.toLowerCase().includes(lowerQuery) ||
-        student.email?.toLowerCase().includes(lowerQuery)
-      );
+        student.email?.toLowerCase().includes(lowerQuery),
+    );
   }, [enrichedStudents, searchQuery]);
 
   const studentColumns = useMemo(
@@ -111,45 +121,52 @@ export default function StudentPage() {
   };
 
   const handleExport = (data: User[]) => {
-    const exportData = data.map(student => ({
-       [tColumn('code')]: student.code || '',
-       [tColumn('full-name')]: `${student.firstName} ${student.lastName}`,
-       [tColumn('email')]: student.email || '',
-       [tColumn('phone')]: student.phone || '',
-       [tColumn('education-level')]: student.degree || '',
-       [tColumn('course-name')]: student.courseName || '',
-       [tColumn('academic-year')]: student.enrollDate ? (new Date(student.enrollDate).getFullYear() + 543).toString() : '',
-       [tColumn('enroll-date')]: student.enrollDate ? formatDate(student.enrollDate) : '-'
+    const exportData = data.map((student) => ({
+      [tColumn('code')]: student.code || '',
+      [tColumn('full-name')]: `${student.firstName} ${student.lastName}`,
+      [tColumn('email')]: student.email || '',
+      [tColumn('phone')]: student.phone || '',
+      [tColumn('education-level')]: student.degree || '',
+      [tColumn('course-name')]: student.courseName || '',
+      [tColumn('academic-year')]: student.enrollDate
+        ? (new Date(student.enrollDate).getFullYear() + 543).toString()
+        : '',
+      [tColumn('enroll-date')]: student.enrollDate
+        ? formatDate(student.enrollDate)
+        : '-',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
-    XLSX.writeFile(workbook, "students_export.xlsx");
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
+    XLSX.writeFile(workbook, 'students_export.xlsx');
   };
 
   if (isLoading) {
-      return (
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="text-center">
-            <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin" />
-            <p>Loading...</p>
-          </div>
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin" />
+          <p>Loading...</p>
         </div>
-      );
+      </div>
+    );
   }
 
   if (error) {
-      return (
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="text-center text-red-500">
-            <p>Error loading data</p>
-            <button onClick={clearErr} className="mt-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600">
-                Retry
-            </button>
-          </div>
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center text-red-500">
+          <p>Error loading data</p>
+          <button
+            onClick={clearErr}
+            className="mt-4 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+          >
+            Retry
+          </button>
         </div>
-      );
+      </div>
+    );
   }
 
   return (
@@ -158,9 +175,7 @@ export default function StudentPage() {
       <div className="container mx-auto py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
-          <p className="text-muted-foreground">
-            {t('description')}
-          </p>
+          <p className="text-muted-foreground">{t('description')}</p>
         </div>
 
         <DataTableClickable
@@ -172,10 +187,14 @@ export default function StudentPage() {
           onView={handleViewProfile}
           filterColumns={filterColumns}
           extraToolbarAction={(table) => (
-            <Button 
-              variant="outline" 
-              onClick={() => handleExport(table.getFilteredRowModel().rows.map((row) => row.original))} 
-              className="ml-auto mr-2"
+            <Button
+              variant="outline"
+              onClick={() =>
+                handleExport(
+                  table.getFilteredRowModel().rows.map((row) => row.original),
+                )
+              }
+              className="mr-2 ml-auto"
             >
               <Download className="mr-2 h-4 w-4" />
               {t('export-button')}

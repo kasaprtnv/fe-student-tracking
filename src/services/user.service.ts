@@ -107,7 +107,7 @@ class UserService extends APIService {
     }
 
     const payload = toSnakeCase(filteredData);
-    
+
     return this.post('/users/create', payload)
       .then((response) => response?.data)
       .catch((error) => {
@@ -148,7 +148,7 @@ class UserService extends APIService {
     }
 
     const payload = toSnakeCase(filteredData);
-    
+
     return this.patch(`/users/${id}`, payload)
       .then((response) => response?.data)
       .catch((error) => {

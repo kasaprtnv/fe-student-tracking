@@ -28,7 +28,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { EnrollDateInput } from '@/components/enroll-date-input';
-import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -119,36 +118,6 @@ export function UpdateUserFormDialog({
     }
   }, [user, form, getDefaultValues]);
 
-  // Handle role change
-  const handleRoleChange = (newRole: UserRole) => {
-    setSelectedRole(newRole);
-    const currentValues = form.getValues();
-
-    if (newRole === 'student') {
-      form.reset({
-        role: 'student',
-        code: user?.code || '',
-        firstName: currentValues.firstName || '',
-        lastName: currentValues.lastName || '',
-        email: currentValues.email || '',
-        phone: currentValues.phone || '',
-        degree: user?.degree || '',
-        year: user?.year || '',
-        courseId: user?.courseId || '',
-        enrollDate: user?.enrollDate || '',
-      } as UserFormValues);
-    } else {
-      form.reset({
-        role: 'teacher',
-        firstName: currentValues.firstName || '',
-        lastName: currentValues.lastName || '',
-        email: currentValues.email || '',
-        phone: currentValues.phone || '',
-        courseId: user?.courseId || '',
-      } as UserFormValues);
-    }
-  };
-
   const onSubmit = async (data: UserFormValues) => {
     if (!user?.id) return;
 
@@ -168,13 +137,16 @@ export function UpdateUserFormDialog({
 
     try {
       console.log('Submitting Update User Data:', formattedData);
-      await updateExistingUser(user.id, formattedData as unknown as UpdateUserFormData);
+      await updateExistingUser(
+        user.id,
+        formattedData as unknown as UpdateUserFormData,
+      );
       form.reset();
       onOpenChange(false);
       toast.success(t('toast.updated-successfully'));
     } catch (error: any) {
       console.error('Error updating user:', error);
-      
+
       // Check if it's a Supabase email already exists error
       const errorMessage = error?.message || '';
       if (
@@ -209,8 +181,6 @@ export function UpdateUserFormDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
           >
-
-
             {/* Student-specific fields: code, courseId */}
             {selectedRole === 'student' && (
               <>
@@ -405,7 +375,9 @@ export function UpdateUserFormDialog({
                       >
                         <FormControl>
                           <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                            <SelectValue placeholder={t('placeholder.degree')} />
+                            <SelectValue
+                              placeholder={t('placeholder.degree')}
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -464,7 +436,6 @@ export function UpdateUserFormDialog({
                 )}
               />
             )}
-
 
             {/* Spacer to push footer to bottom */}
             <div className="flex-1" />
