@@ -17,45 +17,6 @@ const fruits: SelectOption[] = [
   { label: 'ลิ้นจี่', value: 'lychee' },
 ];
 
-const courses: SelectOption[] = [
-  {
-    label: 'React Development',
-    value: 'react',
-    description:
-      'สร้างเว็บแอพพลิเคชันด้วย React, Hooks และ Context API พร้อมจัดการ State ขั้นสูง',
-  },
-  {
-    label: 'Node.js Backend',
-    value: 'nodejs',
-    description:
-      'พัฒนา Backend API ด้วย Node.js, Express, MongoDB และ Authentication',
-  },
-  {
-    label: 'TypeScript Mastery',
-    value: 'typescript',
-    description:
-      'เรียนรู้ TypeScript ตั้งแต่พื้นฐานไปจนถึงขั้นสูง Generic, Utility Types',
-  },
-  {
-    label: 'Database Design',
-    value: 'database',
-    description:
-      'ออกแบบฐานข้อมูลที่มีประสิทธิภาพ SQL, NoSQL และการเพิ่มประสิทธิภาพ',
-  },
-  {
-    label: 'UI/UX Design',
-    value: 'uiux',
-    description:
-      'ออกแบบ User Interface และ User Experience ที่ดึงดูดและใช้งานง่าย',
-  },
-  {
-    label: 'DevOps Engineering',
-    value: 'devops',
-    description:
-      'CI/CD Pipeline, Docker, Kubernetes และการจัดการ Infrastructure',
-  },
-];
-
 export default function TestComboboxPage() {
   const [selectedFruits, setSelectedFruits] = useState<string[]>([]);
 

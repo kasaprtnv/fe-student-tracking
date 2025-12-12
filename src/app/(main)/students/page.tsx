@@ -71,7 +71,8 @@ export default function StudentPage() {
             const yearStr = (date.getFullYear() + 543).toString();
             years.add(yearStr);
           }
-        } catch {
+        } catch (error) {
+          console.log(error);
           // ignore invalid date
         }
       }
