@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import { setLocale } from '@/actions/setLocale';
 import Image from 'next/image';
-import LogoBuu from './logobuu.png';
 import { ArrowRight, LogOut } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
@@ -20,6 +19,7 @@ export default function Sidebar() {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const BASE_PATH = process.env.NEXT_BASE_PATH || '';
   const [, startTransition] = useTransition();
 
   const t = useTranslations();
@@ -64,7 +64,7 @@ export default function Sidebar() {
           {open ? (
             <div className="h-10 w-full max-w-[220px]">
               <Image
-                src={LogoBuu}
+                src={`${BASE_PATH}/logobuu.png`}
                 alt="BUU Logo"
                 width={220}
                 height={40}
