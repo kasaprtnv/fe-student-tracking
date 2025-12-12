@@ -68,7 +68,8 @@
     "delete": "ลบ",
     "confirm": "ยืนยัน",
     "close": "ปิด",
-    "edit": "แก้ไข"
+    "edit": "แก้ไข",
+    "days": "วัน"
   },
   "student-form": {
     "label": {
@@ -300,7 +301,8 @@
 
         "dayPeriod-integer": "ช่วงเวลาต้องเป็นตัวเลข",
 
-        "notifyBeforeDays-integer": "จำนวนวันก่อนแจ้งเตือนต้องเป็นตัวเลข"
+        "notifyBeforeDays-integer": "จำนวนวันก่อนแจ้งเตือนต้องเป็นตัวเลข",
+        "dayPeriod-exceeds": "ช่วงเวลาไม่สามารถเกินช่วงเวลาของขั้นตอนการศึกษาที่ {value} วัน"
       }
     },
     "delete": {

@@ -61,6 +61,16 @@ class MilestoneStepService extends APIService {
       });
   }
 
+  async updateMultipleMilestoneSteps(
+    data: IMilestoneStep[],
+  ): Promise<IApiPatchResponse<IMilestoneStep[]>> {
+    return this.patch('/milestone-steps/bulk-update', data)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async deleteMilestoneStep(id: string): Promise<IApiDeleteResponse> {
     return this.delete(`/milestone-steps/${id}`)
       .then((response) => response?.data)

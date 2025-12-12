@@ -84,6 +84,21 @@ export const updateMilestoneStep = createAsyncThunk(
   },
 );
 
+export const updateMultipleMilestoneSteps = createAsyncThunk(
+  'milestoneStep/multipleUpdate',
+  async (data: IMilestoneStep[], { rejectWithValue }) => {
+    try {
+      const res = await milestoneStepService.updateMultipleMilestoneSteps(data);
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to update multiple milestone steps');
+    }
+  },
+);
+
 export const deleteMilestoneStep = createAsyncThunk(
   'milestoneStep/delete',
   async (id: string, { rejectWithValue }) => {
