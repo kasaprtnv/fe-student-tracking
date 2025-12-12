@@ -13,7 +13,7 @@ import { User } from '@/types/user';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-export const StudentTable = () => {
+export const AllTable = () => {
   const {
     searchQuery,
     setSearch: setSearchQuery,
@@ -31,12 +31,11 @@ export const StudentTable = () => {
     fetchAllCourses();
   }, [fetchAllCourses]);
 
-  // Get student data directly from Redux store userMap and enrich with courseName
-  const filterStudent = React.useMemo(() => {
+  // Get all users data directly from Redux store userMap and enrich with courseName
+  const allUsers = React.useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     return Object.values(userMap)
       .filter((user) => {
-        if (user.role !== 'student') return false;
         if (!query) return true;
         return (
           user.firstName?.toLowerCase().includes(query) ||
@@ -70,7 +69,7 @@ export const StudentTable = () => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const studentColumns = createAllStudentColumns(tColumn);
+  const allColumns = createAllStudentColumns(tColumn);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -107,8 +106,8 @@ export const StudentTable = () => {
   return (
     <>
       <DataTable
-        columns={studentColumns}
-        data={filterStudent}
+        columns={allColumns}
+        data={allUsers}
         searchQuery={searchQuery}
         onSearch={setSearchQuery}
         onAdd={() => setIsAdd(true)}

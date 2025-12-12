@@ -1,4 +1,3 @@
-import { formatDate } from '@/lib/format-date';
 import { User } from '@/types/user';
 import { ColumnDef } from '@tanstack/react-table';
 import {
@@ -18,22 +17,29 @@ interface ColumnActions {
   t?: (key: string) => string;
 }
 
-export const createTeacherColumns = (): ColumnDef<User>[] => {
+export const createTeacherColumns = (
+  t: (key: string) => string,
+): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
-      header: 'full-name',
+      header: t('full-name'),
       accessorFn: (row) =>
         `${row.firstName || ''} ${row.lastName || ''}`.trim() || '-',
     },
     {
-      header: 'email',
+      header: t('email'),
       accessorKey: 'email',
       cell: ({ row }) => row.original.email || '-',
     },
     {
-      header: 'phone',
+      header: t('phone'),
       accessorKey: 'phone',
       cell: ({ row }) => row.original.phone || '-',
+    },
+    {
+      header: t('course'),
+      accessorKey: 'courseName',
+      cell: ({ row }) => row.original.courseName || '-',
     },
   ];
   columns.push({

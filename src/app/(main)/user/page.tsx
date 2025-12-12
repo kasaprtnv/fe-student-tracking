@@ -2,15 +2,22 @@
 
 import React from 'react';
 import useSWR from 'swr';
-import { DataTable } from '@/components/data-table/data-table';
+import { useTranslations } from 'next-intl';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Upload } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
-import { createAllStudentColumns } from './create-all-student-column';
-import { createTeacherColumns } from './create-teacher-column';
 import { TeacherTable } from './teacher-table';
+import { StudentTable } from './student-table';
+import { AllTable } from './all-table';
+import { PageHeader } from '../../../components/page-header';
+import { ImportUsersDialog } from './import-users-dialog';
 
 const UserPage = () => {
-  const { fetchAllUsers, filteredUserIds, getUserById } = useUser();
+  const t = useTranslations('user-page');
+  const tUser = useTranslations('user');
+  const { fetchAllUsers } = useUser();
+  const [isImportOpen, setIsImportOpen] = React.useState(false);
 
   useSWR(
     'fetch-users',
@@ -22,45 +29,50 @@ const UserPage = () => {
     },
   );
 
-  const studentAndAllColumns = createAllStudentColumns().map((column) => {
-    if (typeof column.header === 'string') {
-      return {
-        ...column,
-        header: column.header,
-      };
-    }
-    return column;
-  });
-
-  const alldata = filteredUserIds
-    .map((id) => {
-      const user = getUserById(id);
-      if (!user) return undefined;
-      return user;
-    })
-    .filter((user) => user !== undefined);
-
-  const filterStudent = alldata.filter((user) => user?.role === 'student');
-  const filterTeacher = alldata.filter((user) => user?.role === 'teacher');
+  const handleImportSuccess = async () => {
+    // Refresh user list after successful import
+    await fetchAllUsers();
+  };
 
   return (
-    <div>
-      <h1 className="mb-4 text-2xl font-bold">User Management</h1>
-      <Tabs defaultValue="students" className="w-full">
-        <TabsList>
-          <TabsTrigger value="students">Students</TabsTrigger>
-          <TabsTrigger value="teachers">Teachers</TabsTrigger>
-        </TabsList>
-        <TabsContent value="students">
-          <h2 className="mb-2 text-xl font-semibold">Student List</h2>
-          <DataTable columns={studentAndAllColumns} data={filterStudent} />
-        </TabsContent>
-        <TabsContent value="teachers">
-          <h2 className="mb-2 text-xl font-semibold">Teacher List</h2>
-          <TeacherTable userData={filterTeacher} />
-        </TabsContent>
-      </Tabs>
-    </div>
+    <>
+      <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
+      <div className="container mx-auto py-8">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+            <p className="text-muted-foreground">{t('description')}</p>
+          </div>
+          <Button onClick={() => setIsImportOpen(true)}>
+            <Upload className="mr-2 h-4 w-4" />
+            {t('import-button')}
+          </Button>
+        </div>
+
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList>
+            <TabsTrigger value="all">{t('tabs.all')}</TabsTrigger>
+            <TabsTrigger value="students">{t('tabs.students')}</TabsTrigger>
+            <TabsTrigger value="teachers">{t('tabs.teachers')}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all">
+            <AllTable />
+          </TabsContent>
+          <TabsContent value="students">
+            <StudentTable />
+          </TabsContent>
+          <TabsContent value="teachers">
+            <TeacherTable />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <ImportUsersDialog
+        open={isImportOpen}
+        onOpenChange={setIsImportOpen}
+        onImportSuccess={handleImportSuccess}
+      />
+    </>
   );
 };
 

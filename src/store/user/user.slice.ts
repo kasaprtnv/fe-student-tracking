@@ -150,12 +150,9 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        const updated = action.payload.updatedFields;
-        if (updated.id && state.userMap[updated.id]) {
-          state.userMap[updated.id] = {
-            ...state.userMap[updated.id],
-            ...updated,
-          };
+        const { id, user } = action.payload;
+        if (id && user) {
+          state.userMap[id] = user;
         }
       })
       .addCase(updateUser.rejected, (state, action) => {

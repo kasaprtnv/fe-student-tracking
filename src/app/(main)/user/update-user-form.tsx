@@ -26,8 +26,8 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { EnrollDateInput } from '@/components/enroll-date-input';
 import { Loader } from 'lucide-react';
+import { EnrollDateInput } from '@/components/enroll-date-input';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import React from 'react';
@@ -36,86 +36,88 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
 import { toast } from 'sonner';
 import { SelectOption } from '@/types';
+import { User } from '@/types/user';
 import {
-  createUserSchema,
-  CreateUserFormData,
+  updateUserSchema,
+  UpdateUserFormData,
   UserFormValues,
   UserRole,
 } from '@/validations/user';
 
-interface CreateUserFormDialogProps {
+interface UpdateUserFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  user: User | undefined;
   courseOptions: SelectOption[];
-  defaultRole?: UserRole;
 }
 
-export function CreateUserFormDialog({
+export function UpdateUserFormDialog({
   open,
   onOpenChange,
+  user,
   courseOptions,
-  defaultRole = 'student',
-}: CreateUserFormDialogProps) {
+}: UpdateUserFormDialogProps) {
   const t = useTranslations('user.user-form');
   const tCommon = useTranslations('common');
-  const { createNewUser, storeAction, userMap } = useUser();
+  const { updateExistingUser, storeAction, userMap } = useUser();
 
-  // Check if email already exists
+  // Check if email already exists (excluding current user)
   const isEmailExists = (email: string): boolean => {
     return Object.values(userMap).some(
-      (user) => user.email?.toLowerCase() === email.toLowerCase(),
+      (u) =>
+        u.email?.toLowerCase() === email.toLowerCase() && u.id !== user?.id,
     );
   };
 
-  const [selectedRole, setSelectedRole] = React.useState<UserRole>(defaultRole);
+  const userRole: UserRole =
+    user?.role === 'student' || user?.role === 'teacher'
+      ? user.role
+      : 'student';
+
+  const [selectedRole, setSelectedRole] = React.useState<UserRole>(userRole);
+
+  const getDefaultValues = React.useCallback((): UserFormValues => {
+    if (userRole === 'student') {
+      return {
+        role: 'student',
+        code: user?.code || '',
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        email: user?.email || '',
+        phone: user?.phone || '',
+        degree: user?.degree || '',
+        year: user?.year || '',
+        courseId: user?.courseId || '',
+        enrollDate: user?.enrollDate || '',
+      };
+    } else {
+      return {
+        role: 'teacher',
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        email: user?.email || '',
+        phone: user?.phone || '',
+        courseId: user?.courseId || '',
+      };
+    }
+  }, [user, userRole]);
 
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(createUserSchema(t)) as any,
-    defaultValues: {
-      role: defaultRole,
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      courseId: '',
-      ...(defaultRole === 'student' && {
-        code: '',
-        degree: '',
-        year: '',
-        enrollDate: '',
-      }),
-    } as UserFormValues,
+    resolver: zodResolver(updateUserSchema(t)) as any,
+    defaultValues: getDefaultValues(),
   });
 
-  // Sync selectedRole and form when dialog opens or defaultRole changes
+  // Reset form when user changes or dialog opens
   React.useEffect(() => {
-    if (open) {
-      setSelectedRole(defaultRole);
-      if (defaultRole === 'student') {
-        form.reset({
-          role: 'student',
-          code: '',
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          degree: '',
-          year: '',
-          courseId: '',
-          enrollDate: '',
-        });
-      } else {
-        form.reset({
-          role: 'teacher',
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          courseId: '',
-        });
-      }
+    if (user) {
+      const newRole: UserRole =
+        user.role === 'student' || user.role === 'teacher'
+          ? user.role
+          : 'student';
+      setSelectedRole(newRole);
+      form.reset(getDefaultValues());
     }
-  }, [open, defaultRole, form]);
+  }, [user, form, getDefaultValues]);
 
   // Handle role change
   const handleRoleChange = (newRole: UserRole) => {
@@ -125,29 +127,31 @@ export function CreateUserFormDialog({
     if (newRole === 'student') {
       form.reset({
         role: 'student',
-        code: '',
+        code: user?.code || '',
         firstName: currentValues.firstName || '',
         lastName: currentValues.lastName || '',
         email: currentValues.email || '',
         phone: currentValues.phone || '',
-        degree: '',
-        year: '',
-        courseId: '',
-        enrollDate: '',
-      });
+        degree: user?.degree || '',
+        year: user?.year || '',
+        courseId: user?.courseId || '',
+        enrollDate: user?.enrollDate || '',
+      } as UserFormValues);
     } else {
       form.reset({
         role: 'teacher',
         firstName: currentValues.firstName || '',
         lastName: currentValues.lastName || '',
         email: currentValues.email || '',
-        courseId: '',
         phone: currentValues.phone || '',
-      });
+        courseId: user?.courseId || '',
+      } as UserFormValues);
     }
   };
 
   const onSubmit = async (data: UserFormValues) => {
+    if (!user?.id) return;
+
     // Check if email already exists
     if (isEmailExists(data.email)) {
       form.setError('email', {
@@ -163,14 +167,13 @@ export function CreateUserFormDialog({
     }
 
     try {
-      console.log('Submitting Create User Data:', formattedData);
-      await createNewUser(formattedData as unknown as CreateUserFormData);
+      console.log('Submitting Update User Data:', formattedData);
+      await updateExistingUser(user.id, formattedData as unknown as UpdateUserFormData);
       form.reset();
-      setSelectedRole(defaultRole);
       onOpenChange(false);
-      toast.success(t('toast.created-successfully'));
+      toast.success(t('toast.updated-successfully'));
     } catch (error: any) {
-      console.error('Error creating user:', error);
+      console.error('Error updating user:', error);
       
       // Check if it's a Supabase email already exists error
       const errorMessage = error?.message || '';
@@ -185,28 +188,20 @@ export function CreateUserFormDialog({
         });
         toast.error(t('errors.email-exists'));
       } else {
-        toast.error(t('toast.creation-failed'));
+        toast.error(t('toast.update-failed'));
       }
     }
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      form.reset();
-      setSelectedRole(defaultRole);
-    }
-    onOpenChange(open);
-  };
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex h-[600px] flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-gray-800">
-            {t('header.create')}
+            {t('header.edit')}
           </DialogTitle>
           <DialogDescription className="text-sm text-gray-600">
-            {t('header_description.create')}
+            {t('header_description.edit')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -214,40 +209,7 @@ export function CreateUserFormDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
           >
-            {/* Role Selector */}
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.role')}
-                  </FormLabel>
-                  <Select
-                    onValueChange={(value: UserRole) => {
-                      field.onChange(value);
-                      handleRoleChange(value);
-                    }}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                        <SelectValue placeholder={t('placeholder.role')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="student">
-                        {t('role.student')}
-                      </SelectItem>
-                      <SelectItem value="teacher">
-                        {t('role.teacher')}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
 
             {/* Student-specific fields: code, courseId */}
             {selectedRole === 'student' && (
@@ -364,8 +326,9 @@ export function CreateUserFormDialog({
                   <FormControl>
                     <Input
                       type="email"
+                      disabled
                       placeholder={t('placeholder.email')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
                     />
                   </FormControl>
@@ -492,15 +455,16 @@ export function CreateUserFormDialog({
                     </FormLabel>
                     <div className="relative">
                       <EnrollDateInput
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             )}
+
 
             {/* Spacer to push footer to bottom */}
             <div className="flex-1" />
@@ -516,14 +480,14 @@ export function CreateUserFormDialog({
                     {tCommon('cancel')}
                   </Button>
                 </DialogClose>
-                <Button disabled={storeAction === 'creating'} type="submit">
-                  {storeAction === 'creating' && (
+                <Button disabled={storeAction === 'updating'} type="submit">
+                  {storeAction === 'updating' && (
                     <Loader
                       className="mr-2 size-4 animate-spin"
                       aria-hidden="true"
                     />
                   )}
-                  {tCommon('submit')}
+                  {tCommon('save')}
                 </Button>
               </div>
             </DialogFooter>
@@ -533,5 +497,3 @@ export function CreateUserFormDialog({
     </Dialog>
   );
 }
-
-

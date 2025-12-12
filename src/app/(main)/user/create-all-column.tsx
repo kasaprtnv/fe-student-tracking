@@ -19,49 +19,63 @@ interface ColumnActions {
   t?: (key: string) => string;
 }
 
-export const createAllStudentColumns = (): ColumnDef<User>[] => {
+export const createAllStudentColumns = (
+  t: (key: string) => string,
+): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'code',
-      header: 'code',
+      header: t('code'),
       cell: ({ row }) => row.original.code || '-',
     },
     {
-      header: 'full-name',
+      header: t('full-name'),
       accessorFn: (row) =>
         `${row.firstName || ''} ${row.lastName || ''}`.trim() || '-',
     },
     {
-      header: 'email',
+      header: t('email'),
       accessorKey: 'email',
       cell: ({ row }) => row.original.email || '-',
     },
     {
-      header: 'phone',
+      header: t('phone'),
       accessorKey: 'phone',
       cell: ({ row }) => row.original.phone || '-',
     },
     {
-      header: 'education-level',
+      header: t('role'),
+      accessorKey: 'role',
+      cell: ({ row }) => {
+        const role = row.original.role;
+        if (role === 'student') return 'บัณฑิต';
+        if (role === 'teacher') return 'ผู้ดูแลหลักสูตร';
+        if (role === 'admin') return 'ผู้ดูแลระบบ';
+        return '-';
+      },
+    },
+    {
+      header: t('education-level'),
       accessorKey: 'degree',
       cell: ({ row }) => row.original.degree || '-',
     },
     {
-      header: 'year',
+      header: t('year'),
       accessorKey: 'year',
       cell: ({ row }) => row.original.year || '-',
     },
     {
-      header: 'course-name',
+      header: t('course-name'),
       accessorKey: 'courseName',
       cell: ({ row }) => row.original.courseName || '-',
     },
     {
       id: 'enrollDate',
-      header: 'enroll-date',
+      header: t('enroll-date'),
       accessorKey: 'enrollDate',
       cell: (row) => {
         const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
         const localString = formatDate(rawDate);
         return <span>{localString}</span>;
       },
