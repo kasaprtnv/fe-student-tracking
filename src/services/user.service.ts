@@ -80,7 +80,35 @@ class UserService extends APIService {
   }
 
   async createUser(data: Partial<User>): Promise<IApiPostResponse<User>> {
-    return this.post('/users/create', data)
+    // Determine allowed fields based on role
+    const isTeacher = data.role === 'teacher';
+
+    const allowedFields = isTeacher
+      ? ['firstName', 'lastName', 'email', 'phone', 'role', 'courseId']
+      : [
+          'code',
+          'firstName',
+          'lastName',
+          'email',
+          'phone',
+          'degree',
+          'year',
+          'role',
+          'courseId',
+          'enrollDate',
+        ];
+
+    const filteredData: Record<string, unknown> = {};
+    for (const key of allowedFields) {
+      const value = data[key as keyof User];
+      if (value !== undefined && value !== null && value !== '') {
+        filteredData[key] = value;
+      }
+    }
+
+    const payload = toSnakeCase(filteredData);
+    
+    return this.post('/users/create', payload)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -94,9 +122,9 @@ class UserService extends APIService {
     // Determine allowed fields based on role
     const isTeacher = data.role === 'teacher';
 
-    // Teachers don't have courseId, students do
+    // Both teachers and students can have courseId
     const allowedFields = isTeacher
-      ? ['firstName', 'lastName', 'email', 'phone', 'role']
+      ? ['firstName', 'lastName', 'email', 'phone', 'role', 'courseId']
       : [
           'code',
           'firstName',
@@ -107,6 +135,7 @@ class UserService extends APIService {
           'year',
           'role',
           'courseId',
+          'enrollDate',
         ];
 
     const filteredData: Record<string, unknown> = {};
@@ -118,10 +147,9 @@ class UserService extends APIService {
       }
     }
 
-    // Convert to snake_case for API
-    const snakeCaseData = toSnakeCase(filteredData);
-
-    return this.patch(`/users/${id}`, snakeCaseData)
+    const payload = toSnakeCase(filteredData);
+    
+    return this.patch(`/users/${id}`, payload)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

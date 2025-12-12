@@ -66,11 +66,11 @@ interface DataTableProps<TData, TValue> {
     hiddenColumns: Column<TData, unknown>[],
   ) => Column<TData, unknown>[];
   actionHeader?: React.ReactNode;
-  extraToolbarAction?: React.ReactNode;
+  extraToolbarAction?: React.ReactNode | ((table: import('@tanstack/react-table').Table<TData>) => React.ReactNode);
   actionHeaderId?: string;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTableClickable<TData, TValue>({
   columns,
   data,
   enabledSearch = true,
@@ -107,6 +107,17 @@ export function DataTable<TData, TValue>({
   actionHeaderId,
 }: DataTableProps<TData, TValue>) {
   const t = useTranslations('data-table');
+  // ... (unchanged code) ...
+  // ... (we need to skip until rendering part) ...
+  /* Since replace_file_content is contiguous, I must include lines between prop def and usage or use multiple replaces.
+     Wait, I can just replace the interface definition and the rendering part separately?
+     No, function signature also changed in props destructuring (Wait, destructuring is fine as extraToolbarAction name is same).
+     But I need to change the usage site.
+     Let's do this in 2 steps or careful block selection.
+     Line 1 is imports. Line 34 is interface. Line 73 is function start. Line 232 is usage.
+     I cannot bridge 34 and 232.
+  */
+
   const tColumn = useTranslations('column');
   const [searchValue, setSearchValue] = React.useState(searchQuery);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -229,7 +240,9 @@ export function DataTable<TData, TValue>({
               )}
             </>
           )}
-          {extraToolbarAction}
+          {typeof extraToolbarAction === 'function' 
+            ? extraToolbarAction(table) 
+            : extraToolbarAction}
           {actionHeader}
         </div>
         <div className="flex items-center gap-4">
@@ -321,6 +334,30 @@ export function DataTable<TData, TValue>({
                         ? row.getIsSelected() && 'selected'
                         : false
                     }
+                    className={
+                      onView
+                        ? 'cursor-pointer hover:bg-muted/50 transition-colors'
+                        : undefined
+                    }
+                    onClick={(e) => {
+                      if (!onView) return;
+                      // Prevent navigation when clicking interactive elements
+                      if (
+                        (e.target as HTMLElement).closest('button') ||
+                        (e.target as HTMLElement).closest('input') ||
+                        (e.target as HTMLElement).closest('[role="checkbox"]') ||
+                        (e.target as HTMLElement).closest('a')
+                      ) {
+                        return;
+                      }
+
+                      // Try to find an ID. Assuming TData has an id property or similar.
+                      // Since we can't be sure of TData shape, we cast to any.
+                      const entity = row.original as any;
+                      if (entity && (entity.id || entity._id)) {
+                        onView(entity.id || entity._id);
+                      }
+                    }}
                   >
                     {enabledMultiSelect && (
                       <TableCell className="w-[50px]">
