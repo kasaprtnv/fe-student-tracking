@@ -12,15 +12,14 @@ import { sidebarItems } from './sidabar-data';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/use-auth';
 
-const hiddenRoutes = ['/login'];
-
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const BASE_PATH = process.env.NEXT_BASE_PATH || '';
+  const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const [, startTransition] = useTransition();
+  const hiddenRoutes = [`${BASE_PATH}/login`];
 
   const t = useTranslations();
   const locale = useLocale();
