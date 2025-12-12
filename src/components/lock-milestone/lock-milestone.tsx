@@ -32,7 +32,6 @@ export default function UnlockConditionModal({
   onSave,
   initialSelected,
   isLoop,
-  prerequisites,
 }: UnlockConditionModalProps) {
   const [selected, setSelected] = useState<UnlockCondition[]>(
     initialSelected ?? [],

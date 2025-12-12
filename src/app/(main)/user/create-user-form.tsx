@@ -28,10 +28,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { EnrollDateInput } from '@/components/enroll-date-input';
 import { Loader } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
 import { toast } from 'sonner';
@@ -70,7 +69,7 @@ export function CreateUserFormDialog({
   const [selectedRole, setSelectedRole] = React.useState<UserRole>(defaultRole);
 
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(createUserSchema(t)) as any,
+    resolver: zodResolver(createUserSchema(t)) as Resolver<UserFormValues>,
     defaultValues: {
       role: defaultRole,
       firstName: '',
@@ -169,11 +168,12 @@ export function CreateUserFormDialog({
       setSelectedRole(defaultRole);
       onOpenChange(false);
       toast.success(t('toast.created-successfully'));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating user:', error);
-      
+
       // Check if it's a Supabase email already exists error
-      const errorMessage = error?.message || '';
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       if (
         errorMessage.includes('email address has already been registered') ||
         errorMessage.includes('User already registered') ||
@@ -442,7 +442,9 @@ export function CreateUserFormDialog({
                       >
                         <FormControl>
                           <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                            <SelectValue placeholder={t('placeholder.degree')} />
+                            <SelectValue
+                              placeholder={t('placeholder.degree')}
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -492,9 +494,9 @@ export function CreateUserFormDialog({
                     </FormLabel>
                     <div className="relative">
                       <EnrollDateInput
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     </div>
                     <FormMessage />
                   </FormItem>
@@ -533,5 +535,3 @@ export function CreateUserFormDialog({
     </Dialog>
   );
 }
-
-

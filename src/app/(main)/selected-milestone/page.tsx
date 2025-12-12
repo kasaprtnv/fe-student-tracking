@@ -41,7 +41,6 @@ import MilestoneProgress from '@/components/milestone-progress/milestone-progres
 import type { IMilestone, MilestoneStepStatus } from '@/types/milestone';
 import UnlockConditionModal from '@/components/lock-milestone/lock-milestone';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { useCourse } from '@/hooks/use-course';
 import { useMilestonePrerequisite } from '@/hooks/use-milestone-prerequisite';
 import { useTranslations } from 'next-intl';

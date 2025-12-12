@@ -15,7 +15,6 @@ import { ImportUsersDialog } from './import-users-dialog';
 
 const UserPage = () => {
   const t = useTranslations('user-page');
-  const tUser = useTranslations('user');
   const { fetchAllUsers } = useUser();
   const [isImportOpen, setIsImportOpen] = React.useState(false);
 

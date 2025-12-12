@@ -67,12 +67,12 @@ export const createUser = createAsyncThunk(
   async (data: Partial<User>, { rejectWithValue }) => {
     try {
       const res = await userService.createUser(data);
-      
+
       // Check if backend returned success: false
       if (!res.success) {
         return rejectWithValue(res.message || 'Failed to create user');
       }
-      
+
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -91,12 +91,12 @@ export const updateUser = createAsyncThunk(
   ) => {
     try {
       const updateRes = await userService.updateUser(id, data);
-      
+
       // Check if backend returned success: false
       if (!updateRes?.success) {
         return rejectWithValue(updateRes?.message || 'Failed to update user');
       }
-      
+
       // Fetch the updated user to get fresh data
       const updatedUser = await userService.getById(id);
       return { id, user: updatedUser.data };
