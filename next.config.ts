@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  basePath: '/graduate-tracking',
+  assetPrefix: '/graduate-tracking/',
 };
 
 const withNextIntl = createNextIntlPlugin();
