@@ -13,6 +13,7 @@ import { DataTableFilterField } from '@/components/data-table/types';
 import { User } from '@/types/user';
 import { createStudentColumns } from './student-column';
 import { formatDate } from '@/lib/format-date';
+import { PageHeader } from '@/components/page-header';
 
 export default function StudentPage() {
   const router = useRouter();
@@ -152,33 +153,36 @@ export default function StudentPage() {
   }
 
   return (
-    <div className="flex h-full flex-col p-6">
-      <div className="mb-6 flex flex-col gap-1">
-        <h1 className="text-2xl font-bold">{t('title')}</h1>
-        <p className="text-muted-foreground text-sm">
-          {t('description')}
-        </p>
-      </div>
+    <>
+      <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
+      <div className="container mx-auto py-8">
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">
+            {t('description')}
+          </p>
+        </div>
 
-      <DataTableClickable
-        data={displayStudents}
-        columns={studentColumns}
-        onSearch={setSearch}
-        searchQuery={searchQuery}
-        enabledMultiSelect={false}
-        onView={handleViewProfile}
-        filterColumns={filterColumns}
-        extraToolbarAction={(table) => (
-          <Button 
-            variant="outline" 
-            onClick={() => handleExport(table.getFilteredRowModel().rows.map((row) => row.original))} 
-            className="ml-auto mr-2"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            {t('export-button')}
-          </Button>
-        )}
-      />
-    </div>
+        <DataTableClickable
+          data={displayStudents}
+          columns={studentColumns}
+          onSearch={setSearch}
+          searchQuery={searchQuery}
+          enabledMultiSelect={false}
+          onView={handleViewProfile}
+          filterColumns={filterColumns}
+          extraToolbarAction={(table) => (
+            <Button 
+              variant="outline" 
+              onClick={() => handleExport(table.getFilteredRowModel().rows.map((row) => row.original))} 
+              className="ml-auto mr-2"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {t('export-button')}
+            </Button>
+          )}
+        />
+      </div>
+    </>
   );
 }
