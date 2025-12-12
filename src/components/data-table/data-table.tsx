@@ -107,7 +107,6 @@ export function DataTable<TData, TValue>({
   actionHeaderId,
 }: DataTableProps<TData, TValue>) {
   const t = useTranslations('data-table');
-  const tColumn = useTranslations('column');
   const [searchValue, setSearchValue] = React.useState(searchQuery);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

@@ -19,7 +19,10 @@ interface EnrollDateInputProps {
   onChange: (value: string) => void;
 }
 
-export function EnrollDateInput({ value: externalValue, onChange }: EnrollDateInputProps) {
+export function EnrollDateInput({
+  value: externalValue,
+  onChange,
+}: EnrollDateInputProps) {
   const [inputValue, setInputValue] = React.useState('');
 
   // Sync from externalValue to inputValue only when externalValue changes properly
@@ -33,10 +36,10 @@ export function EnrollDateInput({ value: externalValue, onChange }: EnrollDateIn
         setInputValue(formatThaiDate(externalValue));
       }
     } else {
-        // If external value is cleared, clear input?
-        // setInputValue(''); // Optional: decided not to force clear if user is typing
+      // If external value is cleared, clear input?
+      // setInputValue(''); // Optional: decided not to force clear if user is typing
     }
-  }, [externalValue]);
+  }, [externalValue, inputValue]);
 
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
@@ -84,7 +87,7 @@ export function EnrollDateInput({ value: externalValue, onChange }: EnrollDateIn
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700"
+            className="absolute top-0 right-0 h-full px-3 text-gray-500 hover:text-gray-700"
           >
             <CalendarIcon className="size-4" />
           </Button>

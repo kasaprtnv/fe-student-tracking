@@ -11,7 +11,9 @@ export function formatDate(
   }
 }
 
-export function formatThaiDate(date: Date | string | number | null | undefined): string {
+export function formatThaiDate(
+  date: Date | string | number | null | undefined,
+): string {
   if (!date) return '';
   const d = new Date(date);
   if (isNaN(d.getTime())) return '';

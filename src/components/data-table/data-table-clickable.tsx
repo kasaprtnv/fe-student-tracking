@@ -66,7 +66,11 @@ interface DataTableProps<TData, TValue> {
     hiddenColumns: Column<TData, unknown>[],
   ) => Column<TData, unknown>[];
   actionHeader?: React.ReactNode;
-  extraToolbarAction?: React.ReactNode | ((table: import('@tanstack/react-table').Table<TData>) => React.ReactNode);
+  extraToolbarAction?:
+    | React.ReactNode
+    | ((
+        table: import('@tanstack/react-table').Table<TData>,
+      ) => React.ReactNode);
   actionHeaderId?: string;
 }
 
@@ -118,7 +122,6 @@ export function DataTableClickable<TData, TValue>({
      I cannot bridge 34 and 232.
   */
 
-  const tColumn = useTranslations('column');
   const [searchValue, setSearchValue] = React.useState(searchQuery);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -240,8 +243,8 @@ export function DataTableClickable<TData, TValue>({
               )}
             </>
           )}
-          {typeof extraToolbarAction === 'function' 
-            ? extraToolbarAction(table) 
+          {typeof extraToolbarAction === 'function'
+            ? extraToolbarAction(table)
             : extraToolbarAction}
           {actionHeader}
         </div>
@@ -336,7 +339,7 @@ export function DataTableClickable<TData, TValue>({
                     }
                     className={
                       onView
-                        ? 'cursor-pointer hover:bg-muted/50 transition-colors'
+                        ? 'hover:bg-muted/50 cursor-pointer transition-colors'
                         : undefined
                     }
                     onClick={(e) => {
@@ -345,7 +348,9 @@ export function DataTableClickable<TData, TValue>({
                       if (
                         (e.target as HTMLElement).closest('button') ||
                         (e.target as HTMLElement).closest('input') ||
-                        (e.target as HTMLElement).closest('[role="checkbox"]') ||
+                        (e.target as HTMLElement).closest(
+                          '[role="checkbox"]',
+                        ) ||
                         (e.target as HTMLElement).closest('a')
                       ) {
                         return;
@@ -353,9 +358,12 @@ export function DataTableClickable<TData, TValue>({
 
                       // Try to find an ID. Assuming TData has an id property or similar.
                       // Since we can't be sure of TData shape, we cast to any.
-                      const entity = row.original as any;
-                      if (entity && (entity.id || entity._id)) {
-                        onView(entity.id || entity._id);
+                      const entity = row.original as Record<string, unknown>;
+                      const entityId = (entity?.id ?? entity?._id) as
+                        | string
+                        | undefined;
+                      if (entityId) {
+                        onView(entityId);
                       }
                     }}
                   >
