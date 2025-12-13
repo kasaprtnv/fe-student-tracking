@@ -8,6 +8,7 @@ import {
   fetchMilestoneStepsByMilestoneId,
   createMilestoneStep,
   updateMilestoneStep,
+  updateMultipleMilestoneSteps,
   deleteMilestoneStep,
 } from '@/store/milestone-step/milestone-step.thunks';
 
@@ -86,6 +87,12 @@ export const useMilestoneStep = () => {
     [dispatch],
   );
 
+  const updateMultiMilestoneSteps = useCallback(
+    (data: IMilestoneStep[]) =>
+      dispatch(updateMultipleMilestoneSteps(data)).unwrap(),
+    [dispatch],
+  );
+
   const deleteMilestoneStepById = useCallback(
     (id: string) => dispatch(deleteMilestoneStep(id)).unwrap(),
     [dispatch],
@@ -122,6 +129,7 @@ export const useMilestoneStep = () => {
     fetchMilestoneStepsByMilestone,
     createNewMilestoneStep,
     updateExistingMilestoneStep,
+    updateMultiMilestoneSteps,
     deleteMilestoneStepById,
 
     // Sync Actions

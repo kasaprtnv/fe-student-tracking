@@ -69,7 +69,8 @@
     "delete": "Delete",
     "confirm": "Confirm",
     "close": "Close",
-    "edit": "Edit"
+    "edit": "Edit",
+    "days": "Days"
   },
   "student-form": {
     "label": {
@@ -301,7 +302,9 @@
 
         "dayPeriod-integer": "Day period must be a number",
 
-        "notifyBeforeDays-integer": "Notify-before-days must be a number"
+        "notifyBeforeDays-integer": "Notify-before-days must be a number",
+
+        "dayPeriod-exceeds": "Day period cannot exceed milestone's day period of {value} days"
       }
     },
     "delete": {
