@@ -84,9 +84,10 @@ class UserService extends APIService {
     const isTeacher = data.role === 'teacher';
 
     const allowedFields = isTeacher
-      ? ['firstName', 'lastName', 'email', 'phone', 'role', 'courseId']
+      ? ['title', 'firstName', 'lastName', 'email', 'phone', 'role', 'courseId']
       : [
           'code',
+          'title',
           'firstName',
           'lastName',
           'email',
@@ -124,9 +125,10 @@ class UserService extends APIService {
 
     // Both teachers and students can have courseId
     const allowedFields = isTeacher
-      ? ['firstName', 'lastName', 'email', 'phone', 'role', 'courseId']
+      ? ['title', 'firstName', 'lastName', 'email', 'phone', 'role', 'courseId']
       : [
           'code',
+          'title',
           'firstName',
           'lastName',
           'email',

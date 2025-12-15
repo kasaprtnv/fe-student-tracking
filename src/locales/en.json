@@ -1,4 +1,3 @@
-
 {
   "homepage": {
     "title": "Student Tracker",
@@ -59,7 +58,8 @@
     "course-name": "Course Name",
     "enroll-date": "Enroll Date",
     "course": "Course",
-    "academic-year": "Academic Year"
+    "academic-year": "Academic Year",
+    "managed-courses": "Managed Courses"
   },
   "common": {
     "submit": "Submit",
@@ -424,6 +424,7 @@
         "role": "Role",
         "code": "Code",
         "course": "Course",
+        "title": "Title",
         "first-name": "First Name",
         "last-name": "Last Name",
         "email": "Email",
@@ -437,12 +438,13 @@
         "role": "Select role",
         "code": "Enter code",
         "course": "Select course",
+        "title": "Enter title",
         "first-name": "Enter first name",
         "last-name": "Enter last name",
         "email": "Enter email",
         "phone": "Enter phone number",
-        "degree": "Enter education level",
-        "year": "Enter year",
+        "degree": "Select education level",
+        "year": "Select year",
         "enroll-date": "Select enroll date"
       },
       "role": {
@@ -452,6 +454,15 @@
       "education-level": {
         "masters": "Master's Degree",
         "doctoral": "Doctoral Degree"
+      },
+      "title-options": {
+        "mr": "Mr.",
+        "mrs": "Mrs.",
+        "miss": "Miss",
+        "prof": "Professor",
+        "assoc-prof": "Associate Professor",
+        "asst-prof": "Assistant Professor",
+        "dr": "Dr."
       },
       "errors": {
         "first-name-required": "First name is required",
@@ -485,6 +496,7 @@
       "drag-drop-text": "Drag and drop file here, or click to select",
       "file-format": "Supports .xlsx and .xls files (max 5MB)",
       "upload-button": "Upload",
+      "download-template": "Download Template",
       "errors": {
         "invalid-file-type": "Please select an Excel file (.xlsx or .xls)",
         "no-file-selected": "Please select a file before uploading"
@@ -492,13 +504,14 @@
       "toast": {
         "import-success": "Successfully imported {count} user(s)",
         "import-partial": "Failed to import {failed} user(s)",
-        "import-failed": "Failed to import users"
+        "import-failed": "Failed to import users",
+        "template-downloaded": "Template downloaded successfully"
       }
     }
   },
   "role": {
-    "admin": "admin",
-    "student": "student",
+    "admin": "Admin",
+    "student": "Student",
     "teacher": "Staff Member"
   },
   "user-page": {

@@ -16,11 +16,16 @@ export const createStudentColumns = (
     },
     {
       header: t('full-name'),
-      accessorFn: (row) =>
-        `${row.firstName || ''} ${row.lastName || ''}`.trim() || '-',
+      accessorFn: (row) => {
+        const titleName = `${row.title || ''}${row.firstName || ''}`.trim();
+        const lastName = row.lastName || '';
+        return `${titleName} ${lastName}`.trim() || '-';
+      },
       cell: ({ row }) => {
-        const fullName =
-          `${row.original.firstName || ''} ${row.original.lastName || ''}`.trim();
+        const titleName =
+          `${row.original.title || ''}${row.original.firstName || ''}`.trim();
+        const lastName = row.original.lastName || '';
+        const fullName = `${titleName} ${lastName}`.trim();
         return <span>{fullName || '-'}</span>;
       },
     },
@@ -57,24 +62,7 @@ export const createStudentColumns = (
         return Array.isArray(value) && value.includes(rowValue);
       },
     },
-    {
-      id: 'academicYear',
-      header: t('academic-year'),
-      accessorFn: (row) => {
-        if (!row.enrollDate) return '-';
-        try {
-          const date = new Date(row.enrollDate);
-          if (isNaN(date.getTime())) return '-';
-          return (date.getFullYear() + 543).toString();
-        } catch {
-          return '-';
-        }
-      },
-      filterFn: (row, id, value) => {
-        const rowValue = row.getValue(id);
-        return Array.isArray(value) && value.includes(rowValue);
-      },
-    },
+
     {
       id: 'enrollDate',
       header: t('enroll-date'),

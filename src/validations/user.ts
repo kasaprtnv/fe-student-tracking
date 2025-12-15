@@ -6,6 +6,7 @@ export type UserRole = 'student' | 'teacher';
 const baseSchema = (t: (key: string) => string) =>
   z.object({
     role: z.enum(['student', 'teacher']),
+    title: z.string().optional(),
     firstName: z
       .string()
       .min(1, t('errors.first-name-required'))
@@ -47,7 +48,7 @@ const studentSchema = (t: (key: string) => string) =>
 const teacherSchema = (t: (key: string) => string) =>
   baseSchema(t).extend({
     role: z.literal('teacher'),
-    courseId: z.string().min(1, t('errors.course-required')),
+    courseIds: z.array(z.string()).optional(),
   });
 
 // Combined schema using discriminated union
@@ -62,11 +63,13 @@ export type UpdateUserFormData = z.infer<ReturnType<typeof updateUserSchema>>;
 
 export interface UserFormValues {
   role: UserRole;
+  title?: string;
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
-  courseId: string;
+  courseId?: string;
+  courseIds?: string[];
   code?: string;
   degree?: string;
   year?: string;

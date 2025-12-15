@@ -1,4 +1,5 @@
 import { formatDate } from '@/lib/format-date';
+import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
 import { ColumnDef } from '@tanstack/react-table';
 import {
@@ -30,8 +31,11 @@ export const createAllStudentColumns = (
     },
     {
       header: t('full-name'),
-      accessorFn: (row) =>
-        `${row.firstName || ''} ${row.lastName || ''}`.trim() || '-',
+      accessorFn: (row) => {
+        const titleName = `${row.title || ''}${row.firstName || ''}`.trim();
+        const lastName = row.lastName || '';
+        return `${titleName} ${lastName}`.trim() || '-';
+      },
     },
     {
       header: t('email'),
@@ -41,7 +45,7 @@ export const createAllStudentColumns = (
     {
       header: t('phone'),
       accessorKey: 'phone',
-      cell: ({ row }) => row.original.phone || '-',
+      cell: ({ row }) => formatPhoneNumber(row.original.phone),
     },
     {
       header: t('role'),
@@ -49,7 +53,7 @@ export const createAllStudentColumns = (
       cell: ({ row }) => {
         const role = row.original.role;
         if (role === 'student') return 'บัณฑิต';
-        if (role === 'teacher') return 'ผู้ดูแลหลักสูตร';
+        if (role === 'teacher') return 'ผู้รับผิดชอบหลักสูตร';
         if (role === 'admin') return 'ผู้ดูแลระบบ';
         return '-';
       },

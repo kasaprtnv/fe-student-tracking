@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 import { EnrollDateInput } from '@/components/enroll-date-input';
 import { Loader } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -33,6 +34,8 @@ import React from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
+import { useCourseStaff } from '@/hooks/use-course_staff';
+import { useCourse } from '@/hooks/use-course';
 import { toast } from 'sonner';
 import { SelectOption } from '@/types';
 import {
@@ -58,6 +61,8 @@ export function CreateUserFormDialog({
   const t = useTranslations('user.user-form');
   const tCommon = useTranslations('common');
   const { createNewUser, storeAction, userMap } = useUser();
+  const { createNewCourseStaff } = useCourseStaff();
+  const { updateExistingCourse, getCourseById, fetchAllCourses } = useCourse();
 
   // Check if email already exists
   const isEmailExists = (email: string): boolean => {
@@ -72,6 +77,7 @@ export function CreateUserFormDialog({
     resolver: zodResolver(createUserSchema(t)) as Resolver<UserFormValues>,
     defaultValues: {
       role: defaultRole,
+      title: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -93,6 +99,7 @@ export function CreateUserFormDialog({
       if (defaultRole === 'student') {
         form.reset({
           role: 'student',
+          title: '',
           code: '',
           firstName: '',
           lastName: '',
@@ -106,6 +113,7 @@ export function CreateUserFormDialog({
       } else {
         form.reset({
           role: 'teacher',
+          title: '',
           firstName: '',
           lastName: '',
           email: '',
@@ -124,6 +132,7 @@ export function CreateUserFormDialog({
     if (newRole === 'student') {
       form.reset({
         role: 'student',
+        title: currentValues.title || '',
         code: '',
         firstName: currentValues.firstName || '',
         lastName: currentValues.lastName || '',
@@ -137,6 +146,7 @@ export function CreateUserFormDialog({
     } else {
       form.reset({
         role: 'teacher',
+        title: currentValues.title || '',
         firstName: currentValues.firstName || '',
         lastName: currentValues.lastName || '',
         email: currentValues.email || '',
@@ -163,7 +173,37 @@ export function CreateUserFormDialog({
 
     try {
       console.log('Submitting Create User Data:', formattedData);
-      await createNewUser(formattedData as unknown as CreateUserFormData);
+      const result = await createNewUser(
+        formattedData as unknown as CreateUserFormData,
+      );
+
+      // If teacher with courseIds, create course_staff records
+      if (
+        formattedData.role === 'teacher' &&
+        formattedData.courseIds &&
+        result?.receivedData?.id
+      ) {
+        const newUserId = result.receivedData.id;
+        const courseIds = formattedData.courseIds as string[];
+        for (const courseId of courseIds) {
+          await createNewCourseStaff({
+            courseId,
+            userId: newUserId,
+          } as unknown as { courseId: string; staffId: string });
+
+          // Update course.staffIds
+          const course = getCourseById(courseId);
+          if (course) {
+            const updatedStaffIds = [...(course.staffIds || []), newUserId];
+            await updateExistingCourse(course.id, {
+              staffIds: updatedStaffIds,
+            });
+          }
+        }
+        // Refetch courses to update UI
+        fetchAllCourses();
+      }
+
       form.reset();
       setSelectedRole(defaultRole);
       onOpenChange(false);
@@ -310,6 +350,27 @@ export function CreateUserFormDialog({
               </>
             )}
 
+            {/* Title field */}
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.title')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('placeholder.title')}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Common fields: firstName, lastName */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -387,7 +448,13 @@ export function CreateUserFormDialog({
                     <Input
                       placeholder={t('placeholder.phone')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      maxLength={10}
                       {...field}
+                      onInput={(e) => {
+                        const target = e.target as HTMLInputElement;
+                        target.value = target.value.replace(/\D/g, '');
+                        field.onChange(target.value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -395,30 +462,26 @@ export function CreateUserFormDialog({
               )}
             />
 
-            {/* Teacher-specific field: courseId */}
+            {/* Teacher-specific field: courseIds (multiple courses) */}
             {selectedRole === 'teacher' && (
               <FormField
                 control={form.control}
-                name="courseId"
+                name="courseIds"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700">
                       {t('label.course')}
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                          <SelectValue placeholder={t('placeholder.course')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {courseOptions.map((course) => (
-                          <SelectItem key={course.value} value={course.value}>
-                            {course.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <MultiCombobox
+                        defaultValue={field.value || []}
+                        placeholder={t('placeholder.course')}
+                        placeholderSearch={t('placeholder.course')}
+                        placeholderEmpty={t('placeholder.course')}
+                        options={courseOptions}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -448,10 +511,10 @@ export function CreateUserFormDialog({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="masters">
+                          <SelectItem value="ปริญญาโท">
                             {t('education-level.masters')}
                           </SelectItem>
-                          <SelectItem value="doctoral">
+                          <SelectItem value="ปริญญาเอก">
                             {t('education-level.doctoral')}
                           </SelectItem>
                         </SelectContent>
@@ -463,21 +526,41 @@ export function CreateUserFormDialog({
                 <FormField
                   control={form.control}
                   name="year"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.year')}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t('placeholder.year')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    // Generate years from current year back 5 years (in Buddhist Era)
+                    const currentYear = new Date().getFullYear() + 543;
+                    const years = Array.from({ length: 5 }, (_, i) =>
+                      (currentYear - i).toString(),
+                    );
+
+                    return (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          {t('label.year')}
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                              <SelectValue
+                                placeholder={t('placeholder.year')}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {years.map((year) => (
+                              <SelectItem key={year} value={year}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
             )}
