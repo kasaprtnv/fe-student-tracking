@@ -47,6 +47,21 @@ export const fetchCourseStaffByCourseId = createAsyncThunk(
   },
 );
 
+export const fetchCourseStaffByUserId = createAsyncThunk(
+  'courseStaff/getByUserId',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const res = await courseStaffService.getCourseStaffByUserId(userId);
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to fetch course staff by user ID');
+    }
+  },
+);
+
 export const createCourseStaff = createAsyncThunk(
   'courseStaff/create',
   async (payload: ICourseStaffCreateDTO, { rejectWithValue }) => {

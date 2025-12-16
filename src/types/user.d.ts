@@ -6,6 +6,7 @@ export interface User {
   id: string;
   supabaseId?: string;
   code: string;
+  title?: string;
   firstName: string;
   lastName: string;
   email?: string;

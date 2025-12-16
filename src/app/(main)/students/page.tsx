@@ -63,18 +63,8 @@ export default function StudentPage() {
   const yearOptions = useMemo(() => {
     const years = new Set<string>();
     enrichedStudents.forEach((s) => {
-      if (s.enrollDate) {
-        try {
-          const date = new Date(s.enrollDate);
-          if (!isNaN(date.getTime())) {
-            // Calculate academic year (Enroll Year + 543 for TH)
-            const yearStr = (date.getFullYear() + 543).toString();
-            years.add(yearStr);
-          }
-        } catch (error) {
-          console.log(error);
-          // ignore invalid date
-        }
+      if (s.year) {
+        years.add(s.year);
       }
     });
     return Array.from(years)
@@ -108,9 +98,9 @@ export default function StudentPage() {
         options: courseOptions,
       },
       {
-        id: 'academicYear' as keyof User,
-        label: tColumn('academic-year'),
-        value: 'academicYear',
+        id: 'year' as keyof User,
+        label: tColumn('year'),
+        value: 'year',
         options: yearOptions,
       },
     ];
