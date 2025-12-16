@@ -10,20 +10,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  basePath: '/graduate-tracking',
-  assetPrefix: '/graduate-tracking',
   output: 'standalone',
-
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/graduate-tracking',
-        permanent: false,
-        basePath: false,
-      },
-    ];
-  },
 };
 
 const withNextIntl = createNextIntlPlugin();
