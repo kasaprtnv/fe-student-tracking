@@ -56,7 +56,7 @@ export function DegreesCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            'w-full justify-between',
+            'w-full justify-between font-normal',
             !value && 'text-muted-foreground hover:text-muted-foreground',
           )}
         >

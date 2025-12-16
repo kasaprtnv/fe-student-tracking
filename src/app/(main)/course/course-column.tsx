@@ -31,15 +31,17 @@ interface ColumnActions {
   t?: (key: string) => string;
 }
 
-export const createCourseColumns = (): ColumnDef<ICourse>[] => {
+export const createCourseColumns = (
+  tDegree: (key: string) => string,
+): ColumnDef<ICourse>[] => {
   const columns: ColumnDef<ICourse>[] = [
-    {
-      accessorKey: 'name',
-      header: 'name',
-    },
     {
       accessorKey: 'code',
       header: 'code',
+    },
+    {
+      accessorKey: 'name',
+      header: 'name',
     },
     {
       accessorKey: 'description',
@@ -101,6 +103,15 @@ export const createCourseColumns = (): ColumnDef<ICourse>[] => {
     {
       accessorKey: 'degree',
       header: 'degree',
+      cell: (info) => {
+        const degree = info.getValue<string>();
+        const degreeMap: Record<string, string> = {
+          bachelor: tDegree('bachelor'),
+          master: tDegree('master'),
+          doctorate: tDegree('doctorate'),
+        };
+        return <span>{degreeMap[degree] || '-'}</span>;
+      },
     },
     {
       accessorKey: 'createdAt',
