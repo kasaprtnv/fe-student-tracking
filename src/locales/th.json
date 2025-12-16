@@ -54,12 +54,13 @@
     "phone": "เบอร์โทร",
     "role": "บทบาท",
     "education-level": "ระดับการศึกษา",
-    "year": "ปี",
+    "year": "ปีการศึกษา",
     "course-name": "ชื่อหลักสูตร",
     "enroll-date": "วันที่ลงทะเบียน",
     "course": "หลักสูตร",
     "academic-year": "ปีการศึกษา",
-    "degree": "วุฒิการศึกษา"
+    "degree": "วุฒิการศึกษา",
+    "managed-courses": "ดูแลหลักสูตร"
   },
   "common": {
     "submit": "ส่ง",
@@ -367,14 +368,14 @@
     "edit-user": "แก้ไขผู้ใช้",
     "add-student": "เพิ่มบัณฑิต",
     "edit-student": "แก้ไขข้อมูลบัณฑิต",
-    "add-teacher": "เพิ่มผู้ดูแลหลักสูตร",
-    "edit-teacher": "แก้ไขข้อมูลผู้ดูแลหลักสูตร",
+    "add-teacher": "เพิ่มผู้รับผิดชอบหลักสูตร",
+    "edit-teacher": "แก้ไขข้อมูลผู้รับผิดชอบหลักสูตร",
     "code": "รหัส",
     "code-placeholder": "กรอกรหัส",
     "role": "ตำแหน่ง",
     "select-role": "เลือกตำแหน่ง",
-    "student": "นักศึกษา",
-    "teacher": "ผู้ดูแลหลักสูตร",
+    "student": "บัณฑิต",
+    "teacher": "ผู้รับผิดชอบหลักสูตร",
     "first-name": "ชื่อ",
     "first-name-placeholder": "กรอกชื่อ",
     "last-name": "นามสกุล",
@@ -385,8 +386,8 @@
     "phone-placeholder": "กรอกเบอร์โทร",
     "degree": "ระดับการศึกษา",
     "degree-placeholder": "กรอกระดับการศึกษา",
-    "year": "ปี",
-    "year-placeholder": "กรอกปี",
+    "year": "ปีการศึกษา",
+    "year-placeholder": "กรอกปีการศึกษา",
     "code-required": "กรุณากรอกรหัส",
     "first-name-required": "กรุณากรอกชื่อ",
     "first-name-min": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
@@ -417,25 +418,26 @@
       "header": {
         "create": "เพิ่มผู้ใช้งาน",
         "create-student": "เพิ่มบัณฑิต",
-        "create-teacher": "เพิ่มผู้ดูแลหลักสูตร",
+        "create-teacher": "เพิ่มผู้รับผิดชอบหลักสูตร",
         "edit": "แก้ไขผู้ใช้งาน"
       },
       "header_description": {
         "create": "กรอกข้อมูลเพื่อเพิ่มผู้ใช้งานใหม่",
         "create-student": "กรอกข้อมูลเพื่อเพิ่มบัณฑิตใหม่",
-        "create-teacher": "กรอกข้อมูลเพื่อเพิ่มผู้ดูแลหลักสูตรใหม่",
+        "create-teacher": "กรอกข้อมูลเพื่อเพิ่มผู้รับผิดชอบหลักสูตรใหม่",
         "edit": "แก้ไขข้อมูลผู้ใช้งาน"
       },
       "label": {
         "role": "บทบาท",
         "code": "รหัส",
         "course": "หลักสูตร",
+        "title": "คำนำหน้า",
         "first-name": "ชื่อ",
         "last-name": "นามสกุล",
         "email": "อีเมล",
         "phone": "เบอร์โทร",
         "degree": "ระดับการศึกษา",
-        "year": "ปี",
+        "year": "ปีการศึกษา",
         "enroll-date": "วันที่ลงทะเบียน",
         "is-active": "สถานะการใช้งาน"
       },
@@ -443,21 +445,31 @@
         "role": "เลือกประเภทผู้ใช้",
         "code": "กรอกรหัส",
         "course": "เลือกหลักสูตร",
+        "title": "กรอกคำนำหน้า",
         "first-name": "กรอกชื่อ",
         "last-name": "กรอกนามสกุล",
         "email": "กรอกอีเมล",
         "phone": "กรอกเบอร์โทร",
-        "degree": "กรอกระดับการศึกษา",
-        "year": "กรอกปี",
+        "degree": "เลือกระดับการศึกษา",
+        "year": "เลือกปีการศึกษา",
         "enroll-date": "เลือกวันที่ลงทะเบียน"
       },
       "role": {
         "student": "บัณฑิต",
-        "teacher": "ผู้ดูแลหลักสูตร"
+        "teacher": "ผู้รับผิดชอบหลักสูตร"
       },
       "education-level": {
         "masters": "ปริญญาโท",
         "doctoral": "ปริญญาเอก"
+      },
+      "title-options": {
+        "mr": "นาย",
+        "mrs": "นาง",
+        "miss": "นางสาว",
+        "prof": "ศาสตราจารย์",
+        "assoc-prof": "รองศาสตราจารย์",
+        "asst-prof": "ผู้ช่วยศาสตราจารย์",
+        "dr": "ดร."
       },
       "errors": {
         "first-name-required": "กรุณากรอกชื่อ",
@@ -491,6 +503,7 @@
       "drag-drop-text": "ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
       "file-format": "รองรับไฟล์ .xlsx และ .xls (สูงสุด 5MB)",
       "upload-button": "อัปโหลด",
+      "download-template": "ดาวน์โหลดไฟล์ตัวอย่าง",
       "errors": {
         "invalid-file-type": "กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls)",
         "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด"
@@ -498,14 +511,15 @@
       "toast": {
         "import-success": "นำเข้าผู้ใช้สำเร็จ {count} คน",
         "import-partial": "นำเข้าไม่สำเร็จ {failed} คน",
-        "import-failed": "นำเข้าผู้ใช้ไม่สำเร็จ"
+        "import-failed": "นำเข้าผู้ใช้ไม่สำเร็จ",
+        "template-downloaded": "ดาวน์โหลดไฟล์ตัวอย่างสำเร็จ"
       }
     }
   },
   "role": {
     "admin": "ผู้ดูแลระบบ",
     "student": "บัณฑิต",
-    "teacher": "ผู้ดูแลหลักสูตร"
+    "teacher": "ผู้รับผิดชอบหลักสูตร"
   },
   "user-page": {
     "title": "จัดการผู้ใช้งาน",
@@ -513,8 +527,8 @@
     "import-button": "อัปโหลดไฟล์",
     "tabs": {
       "all": "ผู้ใช้ทั้งหมด",
-      "students": "นิสิต",
-      "teachers": "อาจารย์"
+      "students": "บัณฑิต",
+      "teachers": "ผู้รับผิดชอบหลักสูตร"
     }
   },
   "student-page": {

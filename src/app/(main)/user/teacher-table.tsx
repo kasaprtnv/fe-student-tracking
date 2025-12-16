@@ -1,7 +1,9 @@
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
+import { useCourseStaff } from '@/hooks/use-course_staff';
 import { createTeacherColumns } from './create-teacher-column';
 import { User } from '@/types/user';
+import { ICourseStaff } from '@/types/course-staff';
 import React from 'react';
 import { DataTable } from '../../../components/data-table/data-table';
 import { CreateUserFormDialog } from './create-user-form';
@@ -21,15 +23,33 @@ export const TeacherTable = () => {
     userMap,
   } = useUser();
   const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
+  const { fetchAllCourseStaff } = useCourseStaff();
+  const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
+    [],
+  );
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
 
-  // Fetch courses on mount
+  // Fetch courses and course_staff on mount
   React.useEffect(() => {
     fetchAllCourses();
-  }, [fetchAllCourses]);
+    fetchAllCourseStaff().then((response) => {
+      if (response.data) {
+        setAllCourseStaff(response.data);
+      }
+    });
+  }, [fetchAllCourses, fetchAllCourseStaff]);
 
-  // Get teacher data directly from Redux store userMap and enrich with courseName
+  // Refetch course_staff data (called after form save)
+  const refetchCourseStaff = React.useCallback(() => {
+    fetchAllCourseStaff().then((response) => {
+      if (response.data) {
+        setAllCourseStaff(response.data);
+      }
+    });
+  }, [fetchAllCourseStaff]);
+
+  // Get teacher data directly from Redux store userMap and enrich with managedCourses
   const filterTeacher = React.useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     return Object.values(userMap)
@@ -44,19 +64,24 @@ export const TeacherTable = () => {
         );
       })
       .map((user) => {
-        // Enrich user with courseName if courseId exists but courseName doesn't
-        if (user.courseId && !user.courseName) {
-          const course = getCourseById(user.courseId);
-          if (course) {
-            return {
-              ...user,
-              courseName: `${course.code} - ${course.name}`,
-            };
-          }
-        }
-        return user;
+        // Find all course_staff for this teacher
+        const teacherCourseStaff = allCourseStaff.filter(
+          (cs) => (cs as unknown as { userId: string }).userId === user.id,
+        );
+        // Get course names for each managed course
+        const managedCourses = teacherCourseStaff
+          .map((cs) => {
+            const course = getCourseById(cs.courseId);
+            return course ? `${course.code} - ${course.name}` : null;
+          })
+          .filter((name): name is string => name !== null);
+
+        return {
+          ...user,
+          managedCourses: managedCourses,
+        };
       });
-  }, [userMap, searchQuery, getCourseById]);
+  }, [userMap, searchQuery, getCourseById, allCourseStaff]);
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId
@@ -134,6 +159,8 @@ export const TeacherTable = () => {
         }
         user={isEdit.user}
         courseOptions={courseOptions}
+        allCourseStaff={allCourseStaff}
+        onCourseStaffChange={refetchCourseStaff}
       />
       <DeleteConfirmationDialog
         open={isDelete.isDeleting}

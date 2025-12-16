@@ -1,4 +1,5 @@
 import { User } from '@/types/user';
+import { formatPhoneNumber } from '@/lib/format-phone';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   DropdownMenu,
@@ -23,8 +24,11 @@ export const createTeacherColumns = (
   const columns: ColumnDef<User>[] = [
     {
       header: t('full-name'),
-      accessorFn: (row) =>
-        `${row.firstName || ''} ${row.lastName || ''}`.trim() || '-',
+      accessorFn: (row) => {
+        const titleName = `${row.title || ''}${row.firstName || ''}`.trim();
+        const lastName = row.lastName || '';
+        return `${titleName} ${lastName}`.trim() || '-';
+      },
     },
     {
       header: t('email'),
@@ -34,12 +38,25 @@ export const createTeacherColumns = (
     {
       header: t('phone'),
       accessorKey: 'phone',
-      cell: ({ row }) => row.original.phone || '-',
+      cell: ({ row }) => formatPhoneNumber(row.original.phone),
     },
     {
-      header: t('course'),
-      accessorKey: 'courseName',
-      cell: ({ row }) => row.original.courseName || '-',
+      header: t('managed-courses'),
+      accessorKey: 'managedCourses',
+      cell: ({ row }) => {
+        const rowData = row.original as User & { managedCourses?: string[] };
+        const courses = rowData.managedCourses;
+        if (!courses || courses.length === 0) return '-';
+        return (
+          <div className="flex flex-col gap-1">
+            {courses.map((course, index) => (
+              <span key={index} className="text-sm">
+                {course}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
   ];
   columns.push({

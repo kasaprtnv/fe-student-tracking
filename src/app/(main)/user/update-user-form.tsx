@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 import { Loader } from 'lucide-react';
 import { EnrollDateInput } from '@/components/enroll-date-input';
 import { useTranslations } from 'next-intl';
@@ -33,9 +34,13 @@ import React from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
+import { useCourse } from '@/hooks/use-course';
+import { useCourseStaff } from '@/hooks/use-course_staff';
+import { useSWRConfig } from 'swr';
 import { toast } from 'sonner';
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
+import { ICourseStaff } from '@/types/course-staff';
 import {
   updateUserSchema,
   UpdateUserFormData,
@@ -48,6 +53,8 @@ interface UpdateUserFormDialogProps {
   onOpenChange: (open: boolean) => void;
   user: User | undefined;
   courseOptions: SelectOption[];
+  allCourseStaff?: ICourseStaff[];
+  onCourseStaffChange?: () => void;
 }
 
 export function UpdateUserFormDialog({
@@ -55,10 +62,14 @@ export function UpdateUserFormDialog({
   onOpenChange,
   user,
   courseOptions,
+  allCourseStaff = [],
+  onCourseStaffChange,
 }: UpdateUserFormDialogProps) {
   const t = useTranslations('user.user-form');
   const tCommon = useTranslations('common');
   const { updateExistingUser, storeAction, userMap } = useUser();
+  const { fetchAllCourses, updateExistingCourse, getCourseById } = useCourse();
+  const { mutate } = useSWRConfig();
 
   // Check if email already exists (excluding current user)
   const isEmailExists = (email: string): boolean => {
@@ -75,10 +86,18 @@ export function UpdateUserFormDialog({
 
   const [selectedRole, setSelectedRole] = React.useState<UserRole>(userRole);
 
+  // Course staff management for teachers
+  const { createNewCourseStaff, removeCourseStaff, fetchAllCourseStaff } =
+    useCourseStaff();
+  const [teacherCourseStaffList, setTeacherCourseStaffList] = React.useState<
+    ICourseStaff[]
+  >([]);
+
   const getDefaultValues = React.useCallback((): UserFormValues => {
     if (userRole === 'student') {
       return {
         role: 'student',
+        title: user?.title || '',
         code: user?.code || '',
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
@@ -92,11 +111,12 @@ export function UpdateUserFormDialog({
     } else {
       return {
         role: 'teacher',
+        title: user?.title || '',
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
         email: user?.email || '',
         phone: user?.phone || '',
-        courseId: user?.courseId || '',
+        courseIds: [],
       };
     }
   }, [user, userRole]);
@@ -106,7 +126,7 @@ export function UpdateUserFormDialog({
     defaultValues: getDefaultValues(),
   });
 
-  // Reset form when user changes or dialog opens
+  // Reset form when user changes
   React.useEffect(() => {
     if (user) {
       const newRole: UserRole =
@@ -116,7 +136,31 @@ export function UpdateUserFormDialog({
       setSelectedRole(newRole);
       form.reset(getDefaultValues());
     }
-  }, [user, form, getDefaultValues]);
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Set courseIds when dialog opens for teachers
+  // Filter from allCourseStaff prop and set form values directly
+  React.useEffect(() => {
+    if (!open) return; // Only run when dialog is open
+
+    if (user?.id && user?.role === 'teacher' && allCourseStaff.length > 0) {
+      // Filter course_staff for this user from the prop
+      const userCourseStaff = allCourseStaff.filter((cs) => {
+        const csUserId = (cs as unknown as { userId: string }).userId;
+        return csUserId === user.id;
+      });
+
+      // Only update if we have course staff data
+      if (userCourseStaff.length > 0) {
+        const courseIds = userCourseStaff.map((cs) => cs.courseId);
+        setTeacherCourseStaffList(userCourseStaff);
+        form.setValue('courseIds', courseIds);
+      } else {
+        // allCourseStaff is loaded but no courses for this user
+        setTeacherCourseStaffList([]);
+      }
+    }
+  }, [open, user?.id, allCourseStaff.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = async (data: UserFormValues) => {
     if (!user?.id) return;
@@ -137,13 +181,76 @@ export function UpdateUserFormDialog({
 
     try {
       console.log('Submitting Update User Data:', formattedData);
-      await updateExistingUser(
-        user.id,
-        formattedData as unknown as UpdateUserFormData,
-      );
+
+      // Handle course_staff update for teachers (multi-course support)
+      if (formattedData.role === 'teacher' && formattedData.courseIds) {
+        const newCourseIds = formattedData.courseIds as string[];
+        const oldCourseIds = teacherCourseStaffList.map((cs) => cs.courseId);
+
+        // Find courses to add (in new but not in old)
+        const coursesToAdd = newCourseIds.filter(
+          (id) => !oldCourseIds.includes(id),
+        );
+        // Find courses to remove (in old but not in new)
+        const coursesToRemove = teacherCourseStaffList.filter(
+          (cs) => !newCourseIds.includes(cs.courseId),
+        );
+
+        // Delete removed course_staff records and update course.staffIds
+        for (const courseStaff of coursesToRemove) {
+          await removeCourseStaff(courseStaff.id);
+          // Update course to remove this user from staffIds
+          const course = getCourseById(courseStaff.courseId);
+          if (course) {
+            const updatedStaffIds = (course.staffIds || []).filter(
+              (id) => id !== user.id,
+            );
+            await updateExistingCourse(course.id, {
+              staffIds: updatedStaffIds,
+            });
+          }
+        }
+
+        // Create new course_staff records and update course.staffIds
+        for (const courseId of coursesToAdd) {
+          await createNewCourseStaff({
+            courseId,
+            userId: user.id,
+          } as unknown as { courseId: string; staffId: string });
+          // Update course to add this user to staffIds
+          const course = getCourseById(courseId);
+          if (course) {
+            const updatedStaffIds = [...(course.staffIds || []), user.id];
+            await updateExistingCourse(course.id, {
+              staffIds: updatedStaffIds,
+            });
+          }
+        }
+
+        // Remove courseId from user data since it's managed by course_staff
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { courseId: _courseId, ...teacherDataWithoutCourse } =
+          formattedData;
+        await updateExistingUser(
+          user.id,
+          teacherDataWithoutCourse as unknown as UpdateUserFormData,
+        );
+      } else {
+        await updateExistingUser(
+          user.id,
+          formattedData as unknown as UpdateUserFormData,
+        );
+      }
       form.reset();
       onOpenChange(false);
       toast.success(t('toast.updated-successfully'));
+
+      // Trigger refetch of course_staff data and courses (to update course page)
+      onCourseStaffChange?.();
+      fetchAllCourses();
+      fetchAllCourseStaff();
+      // Invalidate SWR cache for course page
+      mutate('fetch-courses and-course-staff');
     } catch (error: unknown) {
       console.error('Error updating user:', error);
 
@@ -243,6 +350,27 @@ export function UpdateUserFormDialog({
               </>
             )}
 
+            {/* Title field */}
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.title')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t('placeholder.title')}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Common fields: firstName, lastName */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -321,7 +449,13 @@ export function UpdateUserFormDialog({
                     <Input
                       placeholder={t('placeholder.phone')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      maxLength={10}
                       {...field}
+                      onInput={(e) => {
+                        const target = e.target as HTMLInputElement;
+                        target.value = target.value.replace(/\D/g, '');
+                        field.onChange(target.value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -329,30 +463,26 @@ export function UpdateUserFormDialog({
               )}
             />
 
-            {/* Teacher-specific field: courseId */}
+            {/* Teacher-specific field: courseIds (multiple courses) */}
             {selectedRole === 'teacher' && (
               <FormField
                 control={form.control}
-                name="courseId"
+                name="courseIds"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700">
                       {t('label.course')}
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                          <SelectValue placeholder={t('placeholder.course')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {courseOptions.map((course) => (
-                          <SelectItem key={course.value} value={course.value}>
-                            {course.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <MultiCombobox
+                        defaultValue={field.value || []}
+                        placeholder={t('placeholder.course')}
+                        placeholderSearch={t('placeholder.course')}
+                        placeholderEmpty={t('placeholder.course')}
+                        options={courseOptions}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -382,10 +512,10 @@ export function UpdateUserFormDialog({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="masters">
+                          <SelectItem value="ปริญญาโท">
                             {t('education-level.masters')}
                           </SelectItem>
-                          <SelectItem value="doctoral">
+                          <SelectItem value="ปริญญาเอก">
                             {t('education-level.doctoral')}
                           </SelectItem>
                         </SelectContent>
@@ -397,21 +527,41 @@ export function UpdateUserFormDialog({
                 <FormField
                   control={form.control}
                   name="year"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.year')}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t('placeholder.year')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    // Generate years from current year back 5 years (in Buddhist Era)
+                    const currentYear = new Date().getFullYear() + 543;
+                    const years = Array.from({ length: 5 }, (_, i) =>
+                      (currentYear - i).toString(),
+                    );
+
+                    return (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          {t('label.year')}
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                              <SelectValue
+                                placeholder={t('placeholder.year')}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {years.map((year) => (
+                              <SelectItem key={year} value={year}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
             )}
