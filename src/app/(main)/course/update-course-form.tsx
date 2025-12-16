@@ -17,9 +17,7 @@ import {
 } from '@/components/ui/form';
 import React from 'react';
 import { useCourse } from '@/hooks/use-course';
-import { useCourseStaff } from '@/hooks/use-course_staff';
 import { ICourse } from '@/types/course';
-import { ICourseStaff } from '@/types/course-staff';
 import {
   updateCourseSchema,
   type UpdateCourseFormData,
@@ -53,13 +51,6 @@ export function UpdateCourseFormDialog({
   const tCommon = useTranslations('common');
   const { updateExistingCourse, storeAction, allCourseId, getCourseById } =
     useCourse();
-  const {
-    createNewCourseStaff,
-    removeCourseStaff,
-    fetchAllCourseStaff,
-    courseStaffMap,
-    allCourseStaffId,
-  } = useCourseStaff();
 
   const form = useForm<UpdateCourseFormData>({
     resolver: zodResolver(updateCourseSchema(t)),
@@ -96,44 +87,7 @@ export function UpdateCourseFormDialog({
           message: t('errors.code-duplicate'),
         });
       } else {
-        // Get current course_staff records for this course
-        const allCourseStaffRecords = allCourseStaffId
-          .map((id) => courseStaffMap[id])
-          .filter((cs): cs is ICourseStaff => cs !== undefined);
-        const currentCourseStaff = allCourseStaffRecords.filter(
-          (cs) => cs.courseId === course.id,
-        );
-        const oldStaffIds = currentCourseStaff.map((cs) => cs.staffId);
-        const newStaffIds = data.staffIds || [];
-
-        // Find staff to add (in new but not in old)
-        const staffToAdd = newStaffIds.filter(
-          (id) => !oldStaffIds.includes(id),
-        );
-        // Find staff to remove (in old but not in new)
-        const staffToRemove = currentCourseStaff.filter(
-          (cs) => !newStaffIds.includes(cs.staffId),
-        );
-
-        // Delete removed course_staff records
-        for (const courseStaff of staffToRemove) {
-          await removeCourseStaff(courseStaff.id);
-        }
-
-        // Create new course_staff records
-        for (const staffId of staffToAdd) {
-          await createNewCourseStaff({
-            courseId: course.id,
-            staffId,
-          });
-        }
-
-        // Update course
         await updateExistingCourse(course.id, data);
-
-        // Refetch course_staff to update teacher datatable
-        fetchAllCourseStaff();
-
         form.reset();
         onOpenChange(false);
         toast.success(t('toast.updated-successfully'));
