@@ -49,7 +49,7 @@ export function CreateUserFormDialog({
   const tCommon = useTranslations('common');
   const { createNewUser, storeAction, userMap } = useUser();
   const { createNewCourseStaff } = useCourseStaff();
-  const { updateExistingCourse, getCourseById, fetchAllCourses } = useCourse();
+  const { updateExistingCourse, getCourseById } = useCourse();
 
   // Check if email already exists
   const isEmailExists = (email: string): boolean => {
