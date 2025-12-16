@@ -449,11 +449,15 @@
         "phone": "Enter phone number",
         "degree": "Select education level",
         "year": "Select year",
-        "enroll-date": "Select enroll date"
+        "enroll-date": "Select enroll date",
+        "search-course": "Search course...",
+        "no-course-found": "No course found",
+        "search-year": "Search year...",
+        "no-year-found": "No year found"
       },
       "role": {
         "student": "Student",
-        "teacher": "Staff Member"
+        "teacher": "Teacher"
       },
       "education-level": {
         "masters": "Master's Degree",

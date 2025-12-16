@@ -9,25 +9,8 @@ import {
   DialogDescription,
   DialogClose,
 } from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
-import { EnrollDateInput } from '@/components/enroll-date-input';
 import { Loader } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import React from 'react';
@@ -38,12 +21,16 @@ import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useCourse } from '@/hooks/use-course';
 import { toast } from 'sonner';
 import { SelectOption } from '@/types';
+import { RoleSelector } from '../../../components/user/form-fields/role-selector';
+import { StudentFormFields } from '../../../components/user/form-fields/student-form-fields';
+import { CommonFormFields } from '../../../components/user/form-fields/common-form-fields';
 import {
   createUserSchema,
   CreateUserFormData,
   UserFormValues,
   UserRole,
 } from '@/validations/user';
+import { TeacherFormFields } from '@/components/user/form-fields/teacher-form-fields';
 
 interface CreateUserFormDialogProps {
   open: boolean;
@@ -125,11 +112,11 @@ export function CreateUserFormDialog({
   }, [open, defaultRole, form]);
 
   // Handle role change
-  const handleRoleChange = (newRole: UserRole) => {
-    setSelectedRole(newRole);
+  const handleRoleChange = (role: UserRole) => {
+    setSelectedRole(role);
     const currentValues = form.getValues();
 
-    if (newRole === 'student') {
+    if (role === 'student') {
       form.reset({
         role: 'student',
         title: currentValues.title || '',
@@ -172,7 +159,6 @@ export function CreateUserFormDialog({
     }
 
     try {
-      console.log('Submitting Create User Data:', formattedData);
       const result = await createNewUser(
         formattedData as unknown as CreateUserFormData,
       );
@@ -200,8 +186,6 @@ export function CreateUserFormDialog({
             });
           }
         }
-        // Refetch courses to update UI
-        fetchAllCourses();
       }
 
       form.reset();
@@ -254,342 +238,14 @@ export function CreateUserFormDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
           >
-            {/* Role Selector */}
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.role')}
-                  </FormLabel>
-                  <Select
-                    onValueChange={(value: UserRole) => {
-                      field.onChange(value);
-                      handleRoleChange(value);
-                    }}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                        <SelectValue placeholder={t('placeholder.role')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="student">
-                        {t('role.student')}
-                      </SelectItem>
-                      <SelectItem value="teacher">
-                        {t('role.teacher')}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Student-specific fields: code, courseId */}
+            <RoleSelector form={form} handleRoleChange={handleRoleChange} />
+            <CommonFormFields form={form} />
             {selectedRole === 'student' && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="code"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">
-                          {t('label.code')}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={t('placeholder.code')}
-                            className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="courseId"
-                    render={({ field }) => (
-                      <FormItem className="min-w-0">
-                        <FormLabel className="text-sm font-medium text-gray-700">
-                          {t('label.course')}
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-full truncate border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                              <SelectValue
-                                placeholder={t('placeholder.course')}
-                              />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {courseOptions.map((course) => (
-                              <SelectItem
-                                key={course.value}
-                                value={course.value}
-                              >
-                                {course.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </>
+              <StudentFormFields form={form} courseOptions={courseOptions} />
             )}
-
-            {/* Title field */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.title')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('placeholder.title')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Common fields: firstName, lastName */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.first-name')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t('placeholder.first-name')}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.last-name')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t('placeholder.last-name')}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Email field */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.email')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder={t('placeholder.email')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Phone field */}
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.phone')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('placeholder.phone')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      maxLength={10}
-                      {...field}
-                      onInput={(e) => {
-                        const target = e.target as HTMLInputElement;
-                        target.value = target.value.replace(/\D/g, '');
-                        field.onChange(target.value);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Teacher-specific field: courseIds (multiple courses) */}
             {selectedRole === 'teacher' && (
-              <FormField
-                control={form.control}
-                name="courseIds"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.course')}
-                    </FormLabel>
-                    <FormControl>
-                      <MultiCombobox
-                        defaultValue={field.value || []}
-                        placeholder={t('placeholder.course')}
-                        placeholderSearch={t('placeholder.course')}
-                        placeholderEmpty={t('placeholder.course')}
-                        options={courseOptions}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <TeacherFormFields form={form} courseOptions={courseOptions} />
             )}
-
-            {/* Student-specific fields: degree, year */}
-            {selectedRole === 'student' && (
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="degree"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.degree')}
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                            <SelectValue
-                              placeholder={t('placeholder.degree')}
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="ปริญญาโท">
-                            {t('education-level.masters')}
-                          </SelectItem>
-                          <SelectItem value="ปริญญาเอก">
-                            {t('education-level.doctoral')}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="year"
-                  render={({ field }) => {
-                    // Generate years from current year back 5 years (in Buddhist Era)
-                    const currentYear = new Date().getFullYear() + 543;
-                    const years = Array.from({ length: 5 }, (_, i) =>
-                      (currentYear - i).toString(),
-                    );
-
-                    return (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">
-                          {t('label.year')}
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                              <SelectValue
-                                placeholder={t('placeholder.year')}
-                              />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {years.map((year) => (
-                              <SelectItem key={year} value={year}>
-                                {year}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Student-specific field: enrollDate */}
-            {selectedRole === 'student' && (
-              <FormField
-                control={form.control}
-                name="enrollDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.enroll-date')}
-                    </FormLabel>
-                    <div className="relative">
-                      <EnrollDateInput
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {/* Spacer to push footer to bottom */}
-            <div className="flex-1" />
-
             <DialogFooter className="px-0">
               <div className="flex flex-1 justify-end space-x-2">
                 <DialogClose asChild>

@@ -374,7 +374,7 @@
     "code-placeholder": "กรอกรหัส",
     "role": "ตำแหน่ง",
     "select-role": "เลือกตำแหน่ง",
-    "student": "บัณฑิต",
+    "student": "นักศึกษา",
     "teacher": "ผู้รับผิดชอบหลักสูตร",
     "first-name": "ชื่อ",
     "first-name-placeholder": "กรอกชื่อ",
@@ -452,11 +452,15 @@
         "phone": "กรอกเบอร์โทร",
         "degree": "เลือกระดับการศึกษา",
         "year": "เลือกปีการศึกษา",
-        "enroll-date": "เลือกวันที่ลงทะเบียน"
+        "enroll-date": "เลือกวันที่ลงทะเบียน",
+        "search-course": "ค้นหาหลักสูตร...",
+        "no-course-found": "ไม่พบหลักสูตร",
+        "search-year": "ค้นหาปีการศึกษา...",
+        "no-year-found": "ไม่พบปีการศึกษา"
       },
       "role": {
-        "student": "บัณฑิต",
-        "teacher": "ผู้รับผิดชอบหลักสูตร"
+        "student": "นักศึกษา",
+        "teacher": "อาจารย์"
       },
       "education-level": {
         "masters": "ปริญญาโท",
@@ -518,7 +522,7 @@
   },
   "role": {
     "admin": "ผู้ดูแลระบบ",
-    "student": "บัณฑิต",
+    "student": "นักศึกษา",
     "teacher": "ผู้รับผิดชอบหลักสูตร"
   },
   "user-page": {
@@ -527,7 +531,7 @@
     "import-button": "อัปโหลดไฟล์",
     "tabs": {
       "all": "ผู้ใช้ทั้งหมด",
-      "students": "บัณฑิต",
+      "students": "นักศึกษา",
       "teachers": "ผู้รับผิดชอบหลักสูตร"
     }
   },
