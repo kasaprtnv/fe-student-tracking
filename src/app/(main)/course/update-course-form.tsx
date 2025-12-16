@@ -32,6 +32,7 @@ import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { SelectOption } from '@/types';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
+import { DegreesCombobox } from '@/components/degree-combobox';
 
 interface UpdateCourseFormDialogProps {
   open: boolean;
@@ -86,7 +87,6 @@ export function UpdateCourseFormDialog({
           message: t('errors.code-duplicate'),
         });
       } else {
-        // Update course
         await updateExistingCourse(course.id, data);
         form.reset();
         onOpenChange(false);
@@ -190,10 +190,9 @@ export function UpdateCourseFormDialog({
                     {t('label.degree')}
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t('placeholder.code')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
+                    <DegreesCombobox
+                      defaultValue={field.value}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
