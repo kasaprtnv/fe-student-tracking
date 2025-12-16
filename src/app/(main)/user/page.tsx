@@ -12,15 +12,18 @@ import { StudentTable } from './student-table';
 import { AllTable } from './all-table';
 import { PageHeader } from '../../../components/page-header';
 import { ImportUsersDialog } from './import-users-dialog';
+import { useCourse } from '@/hooks/use-course';
 
 const UserPage = () => {
   const t = useTranslations('user-page');
   const { fetchAllUsers } = useUser();
+  const { fetchAllCourses } = useCourse();
   const [isImportOpen, setIsImportOpen] = React.useState(false);
 
   useSWR(
     'fetch-users',
     async () => {
+      await fetchAllCourses();
       await fetchAllUsers();
     },
     {
@@ -48,7 +51,7 @@ const UserPage = () => {
           </Button>
         </div>
 
-        <Tabs defaultValue="all" className="w-full">
+        <Tabs defaultValue="all" className="w-full space-y-4">
           <TabsList>
             <TabsTrigger value="all">{t('tabs.all')}</TabsTrigger>
             <TabsTrigger value="students">{t('tabs.students')}</TabsTrigger>

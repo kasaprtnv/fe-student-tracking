@@ -22,14 +22,9 @@ export const StudentTable = () => {
     storeAction,
     userMap,
   } = useUser();
-  const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
+  const { allCourseId, getCourseById } = useCourse();
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
-
-  // Fetch courses on mount
-  React.useEffect(() => {
-    fetchAllCourses();
-  }, [fetchAllCourses]);
 
   // Get student data directly from Redux store userMap and enrich with courseName
   const filterStudent = React.useMemo(() => {

@@ -22,7 +22,7 @@ export const TeacherTable = () => {
     storeAction,
     userMap,
   } = useUser();
-  const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
+  const { allCourseId, getCourseById } = useCourse();
   const { fetchAllCourseStaff } = useCourseStaff();
   const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
     [],
@@ -32,13 +32,12 @@ export const TeacherTable = () => {
 
   // Fetch courses and course_staff on mount
   React.useEffect(() => {
-    fetchAllCourses();
     fetchAllCourseStaff().then((response) => {
       if (response.data) {
         setAllCourseStaff(response.data);
       }
     });
-  }, [fetchAllCourses, fetchAllCourseStaff]);
+  }, [fetchAllCourseStaff]);
 
   // Refetch course_staff data (called after form save)
   const refetchCourseStaff = React.useCallback(() => {

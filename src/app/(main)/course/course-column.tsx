@@ -34,6 +34,10 @@ interface ColumnActions {
 export const createCourseColumns = (): ColumnDef<ICourse>[] => {
   const columns: ColumnDef<ICourse>[] = [
     {
+      accessorKey: 'code',
+      header: 'code',
+    },
+    {
       accessorKey: 'name',
       header: 'name',
     },
