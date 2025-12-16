@@ -11,21 +11,6 @@ import {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-// Helper function to convert camelCase to snake_case
-function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const snakeKey = key.replace(
-        /[A-Z]/g,
-        (letter) => `_${letter.toLowerCase()}`,
-      );
-      result[snakeKey] = obj[key];
-    }
-  }
-  return result;
-}
-
 class UserService extends APIService {
   constructor(baseURL?: string) {
     super(baseURL ?? API_BASE_URL);
@@ -107,9 +92,7 @@ class UserService extends APIService {
       }
     }
 
-    const payload = toSnakeCase(filteredData);
-
-    return this.post('/users/create', payload)
+    return this.post('/users/create', filteredData)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -149,9 +132,7 @@ class UserService extends APIService {
       }
     }
 
-    const payload = toSnakeCase(filteredData);
-
-    return this.patch(`/users/${id}`, payload)
+    return this.patch(`/users/${id}`, filteredData)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
