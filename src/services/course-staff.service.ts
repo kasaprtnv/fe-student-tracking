@@ -40,6 +40,16 @@ class CourseStaffService extends APIService {
       });
   }
 
+  async getCourseStaffByUserId(
+    userId: string,
+  ): Promise<IApiGetResponse<ICourseStaff>> {
+    return this.get(`/course-staff/by-user/${userId}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async createCourseStaff(
     data: Partial<ICourseStaff>,
   ): Promise<IApiPostResponse<ICourseStaff>> {

@@ -5,6 +5,7 @@ import {
   fetchMilestoneStepsByMilestoneId,
   createMilestoneStep,
   updateMilestoneStep,
+  updateMultipleMilestoneSteps,
   deleteMilestoneStep,
 } from './milestone-step.thunks';
 import { IMilestoneStep, MilestoneStepState } from '@/types/milestone-step';
@@ -124,6 +125,33 @@ const milestoneStepSlice = createSlice({
         state.storeAction = 'none';
         state.error =
           (action.payload as string) || 'Failed to update milestone step';
+      });
+
+    // Bulk Update
+    builder
+      .addCase(updateMultipleMilestoneSteps.pending, (state) => {
+        state.storeAction = 'updating';
+        state.error = null;
+      })
+      .addCase(updateMultipleMilestoneSteps.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+        const updateData = action.payload.updatedFields;
+        if (updateData && Array.isArray(updateData)) {
+          updateData.forEach((updatedStep) => {
+            if (updatedStep?.id && state.milestoneStepMap[updatedStep.id]) {
+              state.milestoneStepMap[updatedStep.id] = {
+                ...state.milestoneStepMap[updatedStep.id],
+                ...updatedStep,
+              };
+            }
+          });
+        }
+      })
+      .addCase(updateMultipleMilestoneSteps.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.error =
+          (action.payload as string) ||
+          'Failed to update multiple milestone steps';
       });
 
     // Delete

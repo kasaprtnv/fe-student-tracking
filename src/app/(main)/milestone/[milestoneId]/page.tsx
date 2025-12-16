@@ -18,6 +18,7 @@ import { IMilestone } from '@/types/milestone';
 import { IMilestoneStep } from '@/types/milestone-step';
 import MilestoneStepCard from '@/components/milestone-step/milestone-step-card';
 import { PageHeader } from '@/components/page-header';
+import { Loader, Plus } from 'lucide-react';
 
 const MilestoneStepPage = () => {
   const { milestoneId } = useParams();
@@ -27,8 +28,9 @@ const MilestoneStepPage = () => {
   const {
     fetchMilestoneStepsByMilestone,
     getMilestoneStepsByMilestoneId,
-    updateExistingMilestoneStep,
+    updateMultiMilestoneSteps,
     deleteMilestoneStepById,
+    storeAction,
   } = useMilestoneStep();
   const { fetchMilestoneDetails, getMilestoneById } = useMilestone();
 
@@ -46,8 +48,6 @@ const MilestoneStepPage = () => {
   const [selectedStep, setSelectedStep] = React.useState<IMilestoneStep | null>(
     null,
   );
-  const [isUpdatingPositions, setIsUpdatingPositions] =
-    React.useState<boolean>(false);
 
   // Fetch milestone and milestone steps
   React.useEffect(() => {
@@ -94,19 +94,11 @@ const MilestoneStepPage = () => {
   };
 
   const confirmUpdatePositions = async () => {
-    setIsUpdatingPositions(true);
     try {
-      await Promise.all(
-        steps.map((step) =>
-          updateExistingMilestoneStep(step.id, { position: step.position }),
-        ),
-      );
+      await updateMultiMilestoneSteps(steps);
       setOriginalSteps(steps); // Update original positions after saving
-      console.log('Positions updated successfully');
     } catch (error) {
       console.error('Failed to update positions:', error);
-    } finally {
-      setIsUpdatingPositions(false);
     }
   };
 
@@ -157,6 +149,7 @@ const MilestoneStepPage = () => {
         </div>
         <div className="flex justify-end">
           <Button onClick={() => setIsAdd(true)} className="mb-4">
+            <Plus size={16} />
             {t('add-step')}
           </Button>
         </div>
@@ -190,13 +183,18 @@ const MilestoneStepPage = () => {
           </Droppable>
         </DragDropContext>
         {hasPositionChanged && ( // Show button only if positions have changed
-          <Button
-            onClick={confirmUpdatePositions}
-            disabled={isUpdatingPositions}
-            className="mt-4"
-          >
-            {isUpdatingPositions ? 'Updating...' : 'Confirm Positions'}
-          </Button>
+          <div className="flex w-full justify-end">
+            <Button
+              onClick={confirmUpdatePositions}
+              disabled={storeAction === 'updating'} // ใช้ storeAction แทน isUpdatingPositions
+              className="mt-4 ml-auto"
+            >
+              {storeAction === 'updating' && (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {t('milestone-step-form.label.confirm-position')}
+            </Button>
+          </div>
         )}
 
         <CreateMilestoneStepForm

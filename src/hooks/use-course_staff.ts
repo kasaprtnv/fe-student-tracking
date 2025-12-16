@@ -6,6 +6,7 @@ import {
   fetchCourseStaff,
   fetchCourseStaffById,
   fetchCourseStaffByCourseId,
+  fetchCourseStaffByUserId,
   createCourseStaff,
   updateCourseStaff,
   deleteCourseStaff,
@@ -62,6 +63,14 @@ export const useCourseStaff = () => {
     [dispatch],
   );
 
+  // Fetch course staff by user ID (teacher's user ID)
+  const fetchCourseStaffByUser = useCallback(
+    (userId: string) => {
+      return dispatch(fetchCourseStaffByUserId(userId)).unwrap();
+    },
+    [dispatch],
+  );
+
   // Create a new course staff
   const createNewCourseStaff = useCallback(
     (data: ICourseStaffCreateDTO) => dispatch(createCourseStaff(data)).unwrap(),
@@ -107,6 +116,7 @@ export const useCourseStaff = () => {
     fetchAllCourseStaff,
     fetchCourseStaffDetails,
     fetchCourseStaffByCourse,
+    fetchCourseStaffByUser,
     createNewCourseStaff,
     updateExistingCourseStaff,
     removeCourseStaff,

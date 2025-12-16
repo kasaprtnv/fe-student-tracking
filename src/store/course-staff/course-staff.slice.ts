@@ -3,6 +3,7 @@ import {
   fetchCourseStaff,
   fetchCourseStaffById,
   fetchCourseStaffByCourseId,
+  fetchCourseStaffByUserId,
   createCourseStaff,
   updateCourseStaff,
   deleteCourseStaff,
@@ -75,6 +76,23 @@ const courseStaffSlice = createSlice({
         });
       })
       .addCase(fetchCourseStaffByCourseId.rejected, (state, action) => {
+        state.loader = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch course staff by User ID
+    builder
+      .addCase(fetchCourseStaffByUserId.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(fetchCourseStaffByUserId.fulfilled, (state, action) => {
+        state.loader = false;
+        action.payload.data.forEach((courseStaff: ICourseStaff) => {
+          state.courseStaffMap[courseStaff.id] = courseStaff;
+        });
+      })
+      .addCase(fetchCourseStaffByUserId.rejected, (state, action) => {
         state.loader = false;
         state.error = action.payload as string;
       });

@@ -10,10 +10,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Upload, FileSpreadsheet, X, Loader } from 'lucide-react';
+import { Upload, FileSpreadsheet, X, Loader, Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { userService } from '@/services/user.service';
+import * as XLSX from 'xlsx';
+import { useCourse } from '@/hooks/use-course';
 
 interface ImportUsersDialogProps {
   open: boolean;
@@ -27,6 +29,7 @@ interface ImportResult {
   data?: {
     success?: number;
     failed?: number;
+    errors?: string[];
   };
 }
 
@@ -42,6 +45,31 @@ export function ImportUsersDialog({
   const [isDragging, setIsDragging] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Use course hook to get course data for courseName to courseId mapping
+  const { courseMap, allCourseId, fetchAllCourses } = useCourse();
+
+  // Fetch courses when dialog opens
+  React.useEffect(() => {
+    if (open && allCourseId.length === 0) {
+      fetchAllCourses();
+    }
+  }, [open, allCourseId.length, fetchAllCourses]);
+
+  // Create courseName to courseId mapping
+  const getCourseIdByName = React.useCallback(
+    (courseName: string): string | undefined => {
+      const normalizedName = courseName.trim().toLowerCase();
+      for (const courseId of allCourseId) {
+        const course = courseMap[courseId];
+        if (course && course.name.toLowerCase() === normalizedName) {
+          return courseId;
+        }
+      }
+      return undefined;
+    },
+    [courseMap, allCourseId],
+  );
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -86,6 +114,37 @@ export function ImportUsersDialog({
     );
   };
 
+  const handleDownloadTemplate = () => {
+    // Define the headers for the template
+    const headers = [
+      'email',
+      'title',
+      'firstName',
+      'lastName',
+      'phone',
+      'role',
+      'code',
+      'degree',
+      'year',
+      'courseName',
+      'enrollDate',
+    ];
+
+    // Create a worksheet with just the headers
+    const worksheet = XLSX.utils.aoa_to_sheet([headers]);
+
+    // Set column widths for better readability
+    worksheet['!cols'] = headers.map(() => ({ wch: 15 }));
+
+    // Create a workbook and add the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+
+    // Generate and download the file
+    XLSX.writeFile(workbook, 'user_import_template.xlsx');
+    toast.success(t('toast.template-downloaded'));
+  };
+
   const handleUpload = async () => {
     if (!file) {
       toast.error(t('errors.no-file-selected'));
@@ -94,8 +153,59 @@ export function ImportUsersDialog({
 
     setIsUploading(true);
     try {
+      // Read the Excel file
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+
+      // Convert to JSON array
+      const jsonData =
+        XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
+
+      // Map courseName to courseId if courseName exists
+      const processedData = jsonData.map((row) => {
+        const newRow: Record<string, unknown> = {};
+
+        // Trim all string values to remove whitespace/tabs
+        for (const [key, value] of Object.entries(row)) {
+          if (typeof value === 'string') {
+            newRow[key] = value.trim();
+          } else {
+            newRow[key] = value;
+          }
+        }
+
+        // If courseName exists and courseId doesn't, try to find courseId
+        if (newRow.courseName && !newRow.courseId) {
+          const courseId = getCourseIdByName(String(newRow.courseName));
+          if (courseId) {
+            newRow.courseId = courseId;
+          }
+          delete newRow.courseName; // Remove courseName as backend expects courseId
+        }
+
+        return newRow;
+      });
+
+      // Create a new worksheet with processed data
+      const newWorksheet = XLSX.utils.json_to_sheet(processedData);
+      const newWorkbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, 'Users');
+
+      // Generate new Excel file as blob
+      const excelBuffer = XLSX.write(newWorkbook, {
+        bookType: 'xlsx',
+        type: 'array',
+      });
+      const blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const processedFile = new File([blob], file.name, { type: blob.type });
+
+      // Upload the processed file
       const result = (await userService.importUsers(
-        file,
+        processedFile,
       )) as unknown as ImportResult;
 
       if (result.success) {
@@ -106,6 +216,14 @@ export function ImportUsersDialog({
 
         if (failedCount > 0) {
           toast.warning(t('toast.import-partial', { failed: failedCount }));
+
+          // Show each error message
+          const errors = result.data?.errors || [];
+          errors.forEach((error) => {
+            // Clean up the error message (remove leading tabs/whitespace)
+            const cleanError = error.trim();
+            toast.error(cleanError, { duration: 8000 });
+          });
         }
 
         setFile(null);
@@ -145,6 +263,20 @@ export function ImportUsersDialog({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Download Template Button */}
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadTemplate}
+              className="text-blue-600 hover:text-blue-700"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {t('download-template')}
+            </Button>
+          </div>
+
           {/* Drag & Drop Area */}
           <div
             onDragOver={handleDragOver}
