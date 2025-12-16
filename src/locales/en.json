@@ -59,6 +59,7 @@
     "enroll-date": "Enroll Date",
     "course": "Course",
     "academic-year": "Academic Year",
+    "degree": "Degree",
     "managed-courses": "Managed Courses"
   },
   "common": {
@@ -120,7 +121,7 @@
         "description": "Enter course description",
         "degree": "Enter degree",
         "staffIds": "Select staff members",
-        "search-staff": "Search staff",
+        "search-staff": "Search staff...",
         "no-staff-found": "No staff found"
       },
       "toast": {
@@ -531,5 +532,13 @@
     "title": "Graduate List",
     "description": "View all graduate information. Click on a row to view profile.",
     "export-button": "Export Data"
+  },
+  "degree": {
+    "bachelor": "Bachelor's Degree",
+    "master": "Master's Degree",
+    "doctorate": "Doctoral Degree",
+    "select-degree": "Select degree",
+    "not-found": "Degree not found",
+    "search-degree": "Search degree..."
   }
 }

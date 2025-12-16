@@ -42,6 +42,10 @@ export const createCourseColumns = (): ColumnDef<ICourse>[] => {
       header: 'name',
     },
     {
+      accessorKey: 'code',
+      header: 'code',
+    },
+    {
       accessorKey: 'description',
       header: 'description',
       cell: (info) => {
@@ -97,6 +101,10 @@ export const createCourseColumns = (): ColumnDef<ICourse>[] => {
           </div>
         );
       },
+    },
+    {
+      accessorKey: 'degree',
+      header: 'degree',
     },
     {
       accessorKey: 'createdAt',

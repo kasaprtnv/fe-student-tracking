@@ -31,6 +31,7 @@ import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { SelectOption } from '@/types';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
+import { DegreesCombobox } from '@/components/degree-combobox';
 
 interface CreateCourseFormDialogProps {
   open: boolean;
@@ -189,10 +190,9 @@ export function CreateCourseFormDialog({
                     {t('label.degree')}
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t('placeholder.degree')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
+                    <DegreesCombobox
+                      defaultValue={field.value}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
