@@ -55,7 +55,7 @@
     "role": "Role",
     "education-level": "Education Level",
     "year": "Year",
-    "course-name": "Course Name",
+    "course-name": "Enroll Course Name",
     "enroll-date": "Enroll Date",
     "course": "Course",
     "academic-year": "Academic Year",
@@ -427,7 +427,8 @@
       "label": {
         "role": "Role",
         "code": "Code",
-        "course": "Course",
+        "student-course": "Enroll Course",
+        "teacher-course": "Responsible Courses",
         "title": "Title",
         "first-name": "First Name",
         "last-name": "Last Name",

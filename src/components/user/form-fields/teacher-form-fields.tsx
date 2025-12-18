@@ -28,7 +28,7 @@ export const TeacherFormFields = ({
       render={({ field }) => (
         <FormItem>
           <FormLabel className="text-sm font-medium text-gray-700">
-            {t('label.course')}
+            {t('label.teacher-course')}
           </FormLabel>
           <FormControl>
             <MultiCombobox

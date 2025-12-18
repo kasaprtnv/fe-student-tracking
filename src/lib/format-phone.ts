@@ -8,9 +8,9 @@ export const formatPhoneNumber = (phone: string | undefined | null): string => {
   // Remove all non-digit characters
   const digits = phone.replace(/\D/g, '');
 
-  // Thai format: XX XXXX XXXX (2-4-4)
+  // Thai format: XXX XXX XXXX (3-3-4)
   if (digits.length === 10) {
-    return `${digits.slice(0, 2)} ${digits.slice(2, 6)} ${digits.slice(6)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
   }
 
   // If not 10 digits, return as-is
