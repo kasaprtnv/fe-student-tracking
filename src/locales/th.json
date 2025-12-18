@@ -158,7 +158,8 @@
       "faculty": "คณะ",
       "degree": "หลักสูตร"
     },
-    "progress_title": "ความคืบหน้าของบัณฑิตศึกษา"
+    "progress_title": "ความคืบหน้าของบัณฑิตศึกษา",
+    "contact_admin": "โปรดติดต่อเจ้าหน้าที่เพื่อลงทะเบียนหลักสูตร"
   },
   "milestone-progress": {
     "completed": "สำเร็จ",

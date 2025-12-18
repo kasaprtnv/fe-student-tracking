@@ -14,7 +14,7 @@ import { useAuth } from '@/hooks/use-auth';
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
-  const { user } = useAuth();
+  const { user, initialized } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -174,11 +174,22 @@ export default function Sidebar() {
             </Avatar>
             {open && (
               <div className="flex flex-col">
-                <span className="text-sm font-medium">{`${user?.firstName} ${user?.lastName}`}</span>
-                {user?.role && (
-                  <span className="text-xs text-gray-500">
-                    {t(`role.${user.role}`)}
-                  </span>
+                {!initialized || !user ? (
+                  <>
+                    <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+                    <div className="mt-1 h-3 w-16 animate-pulse rounded bg-gray-200" />
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm font-medium">
+                      {user.firstName} {user.lastName}
+                    </span>
+                    {user.role && (
+                      <span className="text-xs text-gray-500">
+                        {t(`role.${user.role}`)}
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
             )}

@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/use-auth';
 
 export default function LoginPage() {
   const { loginUser, error, user } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      await loginUser(email, password).unwrap();
+      await loginUser(username, password).unwrap();
       setMessage('Login successful!');
     } catch {
       setMessage(error || 'Login failed');
@@ -84,10 +84,10 @@ export default function LoginPage() {
                 />
               </svg>
               <input
-                type="email"
+                type="text"
                 placeholder="Username"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full text-base text-gray-600 placeholder-gray-400 outline-none sm:text-lg lg:text-xl"
               />
             </div>

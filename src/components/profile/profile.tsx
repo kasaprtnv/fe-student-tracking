@@ -4,11 +4,36 @@ import { User } from '@/types/user';
 
 interface ProfilePageProps {
   user: User | null;
+  isLoading?: boolean;
 }
 
-export const ProfileComponent: React.FC<ProfilePageProps> = ({ user }) => {
+export const ProfileComponent: React.FC<ProfilePageProps> = ({
+  user,
+  isLoading,
+}) => {
   const t = useTranslations('profile');
   const role = user?.role === 'student' ? 'student' : user?.role;
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="mb-4 text-2xl font-bold">
+          {t('personal_information.title')}
+        </div>
+        <div className="flex flex-row items-center gap-8">
+          {/* Skeleton for Avatar */}
+          <div className="h-60 w-60 animate-pulse rounded-full bg-gray-200" />
+
+          {/* Skeleton for Info */}
+          <div className="flex-1 space-y-4">
+            <div className="h-6 w-5/6 animate-pulse rounded bg-gray-200" />
+            <div className="h-6 w-5/6 animate-pulse rounded bg-gray-200" />
+            <div className="h-6 w-1/4 animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       <div className="mb-4 text-2xl font-bold">
@@ -38,41 +63,41 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({ user }) => {
                 <div className="mr-2 text-xl">
                   {t('personal_information.student_id')} :
                 </div>
-                <div className="text-xl">{user?.code}</div>
+                <div className="text-xl">{user?.code ?? '-'}</div>
               </div>
             )}
             <div className="flex">
               <div className="mr-2 text-xl">
                 {t('personal_information.faculty')} :
               </div>
-              <div className="text-xl">รัฐศาสตร์</div>
+              <div className="text-xl">รัฐศาสตร์และนิติศาสตร์</div>
             </div>
             <div className="flex">
               <div className="mr-2 text-xl">
                 {t('personal_information.department')} :
               </div>
-              <div className="text-xl">วิชาการบริหารงานยุติธรรมและสังคม</div>
+              <div className="text-xl">{user?.major ?? '-'}</div>
             </div>
             {role === 'student' && (
               <div className="flex">
                 <div className="mr-2 text-xl">
                   {t('personal_information.year')} :
                 </div>
-                <div className="text-xl">{user?.year}</div>
+                <div className="text-xl">{user?.year ?? '-'}</div>
               </div>
             )}
             <div className="flex">
               <div className="mr-2 text-xl">
                 {t('personal_information.email')} :
               </div>
-              <div className="text-xl">{user?.email}</div>
+              <div className="text-xl">{user?.email ?? '-'}</div>
             </div>
             {role === 'student' && (
               <div className="flex">
                 <div className="mr-2 text-xl">
                   {t('personal_information.degree')} :
                 </div>
-                <div className="text-xl">{user?.degree}</div>
+                <div className="text-xl">{user?.degree ?? '-'}</div>
               </div>
             )}
           </div>

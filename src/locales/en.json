@@ -158,7 +158,8 @@
       "faculty": "Faculty",
       "degree": "Degree"
     },
-    "progress_title": "Graduate Progress"
+    "progress_title": "Graduate Progress",
+    "contact_admin": "Please contact staff to enroll in a course"
   },
   "milestone-progress": {
     "completed": "Completed",

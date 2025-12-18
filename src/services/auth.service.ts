@@ -11,10 +11,10 @@ class AuthService extends APIService {
   }
 
   async login(
-    email: string,
+    username: string,
     password: string,
   ): Promise<IApiPostResponse<User>> {
-    return this.post('/auth/login', { email, password })
+    return this.post('/auth/login', { username, password })
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
