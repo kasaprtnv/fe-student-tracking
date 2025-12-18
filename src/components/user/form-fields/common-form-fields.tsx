@@ -18,44 +18,46 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
   const t = useTranslations('user.user-form');
   return (
     <>
-      <FormField
-        control={form.control}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium text-gray-700">
-              {t('label.title')}
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder={t('placeholder.title')}
-                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="firstName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium text-gray-700">
-              {t('label.first-name')}
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder={t('placeholder.first-name')}
-                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-gray-700">
+                {t('label.title')}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t('placeholder.title')}
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-gray-700">
+                {t('label.first-name')}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t('placeholder.first-name')}
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
       <FormField
         control={form.control}
         name="lastName"

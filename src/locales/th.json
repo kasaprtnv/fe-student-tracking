@@ -55,7 +55,7 @@
     "role": "บทบาท",
     "education-level": "ระดับการศึกษา",
     "year": "ปีการศึกษา",
-    "course-name": "ชื่อหลักสูตร",
+    "course-name": "ชื่อหลักสูตรที่ลงทะเบียน",
     "enroll-date": "วันที่ลงทะเบียน",
     "course": "หลักสูตร",
     "academic-year": "ปีการศึกษา",
@@ -430,7 +430,8 @@
       "label": {
         "role": "บทบาท",
         "code": "รหัส",
-        "course": "หลักสูตร",
+        "student-course": "ลงทะเบียนหลักสูตร",
+        "teacher-course": "หลักสูตรที่รับผิดชอบ",
         "title": "คำนำหน้า",
         "first-name": "ชื่อ",
         "last-name": "นามสกุล",
