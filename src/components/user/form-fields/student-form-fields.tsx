@@ -51,7 +51,7 @@ export const StudentFormFields = ({
         render={({ field }) => (
           <FormItem className="min-w-0">
             <FormLabel className="text-sm font-medium text-gray-700">
-              {t('label.course')}
+              {t('label.student-course')}
             </FormLabel>
             <FormControl>
               <SingleCombobox
