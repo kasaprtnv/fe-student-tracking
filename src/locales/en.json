@@ -55,7 +55,7 @@
     "role": "Role",
     "education-level": "Education Level",
     "year": "Year",
-    "course-name": "Course Name",
+    "course-name": "Enroll Course Name",
     "enroll-date": "Enroll Date",
     "course": "Course",
     "academic-year": "Academic Year",
@@ -158,7 +158,8 @@
       "faculty": "Faculty",
       "degree": "Degree"
     },
-    "progress_title": "Graduate Progress"
+    "progress_title": "Graduate Progress",
+    "contact_admin": "Please contact staff to enroll in a course"
   },
   "milestone-progress": {
     "completed": "Completed",
@@ -427,7 +428,8 @@
       "label": {
         "role": "Role",
         "code": "Code",
-        "course": "Course",
+        "student-course": "Enroll Course",
+        "teacher-course": "Responsible Courses",
         "title": "Title",
         "first-name": "First Name",
         "last-name": "Last Name",
@@ -449,11 +451,15 @@
         "phone": "Enter phone number",
         "degree": "Select education level",
         "year": "Select year",
-        "enroll-date": "Select enroll date"
+        "enroll-date": "Select enroll date",
+        "search-course": "Search course...",
+        "no-course-found": "No course found",
+        "search-year": "Search year...",
+        "no-year-found": "No year found"
       },
       "role": {
         "student": "Student",
-        "teacher": "Staff Member"
+        "teacher": "Teacher"
       },
       "education-level": {
         "masters": "Master's Degree",
@@ -525,7 +531,7 @@
     "tabs": {
       "all": "All Users",
       "students": "Students",
-      "teachers": "Staff Members"
+      "teachers": "Teachers"
     }
   },
   "student-page": {

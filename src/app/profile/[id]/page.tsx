@@ -9,14 +9,15 @@ import { UploadedFilesMap, ViewMode } from '@/types/milestone';
 import { useMilestone } from '@/hooks/use-milestone';
 import { useAuth } from '@/hooks/use-auth';
 import useSWR from 'swr';
-import { notFound, useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/use-user';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
-  const { user } = useAuth();
+  const { user, initialized } = useAuth();
   const { fetchUserDetails, userMap } = useUser();
   const { fetchMilestonesWithStatus, milestoneMap } = useMilestone();
+  const router = useRouter();
   const params = useParams();
   const rawId = params.id;
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
@@ -25,9 +26,11 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!isOwnProfile && id && !userMap[id]) {
-      fetchUserDetails(id);
+      Promise.resolve(fetchUserDetails(id)).catch(() => {
+        router.push(`/profile/${user?.id}`);
+      });
     }
-  }, [isOwnProfile, id, userMap, fetchUserDetails]);
+  }, [isOwnProfile, id, userMap, fetchUserDetails, router, user?.id]);
 
   const courseId = isOwnProfile ? user?.courseId : userMap[id ?? '']?.courseId;
   useSWR(
@@ -39,9 +42,6 @@ export default function ProfilePage() {
       : null,
     {
       revalidateOnFocus: false,
-      onError: () => {
-        if (!user && !userMap[id ?? '']) notFound();
-      },
     },
   );
 
@@ -54,52 +54,59 @@ export default function ProfilePage() {
     }));
   };
 
+  const profileUser = isOwnProfile ? user : userMap[id ?? ''];
+  const profileCourseId = isOwnProfile
+    ? user?.courseId
+    : userMap[id ?? '']?.courseId;
+  const profileEnrollDate = isOwnProfile
+    ? user?.enrollDate
+    : userMap[id ?? '']?.enrollDate;
+
+  const renderMilestones = () => (
+    <>
+      <Separator className="my-6" />
+      <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+      <MilestoneComponent
+        milestones={Object.values(milestoneMap)}
+        mode={mode}
+        enrollDate={profileEnrollDate}
+        onFileUpload={handleFileUpload}
+        uploadedFiles={uploadedFiles}
+        userId={isOwnProfile ? user?.id : undefined}
+      />
+    </>
+  );
+
+  const renderTeacherView = () => (
+    <>
+      <Separator className="my-6" />
+      <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+      <label className="mr-4 font-medium">teacher</label>
+    </>
+  );
+
   return (
     <div>
-      <ProfileComponent
-        user={isOwnProfile ? (user ?? null) : (userMap[id ?? ''] ?? null)}
-      />
+      <ProfileComponent user={profileUser ?? null} isLoading={!initialized} />
 
-      {isOwnProfile && user?.role === 'admin' ? (
-        <div></div>
-      ) : isOwnProfile && user?.role === 'student' ? (
-        <div>
+      {/* Admin - no progress */}
+      {profileUser?.role === 'admin' && null}
+
+      {/* Student without course */}
+      {profileUser?.role === 'student' && !profileCourseId && (
+        <>
           <Separator className="my-6" />
-          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
-          <MilestoneComponent
-            milestones={Object.values(milestoneMap)}
-            mode={mode}
-            enrollDate={user?.enrollDate}
-            onFileUpload={handleFileUpload}
-            uploadedFiles={uploadedFiles}
-            userId={user?.id}
-          ></MilestoneComponent>
-        </div>
-      ) : !isOwnProfile && userMap[id ?? '']?.role === 'student' ? (
-        <div>
-          <Separator className="my-6" />
-          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
-          <MilestoneComponent
-            milestones={Object.values(milestoneMap)}
-            mode={mode}
-            enrollDate={userMap[id ?? '']?.enrollDate}
-            onFileUpload={handleFileUpload}
-            uploadedFiles={uploadedFiles}
-          ></MilestoneComponent>
-        </div>
-      ) : isOwnProfile && user?.role === 'teacher' ? (
-        <div>
-          <Separator className="my-6" />
-          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
-          <label className="mr-4 font-medium">teacher</label>
-        </div>
-      ) : !isOwnProfile && userMap[id ?? '']?.role === 'teacher' ? (
-        <div>
-          <Separator className="my-6" />
-          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
-          <label className="mr-4 font-medium">teacher</label>
-        </div>
-      ) : null}
+          <div>
+            <span className="text-lg font-medium">{t('contact_admin')}</span>
+          </div>
+        </>
+      )}
+
+      {/* Student with course */}
+      {profileUser?.role === 'student' && profileCourseId && renderMilestones()}
+
+      {/* Teacher */}
+      {profileUser?.role === 'teacher' && renderTeacherView()}
     </div>
   );
 }

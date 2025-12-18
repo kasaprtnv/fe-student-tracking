@@ -61,7 +61,7 @@ interface MilestoneProgressProps {
 const isStepCompleted = (status: string) => status === 'approved';
 const isStepDeclined = (status: string) => status === 'declined';
 const isStepPending = (status: string) => status === 'pending';
-const isAvailable = (status: string) => status === 'available';
+const isStepAvailable = (status: string) => status === 'available';
 const isLocked = (status: string) => status === 'locked';
 
 export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
@@ -335,7 +335,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                         const completed = isStepCompleted(step.status);
                         const declined = isStepDeclined(step.status);
                         const pending = isStepPending(step.status);
-                        const available = isAvailable(step.status);
+                        const available = isStepAvailable(step.status);
                         const locked = isLocked(step.status);
 
                         return (

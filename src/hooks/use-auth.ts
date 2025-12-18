@@ -21,7 +21,8 @@ export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const loginUser = useCallback(
-    (email: string, password: string) => dispatch(login({ email, password })),
+    (username: string, password: string) =>
+      dispatch(login({ username, password })),
     [dispatch],
   );
   const validateTokenAction = useCallback(

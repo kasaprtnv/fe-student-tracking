@@ -13,6 +13,7 @@ export interface User {
   role: UserRole;
   phone?: string;
   degree?: string;
+  major?: string;
   year?: string;
   courseId?: string;
   courseName?: string;

@@ -55,7 +55,7 @@
     "role": "บทบาท",
     "education-level": "ระดับการศึกษา",
     "year": "ปีการศึกษา",
-    "course-name": "ชื่อหลักสูตร",
+    "course-name": "ชื่อหลักสูตรที่ลงทะเบียน",
     "enroll-date": "วันที่ลงทะเบียน",
     "course": "หลักสูตร",
     "academic-year": "ปีการศึกษา",
@@ -158,7 +158,8 @@
       "faculty": "คณะ",
       "degree": "หลักสูตร"
     },
-    "progress_title": "ความคืบหน้าของบัณฑิตศึกษา"
+    "progress_title": "ความคืบหน้าของบัณฑิตศึกษา",
+    "contact_admin": "โปรดติดต่อเจ้าหน้าที่เพื่อลงทะเบียนหลักสูตร"
   },
   "milestone-progress": {
     "completed": "สำเร็จ",
@@ -374,7 +375,7 @@
     "code-placeholder": "กรอกรหัส",
     "role": "ตำแหน่ง",
     "select-role": "เลือกตำแหน่ง",
-    "student": "บัณฑิต",
+    "student": "นักศึกษา",
     "teacher": "ผู้รับผิดชอบหลักสูตร",
     "first-name": "ชื่อ",
     "first-name-placeholder": "กรอกชื่อ",
@@ -430,7 +431,8 @@
       "label": {
         "role": "บทบาท",
         "code": "รหัส",
-        "course": "หลักสูตร",
+        "student-course": "ลงทะเบียนหลักสูตร",
+        "teacher-course": "หลักสูตรที่รับผิดชอบ",
         "title": "คำนำหน้า",
         "first-name": "ชื่อ",
         "last-name": "นามสกุล",
@@ -452,11 +454,15 @@
         "phone": "กรอกเบอร์โทร",
         "degree": "เลือกระดับการศึกษา",
         "year": "เลือกปีการศึกษา",
-        "enroll-date": "เลือกวันที่ลงทะเบียน"
+        "enroll-date": "เลือกวันที่ลงทะเบียน",
+        "search-course": "ค้นหาหลักสูตร...",
+        "no-course-found": "ไม่พบหลักสูตร",
+        "search-year": "ค้นหาปีการศึกษา...",
+        "no-year-found": "ไม่พบปีการศึกษา"
       },
       "role": {
-        "student": "บัณฑิต",
-        "teacher": "ผู้รับผิดชอบหลักสูตร"
+        "student": "นักศึกษา",
+        "teacher": "อาจารย์"
       },
       "education-level": {
         "masters": "ปริญญาโท",
@@ -518,7 +524,7 @@
   },
   "role": {
     "admin": "ผู้ดูแลระบบ",
-    "student": "บัณฑิต",
+    "student": "นักศึกษา",
     "teacher": "ผู้รับผิดชอบหลักสูตร"
   },
   "user-page": {
@@ -527,7 +533,7 @@
     "import-button": "อัปโหลดไฟล์",
     "tabs": {
       "all": "ผู้ใช้ทั้งหมด",
-      "students": "บัณฑิต",
+      "students": "นักศึกษา",
       "teachers": "ผู้รับผิดชอบหลักสูตร"
     }
   },
