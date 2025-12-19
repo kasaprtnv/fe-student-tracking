@@ -12,7 +12,6 @@ import {
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart';
 import { PieChart, Pie, Cell } from 'recharts';
