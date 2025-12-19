@@ -114,6 +114,7 @@ export function GraduationByYearChart({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{tFilters('all-degrees')}</SelectItem>
+              <SelectItem value="bachelor">{tDegree('bachelor')}</SelectItem>
               <SelectItem value="master">{tDegree('master')}</SelectItem>
               <SelectItem value="doctorate">{tDegree('doctorate')}</SelectItem>
             </SelectContent>
