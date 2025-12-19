@@ -548,5 +548,41 @@
     "select-degree": "เลือกวุฒิการศึกษา",
     "not-found": "ไม่พบวุฒิการศึกษา",
     "search-degree": "ค้นหาวุฒิการศึกษา..."
+  },
+  "dashboard": {
+    "title": "แดชบอร์ด",
+    "description": "ภาพรวมข้อมูลนักศึกษาและหลักสูตร",
+    "summary-cards": {
+      "total-students": "นักศึกษาทั้งหมด",
+      "total-teachers": "ผู้รับผิดชอบหลักสูตร",
+      "total-courses": "หลักสูตรทั้งหมด",
+      "unit-people": "คน",
+      "unit-courses": "หลักสูตร"
+    },
+    "charts": {
+      "students-by-course": "จำนวนนักศึกษาในแต่ละหลักสูตร",
+      "students-by-degree": "นักศึกษาตามระดับปริญญา",
+      "graduation-by-year": "สถานะจบการศึกษาตามปี",
+      "no-data": "ไม่มีข้อมูลนักศึกษา"
+    },
+    "filters": {
+      "all-courses": "ทุกหลักสูตร",
+      "all-degrees": "ทุกระดับการศึกษา",
+      "all-years": "ทุกปี",
+      "all": "ทั้งหมด",
+      "years-3": "3 ปีล่าสุด",
+      "years-5": "5 ปีล่าสุด",
+      "years-10": "10 ปีล่าสุด",
+      "course": "หลักสูตร",
+      "degree": "ระดับ",
+      "year": "ปี"
+    },
+    "legend": {
+      "master": "ปริญญาโท",
+      "doctorate": "ปริญญาเอก",
+      "graduated": "จบแล้ว",
+      "not-graduated": "ยังไม่จบ",
+      "total": "รวม"
+    }
   }
 }

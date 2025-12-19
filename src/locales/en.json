@@ -545,5 +545,41 @@
     "select-degree": "Select degree",
     "not-found": "Degree not found",
     "search-degree": "Search degree..."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Overview of students and courses",
+    "summary-cards": {
+      "total-students": "Total Students",
+      "total-teachers": "Teachers",
+      "total-courses": "Total Courses",
+      "unit-people": "people",
+      "unit-courses": "courses"
+    },
+    "charts": {
+      "students-by-course": "Students by Course",
+      "students-by-degree": "Students by Degree",
+      "graduation-by-year": "Graduation Status by Year",
+      "no-data": "No student data"
+    },
+    "filters": {
+      "all-courses": "All Courses",
+      "all-degrees": "All Education Levels",
+      "all-years": "All Years",
+      "all": "All",
+      "years-3": "Last 3 years",
+      "years-5": "Last 5 years",
+      "years-10": "Last 10 years",
+      "course": "Course",
+      "degree": "Degree",
+      "year": "Year"
+    },
+    "legend": {
+      "master": "Master's",
+      "doctorate": "Doctorate",
+      "graduated": "Graduated",
+      "not-graduated": "Not Graduated",
+      "total": "Total"
+    }
   }
 }

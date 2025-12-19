@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 import { User } from '@/types/user';
 import { ICourse } from '@/types/course';
+import { useTranslations } from 'next-intl';
 
 interface StudentsByYearCourseChartProps {
   students: User[];
@@ -35,8 +36,13 @@ export function StudentsByYearCourseChart({
   students,
   courseMap,
 }: StudentsByYearCourseChartProps) {
+  const t = useTranslations('dashboard');
+  const tFilters = useTranslations('dashboard.filters');
+  const tDegree = useTranslations('degree');
+  const tLegend = useTranslations('dashboard.legend');
+  const tSummary = useTranslations('dashboard.summary-cards');
   const [selectedCourse, setSelectedCourse] = React.useState<string>('all');
-  const [yearRange, setYearRange] = React.useState<string>('5');
+  const [yearRange, setYearRange] = React.useState<string>('3');
   const [selectedDegree, setSelectedDegree] = React.useState<string>('all');
 
   // Compute chart data from students
@@ -135,26 +141,28 @@ export function StudentsByYearCourseChart({
       <CardHeader className="space-y-2 pb-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="text-lg font-bold">
-            จำนวนนักศึกษาในแต่ละหลักสูตร
+            {t('charts.students-by-course')}
           </CardTitle>
           <div className="flex flex-wrap gap-2">
             <Select value={selectedDegree} onValueChange={setSelectedDegree}>
-              <SelectTrigger className="w-[100px]">
-                <SelectValue placeholder="ระดับ" />
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder={tFilters('degree')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">ทุกระดับ</SelectItem>
-                <SelectItem value="bachelor">ปริญญาตรี</SelectItem>
-                <SelectItem value="master">ปริญญาโท</SelectItem>
-                <SelectItem value="doctorate">ปริญญาเอก</SelectItem>
+                <SelectItem value="all">{tFilters('all-degrees')}</SelectItem>
+                <SelectItem value="bachelor">{tDegree('bachelor')}</SelectItem>
+                <SelectItem value="master">{tDegree('master')}</SelectItem>
+                <SelectItem value="doctorate">
+                  {tDegree('doctorate')}
+                </SelectItem>
               </SelectContent>
             </Select>
             <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-              <SelectTrigger className="w-[110px]">
-                <SelectValue placeholder="หลักสูตร" />
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder={tFilters('course')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">ทุกหลักสูตร</SelectItem>
+                <SelectItem value="all">{tFilters('all-courses')}</SelectItem>
                 {Object.entries(courseNames).map(([id, name]) => (
                   <SelectItem key={id} value={id}>
                     {name}
@@ -163,14 +171,14 @@ export function StudentsByYearCourseChart({
               </SelectContent>
             </Select>
             <Select value={yearRange} onValueChange={setYearRange}>
-              <SelectTrigger className="w-[120px]">
+              <SelectTrigger className="w-[130px]">
                 <SelectValue placeholder="ช่วงปี" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="3">3 ปีล่าสุด</SelectItem>
-                <SelectItem value="5">5 ปีล่าสุด</SelectItem>
-                <SelectItem value="10">10 ปีล่าสุด</SelectItem>
-                <SelectItem value="all">ทั้งหมด</SelectItem>
+                <SelectItem value="3">{tFilters('years-3')}</SelectItem>
+                <SelectItem value="5">{tFilters('years-5')}</SelectItem>
+                <SelectItem value="10">{tFilters('years-10')}</SelectItem>
+                <SelectItem value="all">{tFilters('all')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -191,7 +199,41 @@ export function StudentsByYearCourseChart({
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="year" tickLine={false} axisLine={false} />
                   <YAxis tickLine={false} axisLine={false} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartTooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        const total = payload.reduce(
+                          (sum, item) => sum + (Number(item.value) || 0),
+                          0,
+                        );
+                        return (
+                          <div className="rounded-lg border bg-white p-2 shadow-sm">
+                            <div className="mb-1 font-medium">{label}</div>
+                            {payload.map((item, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center gap-2"
+                              >
+                                <div
+                                  className="h-2.5 w-2.5 rounded-full"
+                                  style={{ backgroundColor: item.color }}
+                                />
+                                <span>
+                                  {item.name}: {item.value}{' '}
+                                  {tSummary('unit-people')}
+                                </span>
+                              </div>
+                            ))}
+                            <div className="mt-1 border-t pt-1 font-medium">
+                              {tLegend('total')}: {total}{' '}
+                              {tSummary('unit-people')}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
                   {Object.keys(displayCourseColors).map((courseId) => (
                     <Bar
                       key={courseId}

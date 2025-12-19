@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import useSWR from 'swr';
+import { useTranslations } from 'next-intl';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
 import { dashboardService } from '@/services/dashboard.service';
@@ -10,10 +11,11 @@ import { IDashboardStats } from '@/types/dashboard';
 import { SummaryCards } from './summary-cards';
 import { StudentsByYearCourseChart } from './students-by-year-course-chart';
 import { StudentsByDegreeChart } from './students-by-degree-chart';
-import { MilestoneStatusChart } from './milestone-status-chart';
-import { MilestoneByYearBarChart } from './milestone-by-year-bar-chart';
+import { GraduationByYearChart } from './graduation-by-year-chart';
+import { PageHeader } from '@/components/page-header';
 
 const DashboardPage = () => {
+  const t = useTranslations('dashboard');
   const { fetchStudents, studentUsers, loader: userLoader } = useUser();
   const {
     fetchAllCourses,
@@ -49,25 +51,10 @@ const DashboardPage = () => {
     },
   );
 
-  // Calculate students by degree from real data
-  const studentsByDegreeData = React.useMemo(() => {
-    const masterCount = studentUsers.filter(
-      (user) => user.degree === 'master',
-    ).length;
-    const doctorateCount = studentUsers.filter(
-      (user) => user.degree === 'doctorate',
-    ).length;
-    return [
-      { name: 'ปริญญาโท', value: masterCount, color: '#8b5cf6' },
-      { name: 'ปริญญาเอก', value: doctorateCount, color: '#f59e0b' },
-    ];
-  }, [studentUsers]);
-
   // Calculate totals for summary cards
   const totalStudents = studentUsers.length;
   const totalTeachers = dashboardStats?.totalTeachers ?? 0;
   const totalCourses = allCourseId.length;
-  const totalMilestones = dashboardStats?.totalMilestones ?? 0;
 
   const isLoading = userLoader || courseLoader || statsLoader;
 
@@ -81,34 +68,42 @@ const DashboardPage = () => {
   }, [studentUsers]);
 
   return (
-    <div className="container mx-auto space-y-6 py-8">
-      {/* Summary Cards */}
-      <SummaryCards
-        totalStudents={totalStudents}
-        totalTeachers={totalTeachers}
-        totalCourses={totalCourses}
-        totalMilestones={totalMilestones}
-        isLoading={isLoading}
-      />
+    <>
+      <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
+      <div className="container mx-auto space-y-6 py-8">
+        <div className="mb-4">
+          <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('description')}</p>
+        </div>
+        {/* Summary Cards */}
+        <SummaryCards
+          totalStudents={totalStudents}
+          totalTeachers={totalTeachers}
+          totalCourses={totalCourses}
+          isLoading={isLoading}
+        />
 
-      {/* Charts 2x2 Grid */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <StudentsByYearCourseChart
-          students={studentUsers}
-          courseMap={courseMap}
-        />
-        <StudentsByDegreeChart data={studentsByDegreeData} />
-        <MilestoneStatusChart
-          courseMap={courseMap}
-          allCourseIds={allCourseId}
-          allYears={allYears}
-        />
-        <MilestoneByYearBarChart
-          courseMap={courseMap}
-          allCourseIds={allCourseId}
-        />
+        {/* Charts 2x2 Grid */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <StudentsByYearCourseChart
+              students={studentUsers}
+              courseMap={courseMap}
+            />
+          </div>
+          <StudentsByDegreeChart
+            students={studentUsers}
+            courseMap={courseMap}
+            allCourseIds={allCourseId}
+            allYears={allYears}
+          />
+          <GraduationByYearChart
+            courseMap={courseMap}
+            allCourseIds={allCourseId}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
