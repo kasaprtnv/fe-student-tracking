@@ -5,8 +5,7 @@ import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
-import { dashboardService } from '@/services/dashboard.service';
-import { IDashboardStats } from '@/types/dashboard';
+import { useDashboard } from '@/hooks/use-dashboard';
 
 import { SummaryCards } from './summary-cards';
 import { StudentsByYearCourseChart } from './students-by-year-course-chart';
@@ -23,28 +22,14 @@ const DashboardPage = () => {
     courseMap,
     loader: courseLoader,
   } = useCourse();
+  const { stats, loader: dashboardLoader, fetchStats } = useDashboard();
 
-  const [dashboardStats, setDashboardStats] =
-    React.useState<IDashboardStats | null>(null);
-  const [statsLoader, setStatsLoader] = React.useState(false);
   useSWR(
     'fetch-dashboard-data',
     async () => {
       await fetchStudents();
       await fetchAllCourses();
-
-      // Fetch dashboard stats
-      setStatsLoader(true);
-      try {
-        const response = await dashboardService.getDashboardStats();
-        if (response?.data) {
-          setDashboardStats(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
-      } finally {
-        setStatsLoader(false);
-      }
+      await fetchStats();
     },
     {
       revalidateOnFocus: false,
@@ -53,10 +38,10 @@ const DashboardPage = () => {
 
   // Calculate totals for summary cards
   const totalStudents = studentUsers.length;
-  const totalTeachers = dashboardStats?.totalTeachers ?? 0;
+  const totalTeachers = stats?.totalTeachers ?? 0;
   const totalCourses = allCourseId.length;
 
-  const isLoading = userLoader || courseLoader || statsLoader;
+  const isLoading = userLoader || courseLoader || dashboardLoader;
 
   // Get all unique years from students
   const allYears = React.useMemo(() => {
