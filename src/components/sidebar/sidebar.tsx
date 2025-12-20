@@ -20,9 +20,9 @@ export default function Sidebar() {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const [, startTransition] = useTransition();
   const { pendingCount } = usePendingCount();
+  const hiddenRoutes = [`/login`];
 
   const t = useTranslations();
   const locale = useLocale();
@@ -78,7 +78,7 @@ export default function Sidebar() {
           {open ? (
             <div className="h-10 w-full max-w-[220px]">
               <Image
-                src={`${BASE_PATH}/logobuu.png`}
+                src={`/logobuu.png`}
                 alt="BUU Logo"
                 width={220}
                 height={40}
