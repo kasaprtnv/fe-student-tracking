@@ -6,6 +6,7 @@ import courseStaffReducer from './course-staff/course-staff.slice';
 import MilestonePrerequisiteReducer from './milestone-prerequisite/milestone-prerequisite.slice';
 import userReducer from './user/user.slice';
 import authReducer from './auth/auth.slice';
+import dashboardReducer from './dashboard/dashboard.slice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     milestonePrerequisites: MilestonePrerequisiteReducer,
     users: userReducer,
     auth: authReducer,
+    dashboard: dashboardReducer,
   },
 });
 
