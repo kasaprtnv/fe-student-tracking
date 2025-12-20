@@ -7,6 +7,8 @@
     "userManagement": "จัดการข้อมูลผู้ใช้งาน",
     "studentReport": "รายงานบัณฑิต",
     "progressVerify": "ตรวจสอบหลักฐาน",
+    "mergeFiles": "รวมไฟล์",
+    "settings": "การตั้งค่า",
     "logout": "ออกจากระบบ"
   },
   "data-table": {
@@ -400,5 +402,74 @@
     "admin": "ผู้ดูแลระบบ",
     "student": "นักศึกษา",
     "teacher": "อาจารย์"
+  },
+  "verify-certificate": {
+    "title": "ตรวจสอบหลักฐานบัณฑิต",
+    "breadcrumb": {
+      "home": "แดชบอร์ด",
+      "verify": "ตรวจสอบหลักฐานบัณฑิต",
+      "detail": "รายละเอียด"
+    },
+    "search_placeholder": "ค้นหา",
+    "filter": {
+      "status": "สถานะ",
+      "date": "วันที่",
+      "all_status": "สถานะทั้งหมด",
+      "all_date": "วันที่ทั้งหมด",
+      "today": "วันนี้",
+      "this_week": "สัปดาห์นี้",
+      "this_month": "เดือนนี้",
+      "select_date_range": "เลือกช่วงวันที่",
+      "start_date": "วันที่เริ่มต้น",
+      "end_date": "วันที่สิ้นสุด",
+      "clear": "ล้างวันที่"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "declined": "Declined"
+    },
+    "table": {
+      "student_code": "รหัสนิสิต",
+      "name": "ชื่อ-สกุล",
+      "course": "หลักสูตร",
+      "step": "หัวข้อที่ดำเนินการ",
+      "submit_date": "วันที่ส่ง",
+      "status": "สถานะ",
+      "action": ""
+    },
+    "loading": "กำลังโหลด...",
+    "no_data": "ไม่พบข้อมูล",
+    "not_found": "ไม่พบข้อมูลที่ต้องการ",
+    "pagination": {
+      "showing": "{start} ถึง {total} แถวที่เลือก",
+      "rows_per_page": "หน้าละ",
+      "page": "หน้า {current} จาก {total}"
+    },
+    "detail": {
+      "title": "รายละเอียดการส่ง",
+      "student_code": "รหัสนิสิต",
+      "student_name": "ชื่อผู้ส่ง",
+      "step": "หัวข้อที่ดำเนินการ",
+      "submit_date": "วันที่ส่ง",
+      "reason": "เหตุผล"
+    },
+    "review": {
+      "title": "ตรวจสอบการดำเนินการ",
+      "decline_reason": "เหตุผลที่ไม่อนุมัติ",
+      "decline_reason_placeholder": "กรุณาระบุเหตุผลให้ชัดเจน",
+      "approve": "อนุมัติ",
+      "decline": "ไม่อนุมัติ"
+    },
+    "success": {
+      "title": "สำเร็จ",
+      "approved": "อนุมัติหลักฐานเรียบร้อยแล้ว",
+      "declined": "ปฏิเสธหลักฐานเรียบร้อยแล้ว",
+      "ok": "ตกลง"
+    },
+    "already_approved": "หลักฐานนี้ได้รับการอนุมัติแล้ว",
+    "already_declined": "หลักฐานนี้ถูกปฏิเสธแล้ว",
+    "no_document": "ไม่พบเอกสาร",
+    "download": "ดาวน์โหลด"
   }
 }

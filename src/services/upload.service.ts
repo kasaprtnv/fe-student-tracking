@@ -8,6 +8,7 @@ export interface AttachmentDTO {
   uploadedByUserId?: string;
   fileName?: string;
   fileKey?: string;
+  fileUrl?: string;
   fileSize?: string;
   mimeType?: string;
   isDeleted?: boolean;
@@ -31,13 +32,12 @@ class UploadService extends APIService {
     super(API_BASE_URL);
   }
 
-  // สร้าง attachment record ใน database
+  // อัปโหลดไฟล์จริงๆ พร้อมสร้าง attachment record
   async createAttachment(
     stepId: string,
     file: File,
     uploadedByUserId?: string,
   ): Promise<UploadResponse> {
-    // ตรวจสอบ userId ก่อน
     if (!uploadedByUserId) {
       return {
         success: false,
@@ -46,18 +46,28 @@ class UploadService extends APIService {
     }
 
     try {
-      const response = await this.post(
-        `/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`,
+      // สร้าง FormData สำหรับอัปโหลดไฟล์ (เฉพาะ file ตามตัวอย่าง)
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(
+        `${API_BASE_URL}/attachment/upload?stepId=${stepId}&userId=${uploadedByUserId}`,
         {
-          fileName: file.name,
-          fileSize: String(file.size),
-          mimeType: file.type,
+          method: 'POST',
+          body: formData,
+          // ไม่ต้องใส่ Content-Type เพราะ browser จะใส่ให้อัตโนมัติพร้อม boundary
         },
       );
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Upload failed');
+      }
+
+      const data = await response.json();
       return {
         success: true,
-        data: response.data,
+        data: data.data || data,
       };
     } catch (error) {
       return {
@@ -86,7 +96,20 @@ class UploadService extends APIService {
     const response = await this.get(
       `/attachment/progress/${studentStepProgressId}`,
     );
-    return response.data;
+    return response.data || [];
+  }
+
+  // ดึง URL สำหรับดู/ดาวน์โหลดไฟล์
+  getFileUrl(fileKey: string): string {
+    if (!fileKey) return '';
+
+    // ถ้าเป็น URL เต็มแล้ว
+    if (fileKey.startsWith('http://') || fileKey.startsWith('https://')) {
+      return fileKey;
+    }
+
+    // ถ้าเป็น path ให้เติม base URL
+    return `${API_BASE_URL}/attachment/file/${fileKey}`;
   }
 
   // อัพเดท attachment
