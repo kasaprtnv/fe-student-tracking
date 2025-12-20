@@ -7,6 +7,8 @@
     "userManagement": "User Management",
     "studentReport": "Student Report",
     "progressVerify": "Progress Verify",
+    "mergeFiles": "Merge Files",
+    "settings": "Settings",
     "logout": "Logout"
   },
   "data-table": {
@@ -520,6 +522,78 @@
     }
   },
   "role": {
+    "admin": "admin",
+    "student": "student",
+    "teacher": "teacher"
+  },
+  "verify-certificate": {
+    "title": "Verify Graduate Certificate",
+    "breadcrumb": {
+      "home": "Dashboard",
+      "verify": "Verify Graduate Certificate",
+      "detail": "Detail"
+    },
+    "search_placeholder": "Search",
+    "filter": {
+      "status": "Status",
+      "date": "Date",
+      "all_status": "All Status",
+      "all_date": "All Date",
+      "today": "Today",
+      "this_week": "This Week",
+      "this_month": "This Month",
+      "select_date_range": "Select date range",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "clear": "Clear dates"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "declined": "Declined"
+    },
+    "table": {
+      "student_code": "Student Code",
+      "name": "Name",
+      "course": "Course",
+      "step": "Step",
+      "submit_date": "Submit Date",
+      "status": "Status",
+      "action": ""
+    },
+    "loading": "Loading...",
+    "no_data": "No data found",
+    "not_found": "Data not found",
+    "pagination": {
+      "showing": "{start} to {total} rows selected",
+      "rows_per_page": "Rows per page",
+      "page": "Page {current} of {total}"
+    },
+    "detail": {
+      "title": "Submission Details",
+      "student_code": "Student Code",
+      "student_name": "Submitted By",
+      "step": "Step",
+      "submit_date": "Submit Date",
+      "reason": "Reason"
+    },
+    "review": {
+      "title": "Review Submission",
+      "decline_reason": "Decline Reason",
+      "decline_reason_placeholder": "Please specify the reason",
+      "approve": "Approve",
+      "decline": "Decline"
+    },
+    "success": {
+      "title": "Success",
+      "approved": "Certificate has been approved successfully",
+      "declined": "Certificate has been declined successfully",
+      "ok": "OK"
+    },
+    "already_approved": "This certificate has already been approved",
+    "already_declined": "This certificate has already been declined",
+    "no_document": "No document found",
+    "download": "Download"
     "admin": "Admin",
     "student": "Student",
     "teacher": "Staff Member"

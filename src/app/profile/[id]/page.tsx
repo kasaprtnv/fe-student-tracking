@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Separator } from '@/components/ui/separator';
 import MilestoneComponent from '@/components/milestone-progress/milestone-progress';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ProfileComponent } from '@/components/profile/profile';
 import { UploadedFilesMap, ViewMode } from '@/types/milestone';
 import { useMilestone } from '@/hooks/use-milestone';
@@ -41,6 +41,11 @@ export default function ProfilePage() {
         }
       : null,
     {
+      revalidateOnFocus: true, // Refresh เมื่อกลับมาที่หน้านี้
+      refreshInterval: 30000, // Refresh ทุก 30 วินาที เพื่อให้เห็นการเปลี่ยนแปลงสถานะ
+      onError: () => {
+        if (!user && !userMap[id ?? '']) notFound();
+      },
       revalidateOnFocus: false,
     },
   );
@@ -54,6 +59,15 @@ export default function ProfilePage() {
     }));
   };
 
+  // Callback หลังอัพโหลดสำเร็จ - refresh ข้อมูล milestone
+  const handleSubmitSuccess = useCallback(async () => {
+    // เคลียร์ไฟล์ที่อัพโหลด
+    setUploadedFiles({});
+    // Refresh ข้อมูล milestone เพื่ออัพเดทสถานะใหม่
+    if (courseId && id) {
+      await fetchMilestonesWithStatus(courseId, id);
+    }
+  }, [courseId, id, fetchMilestonesWithStatus]);
   const profileUser = isOwnProfile ? user : userMap[id ?? ''];
   const profileCourseId = isOwnProfile
     ? user?.courseId
@@ -89,6 +103,43 @@ export default function ProfilePage() {
     <div>
       <ProfileComponent user={profileUser ?? null} isLoading={!initialized} />
 
+      {isOwnProfile && user?.role === 'admin' ? (
+        <div></div>
+      ) : isOwnProfile && user?.role === 'student' ? (
+        <div>
+          <Separator className="my-6" />
+          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+          <MilestoneComponent
+            milestones={Object.values(milestoneMap)}
+            mode={mode}
+            enrollDate={user?.enrollDate}
+            onFileUpload={handleFileUpload}
+            onSubmitSuccess={handleSubmitSuccess}
+            uploadedFiles={uploadedFiles}
+            userId={user?.id}
+          ></MilestoneComponent>
+        </div>
+      ) : !isOwnProfile && userMap[id ?? '']?.role === 'student' ? (
+        <div>
+          <Separator className="my-6" />
+          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+          <MilestoneComponent
+            milestones={Object.values(milestoneMap)}
+            mode={mode}
+            enrollDate={userMap[id ?? '']?.enrollDate}
+            onFileUpload={handleFileUpload}
+            onSubmitSuccess={handleSubmitSuccess}
+            uploadedFiles={uploadedFiles}
+          ></MilestoneComponent>
+        </div>
+      ) : isOwnProfile && user?.role === 'teacher' ? (
+        <div>
+          <Separator className="my-6" />
+          <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+          <label className="mr-4 font-medium">teacher</label>
+        </div>
+      ) : !isOwnProfile && userMap[id ?? '']?.role === 'teacher' ? (
+        <div>
       {/* Admin - no progress */}
       {profileUser?.role === 'admin' && null}
 
