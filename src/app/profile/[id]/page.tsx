@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Separator } from '@/components/ui/separator';
 import MilestoneComponent from '@/components/milestone-progress/milestone-progress';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ProfileComponent } from '@/components/profile/profile';
 import { UploadedFilesMap, ViewMode } from '@/types/milestone';
 import { useMilestone } from '@/hooks/use-milestone';
@@ -41,7 +41,8 @@ export default function ProfilePage() {
         }
       : null,
     {
-      revalidateOnFocus: false,
+      revalidateOnFocus: true, // Refresh เมื่อกลับมาที่หน้านี้
+      refreshInterval: 30000, // Refresh ทุก 30 วินาที เพื่อให้เห็นการเปลี่ยนแปลงสถานะ
     },
   );
 
@@ -54,6 +55,15 @@ export default function ProfilePage() {
     }));
   };
 
+  // Callback หลังอัพโหลดสำเร็จ - refresh ข้อมูล milestone
+  const handleSubmitSuccess = useCallback(async () => {
+    // เคลียร์ไฟล์ที่อัพโหลด
+    setUploadedFiles({});
+    // Refresh ข้อมูล milestone เพื่ออัพเดทสถานะใหม่
+    if (courseId && id) {
+      await fetchMilestonesWithStatus(courseId, id);
+    }
+  }, [courseId, id, fetchMilestonesWithStatus]);
   const profileUser = isOwnProfile ? user : userMap[id ?? ''];
   const profileCourseId = isOwnProfile
     ? user?.courseId
@@ -71,6 +81,7 @@ export default function ProfilePage() {
         mode={mode}
         enrollDate={profileEnrollDate}
         onFileUpload={handleFileUpload}
+        onSubmitSuccess={handleSubmitSuccess}
         uploadedFiles={uploadedFiles}
         userId={isOwnProfile ? user?.id : undefined}
       />
