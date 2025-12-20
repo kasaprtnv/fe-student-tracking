@@ -41,7 +41,6 @@ import MilestoneProgress from '@/components/milestone-progress/milestone-progres
 import type { IMilestone, MilestoneStepStatus } from '@/types/milestone';
 import UnlockConditionModal from '@/components/lock-milestone/lock-milestone';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { useCourse } from '@/hooks/use-course';
 import { useMilestonePrerequisite } from '@/hooks/use-milestone-prerequisite';
 import { useTranslations } from 'next-intl';
@@ -94,29 +93,51 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
 
   const handleRemove = (id: string) => {
-    // remove จากซ้าย
-    setSelectedItems(selectedItems.filter((x) => x !== id));
+    // เอา id ออกจาก selectedItems
+    setSelectedItems((prev) => prev.filter((x) => x !== id));
 
-    // remove steps ของ milestone นั้น
-    setStepsByMilestone((prev) => {
-      const copy = { ...prev };
-      delete copy[id];
-      return copy;
-    });
-    // ลบ lock ของ milestone และ step ที่เกี่ยวข้อง
-    setLockedItems((prev) => {
-      const updated = { ...prev };
+    // แก้ทุกอย่างใน setStepsByMilestone เพื่อให้มี prevSteps ใช้งานได้
+    setStepsByMilestone((prevSteps) => {
+      const copy = { ...prevSteps };
+      const steps = copy[id] ?? [];
 
-      // ลบ lock ของ milestone เอง
-      delete updated[id];
+      // ==== ลบล็อคของ milestone และ steps ทั้งหมด ====
+      setLockedItems((prevLocked) => {
+        const updated = { ...prevLocked };
 
-      // ลบ lock ของทุก step ใน milestone นี้
-      const steps = stepsByMilestone[id] ?? [];
-      steps.forEach((step) => {
-        delete updated[step.id];
+        delete updated[id]; // ลบ lock ของ milestone
+
+        // ลบ lock ของทุก step
+        steps.forEach((s: { id: string }) => {
+          delete updated[s.id];
+        });
+
+        return updated;
       });
 
-      return updated;
+      // ==== ลบ prerequisites ของ milestone / step ====
+      setPrerequisites((prev) => {
+        const updated: typeof prev = {};
+
+        const stepIds = steps.map((s: { id: string }) => s.id);
+
+        for (const [targetId, conds] of Object.entries(prev)) {
+          // ข้าม target ที่ถูกลบ
+          if (targetId === id) continue;
+
+          // ลบ prereq ที่เป็น milestone นี้ หรือ steps ใน milestone นี้
+          updated[targetId] = conds.filter(
+            (c) => c.id !== id && !stepIds.includes(c.id),
+          );
+        }
+
+        return updated;
+      });
+
+      // ==== ลบ steps ของ milestone นี้ ====
+      delete copy[id];
+
+      return copy;
     });
   };
 
@@ -408,6 +429,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
               initialSelected={
                 targetLock ? (prerequisites[targetLock.id] ?? []) : []
               }
+              prerequisites={prerequisites}
               onSave={(conditions) => {
                 setPrerequisites((prev) => ({
                   ...prev,

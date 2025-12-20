@@ -43,7 +43,9 @@ const DeleteConfirmationDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>{t(title)}</AlertDialogTitle>
           <AlertDialogDescription>
-            {count ? t(description, { count }) : t(description)}
+            {typeof count === 'number'
+              ? t(description, { count })
+              : t(description)}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

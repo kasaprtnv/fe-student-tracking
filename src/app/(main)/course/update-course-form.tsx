@@ -30,17 +30,22 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
+import { SelectOption } from '@/types';
+import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
+import { DegreesCombobox } from '@/components/degree-combobox';
 
 interface UpdateCourseFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   course: ICourse | undefined;
+  teacherOptions: SelectOption[];
 }
 
 export function UpdateCourseFormDialog({
   open,
   onOpenChange,
   course,
+  teacherOptions,
 }: UpdateCourseFormDialogProps) {
   const t = useTranslations('course.course-form');
   const tCommon = useTranslations('common');
@@ -54,6 +59,7 @@ export function UpdateCourseFormDialog({
       name: course?.name || '',
       description: course?.description || '',
       degree: course?.degree || '',
+      staffIds: course?.staffIds || [],
     },
   });
 
@@ -98,6 +104,7 @@ export function UpdateCourseFormDialog({
       name: course?.name || '',
       description: course?.description || '',
       degree: course?.degree || '',
+      staffIds: course?.staffIds || [],
     });
   }, [course, form]);
 
@@ -119,15 +126,16 @@ export function UpdateCourseFormDialog({
           >
             <FormField
               control={form.control}
-              name="name"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.name')}
+                    {t('label.code')}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('placeholder.name')}
+                      maxLength={10}
+                      placeholder={t('placeholder.code')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
                     />
@@ -138,15 +146,15 @@ export function UpdateCourseFormDialog({
             />
             <FormField
               control={form.control}
-              name="code"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.code')}
+                    {t('label.name')}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('placeholder.code')}
+                      placeholder={t('placeholder.name')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
                     />
@@ -183,15 +191,38 @@ export function UpdateCourseFormDialog({
                     {t('label.degree')}
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t('placeholder.code')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
+                    <DegreesCombobox
+                      defaultValue={field.value}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
+            />
+            <FormField
+              control={form.control}
+              name="staffIds"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      {t('label.staffIds')}
+                    </FormLabel>
+                    <FormControl>
+                      <MultiCombobox
+                        defaultValue={field.value}
+                        placeholder={t('placeholder.staffIds')}
+                        placeholderSearch={t('placeholder.search-staff')}
+                        placeholderEmpty={t('placeholder.no-staff-found')}
+                        options={teacherOptions}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             <DialogFooter className="px-0">
               <div className="flex flex-1 justify-end space-x-2">

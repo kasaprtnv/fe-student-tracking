@@ -11,21 +11,6 @@ import {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-// Helper function to convert camelCase to snake_case
-function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const snakeKey = key.replace(
-        /[A-Z]/g,
-        (letter) => `_${letter.toLowerCase()}`,
-      );
-      result[snakeKey] = obj[key];
-    }
-  }
-  return result;
-}
-
 class UserService extends APIService {
   constructor(baseURL?: string) {
     super(baseURL ?? API_BASE_URL);
@@ -80,7 +65,34 @@ class UserService extends APIService {
   }
 
   async createUser(data: Partial<User>): Promise<IApiPostResponse<User>> {
-    return this.post('/users/create', data)
+    // Determine allowed fields based on role
+    const isTeacher = data.role === 'teacher';
+
+    const allowedFields = isTeacher
+      ? ['title', 'firstName', 'lastName', 'email', 'phone', 'role', 'courseId']
+      : [
+          'code',
+          'title',
+          'firstName',
+          'lastName',
+          'email',
+          'phone',
+          'degree',
+          'year',
+          'role',
+          'courseId',
+          'enrollDate',
+        ];
+
+    const filteredData: Record<string, unknown> = {};
+    for (const key of allowedFields) {
+      const value = data[key as keyof User];
+      if (value !== undefined && value !== null && value !== '') {
+        filteredData[key] = value;
+      }
+    }
+
+    return this.post('/users/create', filteredData)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -94,11 +106,12 @@ class UserService extends APIService {
     // Determine allowed fields based on role
     const isTeacher = data.role === 'teacher';
 
-    // Teachers don't have courseId, students do
+    // Both teachers and students can have courseId
     const allowedFields = isTeacher
-      ? ['firstName', 'lastName', 'email', 'phone', 'role']
+      ? ['title', 'firstName', 'lastName', 'email', 'phone', 'role', 'courseId']
       : [
           'code',
+          'title',
           'firstName',
           'lastName',
           'email',
@@ -107,6 +120,7 @@ class UserService extends APIService {
           'year',
           'role',
           'courseId',
+          'enrollDate',
         ];
 
     const filteredData: Record<string, unknown> = {};
@@ -118,10 +132,7 @@ class UserService extends APIService {
       }
     }
 
-    // Convert to snake_case for API
-    const snakeCaseData = toSnakeCase(filteredData);
-
-    return this.patch(`/users/${id}`, snakeCaseData)
+    return this.patch(`/users/${id}`, filteredData)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

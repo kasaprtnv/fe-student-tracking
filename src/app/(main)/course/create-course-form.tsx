@@ -31,6 +31,7 @@ import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 import { SelectOption } from '@/types';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
+import { DegreesCombobox } from '@/components/degree-combobox';
 
 interface CreateCourseFormDialogProps {
   open: boolean;
@@ -59,6 +60,7 @@ export function CreateCourseFormDialog({
       name: '',
       description: '',
       degree: '',
+      staffIds: [],
     },
   });
 
@@ -124,15 +126,16 @@ export function CreateCourseFormDialog({
           >
             <FormField
               control={form.control}
-              name="name"
+              name="code"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.name')}
+                    {t('label.code')}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('placeholder.name')}
+                      maxLength={10}
+                      placeholder={t('placeholder.code')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
                     />
@@ -143,15 +146,15 @@ export function CreateCourseFormDialog({
             />
             <FormField
               control={form.control}
-              name="code"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.code')}
+                    {t('label.name')}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('placeholder.code')}
+                      placeholder={t('placeholder.name')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
                     />
@@ -188,10 +191,9 @@ export function CreateCourseFormDialog({
                     {t('label.degree')}
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t('placeholder.degree')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
+                    <DegreesCombobox
+                      defaultValue={field.value}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />

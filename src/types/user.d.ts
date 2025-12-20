@@ -6,12 +6,14 @@ export interface User {
   id: string;
   supabaseId?: string;
   code: string;
+  title?: string;
   firstName: string;
   lastName: string;
   email?: string;
   role: UserRole;
   phone?: string;
   degree?: string;
+  major?: string;
   year?: string;
   courseId?: string;
   courseName?: string;

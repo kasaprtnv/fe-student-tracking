@@ -94,6 +94,10 @@ const UserFormDialog = ({
   // Reset form when user changes or mode changes
   React.useEffect(() => {
     if (user && open && mode === 'edit') {
+      const validRole: 'student' | 'teacher' =
+        user.role === 'student' || user.role === 'teacher'
+          ? user.role
+          : 'student';
       form.reset({
         code: user.code || '',
         firstName: user.firstName || '',
@@ -102,7 +106,7 @@ const UserFormDialog = ({
         phone: user.phone || '',
         degree: user.degree || '',
         year: user.year || '',
-        role: user.role || 'student',
+        role: validRole,
         courseId: user.courseId || '',
       });
     } else if (!user && open && mode === 'create') {

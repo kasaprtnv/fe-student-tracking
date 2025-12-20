@@ -66,6 +66,7 @@ interface DataTableProps<TData, TValue> {
     hiddenColumns: Column<TData, unknown>[],
   ) => Column<TData, unknown>[];
   actionHeader?: React.ReactNode;
+  extraToolbarAction?: React.ReactNode;
   actionHeaderId?: string;
 }
 
@@ -99,6 +100,7 @@ export function DataTable<TData, TValue>({
   onSearch,
   onPageSizeChange,
   onPageChange,
+  extraToolbarAction,
   getRowId,
   setHiddenColumns,
   actionHeader,
@@ -226,6 +228,8 @@ export function DataTable<TData, TValue>({
               )}
             </>
           )}
+          {extraToolbarAction}
+          {actionHeader}
         </div>
         <div className="flex items-center gap-4">
           {enabledMultiSelect && Object.keys(rowSelection).length > 0 && (

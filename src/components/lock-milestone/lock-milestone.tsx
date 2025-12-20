@@ -21,6 +21,7 @@ interface UnlockConditionModalProps {
   onSave: (conditions: UnlockCondition[]) => void;
   initialSelected?: UnlockCondition[];
   isLoop: (requiredId: string) => boolean;
+  prerequisites: Record<string, UnlockCondition[]>;
 }
 
 export default function UnlockConditionModal({
@@ -65,15 +66,42 @@ export default function UnlockConditionModal({
 
   const hasNoData = milestoneCount === 0 && stepCount === 0;
 
+  // รวม Step ทั้งหมดของทุก Milestone
+  const allSteps = Object.values(milestones).flatMap((m) => m.steps ?? []);
+
   const isDisabled = (type: 'milestone' | 'step', id: string) => {
-    // ห้ามเลือกตัวเอง
+    const isAlreadySelected = selected.some((s) => s.id === id);
+
+    if (type === 'step') {
+      const step = allSteps.find((s) => s.id === id);
+      if (step?.status === 'locked') return true;
+    }
+
     if (id === target.id) return true;
 
-    // ห้ามเลือกของเดิม (initialSelected)
-    if (initialSelected?.some((c) => c.id === id)) return true;
+    if (!isAlreadySelected) {
+      if (initialSelected?.some((c) => c.id === id)) return true;
+      if (isLoop(id)) return true;
+    }
 
-    // ❗ ห้ามเลือกสิ่งที่จะทำให้เกิด loop
-    if (isLoop(id)) return true;
+    if (type === 'step') {
+      const msOfStep = milestones.find((m) =>
+        (m.steps ?? []).some((s) => s.id === id),
+      );
+
+      if (msOfStep) {
+        const milestoneLocked = selected.some(
+          (c) => c.type === 'milestone' && c.id === msOfStep.id,
+        );
+
+        if (milestoneLocked) return true;
+      }
+    }
+
+    if (target.type === 'step' && id === target.id) {
+      const anyMilestoneSelected = selected.some((c) => c.type === 'milestone');
+      if (anyMilestoneSelected) return true;
+    }
 
     return false;
   };

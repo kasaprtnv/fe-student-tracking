@@ -14,14 +14,13 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/use-auth';
 import { usePendingCount } from '@/hooks/use-pending-count';
 
-const hiddenRoutes = ['/login'];
-
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const [, startTransition] = useTransition();
   const { pendingCount } = usePendingCount();
 
@@ -79,7 +78,7 @@ export default function Sidebar() {
           {open ? (
             <div className="h-10 w-full max-w-[220px]">
               <Image
-                src={LogoBuu}
+                src={`${BASE_PATH}/logobuu.png`}
                 alt="BUU Logo"
                 width={220}
                 height={40}
@@ -261,11 +260,22 @@ export default function Sidebar() {
             </Avatar>
             {open && (
               <div className="flex flex-col">
-                <span className="text-sm font-medium">{`${user?.firstName} ${user?.lastName}`}</span>
-                {user?.role && (
-                  <span className="text-xs text-gray-500">
-                    {t(`role.${user.role}`)}
-                  </span>
+                {!initialized || !user ? (
+                  <>
+                    <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+                    <div className="mt-1 h-3 w-16 animate-pulse rounded bg-gray-200" />
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm font-medium">
+                      {user.firstName} {user.lastName}
+                    </span>
+                    {user.role && (
+                      <span className="text-xs text-gray-500">
+                        {t(`role.${user.role}`)}
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
             )}

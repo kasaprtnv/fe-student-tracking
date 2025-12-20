@@ -5,11 +5,11 @@ import { userService } from '@/services/user.service';
 export const login = createAsyncThunk(
   'auth/login',
   async (
-    { email, password }: { email: string; password: string },
+    { username, password }: { username: string; password: string },
     { rejectWithValue },
   ) => {
     try {
-      const res = await authService.login(email, password);
+      const res = await authService.login(username, password);
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {

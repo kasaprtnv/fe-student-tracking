@@ -22,6 +22,7 @@ const CoursePage = () => {
   const tForm = useTranslations('course.course-form');
   const tCol = useTranslations('column');
   const tCourse = useTranslations('course');
+  const tDegree = useTranslations('degree');
   const router = useRouter();
   const {
     filteredCoursesId,
@@ -35,7 +36,7 @@ const CoursePage = () => {
   const { fetchAllCourseStaff } = useCourseStaff();
   const { fetchTeachers, allUserIds, getUserById } = useUser();
 
-  const courseColumns = createCourseColumns().map((column) => {
+  const courseColumns = createCourseColumns(tDegree).map((column) => {
     if (typeof column.header === 'string') {
       return {
         ...column,
@@ -94,8 +95,6 @@ const CoursePage = () => {
       return { label: `${user.firstName} ${user.lastName}`, value: user.id };
     })
     .filter((option) => option !== undefined);
-
-  console.log('Teacher Options:', teacherOptions);
 
   const onDeleteCourse = (id: string) => {
     setIsDelete({ isDeleting: true, courseId: [id] });
@@ -184,7 +183,7 @@ const CoursePage = () => {
           onOpenChange={() => {
             setIsEdit({ isEditing: false });
           }}
-          // teacherOptions={teacherOptions}
+          teacherOptions={teacherOptions}
         />
         <DeleteConfirmationDialog
           open={isDelete.isDeleting}

@@ -50,7 +50,19 @@
     "to-milestone-step": "To Milestone Steps",
     "select-milestone": "Select Milestone",
     "created_at": "Created At",
-    "updated_at": "Updated At"
+    "updated_at": "Updated At",
+    "full-name": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "education-level": "Education Level",
+    "year": "Year",
+    "course-name": "Enroll Course Name",
+    "enroll-date": "Enroll Date",
+    "course": "Course",
+    "academic-year": "Academic Year",
+    "degree": "Degree",
+    "managed-courses": "Managed Courses"
   },
   "common": {
     "submit": "Submit",
@@ -60,7 +72,8 @@
     "delete": "Delete",
     "confirm": "Confirm",
     "close": "Close",
-    "edit": "Edit"
+    "edit": "Edit",
+    "days": "Days"
   },
   "student-form": {
     "label": {
@@ -110,7 +123,7 @@
         "description": "Enter course description",
         "degree": "Enter degree",
         "staffIds": "Select staff members",
-        "search-staff": "Search staff",
+        "search-staff": "Search staff...",
         "no-staff-found": "No staff found"
       },
       "toast": {
@@ -147,7 +160,8 @@
       "faculty": "Faculty",
       "degree": "Degree"
     },
-    "progress_title": "Graduate Progress"
+    "progress_title": "Graduate Progress",
+    "contact_admin": "Please contact staff to enroll in a course"
   },
   "milestone-progress": {
     "completed": "Completed",
@@ -292,7 +306,9 @@
 
         "dayPeriod-integer": "Day period must be a number",
 
-        "notifyBeforeDays-integer": "Notify-before-days must be a number"
+        "notifyBeforeDays-integer": "Notify-before-days must be a number",
+
+        "dayPeriod-exceeds": "Day period cannot exceed milestone's day period of {value} days"
       }
     },
     "delete": {
@@ -356,14 +372,14 @@
     "edit-user": "Edit User",
     "add-student": "Add Student",
     "edit-student": "Edit Student",
-    "add-teacher": "Add Teacher",
-    "edit-teacher": "Edit Teacher",
+    "add-teacher": "Add Staff Member",
+    "edit-teacher": "Edit Staff Member",
     "code": "Code",
     "code-placeholder": "Enter code",
     "role": "Role",
     "select-role": "Select role",
     "student": "Student",
-    "teacher": "Teacher",
+    "teacher": "Staff Member",
     "admin": "Admin",
     "first-name": "First Name",
     "first-name-placeholder": "Enter first name",
@@ -397,7 +413,113 @@
     "delete-user-title": "Confirm Delete User",
     "delete-user-description": "Are you sure you want to delete this user? This action cannot be undone.",
     "delete-users-title": "Confirm Delete Multiple Users",
-    "delete-users-description": "Are you sure you want to delete {count} users? This action cannot be undone."
+    "delete-users-description": "Are you sure you want to delete {count} users? This action cannot be undone.",
+    "user-form": {
+      "header": {
+        "create": "Add User",
+        "create-student": "Add Student",
+        "create-teacher": "Add Staff Member",
+        "edit": "Edit User"
+      },
+      "header_description": {
+        "create": "Fill in the form to add a new user.",
+        "create-student": "Fill in the form to add a new student.",
+        "create-teacher": "Fill in the form to add a new staff member.",
+        "edit": "Edit user information."
+      },
+      "label": {
+        "role": "Role",
+        "code": "Code",
+        "student-course": "Enroll Course",
+        "teacher-course": "Responsible Courses",
+        "title": "Title",
+        "first-name": "First Name",
+        "last-name": "Last Name",
+        "email": "Email",
+        "phone": "Phone",
+        "degree": "Education Level",
+        "year": "Year",
+        "enroll-date": "Enroll Date",
+        "is-active": "Is Active"
+      },
+      "placeholder": {
+        "role": "Select role",
+        "code": "Enter code",
+        "course": "Select course",
+        "title": "Enter title",
+        "first-name": "Enter first name",
+        "last-name": "Enter last name",
+        "email": "Enter email",
+        "phone": "Enter phone number",
+        "degree": "Select education level",
+        "year": "Select year",
+        "enroll-date": "Select enroll date",
+        "search-course": "Search course...",
+        "no-course-found": "No course found",
+        "search-year": "Search year...",
+        "no-year-found": "No year found"
+      },
+      "role": {
+        "student": "Student",
+        "teacher": "Teacher"
+      },
+      "education-level": {
+        "masters": "Master's Degree",
+        "doctoral": "Doctoral Degree"
+      },
+      "title-options": {
+        "mr": "Mr.",
+        "mrs": "Mrs.",
+        "miss": "Miss",
+        "prof": "Professor",
+        "assoc-prof": "Associate Professor",
+        "asst-prof": "Assistant Professor",
+        "dr": "Dr."
+      },
+      "errors": {
+        "first-name-required": "First name is required",
+        "first-name-min": "First name must be at least 2 characters",
+        "first-name-max": "First name must not exceed 50 characters",
+        "last-name-required": "Last name is required",
+        "last-name-min": "Last name must be at least 2 characters",
+        "last-name-max": "Last name must not exceed 50 characters",
+        "email-required": "Email is required",
+        "email-invalid": "Invalid email format",
+        "email-exists": "This email already exists in the system",
+        "phone-required": "Phone is required",
+        "phone-max": "Phone must not exceed 20 characters",
+        "code-required": "Code is required",
+        "degree-required": "Education level is required",
+        "degree-max": "Education level must not exceed 100 characters",
+        "year-required": "Year is required",
+        "year-max": "Year must not exceed 10 characters",
+        "course-required": "Course is required"
+      },
+      "toast": {
+        "created-successfully": "User created successfully",
+        "creation-failed": "Failed to create user",
+        "updated-successfully": "User updated successfully",
+        "update-failed": "Failed to update user"
+      }
+    },
+    "import-dialog": {
+      "title": "Import Users from Excel",
+      "description": "Upload an Excel file to import multiple users at once",
+      "drag-drop-text": "Drag and drop file here, or click to select",
+      "file-format": "Supports .xlsx and .xls files (max 5MB)",
+      "upload-button": "Upload",
+      "download-template": "Download Template",
+      "errors": {
+        "invalid-file-type": "Please select an Excel file (.xlsx or .xls)",
+        "no-file-selected": "Please select a file before uploading"
+      },
+      "toast": {
+        "import-success": "Successfully imported {count} user(s)",
+        "import-partial": "Failed to import {failed} user(s)",
+        "import-failed": "Failed to import users",
+        "template-downloaded": "Template downloaded successfully"
+      }
+    }
   },
   "role": {
     "admin": "admin",
@@ -472,5 +594,31 @@
     "already_declined": "This certificate has already been declined",
     "no_document": "No document found",
     "download": "Download"
+    "admin": "Admin",
+    "student": "Student",
+    "teacher": "Staff Member"
+  },
+  "user-page": {
+    "title": "User Management",
+    "description": "Manage your users here.",
+    "import-button": "Upload File",
+    "tabs": {
+      "all": "All Users",
+      "students": "Students",
+      "teachers": "Teachers"
+    }
+  },
+  "student-page": {
+    "title": "Graduate List",
+    "description": "View all graduate information. Click on a row to view profile.",
+    "export-button": "Export Data"
+  },
+  "degree": {
+    "bachelor": "Bachelor's Degree",
+    "master": "Master's Degree",
+    "doctorate": "Doctoral Degree",
+    "select-degree": "Select degree",
+    "not-found": "Degree not found",
+    "search-degree": "Search degree..."
   }
 }
