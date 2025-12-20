@@ -596,7 +596,7 @@
     "already_approved": "หลักฐานนี้ได้รับการอนุมัติแล้ว",
     "already_declined": "หลักฐานนี้ถูกปฏิเสธแล้ว",
     "no_document": "ไม่พบเอกสาร",
-    "download": "ดาวน์โหลด"
+    "download": "ดาวน์โหลด",
     "teacher": "ผู้รับผิดชอบหลักสูตร"
   },
   "user-page": {

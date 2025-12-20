@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import { setLocale } from '@/actions/setLocale';
 import Image from 'next/image';
-import LogoBuu from './logobuu.png';
 import { ArrowRight, LogOut, ChevronDown, ChevronUp } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
@@ -17,7 +16,7 @@ import { usePendingCount } from '@/hooks/use-pending-count';
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
-  const { user } = useAuth();
+  const { user, initialized } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [, startTransition] = useTransition();

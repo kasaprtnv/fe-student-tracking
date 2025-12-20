@@ -1,5 +1,4 @@
 import {
-  IApiDeleteResponse,
   IApiGetResponse,
   IApiPatchResponse,
   IApiGetByIdResponse,

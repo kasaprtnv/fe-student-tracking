@@ -593,7 +593,7 @@
     "already_approved": "This certificate has already been approved",
     "already_declined": "This certificate has already been declined",
     "no_document": "No document found",
-    "download": "Download"
+    "download": "Download",
     "admin": "Admin",
     "student": "Student",
     "teacher": "Staff Member"

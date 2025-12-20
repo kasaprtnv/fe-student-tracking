@@ -1,10 +1,4 @@
-import {
-  LayoutDashboard,
-  ClipboardList,
-  Settings,
-  ClipboardCheck,
-  Files,
-} from 'lucide-react';
+import { LayoutDashboard, Settings, ClipboardCheck, Files } from 'lucide-react';
 
 export const sidebarItems = [
   {
