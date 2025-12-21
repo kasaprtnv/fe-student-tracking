@@ -54,6 +54,8 @@ export function UpdateMilestoneFormSheet({
     getMilestoneById,
   } = useMilestone();
 
+  const isMilestoneUsed = milestone?.isUsed;
+
   const form = useForm<UpdateMilestoneFormData>({
     resolver: zodResolver(updateMilestoneSchema(t)),
     defaultValues: {
@@ -135,7 +137,11 @@ export function UpdateMilestoneFormSheet({
                 <FormItem>
                   <FormLabel>{t('label.name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('placeholder.name')} {...field} />
+                    <Input
+                      placeholder={t('placeholder.name')}
+                      {...field}
+                      disabled={isMilestoneUsed}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,6 +159,7 @@ export function UpdateMilestoneFormSheet({
                     <Textarea
                       placeholder={t('placeholder.description')}
                       {...field}
+                      disabled={isMilestoneUsed}
                     />
                   </FormControl>
                   <FormMessage />
@@ -168,7 +175,11 @@ export function UpdateMilestoneFormSheet({
                 <FormItem>
                   <FormLabel>{t('label.notifyReceiverEmail')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="example@mail.com" {...field} />
+                    <Input
+                      placeholder="example@mail.com"
+                      {...field}
+                      disabled={isMilestoneUsed}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -188,6 +199,7 @@ export function UpdateMilestoneFormSheet({
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                       min={0}
+                      disabled={isMilestoneUsed}
                     />
                   </FormControl>
                   <FormMessage />
@@ -208,6 +220,7 @@ export function UpdateMilestoneFormSheet({
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                       min={0}
+                      disabled={isMilestoneUsed}
                     />
                   </FormControl>
                   <FormMessage />
@@ -222,7 +235,10 @@ export function UpdateMilestoneFormSheet({
                   <Button variant="outline">{tCommon('cancel')}</Button>
                 </DialogClose>
 
-                <Button type="submit" disabled={storeAction === 'updating'}>
+                <Button
+                  type="submit"
+                  disabled={storeAction === 'updating' || isMilestoneUsed}
+                >
                   {storeAction === 'updating' && (
                     <Loader className="mr-2 size-4 animate-spin" />
                   )}

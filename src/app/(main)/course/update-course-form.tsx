@@ -134,6 +134,7 @@ export function UpdateCourseFormDialog({
                   </FormLabel>
                   <FormControl>
                     <Input
+                      disabled={course?.isUsed}
                       maxLength={10}
                       placeholder={t('placeholder.code')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -154,6 +155,7 @@ export function UpdateCourseFormDialog({
                   </FormLabel>
                   <FormControl>
                     <Input
+                      disabled={course?.isUsed}
                       placeholder={t('placeholder.name')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
@@ -173,6 +175,7 @@ export function UpdateCourseFormDialog({
                   </FormLabel>
                   <FormControl>
                     <Textarea
+                      disabled={course?.isUsed}
                       placeholder={t('placeholder.description')}
                       className="resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
@@ -192,6 +195,7 @@ export function UpdateCourseFormDialog({
                   </FormLabel>
                   <FormControl>
                     <DegreesCombobox
+                      disabled={course?.isUsed}
                       defaultValue={field.value}
                       onChange={field.onChange}
                     />

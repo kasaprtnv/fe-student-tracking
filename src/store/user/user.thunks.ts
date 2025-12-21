@@ -114,6 +114,12 @@ export const deleteUser = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const res = await userService.deleteUser(id);
+
+      // Check if backend returned success: false
+      if (!res.success) {
+        return rejectWithValue(res.message || 'Failed to delete user');
+      }
+
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -129,6 +135,12 @@ export const deleteMultipleUsers = createAsyncThunk(
   async (ids: string[], { rejectWithValue }) => {
     try {
       const res = await userService.deleteMultipleUsers(ids);
+
+      // Check if backend returned success: false
+      if (!res.success) {
+        return rejectWithValue(res.message || 'Failed to delete users');
+      }
+
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {

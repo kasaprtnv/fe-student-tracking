@@ -89,47 +89,51 @@ export function GraduationByYearChart({
   }, [rawData, yearRange]);
 
   return (
-    <Card className="h-[420px]">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-bold">
-          {t('charts.graduation-by-year')}
-        </CardTitle>
-        <div className="flex gap-2">
-          <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="หลักสูตร" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{tFilters('all-courses')}</SelectItem>
-              {allCourseIds.map((id) => (
-                <SelectItem key={id} value={id}>
-                  {courseMap[id]?.name || id}
+    <Card className="min-h-[420px] overflow-hidden">
+      <CardHeader className="pb-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <CardTitle className="text-lg font-bold">
+            {t('charts.graduation-by-year')}
+          </CardTitle>
+          <div className="flex flex-wrap gap-2">
+            <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+              <SelectTrigger className="w-auto min-w-[100px]">
+                <SelectValue placeholder="หลักสูตร" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{tFilters('all-courses')}</SelectItem>
+                {allCourseIds.map((id) => (
+                  <SelectItem key={id} value={id}>
+                    {courseMap[id]?.name || id}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={selectedDegree} onValueChange={setSelectedDegree}>
+              <SelectTrigger className="w-auto min-w-[100px]">
+                <SelectValue placeholder={tFilters('degree')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{tFilters('all-degrees')}</SelectItem>
+                <SelectItem value="bachelor">{tDegree('bachelor')}</SelectItem>
+                <SelectItem value="master">{tDegree('master')}</SelectItem>
+                <SelectItem value="doctorate">
+                  {tDegree('doctorate')}
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedDegree} onValueChange={setSelectedDegree}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={tFilters('degree')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{tFilters('all-degrees')}</SelectItem>
-              <SelectItem value="bachelor">{tDegree('bachelor')}</SelectItem>
-              <SelectItem value="master">{tDegree('master')}</SelectItem>
-              <SelectItem value="doctorate">{tDegree('doctorate')}</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={yearRange} onValueChange={setYearRange}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="ช่วงปี" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="3">{tFilters('years-3')}</SelectItem>
-              <SelectItem value="5">{tFilters('years-5')}</SelectItem>
-              <SelectItem value="10">{tFilters('years-10')}</SelectItem>
-              <SelectItem value="all">{tFilters('all')}</SelectItem>
-            </SelectContent>
-          </Select>
+              </SelectContent>
+            </Select>
+            <Select value={yearRange} onValueChange={setYearRange}>
+              <SelectTrigger className="w-auto min-w-[80px]">
+                <SelectValue placeholder="ช่วงปี" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="3">{tFilters('years-3')}</SelectItem>
+                <SelectItem value="5">{tFilters('years-5')}</SelectItem>
+                <SelectItem value="10">{tFilters('years-10')}</SelectItem>
+                <SelectItem value="all">{tFilters('all')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -147,7 +151,11 @@ export function GraduationByYearChart({
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="year" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    allowDecimals={false}
+                  />
                   <ChartTooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
