@@ -74,7 +74,7 @@ export function StudentsByDegreeChart({
   }, [filteredStudents, tLegend]);
 
   return (
-    <Card className="h-[420px]">
+    <Card className="min-h-[420px] overflow-hidden">
       <CardHeader className="space-y-2 pb-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="text-lg font-bold">
@@ -82,7 +82,7 @@ export function StudentsByDegreeChart({
           </CardTitle>
           <div className="flex flex-wrap gap-2">
             <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-auto min-w-[100px]">
                 <SelectValue placeholder="หลักสูตร" />
               </SelectTrigger>
               <SelectContent>
@@ -95,7 +95,7 @@ export function StudentsByDegreeChart({
               </SelectContent>
             </Select>
             <Select value={selectedYear} onValueChange={setSelectedYear}>
-              <SelectTrigger className="w-[110px]">
+              <SelectTrigger className="w-auto min-w-[80px]">
                 <SelectValue placeholder="ปีการศึกษา" />
               </SelectTrigger>
               <SelectContent>

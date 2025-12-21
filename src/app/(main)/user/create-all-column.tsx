@@ -1,4 +1,4 @@
-import { formatDate } from '@/lib/format-date';
+import { formatThaiDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
 import { ColumnDef } from '@tanstack/react-table';
@@ -22,6 +22,8 @@ interface ColumnActions {
 
 export const createAllStudentColumns = (
   t: (key: string) => string,
+  tDegree: (key: string) => string,
+  tRole: (key: string) => string,
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
@@ -52,16 +54,28 @@ export const createAllStudentColumns = (
       accessorKey: 'role',
       cell: ({ row }) => {
         const role = row.original.role;
-        if (role === 'student') return 'บัณฑิต';
-        if (role === 'teacher') return 'ผู้รับผิดชอบหลักสูตร';
-        if (role === 'admin') return 'ผู้ดูแลระบบ';
-        return '-';
+        if (!role) return '-';
+        const roleMap: Record<string, string> = {
+          student: tRole('student'),
+          teacher: tRole('teacher'),
+          admin: tRole('admin'),
+        };
+        return roleMap[role] || role;
       },
     },
     {
       header: t('education-level'),
       accessorKey: 'degree',
-      cell: ({ row }) => row.original.degree || '-',
+      cell: ({ row }) => {
+        const degree = row.original.degree;
+        if (!degree) return '-';
+        const degreeMap: Record<string, string> = {
+          bachelor: tDegree('bachelor'),
+          master: tDegree('master'),
+          doctorate: tDegree('doctorate'),
+        };
+        return degreeMap[degree] || degree;
+      },
     },
     {
       header: t('year'),
@@ -80,7 +94,7 @@ export const createAllStudentColumns = (
       cell: (row) => {
         const rawDate = row.getValue<string>();
         if (!rawDate) return <span>-</span>;
-        const localString = formatDate(rawDate);
+        const localString = formatThaiDate(rawDate);
         return <span>{localString}</span>;
       },
     },
@@ -106,7 +120,10 @@ export const createAllStudentColumns = (
           <DropdownMenuContent align="end" className="w-40">
             {onEdit && (
               <>
-                <DropdownMenuItem onSelect={() => onEdit(record)}>
+                <DropdownMenuItem
+                  onSelect={() => onEdit(record)}
+                  disabled={record.role === 'admin'}
+                >
                   <div className="flex items-center gap-2">
                     <Pencil size={14} />
                     {t?.('edit')}

@@ -414,6 +414,16 @@
     "delete-user-description": "Are you sure you want to delete this user? This action cannot be undone.",
     "delete-users-title": "Confirm Delete Multiple Users",
     "delete-users-description": "Are you sure you want to delete {count} users? This action cannot be undone.",
+    "toast": {
+      "deleted-successfully": "User deleted successfully",
+      "deleted-multiple-successfully": "Multiple users deleted successfully",
+      "delete-failed": "Failed to delete user",
+      "milestone-progress-exists": "Cannot delete: {count} student(s) have study progress records"
+    },
+    "dialog": {
+      "confirm_course_change_with_progress": "This student has {count} progress records. If you change the course, all progress data will be deleted. Do you want to proceed?",
+      "confirm_delete_user_with_progress": "This user has {count} progress records. Deleting will remove all data. Confirm?"
+    },
     "user-form": {
       "header": {
         "create": "Add User",
@@ -427,6 +437,7 @@
         "create-teacher": "Fill in the form to add a new staff member.",
         "edit": "Edit user information."
       },
+
       "label": {
         "role": "Role",
         "code": "Code",
@@ -493,7 +504,8 @@
         "degree-max": "Education level must not exceed 100 characters",
         "year-required": "Year is required",
         "year-max": "Year must not exceed 10 characters",
-        "course-required": "Course is required"
+        "course-required": "Course is required",
+        "enroll-date-required": "Enroll date is required"
       },
       "toast": {
         "created-successfully": "User created successfully",

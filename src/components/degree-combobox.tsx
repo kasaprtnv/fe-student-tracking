@@ -23,11 +23,13 @@ import { useTranslations } from 'next-intl';
 interface DegreesComboboxProps {
   defaultValue?: string;
   onChange?: (value: string) => void;
+  disabled?: boolean;
 }
 
 export function DegreesCombobox({
   defaultValue,
   onChange,
+  disabled,
 }: DegreesComboboxProps) {
   const t = useTranslations('degree');
   const [open, setOpen] = React.useState(false);
@@ -52,6 +54,7 @@ export function DegreesCombobox({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          disabled={disabled}
           variant="outline"
           role="combobox"
           aria-expanded={open}

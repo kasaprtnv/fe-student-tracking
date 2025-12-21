@@ -55,11 +55,20 @@ export const TeacherTable = () => {
       .filter((user) => {
         if (user.role !== 'teacher') return false;
         if (!query) return true;
+        // Create full name to allow searching like "นายสมชาย ใจดี"
+        const fullName =
+          `${user.title || ''}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+        // Strip non-digit characters for phone search
+        const queryDigits = query.replace(/\D/g, '');
+        const phoneDigits = user.phone?.replace(/\D/g, '') || '';
         return (
+          user.title?.toLowerCase().includes(query) ||
           user.firstName?.toLowerCase().includes(query) ||
           user.lastName?.toLowerCase().includes(query) ||
+          user.code?.toLowerCase().includes(query) ||
           user.email?.toLowerCase().includes(query) ||
-          user.phone?.toLowerCase().includes(query)
+          (queryDigits && phoneDigits.includes(queryDigits)) ||
+          fullName.includes(query)
         );
       })
       .map((user) => {
@@ -123,7 +132,22 @@ export const TeacherTable = () => {
       setIsDelete({ isDeleting: false, userIds: undefined });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
-      toast.error(t('toast.delete-failed'));
+      // Parse error message and translate if it's a known error code
+      let errorMessage = t('toast.delete-failed');
+      if (typeof error === 'string') {
+        try {
+          const parsed = JSON.parse(error);
+          if (parsed.code === 'MILESTONE_PROGRESS_EXISTS') {
+            errorMessage = t('toast.milestone-progress-exists', {
+              count: parsed.count,
+            });
+          }
+        } catch {
+          // Not JSON, use as-is or fallback
+          errorMessage = error || t('toast.delete-failed');
+        }
+      }
+      toast.error(errorMessage);
     }
   };
 

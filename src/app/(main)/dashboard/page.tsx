@@ -55,7 +55,7 @@ const DashboardPage = () => {
   return (
     <>
       <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
-      <div className="container mx-auto space-y-6 py-8">
+      <div className="container mx-auto space-y-6 overflow-x-hidden py-8">
         <div className="mb-4">
           <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">{t('description')}</p>
@@ -68,9 +68,9 @@ const DashboardPage = () => {
           isLoading={isLoading}
         />
 
-        {/* Charts 2x2 Grid */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="md:col-span-2">
+        {/* Charts Grid */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="lg:col-span-2">
             <StudentsByYearCourseChart
               students={studentUsers}
               courseMap={courseMap}
