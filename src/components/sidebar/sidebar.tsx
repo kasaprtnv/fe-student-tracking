@@ -27,16 +27,13 @@ export default function Sidebar() {
   const locale = useLocale();
   const { logoutUser } = useAuth();
 
-  // Filter sidebar items based on user role
   const filteredSidebarItems = useMemo(() => {
     if (!user?.role) return [];
     return sidebarItems.filter((item) => {
-      // If no roles specified, show to all
       if (!item.roles) return true;
-      // Check if user role is in allowed roles
       return item.roles.includes(user.role);
     });
-  }, [user?.role]);
+  }, [user]);
 
   const handleLogout = () => {
     logoutUser();
