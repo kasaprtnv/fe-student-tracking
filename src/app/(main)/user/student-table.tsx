@@ -4,7 +4,7 @@ import React from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
-import { createAllStudentColumns } from './create-all-column';
+import { createStudentColumns } from './create-student-column';
 import { CreateUserFormDialog } from './create-user-form';
 import { UpdateUserFormDialog } from './update-user-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
@@ -38,7 +38,6 @@ export const StudentTable = () => {
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
-  const tRole = useTranslations('role');
   const tCommon = useTranslations('common');
 
   // Get student data directly from Redux store userMap and enrich with courseName
@@ -127,7 +126,7 @@ export const StudentTable = () => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const studentColumns = createAllStudentColumns(tColumn, tDegree, tRole);
+  const studentColumns = createStudentColumns(tColumn, tDegree);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;

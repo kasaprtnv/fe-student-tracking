@@ -31,11 +31,6 @@ const UserPage = () => {
     }
   }, [user, initialized, router]);
 
-  // Don't render anything until we confirm user is admin
-  if (!initialized || !user || user.role !== 'admin') {
-    return null;
-  }
-
   useSWR(
     'fetch-users',
     async () => {
@@ -51,6 +46,11 @@ const UserPage = () => {
     // Refresh user list after successful import
     await fetchAllUsers();
   };
+
+  // Don't render anything until we confirm user is admin
+  if (!initialized || !user || user.role !== 'admin') {
+    return null;
+  }
 
   return (
     <>

@@ -28,11 +28,6 @@ const DashboardPage = () => {
     }
   }, [user, initialized, router]);
 
-  // Don't render anything until we confirm user is admin
-  if (!initialized || !user || user.role !== 'admin') {
-    return null;
-  }
-
   const { fetchStudents, studentUsers, loader: userLoader } = useUser();
   const {
     fetchAllCourses,
@@ -69,6 +64,11 @@ const DashboardPage = () => {
     });
     return Array.from(yearSet).sort();
   }, [studentUsers]);
+
+  // Don't render anything until we confirm user is admin
+  if (!initialized || !user || user.role !== 'admin') {
+    return null;
+  }
 
   return (
     <>
