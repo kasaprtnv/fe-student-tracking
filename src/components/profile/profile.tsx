@@ -70,7 +70,9 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({
               <div className="mr-2 text-xl">
                 {t('personal_information.faculty')} :
               </div>
-              <div className="text-xl">รัฐศาสตร์และนิติศาสตร์</div>
+              <div className="text-xl">
+                {t('personal_information.polsci-law')}
+              </div>
             </div>
             <div className="flex">
               <div className="mr-2 text-xl">

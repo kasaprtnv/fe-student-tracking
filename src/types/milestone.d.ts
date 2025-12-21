@@ -1,7 +1,7 @@
 // Types
 export type MilestoneStepStatus =
   | 'approved'
-  | 'pending'
+  | 'pending approval'
   | 'declined'
   | 'available'
   | 'locked';

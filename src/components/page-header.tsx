@@ -30,7 +30,7 @@ export const PageHeader = ({ breadcrumbs }: BaseHeaderProps) => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/">
+              <BreadcrumbLink href="/dashboard">
                 {' '}
                 <House size={16} />
               </BreadcrumbLink>

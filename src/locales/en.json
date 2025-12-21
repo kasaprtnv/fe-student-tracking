@@ -158,7 +158,8 @@
       "student_id": "Student ID",
       "department": "Department",
       "faculty": "Faculty",
-      "degree": "Degree"
+      "degree": "Degree",
+      "polsci-law": "Political Science And Law"
     },
     "progress_title": "Graduate Progress",
     "contact_admin": "Please contact staff to enroll in a course"

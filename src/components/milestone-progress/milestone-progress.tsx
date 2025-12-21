@@ -60,7 +60,7 @@ interface MilestoneProgressProps {
 // Utility: แปลง status เป็น completed/isActive
 const isStepCompleted = (status: string) => status === 'approved';
 const isStepDeclined = (status: string) => status === 'declined';
-const isStepPending = (status: string) => status === 'pending';
+const isStepPending = (status: string) => status === 'pending approval';
 const isStepAvailable = (status: string) => status === 'available';
 const isLocked = (status: string) => status === 'locked';
 
@@ -232,7 +232,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                 <span className="font-semibold">{t('overall_progress')}</span>
               </div>
               <div className="text-right">
-                <div className="text-primary text-3xl font-bold">
+                <div className="text-3xl font-bold text-red-800">
                   {overallProgress}%
                 </div>
                 <div className="text-muted-foreground text-xs">
@@ -243,7 +243,10 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                 </div>
               </div>
             </div>
-            <Progress value={overallProgress} className="h-2" />
+            <Progress
+              value={overallProgress}
+              className="h-2 [&>div]:bg-red-800"
+            />
           </CardContent>
         </Card>
       )}
@@ -263,7 +266,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
               )}
 
               {/* Milestone Number Badge */}
-              <div className="bg-primary absolute top-0 left-0 z-10 flex h-[60px] w-[60px] items-center justify-center rounded-2xl text-xl font-bold text-white shadow-lg">
+              <div className="bg-primary absolute top-0 left-0 z-10 flex h-[60px] w-[60px] items-center justify-center rounded-2xl bg-red-800 text-xl font-bold text-white shadow-lg">
                 {index + 1}
               </div>
 
@@ -302,7 +305,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <div className="text-primary text-2xl font-bold">
+                          <div className="text-2xl font-bold text-red-800">
                             {progress}%
                           </div>
                           <div className="text-muted-foreground text-xs">
@@ -324,7 +327,10 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                         </CollapsibleTrigger>
                       </div>
                     </div>
-                    <Progress value={progress} className="mt-3 h-2" />
+                    <Progress
+                      value={progress}
+                      className="mt-3 h-2 [&>div]:bg-red-800"
+                    />
                   </CardHeader>
 
                   <CollapsibleContent className="mt-6">
