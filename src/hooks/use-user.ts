@@ -12,6 +12,7 @@ import {
   deleteUser,
   deleteMultipleUsers,
 } from '@/store/user/user.thunks';
+import { userService } from '@/services/user.service';
 
 import {
   selectUserMap,
@@ -129,6 +130,11 @@ export const useUser = () => {
 
   const clearErr = useCallback(() => dispatch(clearError()), [dispatch]);
 
+  const getStudentProgressCount = useCallback(
+    (userId: string) => userService.getStudentProgressCount(userId),
+    [],
+  );
+
   return {
     // State
     userMap,
@@ -151,6 +157,7 @@ export const useUser = () => {
     updateExistingUser,
     deleteExistingUser,
     deleteExistingUsers,
+    getStudentProgressCount,
 
     // Cache Actions
     addUserToCache,

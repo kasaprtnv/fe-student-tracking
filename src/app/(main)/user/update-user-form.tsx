@@ -10,6 +10,16 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Form,
   FormControl,
   FormField,
@@ -29,6 +39,7 @@ import { Button } from '@/components/ui/button';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 import { Loader } from 'lucide-react';
 import { EnrollDateInput } from '@/components/enroll-date-input';
+import { DegreesCombobox } from '@/components/degree-combobox';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useForm, Resolver } from 'react-hook-form';
@@ -66,8 +77,10 @@ export function UpdateUserFormDialog({
   onCourseStaffChange,
 }: UpdateUserFormDialogProps) {
   const t = useTranslations('user.user-form');
+  const tUser = useTranslations('user');
   const tCommon = useTranslations('common');
-  const { updateExistingUser, storeAction, userMap } = useUser();
+  const { updateExistingUser, storeAction, userMap, getStudentProgressCount } =
+    useUser();
   const { fetchAllCourses, updateExistingCourse, getCourseById } = useCourse();
   const { mutate } = useSWRConfig();
 
@@ -92,6 +105,12 @@ export function UpdateUserFormDialog({
   const [teacherCourseStaffList, setTeacherCourseStaffList] = React.useState<
     ICourseStaff[]
   >([]);
+
+  // Confirmation dialog state
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false);
+  const [pendingFormData, setPendingFormData] =
+    React.useState<UserFormValues | null>(null);
+  const [progressCount, setProgressCount] = React.useState(0);
 
   const getDefaultValues = React.useCallback((): UserFormValues => {
     if (userRole === 'student') {
@@ -126,9 +145,9 @@ export function UpdateUserFormDialog({
     defaultValues: getDefaultValues(),
   });
 
-  // Reset form when user changes
+  // Reset form when user changes or dialog opens
   React.useEffect(() => {
-    if (user) {
+    if (user && open) {
       const newRole: UserRole =
         user.role === 'student' || user.role === 'teacher'
           ? user.role
@@ -136,7 +155,7 @@ export function UpdateUserFormDialog({
       setSelectedRole(newRole);
       form.reset(getDefaultValues());
     }
-  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, open, form, getDefaultValues]); // Reset whenever user changes or dialog re-opens
 
   // Set courseIds when dialog opens for teachers
   // Filter from allCourseStaff prop and set form values directly
@@ -236,6 +255,26 @@ export function UpdateUserFormDialog({
           teacherDataWithoutCourse as unknown as UpdateUserFormData,
         );
       } else {
+        // For students, check if courseId changed and if they have progress
+        if (
+          user.role === 'student' &&
+          formattedData.courseId &&
+          formattedData.courseId !== user.courseId
+        ) {
+          try {
+            const count = await getStudentProgressCount(user.id);
+            if (count > 0) {
+              // Open confirmation dialog instead of window.confirm
+              setProgressCount(count);
+              setPendingFormData(formattedData as unknown as UserFormValues);
+              setConfirmDialogOpen(true);
+              return; // Stop here, wait for confirmation
+            }
+          } catch (error) {
+            console.error('Error checking progress count:', error);
+          }
+        }
+
         await updateExistingUser(
           user.id,
           formattedData as unknown as UpdateUserFormData,
@@ -273,125 +312,117 @@ export function UpdateUserFormDialog({
     }
   };
 
+  const handleConfirmUpdate = async () => {
+    if (!pendingFormData) return;
+
+    try {
+      await updateExistingUser(
+        user!.id,
+        pendingFormData as unknown as UpdateUserFormData,
+      );
+      form.reset();
+      onOpenChange(false);
+      setConfirmDialogOpen(false);
+      setPendingFormData(null);
+      toast.success(t('toast.updated-successfully'));
+
+      // Trigger refetch
+      onCourseStaffChange?.();
+      fetchAllCourses();
+      fetchAllCourseStaff();
+      mutate('fetch-courses and-course-staff');
+    } catch (error: unknown) {
+      console.error('Error updating user:', error);
+      toast.error(t('toast.update-failed'));
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex h-[600px] flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-gray-800">
-            {t('header.edit')}
-          </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">
-            {t('header_description.edit')}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
-          >
-            {/* Student-specific fields: code, courseId */}
-            {selectedRole === 'student' && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="code"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">
-                          {t('label.code')}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={t('placeholder.code')}
-                            className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="courseId"
-                    render={({ field }) => (
-                      <FormItem className="min-w-0">
-                        <FormLabel className="text-sm font-medium text-gray-700">
-                          {t('label.course')}
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-full truncate border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                              <SelectValue
-                                placeholder={t('placeholder.course')}
-                              />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {courseOptions.map((course) => (
-                              <SelectItem
-                                key={course.value}
-                                value={course.value}
-                              >
-                                {course.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </>
-            )}
+    <>
+      <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tCommon('confirm')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {tUser('dialog.confirm_course_change_with_progress', {
+                count: progressCount,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setConfirmDialogOpen(false);
+                setPendingFormData(null);
+              }}
+            >
+              {tCommon('cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmUpdate}>
+              {tCommon('confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-            {/* Title field */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.title')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('placeholder.title')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="flex h-[600px] flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-gray-800">
+              {t('header.edit')}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-600">
+              {t('header_description.edit')}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
+            >
+              {/* Common fields: title, firstName in 2 columns */}
+              <div className="grid grid-cols-2 items-start gap-4">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.title')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('placeholder.title')}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.first-name')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('placeholder.first-name')}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            {/* Common fields: firstName, lastName */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.first-name')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t('placeholder.first-name')}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* lastName field */}
               <FormField
                 control={form.control}
                 name="lastName"
@@ -411,87 +442,117 @@ export function UpdateUserFormDialog({
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Email field */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.email')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      disabled
-                      placeholder={t('placeholder.email')}
-                      className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Phone field */}
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.phone')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('placeholder.phone')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      maxLength={10}
-                      {...field}
-                      onInput={(e) => {
-                        const target = e.target as HTMLInputElement;
-                        target.value = target.value.replace(/\D/g, '');
-                        field.onChange(target.value);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Teacher-specific field: courseIds (multiple courses) */}
-            {selectedRole === 'teacher' && (
+              {/* Email field */}
               <FormField
                 control={form.control}
-                name="courseIds"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.course')}
+                      {t('label.email')}
                     </FormLabel>
                     <FormControl>
-                      <MultiCombobox
-                        defaultValue={field.value || []}
-                        placeholder={t('placeholder.course')}
-                        placeholderSearch={t('placeholder.course')}
-                        placeholderEmpty={t('placeholder.course')}
-                        options={courseOptions}
-                        onChange={field.onChange}
+                      <Input
+                        type="email"
+                        disabled
+                        placeholder={t('placeholder.email')}
+                        className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            {/* Student-specific fields: degree, year */}
-            {selectedRole === 'student' && (
-              <div className="grid grid-cols-2 gap-4">
+              {/* Phone field */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      {t('label.phone')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('placeholder.phone')}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        maxLength={10}
+                        {...field}
+                        onInput={(e) => {
+                          const target = e.target as HTMLInputElement;
+                          target.value = target.value.replace(/\D/g, '');
+                          field.onChange(target.value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Student-specific field: code */}
+              {selectedRole === 'student' && (
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.code')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('placeholder.code')}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Student-specific field: courseId */}
+              {selectedRole === 'student' && (
+                <FormField
+                  control={form.control}
+                  name="courseId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.student-course')}
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full truncate border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <SelectValue
+                              placeholder={t('placeholder.course')}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {courseOptions.map((course) => (
+                            <SelectItem key={course.value} value={course.value}>
+                              {course.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Student-specific field: degree */}
+              {selectedRole === 'student' && (
                 <FormField
                   control={form.control}
                   name="degree"
@@ -500,30 +561,18 @@ export function UpdateUserFormDialog({
                       <FormLabel className="text-sm font-medium text-gray-700">
                         {t('label.degree')}
                       </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                            <SelectValue
-                              placeholder={t('placeholder.degree')}
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="ปริญญาโท">
-                            {t('education-level.masters')}
-                          </SelectItem>
-                          <SelectItem value="ปริญญาเอก">
-                            {t('education-level.doctoral')}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <DegreesCombobox
+                        defaultValue={field.value || ''}
+                        onChange={(value) => field.onChange(value)}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              )}
+
+              {/* Student-specific field: year */}
+              {selectedRole === 'student' && (
                 <FormField
                   control={form.control}
                   name="year"
@@ -563,59 +612,85 @@ export function UpdateUserFormDialog({
                     );
                   }}
                 />
-              </div>
-            )}
+              )}
 
-            {/* Student-specific field: enrollDate */}
-            {selectedRole === 'student' && (
-              <FormField
-                control={form.control}
-                name="enrollDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.enroll-date')}
-                    </FormLabel>
-                    <div className="relative">
-                      <EnrollDateInput
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {/* Spacer to push footer to bottom */}
-            <div className="flex-1" />
-
-            <DialogFooter className="px-0">
-              <div className="flex flex-1 justify-end space-x-2">
-                <DialogClose asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border-gray-300 text-gray-700 hover:bg-gray-100"
-                  >
-                    {tCommon('cancel')}
-                  </Button>
-                </DialogClose>
-                <Button disabled={storeAction === 'updating'} type="submit">
-                  {storeAction === 'updating' && (
-                    <Loader
-                      className="mr-2 size-4 animate-spin"
-                      aria-hidden="true"
-                    />
+              {/* Student-specific field: enrollDate */}
+              {selectedRole === 'student' && (
+                <FormField
+                  control={form.control}
+                  name="enrollDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.enroll-date')}
+                      </FormLabel>
+                      <div className="relative">
+                        <EnrollDateInput
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </div>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                  {tCommon('save')}
-                </Button>
-              </div>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                />
+              )}
+
+              {/* Teacher-specific field: courseIds (multiple courses) */}
+              {selectedRole === 'teacher' && (
+                <FormField
+                  control={form.control}
+                  name="courseIds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.teacher-course')}
+                      </FormLabel>
+                      <FormControl>
+                        <MultiCombobox
+                          defaultValue={field.value || []}
+                          placeholder={t('placeholder.course')}
+                          placeholderSearch={t('placeholder.course')}
+                          placeholderEmpty={t('placeholder.course')}
+                          options={courseOptions}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Spacer to push footer to bottom */}
+              <div className="flex-1" />
+
+              <DialogFooter className="px-0">
+                <div className="flex flex-1 justify-end space-x-2">
+                  <DialogClose asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                    >
+                      {tCommon('cancel')}
+                    </Button>
+                  </DialogClose>
+                  <Button disabled={storeAction === 'updating'} type="submit">
+                    {storeAction === 'updating' && (
+                      <Loader
+                        className="mr-2 size-4 animate-spin"
+                        aria-hidden="true"
+                      />
+                    )}
+                    {tCommon('save')}
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
