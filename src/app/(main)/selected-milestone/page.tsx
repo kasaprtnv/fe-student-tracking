@@ -225,6 +225,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   }, [fetchAllCourses]);
 
   const course = getCourseById(courseId);
+  const isCourseUsed = course?.isUsed;
 
   const handleConfirmSave = async () => {
     try {
@@ -340,6 +341,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
                 onValueChange={(value) => {
                   setPendingMilestone(value);
                 }}
+                disabled={isCourseUsed}
               >
                 <SelectTrigger className="h-12 w-full text-base">
                   <SelectValue
@@ -387,6 +389,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
                           id={ms.id}
                           label={ms.name}
                           onRemove={() => handleRemove(ms.id)}
+                          disabled={isCourseUsed}
                         />
                       );
                     })}
@@ -397,7 +400,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           </ResizablePanel>
           <Button
             className="mt-13 mr-4 flex"
-            disabled={!pendingMilestone}
+            disabled={!pendingMilestone || isCourseUsed}
             onClick={() => {
               if (!pendingMilestone) return;
 
@@ -468,7 +471,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
         <div className="mt-4 flex justify-end">
           <Button
             onClick={() => setConfirmOpen(true)}
-            disabled={selectedItems.length === 0}
+            disabled={selectedItems.length === 0 || isCourseUsed}
           >
             {tSelectedMilestone('milestone.next')}
           </Button>
@@ -504,10 +507,12 @@ function SortableItem({
   id,
   label,
   onRemove,
+  disabled,
 }: {
   id: string;
   label: string;
   onRemove: () => void;
+  disabled?: boolean;
 }) {
   const { setNodeRef, attributes, listeners, transform, transition } =
     useSortable({ id });
@@ -526,7 +531,7 @@ function SortableItem({
     >
       <div
         {...listeners}
-        className="cursor-grab text-gray-500 active:cursor-grabbing"
+        className={`cursor-grab text-gray-500 active:cursor-grabbing ${disabled ? 'pointer-events-none opacity-50' : ''}`}
       >
         <GripVertical size={16} />
       </div>
@@ -542,6 +547,7 @@ function SortableItem({
         }}
         variant="ghost"
         className="text-gray-600 hover:text-red-500"
+        disabled={disabled}
       >
         <X size={14} />
       </Button>

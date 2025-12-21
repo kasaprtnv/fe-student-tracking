@@ -154,9 +154,6 @@ export function CreateUserFormDialog({
     }
 
     const formattedData = { ...data };
-    if (formattedData.role === 'student' && formattedData.enrollDate === '') {
-      formattedData.enrollDate = undefined;
-    }
 
     try {
       const result = await createNewUser(

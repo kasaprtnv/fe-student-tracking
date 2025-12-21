@@ -136,15 +136,15 @@ export function StudentsByYearCourseChart({
   }, [selectedCourse, courseNames]);
 
   return (
-    <Card className="h-[420px]">
-      <CardHeader className="space-y-2 pb-2">
+    <Card className="min-h-[420px] overflow-hidden">
+      <CardHeader className="pb-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="text-lg font-bold">
             {t('charts.students-by-course')}
           </CardTitle>
           <div className="flex flex-wrap gap-2">
             <Select value={selectedDegree} onValueChange={setSelectedDegree}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-auto min-w-[100px]">
                 <SelectValue placeholder={tFilters('degree')} />
               </SelectTrigger>
               <SelectContent>
@@ -157,7 +157,7 @@ export function StudentsByYearCourseChart({
               </SelectContent>
             </Select>
             <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-              <SelectTrigger className="w-[130px]">
+              <SelectTrigger className="w-auto min-w-[100px]">
                 <SelectValue placeholder={tFilters('course')} />
               </SelectTrigger>
               <SelectContent>
@@ -170,7 +170,7 @@ export function StudentsByYearCourseChart({
               </SelectContent>
             </Select>
             <Select value={yearRange} onValueChange={setYearRange}>
-              <SelectTrigger className="w-[130px]">
+              <SelectTrigger className="w-auto min-w-[80px]">
                 <SelectValue placeholder="ช่วงปี" />
               </SelectTrigger>
               <SelectContent>
@@ -197,7 +197,11 @@ export function StudentsByYearCourseChart({
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="year" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    allowDecimals={false}
+                  />
                   <ChartTooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {

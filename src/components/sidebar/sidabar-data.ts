@@ -30,7 +30,7 @@ export const sidebarItems = [
       },
       {
         title: 'homepage.userManagement',
-        route: '/users',
+        route: '/user',
       },
     ],
   },
