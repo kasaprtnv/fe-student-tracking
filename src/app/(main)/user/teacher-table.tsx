@@ -61,6 +61,20 @@ export const TeacherTable = () => {
         // Strip non-digit characters for phone search
         const queryDigits = query.replace(/\D/g, '');
         const phoneDigits = user.phone?.replace(/\D/g, '') || '';
+
+        // Get managed courses for this teacher to enable course search
+        const teacherCourseStaff = allCourseStaff.filter(
+          (cs) => (cs as unknown as { userId: string }).userId === user.id,
+        );
+        const managedCoursesText = teacherCourseStaff
+          .map((cs) => {
+            const course = getCourseById(cs.courseId);
+            return course
+              ? `${course.code} - ${course.name}`.toLowerCase()
+              : '';
+          })
+          .join(' ');
+
         return (
           user.title?.toLowerCase().includes(query) ||
           user.firstName?.toLowerCase().includes(query) ||
@@ -68,7 +82,8 @@ export const TeacherTable = () => {
           user.code?.toLowerCase().includes(query) ||
           user.email?.toLowerCase().includes(query) ||
           (queryDigits && phoneDigits.includes(queryDigits)) ||
-          fullName.includes(query)
+          fullName.includes(query) ||
+          managedCoursesText.includes(query)
         );
       })
       .map((user) => {
