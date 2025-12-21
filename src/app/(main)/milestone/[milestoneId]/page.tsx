@@ -148,7 +148,11 @@ const MilestoneStepPage = () => {
           </p>
         </div>
         <div className="flex justify-end">
-          <Button onClick={() => setIsAdd(true)} className="mb-4">
+          <Button
+            onClick={() => setIsAdd(true)}
+            className="mb-4"
+            disabled={milestone?.isUsed}
+          >
             <Plus size={16} />
             {t('add-step')}
           </Button>
@@ -162,10 +166,16 @@ const MilestoneStepPage = () => {
                 className="space-y-4"
               >
                 {steps.map((step, index) => (
-                  <Draggable key={step.id} draggableId={step.id} index={index}>
+                  <Draggable
+                    key={step.id}
+                    draggableId={step.id}
+                    index={index}
+                    isDragDisabled={milestone?.isUsed}
+                  >
                     {(provided) => (
                       <div ref={provided.innerRef} {...provided.draggableProps}>
                         <MilestoneStepCard
+                          milestone={milestone}
                           step={step}
                           dragHandleProps={
                             provided.dragHandleProps ?? undefined
@@ -186,7 +196,7 @@ const MilestoneStepPage = () => {
           <div className="flex w-full justify-end">
             <Button
               onClick={confirmUpdatePositions}
-              disabled={storeAction === 'updating'} // ใช้ storeAction แทน isUpdatingPositions
+              disabled={storeAction === 'updating' || milestone?.isUsed}
               className="mt-4 ml-auto"
             >
               {storeAction === 'updating' && (

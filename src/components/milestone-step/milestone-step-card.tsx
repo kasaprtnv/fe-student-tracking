@@ -19,8 +19,10 @@ import {
   TooltipContent,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { IMilestone } from '@/types/milestone';
 
 interface IMilestoneStepCardProps {
+  milestone: IMilestone;
   step: IMilestoneStep;
   dragHandleProps?: DraggableProvidedDragHandleProps;
   onEdit: (step: IMilestoneStep) => void;
@@ -28,6 +30,7 @@ interface IMilestoneStepCardProps {
 }
 
 const MilestoneStepCard = ({
+  milestone,
   step,
   dragHandleProps,
   onEdit,
@@ -102,13 +105,17 @@ const MilestoneStepCard = ({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-36">
-          <DropdownMenuItem onClick={() => onEdit(step)}>
+          <DropdownMenuItem
+            onClick={() => onEdit(step)}
+            disabled={milestone?.isUsed}
+          >
             <Pencil size={14} />
             {tCommon('edit')}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-red-600 focus:text-red-600"
             onClick={() => onDelete(step)}
+            disabled={milestone?.isUsed}
           >
             <Trash2 size={14} color="#e7000b" />
             {tCommon('delete')}
