@@ -65,7 +65,7 @@ export const AllTable = () => {
           user.role === 'student'
             ? 'นักศึกษา'
             : user.role === 'teacher'
-              ? 'ผู้รับผิดชอบหลักสูตร'
+              ? 'อาจารย์'
               : user.role === 'admin'
                 ? 'ผู้ดูแลระบบ'
                 : '';
