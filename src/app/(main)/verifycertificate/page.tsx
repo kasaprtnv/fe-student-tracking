@@ -40,10 +40,20 @@ import { cn } from '@/lib/utils';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
 import { PageHeader } from '@/components/page-header';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function VerifyCertificatePage() {
   const t = useTranslations('verify-certificate');
   const router = useRouter();
+  const { user, initialized } = useAuth();
+
+  useEffect(() => {
+    if (!initialized) return;
+    if (user && user.role !== 'admin' && user.role !== 'teacher') {
+      router.replace(`/profile/${user.id}`);
+    }
+  }, [user, initialized, router]);
+
   const [data, setData] = useState<IStudentStepProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
