@@ -526,8 +526,10 @@
         "no-file-selected": "Please select a file before uploading"
       },
       "toast": {
-        "import-success": "Successfully imported {count} user(s)",
+        "import-success": "Import successful",
         "import-partial": "Failed to import {failed} user(s)",
+        "import-updated": "Updated {count} user(s)",
+        "import-skipped": "Skipped {count} user(s) (no changes)",
         "import-failed": "Failed to import users",
         "template-downloaded": "Template downloaded successfully"
       }
