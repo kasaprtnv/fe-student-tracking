@@ -108,7 +108,8 @@ const UserFormDialog = ({
         year: user.year || '',
         role: validRole,
         courseId: user.courseId || '',
-      });
+        enrollDate: user.enrollDate || '',
+      } as CreateUserFormData | UpdateUserFormData);
     } else if (!user && open && mode === 'create') {
       form.reset({
         code: '',
