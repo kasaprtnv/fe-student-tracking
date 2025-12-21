@@ -1,11 +1,14 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
 import { useDashboard } from '@/hooks/use-dashboard';
+import { useAuth } from '@/hooks/use-auth';
 
 import { SummaryCards } from './summary-cards';
 import { StudentsByYearCourseChart } from './students-by-year-course-chart';
@@ -15,6 +18,16 @@ import { PageHeader } from '@/components/page-header';
 
 const DashboardPage = () => {
   const t = useTranslations('dashboard');
+  const router = useRouter();
+  const { user, initialized } = useAuth();
+
+  useEffect(() => {
+    if (!initialized) return;
+    if (user && user.role !== 'admin') {
+      router.replace(`/profile/${user.id}`);
+    }
+  }, [user, initialized, router]);
+
   const { fetchStudents, studentUsers, loader: userLoader } = useUser();
   const {
     fetchAllCourses,
@@ -52,10 +65,15 @@ const DashboardPage = () => {
     return Array.from(yearSet).sort();
   }, [studentUsers]);
 
+  // Don't render anything until we confirm user is admin
+  if (!initialized || !user || user.role !== 'admin') {
+    return null;
+  }
+
   return (
     <>
       <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
-      <div className="container mx-auto space-y-6 py-8">
+      <div className="container mx-auto space-y-6 overflow-x-hidden py-8">
         <div className="mb-4">
           <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">{t('description')}</p>
@@ -68,9 +86,9 @@ const DashboardPage = () => {
           isLoading={isLoading}
         />
 
-        {/* Charts 2x2 Grid */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="md:col-span-2">
+        {/* Charts Grid */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="lg:col-span-2">
             <StudentsByYearCourseChart
               students={studentUsers}
               courseMap={courseMap}

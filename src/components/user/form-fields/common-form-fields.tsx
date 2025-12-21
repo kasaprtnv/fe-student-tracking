@@ -18,7 +18,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
   const t = useTranslations('user.user-form');
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 items-start gap-4">
         <FormField
           control={form.control}
           name="title"

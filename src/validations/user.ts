@@ -41,7 +41,7 @@ const studentSchema = (t: (key: string) => string) =>
       .min(1, t('errors.year-required'))
       .max(10, t('errors.year-max')),
     courseId: z.string().min(1, t('errors.course-required')),
-    enrollDate: z.string().optional(),
+    enrollDate: z.string().min(1, t('errors.enroll-date-required')),
   });
 
 // Teacher-specific schema

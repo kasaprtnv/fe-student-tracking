@@ -157,6 +157,15 @@ class UserService extends APIService {
       });
   }
 
+  async getStudentProgressCount(userId: string): Promise<number> {
+    return this.get(`/student-step-progress/count/${userId}`)
+      .then((response) => response?.data?.count || 0)
+      .catch((error) => {
+        console.error('Error fetching student progress count:', error);
+        return 0; // Return 0 if error, to avoid blocking update
+      });
+  }
+
   async importUsers(file: File): Promise<IApiPostResponse<User[]>> {
     const formData = new FormData();
     formData.append('file', file);

@@ -22,14 +22,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -47,10 +39,21 @@ import { th } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
+import { PageHeader } from '@/components/page-header';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function VerifyCertificatePage() {
   const t = useTranslations('verify-certificate');
   const router = useRouter();
+  const { user, initialized } = useAuth();
+
+  useEffect(() => {
+    if (!initialized) return;
+    if (user && user.role !== 'admin' && user.role !== 'teacher') {
+      router.replace(`/profile/${user.id}`);
+    }
+  }, [user, initialized, router]);
+
   const [data, setData] = useState<IStudentStepProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -171,19 +174,9 @@ export default function VerifyCertificatePage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">
-              {t('breadcrumb.home')}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{t('breadcrumb.verify')}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <PageHeader
+        breadcrumbs={[{ label: t('breadcrumb.verify'), isPage: true }]}
+      />
 
       {/* Title */}
       <h1 className="text-2xl font-bold">{t('title')}</h1>

@@ -96,7 +96,13 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
             )}
 
             {onDelete && (
-              <DropdownMenuItem onSelect={() => onDelete(record.id)}>
+              <DropdownMenuItem
+                onSelect={() => onDelete(record.id)}
+                disabled={record.isUsed}
+                className={
+                  record.isUsed ? 'pointer-events-none opacity-50' : ''
+                }
+              >
                 <div className="flex items-center gap-2">
                   <Trash2 size={14} color="#e7000b" />
                   {t?.('delete')}

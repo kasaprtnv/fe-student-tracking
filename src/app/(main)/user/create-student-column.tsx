@@ -20,10 +20,10 @@ interface ColumnActions {
   t?: (key: string) => string;
 }
 
-export const createAllStudentColumns = (
+// Student-only columns (without role column)
+export const createStudentColumns = (
   t: (key: string) => string,
   tDegree: (key: string) => string,
-  tRole: (key: string) => string,
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
@@ -48,20 +48,6 @@ export const createAllStudentColumns = (
       header: t('phone'),
       accessorKey: 'phone',
       cell: ({ row }) => formatPhoneNumber(row.original.phone),
-    },
-    {
-      header: t('role'),
-      accessorKey: 'role',
-      cell: ({ row }) => {
-        const role = row.original.role;
-        if (!role) return '-';
-        const roleMap: Record<string, string> = {
-          student: tRole('student'),
-          teacher: tRole('teacher'),
-          admin: tRole('admin'),
-        };
-        return roleMap[role] || role;
-      },
     },
     {
       header: t('education-level'),

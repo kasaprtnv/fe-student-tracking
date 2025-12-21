@@ -4,7 +4,7 @@ import React from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
-import { createAllStudentColumns } from './create-all-column';
+import { createStudentColumns } from './create-student-column';
 import { CreateUserFormDialog } from './create-user-form';
 import { UpdateUserFormDialog } from './update-user-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
@@ -12,6 +12,17 @@ import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { formatThaiDate } from '@/lib/format-date';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export const StudentTable = () => {
   const {
@@ -21,10 +32,13 @@ export const StudentTable = () => {
     deleteExistingUsers,
     storeAction,
     userMap,
+    getStudentProgressCount,
   } = useUser();
   const { allCourseId, getCourseById } = useCourse();
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
+  const tDegree = useTranslations('degree');
+  const tCommon = useTranslations('common');
 
   // Get student data directly from Redux store userMap and enrich with courseName
   const filterStudent = React.useMemo(() => {
@@ -33,12 +47,59 @@ export const StudentTable = () => {
       .filter((user) => {
         if (user.role !== 'student') return false;
         if (!query) return true;
+        const fullName =
+          `${user.title || ''}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+        // Strip non-digit characters for phone search
+        const queryDigits = query.replace(/\D/g, '');
+        const phoneDigits = user.phone?.replace(/\D/g, '') || '';
+        // Strip spaces for flexible search
+        const queryNoSpaces = query.replace(/\s/g, '');
+        // Map degree to Thai display text for search
+        const degreeDisplay =
+          user.degree === 'bachelor'
+            ? 'ปริญญาตรี'
+            : user.degree === 'master'
+              ? 'ปริญญาโท'
+              : user.degree === 'doctorate'
+                ? 'ปริญญาเอก'
+                : '';
+        // Map degree to English display text for search
+        const degreeDisplayEn =
+          user.degree === 'bachelor'
+            ? "bachelor's degree"
+            : user.degree === 'master'
+              ? "master's degree"
+              : user.degree === 'doctorate'
+                ? 'doctoral degree'
+                : '';
+        // Map role to Thai/English display text for search
+        const roleDisplay =
+          user.role === 'student'
+            ? 'นักศึกษา student'
+            : 'ผู้ดูแลหลักสูตร staff';
         return (
+          user.title?.toLowerCase().includes(query) ||
           user.firstName?.toLowerCase().includes(query) ||
           user.lastName?.toLowerCase().includes(query) ||
           user.code?.toLowerCase().includes(query) ||
           user.email?.toLowerCase().includes(query) ||
-          user.phone?.toLowerCase().includes(query)
+          user.year?.toLowerCase().includes(query) ||
+          user.degree?.toLowerCase().includes(query) ||
+          degreeDisplay.toLowerCase().includes(query) ||
+          degreeDisplayEn.toLowerCase().includes(query) ||
+          user.courseName?.toLowerCase().includes(query) ||
+          (queryNoSpaces &&
+            user.courseName
+              ?.toLowerCase()
+              .replace(/\s/g, '')
+              .includes(queryNoSpaces)) ||
+          user.role?.toLowerCase().includes(query) ||
+          roleDisplay.toLowerCase().includes(query) ||
+          (user.enrollDate &&
+            formatThaiDate(user.enrollDate).toLowerCase().includes(query)) ||
+          (queryDigits && phoneDigits.includes(queryDigits)) ||
+          fullName.includes(query) ||
+          (queryNoSpaces && fullName.replace(/\s/g, '').includes(queryNoSpaces))
         );
       })
       .map((user) => {
@@ -65,7 +126,7 @@ export const StudentTable = () => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const studentColumns = createAllStudentColumns(tColumn);
+  const studentColumns = createStudentColumns(tColumn, tDegree);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -81,6 +142,78 @@ export const StudentTable = () => {
     isDeleting: false,
   });
 
+  // Progress deletion warning state
+  const [progressDeleteState, setProgressDeleteState] = React.useState<{
+    isOpen: boolean;
+    userIds: string[] | null;
+    count: number;
+  }>({
+    isOpen: false,
+    userIds: null,
+    count: 0,
+  });
+
+  const handleMultiDeleteClick = async (users: User[]) => {
+    // In student table, everyone is a student, so we check all
+    const studentIds = users.map((u) => u.id);
+
+    if (studentIds.length > 0) {
+      let totalProgressCount = 0;
+      try {
+        const counts = await Promise.all(
+          studentIds.map((id) => getStudentProgressCount(id).catch(() => 0)),
+        );
+        totalProgressCount = counts.reduce((acc, curr) => acc + curr, 0);
+
+        if (totalProgressCount > 0) {
+          setProgressDeleteState({
+            isOpen: true,
+            userIds: users.map((u) => u.id),
+            count: totalProgressCount,
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking progress count:', error);
+      }
+    }
+
+    // Normal multi-delete flow
+    setIsDelete({ isDeleting: true, userIds: users.map((u) => u.id) });
+  };
+
+  const handleDeleteClick = async (userId: string) => {
+    try {
+      const count = await getStudentProgressCount(userId);
+      if (count > 0) {
+        setProgressDeleteState({
+          isOpen: true,
+          userIds: [userId],
+          count: count,
+        });
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking progress count:', error);
+    }
+
+    // Normal delete flow
+    setIsDelete({ isDeleting: true, userIds: [userId] });
+  };
+
+  const handleConfirmProgressDelete = async () => {
+    if (progressDeleteState.userIds && progressDeleteState.userIds.length > 0) {
+      if (progressDeleteState.userIds.length === 1) {
+        await deleteExistingUser(progressDeleteState.userIds[0]);
+        toast.success(t('toast.deleted-successfully'));
+      } else {
+        await deleteExistingUsers(progressDeleteState.userIds);
+        toast.success(t('toast.deleted-multiple-successfully'));
+      }
+      setProgressDeleteState({ isOpen: false, userIds: null, count: 0 });
+    }
+  };
+
   const onConfirmDelete = async () => {
     if (!isDelete.userIds || isDelete.userIds.length === 0) return;
 
@@ -95,7 +228,22 @@ export const StudentTable = () => {
       setIsDelete({ isDeleting: false, userIds: undefined });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
-      toast.error(t('toast.delete-failed'));
+      // Parse error message and translate if it's a known error code
+      let errorMessage = t('toast.delete-failed');
+      if (typeof error === 'string') {
+        try {
+          const parsed = JSON.parse(error);
+          if (parsed.code === 'MILESTONE_PROGRESS_EXISTS') {
+            errorMessage = t('toast.milestone-progress-exists', {
+              count: parsed.count,
+            });
+          }
+        } catch {
+          // Not JSON, use as-is or fallback
+          errorMessage = error || t('toast.delete-failed');
+        }
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -111,10 +259,10 @@ export const StudentTable = () => {
           setIsEdit({ isEditing: true, user: user });
         }}
         onDelete={(userId) => {
-          setIsDelete({ isDeleting: true, userIds: [userId] });
+          handleDeleteClick(userId);
         }}
         onMultiDelete={(users) => {
-          setIsDelete({ isDeleting: true, userIds: users.map((u) => u.id) });
+          handleMultiDeleteClick(users);
         }}
       />
       <CreateUserFormDialog
@@ -149,6 +297,40 @@ export const StudentTable = () => {
         translationKey="user"
         count={isDelete.userIds?.length || 0}
       />
+
+      <AlertDialog
+        open={progressDeleteState.isOpen}
+        onOpenChange={(open) => {
+          if (!open)
+            setProgressDeleteState((prev) => ({ ...prev, isOpen: false }));
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tCommon('confirm')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('dialog.confirm_delete_user_with_progress', {
+                count: progressDeleteState.count,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() =>
+                setProgressDeleteState((prev) => ({ ...prev, isOpen: false }))
+              }
+            >
+              {tCommon('cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmProgressDelete}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {tCommon('delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

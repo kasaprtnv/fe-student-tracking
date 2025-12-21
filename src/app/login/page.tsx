@@ -18,7 +18,7 @@ export default function LoginPage() {
         user?.role === 'admin' ? '/dashboard' : '/profile/' + user?.id;
       setTimeout(() => {
         router.push(pathName);
-      }, 1000);
+      });
     }
   }, [user, router]);
 

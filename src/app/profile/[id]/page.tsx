@@ -91,7 +91,6 @@ export default function ProfilePage() {
   const renderTeacherView = () => (
     <>
       <Separator className="my-6" />
-      <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
       <label className="mr-4 font-medium">teacher</label>
     </>
   );

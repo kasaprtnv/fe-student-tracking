@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
@@ -26,6 +26,14 @@ export default function Sidebar() {
   const t = useTranslations();
   const locale = useLocale();
   const { logoutUser } = useAuth();
+
+  const filteredSidebarItems = useMemo(() => {
+    if (!user?.role) return [];
+    return sidebarItems.filter((item) => {
+      if (!item.roles) return true;
+      return item.roles.includes(user.role);
+    });
+  }, [user]);
 
   const handleLogout = () => {
     logoutUser();
@@ -91,7 +99,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex flex-1 flex-col gap-2 p-2">
-        {sidebarItems.map((item, index) => {
+        {filteredSidebarItems.map((item, index) => {
           const Icon = item.icon;
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus.includes(item.title);

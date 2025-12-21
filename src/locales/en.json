@@ -4,7 +4,7 @@
     "welcomeMessage": "Welcome to the Student Tracker Application!",
     "dashboard": "Dashboard",
     "graduateList": "List Student",
-    "userManagement": "User Management",
+    "userManagement": "User",
     "studentReport": "Student Report",
     "progressVerify": "Progress Verify",
     "mergeFiles": "Merge Files",
@@ -158,7 +158,8 @@
       "student_id": "Student ID",
       "department": "Department",
       "faculty": "Faculty",
-      "degree": "Degree"
+      "degree": "Degree",
+      "polsci-law": "Political Science And Law"
     },
     "progress_title": "Graduate Progress",
     "contact_admin": "Please contact staff to enroll in a course"
@@ -414,6 +415,16 @@
     "delete-user-description": "Are you sure you want to delete this user? This action cannot be undone.",
     "delete-users-title": "Confirm Delete Multiple Users",
     "delete-users-description": "Are you sure you want to delete {count} users? This action cannot be undone.",
+    "toast": {
+      "deleted-successfully": "User deleted successfully",
+      "deleted-multiple-successfully": "Multiple users deleted successfully",
+      "delete-failed": "Failed to delete user",
+      "milestone-progress-exists": "Cannot delete: {count} student(s) have study progress records"
+    },
+    "dialog": {
+      "confirm_course_change_with_progress": "This student has {count} progress records. If you change the course, all progress data will be deleted. Do you want to proceed?",
+      "confirm_delete_user_with_progress": "This user has {count} progress records. Deleting will remove all data. Confirm?"
+    },
     "user-form": {
       "header": {
         "create": "Add User",
@@ -427,6 +438,7 @@
         "create-teacher": "Fill in the form to add a new staff member.",
         "edit": "Edit user information."
       },
+
       "label": {
         "role": "Role",
         "code": "Code",
@@ -493,7 +505,8 @@
         "degree-max": "Education level must not exceed 100 characters",
         "year-required": "Year is required",
         "year-max": "Year must not exceed 10 characters",
-        "course-required": "Course is required"
+        "course-required": "Course is required",
+        "enroll-date-required": "Enroll date is required"
       },
       "toast": {
         "created-successfully": "User created successfully",
@@ -514,8 +527,10 @@
         "no-file-selected": "Please select a file before uploading"
       },
       "toast": {
-        "import-success": "Successfully imported {count} user(s)",
+        "import-success": "Import successful",
         "import-partial": "Failed to import {failed} user(s)",
+        "import-updated": "Updated {count} user(s)",
+        "import-skipped": "Skipped {count} user(s) (no changes)",
         "import-failed": "Failed to import users",
         "template-downloaded": "Template downloaded successfully"
       }

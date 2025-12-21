@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
+import { useAuth } from '@/hooks/use-auth';
 import { TeacherTable } from './teacher-table';
 import { StudentTable } from './student-table';
 import { AllTable } from './all-table';
@@ -16,9 +18,18 @@ import { useCourse } from '@/hooks/use-course';
 
 const UserPage = () => {
   const t = useTranslations('user-page');
+  const router = useRouter();
+  const { user, initialized } = useAuth();
   const { fetchAllUsers } = useUser();
   const { fetchAllCourses } = useCourse();
   const [isImportOpen, setIsImportOpen] = React.useState(false);
+
+  useEffect(() => {
+    if (!initialized) return;
+    if (user && user.role !== 'admin') {
+      router.replace(`/profile/${user.id}`);
+    }
+  }, [user, initialized, router]);
 
   useSWR(
     'fetch-users',
@@ -35,6 +46,11 @@ const UserPage = () => {
     // Refresh user list after successful import
     await fetchAllUsers();
   };
+
+  // Don't render anything until we confirm user is admin
+  if (!initialized || !user || user.role !== 'admin') {
+    return null;
+  }
 
   return (
     <>

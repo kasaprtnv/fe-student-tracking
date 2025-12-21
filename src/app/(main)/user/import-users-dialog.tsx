@@ -29,6 +29,8 @@ interface ImportResult {
   data?: {
     success?: number;
     failed?: number;
+    skipped?: number;
+    updated?: number;
     errors?: string[];
   };
 }
@@ -181,6 +183,9 @@ export function ImportUsersDialog({
           const courseId = getCourseIdByName(String(newRow.courseName));
           if (courseId) {
             newRow.courseId = courseId;
+          } else {
+            // Store invalid course name for error reporting
+            newRow.__invalidCourseName = newRow.courseName;
           }
           delete newRow.courseName; // Remove courseName as backend expects courseId
         }
@@ -209,10 +214,9 @@ export function ImportUsersDialog({
       )) as unknown as ImportResult;
 
       if (result.success) {
-        const successCount = result.data?.success || 0;
         const failedCount = result.data?.failed || 0;
 
-        toast.success(t('toast.import-success', { count: successCount }));
+        toast.success(t('toast.import-success'));
 
         if (failedCount > 0) {
           toast.warning(t('toast.import-partial', { failed: failedCount }));
