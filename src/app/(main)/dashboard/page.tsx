@@ -1,11 +1,14 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
 import { useDashboard } from '@/hooks/use-dashboard';
+import { useAuth } from '@/hooks/use-auth';
 
 import { SummaryCards } from './summary-cards';
 import { StudentsByYearCourseChart } from './students-by-year-course-chart';
@@ -15,6 +18,21 @@ import { PageHeader } from '@/components/page-header';
 
 const DashboardPage = () => {
   const t = useTranslations('dashboard');
+  const router = useRouter();
+  const { user, initialized } = useAuth();
+
+  useEffect(() => {
+    if (!initialized) return;
+    if (user && user.role !== 'admin') {
+      router.replace(`/profile/${user.id}`);
+    }
+  }, [user, initialized, router]);
+
+  // Don't render anything until we confirm user is admin
+  if (!initialized || !user || user.role !== 'admin') {
+    return null;
+  }
+
   const { fetchStudents, studentUsers, loader: userLoader } = useUser();
   const {
     fetchAllCourses,
