@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/tooltip';
 import { getAvatarFallbackName } from '@/lib/avatar-fallback-name';
 // import { Switch } from '@/components/ui/switch';
-import { formatDate } from '@/lib/format-date';
+import { formatThaiDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import { User } from '@/types/user';
@@ -118,7 +118,7 @@ export const createCourseColumns = (
       header: 'created_at',
       cell: (info) => {
         const rawDate = info.getValue<string>();
-        const localString = formatDate(rawDate);
+        const localString = formatThaiDate(rawDate);
         return <span>{localString}</span>;
       },
     },
@@ -127,7 +127,7 @@ export const createCourseColumns = (
       header: 'updated_at',
       cell: (info) => {
         const rawDate = info.getValue<string>();
-        const localString = formatDate(rawDate);
+        const localString = formatThaiDate(rawDate);
         return <span>{localString}</span>;
       },
     },
