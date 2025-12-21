@@ -525,8 +525,10 @@
         "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด"
       },
       "toast": {
-        "import-success": "นำเข้าผู้ใช้สำเร็จ {count} คน",
+        "import-success": "นำเข้าข้อมูลสำเร็จ",
         "import-partial": "นำเข้าไม่สำเร็จ {failed} คน",
+        "import-updated": "อัพเดทข้อมูล {count} คน",
+        "import-skipped": "ข้อมูลไม่มีการเปลี่ยนแปลง {count} คน",
         "import-failed": "นำเข้าผู้ใช้ไม่สำเร็จ",
         "template-downloaded": "ดาวน์โหลดไฟล์ตัวอย่างสำเร็จ"
       }
