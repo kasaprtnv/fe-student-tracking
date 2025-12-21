@@ -58,14 +58,21 @@ export function ImportUsersDialog({
     }
   }, [open, allCourseId.length, fetchAllCourses]);
 
-  // Create courseName to courseId mapping
-  const getCourseIdByName = React.useCallback(
-    (courseName: string): string | undefined => {
-      const normalizedName = courseName.trim().toLowerCase();
+  // Create courseName/courseCode to courseId mapping
+  // Accepts either course name or course code
+  const getCourseIdByNameOrCode = React.useCallback(
+    (courseNameOrCode: string): string | undefined => {
+      const normalizedInput = courseNameOrCode.trim().toLowerCase();
       for (const courseId of allCourseId) {
         const course = courseMap[courseId];
-        if (course && course.name.toLowerCase() === normalizedName) {
-          return courseId;
+        if (course) {
+          // Match by name or code
+          if (
+            course.name.toLowerCase() === normalizedInput ||
+            course.code.toLowerCase() === normalizedInput
+          ) {
+            return courseId;
+          }
         }
       }
       return undefined;
@@ -180,7 +187,7 @@ export function ImportUsersDialog({
 
         // If courseName exists and courseId doesn't, try to find courseId
         if (newRow.courseName && !newRow.courseId) {
-          const courseId = getCourseIdByName(String(newRow.courseName));
+          const courseId = getCourseIdByNameOrCode(String(newRow.courseName));
           if (courseId) {
             newRow.courseId = courseId;
           } else {
