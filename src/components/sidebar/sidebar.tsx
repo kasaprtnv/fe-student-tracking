@@ -35,9 +35,9 @@ export default function Sidebar() {
     });
   }, [user]);
 
-  const handleLogout = () => {
-    logoutUser();
-    router.push('/login');
+  const handleLogout = async () => {
+    await logoutUser();
+    window.location.replace('/login');
   };
 
   if (hiddenRoutes.includes(pathname)) {
