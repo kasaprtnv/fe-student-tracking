@@ -6,10 +6,11 @@ import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 
 export default function LoginPage() {
-  const { loginUser, error, user } = useAuth();
+  const { loginUser, user } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -24,10 +25,17 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      await loginUser(username, password).unwrap();
-      setMessage('Login successful!');
-    } catch {
-      setMessage(error || 'Login failed');
+      const result = await loginUser(username, password).unwrap();
+      setMessage(result.message || 'Login successful');
+      if (result.success) {
+        setIsError(false);
+      } else {
+        setIsError(true);
+      }
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      setIsError(true);
+      setMessage(errorMessage);
     }
   };
 
@@ -124,7 +132,7 @@ export default function LoginPage() {
           </button>
           {message && (
             <p
-              className={`mt-4 text-center text-sm sm:mt-6 sm:text-base lg:mt-8 lg:text-lg ${message.includes('failed') ? 'text-red-500' : 'text-green-500'}`}
+              className={`mt-4 text-center text-sm sm:mt-6 sm:text-base lg:mt-8 lg:text-lg ${isError ? 'text-red-500' : 'text-green-500'}`}
             >
               {message}
             </p>
