@@ -31,3 +31,22 @@ export interface CourseState {
   loader: boolean;
   error: string | null;
 }
+
+// types/course-milestone.ts
+export interface CourseMilestoneDTO {
+  id: string;
+  courseId: string;
+  milestoneId: string;
+  position: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CourseMilestonesState {
+  // Data
+  milestonesMap: Record<string, CourseMilestoneDTO[]>; // key: courseId
+
+  // UI
+  loader: boolean;
+  error: string | null;
+}

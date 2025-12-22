@@ -50,8 +50,8 @@ export function UpdateMilestoneFormSheet({
   const {
     updateExistingMilestone,
     storeAction,
-    allMilestoneIds,
     getMilestoneById,
+    allMilestoneIds,
   } = useMilestone();
 
   const isMilestoneUsed = milestone?.isUsed;
@@ -62,7 +62,6 @@ export function UpdateMilestoneFormSheet({
       name: milestone?.name || '',
       description: milestone?.description || '',
       dayPeriod: milestone?.dayPeriod || 0,
-      notifyReceiverEmail: milestone?.notifyReceiverEmail || '',
       notifyBeforeDays: milestone?.notifyBeforeDays || 0,
     },
   });
@@ -74,7 +73,6 @@ export function UpdateMilestoneFormSheet({
       name: milestone.name ?? '',
       description: milestone.description ?? '',
       dayPeriod: milestone.dayPeriod ?? 0,
-      notifyReceiverEmail: milestone.notifyReceiverEmail ?? '',
       notifyBeforeDays: milestone.notifyBeforeDays ?? 0,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,25 +156,6 @@ export function UpdateMilestoneFormSheet({
                   <FormControl>
                     <Textarea
                       placeholder={t('placeholder.description')}
-                      {...field}
-                      disabled={isMilestoneUsed}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* notifyReceiverEmail */}
-            <FormField
-              control={form.control}
-              name="notifyReceiverEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('label.notifyReceiverEmail')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="example@mail.com"
                       {...field}
                       disabled={isMilestoneUsed}
                     />

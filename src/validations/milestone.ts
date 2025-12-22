@@ -4,9 +4,6 @@ export const createMilestoneSchema = (t: (key: string) => string) =>
   z.object({
     name: z.string().nonempty(t('errors.name-required')),
     description: z.string().optional(),
-    notifyReceiverEmail: z
-      .email()
-      .nonempty(t('errors.notifyReceiverEmail-required')),
     notifyBeforeDays: z
       .int(t('errors.notifyBeforeDays-integer'))
       .min(0, t('errors.notifyBeforeDays-min')),
@@ -19,10 +16,6 @@ export const updateMilestoneSchema = (t: (key: string) => string) =>
   z.object({
     name: z.string().nonempty(t('errors.name-required')),
     description: z.string().optional(),
-    notifyReceiverEmail: z
-      .email()
-      .nonempty(t('errors.notifyReceiverEmail-required')),
-
     notifyBeforeDays: z
       .int(t('errors.notifyBeforeDays-integer'))
       .min(0, t('errors.notifyBeforeDays-min')),

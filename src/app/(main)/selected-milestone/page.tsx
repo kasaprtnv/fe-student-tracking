@@ -56,6 +56,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import useSWR from 'swr';
 
 interface UnlockCondition {
   type: 'milestone' | 'step';
@@ -70,73 +71,155 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     getMilestoneById,
     fetchAllMilestones,
     reorderPositions,
+    fetchCourseMilestones,
+    removeCourseMilestoneFromCourse,
   } = useMilestone();
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [pendingMilestone, setPendingMilestone] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const { createMany } = useMilestonePrerequisite();
+  const { fetchAll: fetchAllPrereqs, update } = useMilestonePrerequisite();
+  const { fetchMilestoneStepsByMilestone, fetchAllMilestoneSteps } =
+    useMilestoneStep();
+
+  const { data: swrData } = useSWR(
+    `fetch-course-data-${courseId}`,
+    async () => {
+      const msResult = await fetchAllMilestones();
+      const positionResult = await fetchCourseMilestones(courseId || '');
+      const stepResult = await fetchAllMilestoneSteps();
+      const prereqRes = await fetchAllPrereqs(); // fetch prerequisite ด้วย
+      return { msResult, stepResult, prereqRes, positionResult };
+    },
+  );
 
   useEffect(() => {
-    fetchAllMilestones().then((data) => {
-      console.log('📌 Loaded milestones:', data);
+    if (!swrData) return;
+
+    const allMs = swrData.msResult?.data || [];
+    const courseMs = swrData.positionResult?.data || [];
+    const allSteps = swrData.stepResult?.data || [];
+    const allPrereqs = swrData.prereqRes?.data || [];
+
+    // Map สำหรับ position จาก courseMs
+    const positionMap = new Map(
+      courseMs.map((c) => [c.milestone.id, c.position ?? 0]),
+    );
+
+    console.log('courseMs data', courseMs);
+
+    const filteredPrereqs = allPrereqs.filter((p) => p.courseId === courseId);
+
+    // Build selectedItems
+    const selectedItemsSet = new Set<string>();
+    filteredPrereqs.forEach((p) => {
+      if (p.targetMilestoneId) selectedItemsSet.add(p.targetMilestoneId);
+      if (p.requiredMilestoneId) selectedItemsSet.add(p.requiredMilestoneId);
+
+      if (p.targetStepId) {
+        const step = allSteps.find((s) => s.id === p.targetStepId);
+        if (step?.milestoneId) selectedItemsSet.add(step.milestoneId);
+      }
+
+      if (p.requiredStepId) {
+        const step = allSteps.find((s) => s.id === p.requiredStepId);
+        if (step?.milestoneId) selectedItemsSet.add(step.milestoneId);
+      }
     });
-  }, [fetchAllMilestones]);
+
+    // Build selectedMilestones โดยเอา position จาก courseMs
+    const selectedMilestones: (IMilestone & { position: number })[] = allMs
+      .filter((m) => selectedItemsSet.has(m.id)) // เฉพาะที่เกี่ยวข้อง
+      .map((m) => ({ ...m, position: positionMap.get(m.id) ?? 0 }))
+      .sort((a, b) => a.position - b.position);
+
+    const selectedIds = selectedMilestones.map((m) => m.id); // เรียงตาม position จริง
+
+    // Build stepsByMilestone
+    const stepsMap: Record<string, IMilestoneStep[]> = {};
+    allSteps.forEach((s) => {
+      if (!stepsMap[s.milestoneId]) stepsMap[s.milestoneId] = [];
+      stepsMap[s.milestoneId].push(s);
+    });
+
+    // Build prerequisites
+    const loadedPrereqs: Record<string, UnlockCondition[]> = {};
+    const loadedLockedItems: Record<string, boolean> = {};
+
+    filteredPrereqs.forEach((p) => {
+      const targetId = p.targetMilestoneId || p.targetStepId;
+      if (!targetId) return;
+
+      const condition: UnlockCondition | null = p.requiredMilestoneId
+        ? { type: 'milestone', id: p.requiredMilestoneId }
+        : p.requiredStepId
+          ? { type: 'step', id: p.requiredStepId }
+          : null;
+
+      if (condition) {
+        if (!loadedPrereqs[targetId]) loadedPrereqs[targetId] = [];
+        loadedPrereqs[targetId].push(condition);
+        loadedLockedItems[targetId] = true;
+      }
+    });
+
+    // set state
+    setSelectedItems(selectedIds);
+    setStepsByMilestone(stepsMap);
+    setPrerequisites(loadedPrereqs);
+    setLockedItems(loadedLockedItems);
+  }, [swrData]);
 
   const milestones = allMilestoneIds
     .map((id) => getMilestoneById(id))
     .filter((ms) => ms !== undefined);
 
-  // DND sensors
   const sensors = useSensors(useSensor(PointerSensor));
 
   const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
 
-  const handleRemove = (id: string) => {
-    // เอา id ออกจาก selectedItems
-    setSelectedItems((prev) => prev.filter((x) => x !== id));
+  const handleRemove = async (milestoneId: string) => {
+    if (!courseId) return;
 
-    // แก้ทุกอย่างใน setStepsByMilestone เพื่อให้มี prevSteps ใช้งานได้
-    setStepsByMilestone((prevSteps) => {
-      const copy = { ...prevSteps };
-      const steps = copy[id] ?? [];
+    await removeCourseMilestoneFromCourse(courseId, milestoneId);
+    setSelectedItems((prev) => prev.filter((x) => x !== milestoneId));
 
-      // ==== ลบล็อคของ milestone และ steps ทั้งหมด ====
-      setLockedItems((prevLocked) => {
-        const updated = { ...prevLocked };
+    const stepIds = stepsByMilestone[milestoneId]?.map((s) => s.id) ?? [];
 
-        delete updated[id]; // ลบ lock ของ milestone
+    // ล้าง prerequisites แบบ cascade
+    setPrerequisites((prev) => {
+      const updated: typeof prev = {};
 
-        // ลบ lock ของทุก step
-        steps.forEach((s: { id: string }) => {
-          delete updated[s.id];
-        });
+      Object.entries(prev).forEach(([targetId, conds]) => {
+        // ลบ target ที่เป็น milestone นี้ หรือ step ลูกของมัน
+        if (targetId === milestoneId) return;
+        if (stepIds.includes(targetId)) return;
 
-        return updated;
-      });
+        // ลบ condition ที่อ้าง milestone หรือ step ลูก
+        const filtered = conds.filter(
+          (c) => c.id !== milestoneId && !stepIds.includes(c.id),
+        );
 
-      // ==== ลบ prerequisites ของ milestone / step ====
-      setPrerequisites((prev) => {
-        const updated: typeof prev = {};
-
-        const stepIds = steps.map((s: { id: string }) => s.id);
-
-        for (const [targetId, conds] of Object.entries(prev)) {
-          // ข้าม target ที่ถูกลบ
-          if (targetId === id) continue;
-
-          // ลบ prereq ที่เป็น milestone นี้ หรือ steps ใน milestone นี้
-          updated[targetId] = conds.filter(
-            (c) => c.id !== id && !stepIds.includes(c.id),
-          );
+        if (filtered.length > 0) {
+          updated[targetId] = filtered;
         }
-
-        return updated;
       });
 
-      // ==== ลบ steps ของ milestone นี้ ====
-      delete copy[id];
+      return updated;
+    });
 
+    // ลบ lock
+    setLockedItems((prev) => {
+      const updated = { ...prev };
+      delete updated[milestoneId];
+      stepIds.forEach((id) => delete updated[id]);
+      return updated;
+    });
+
+    // ลบ steps
+    setStepsByMilestone((prev) => {
+      const copy = { ...prev };
+      delete copy[milestoneId];
       return copy;
     });
   };
@@ -160,8 +243,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     Record<string, IMilestoneStep[]>
   >({});
 
-  const { fetchMilestoneStepsByMilestone } = useMilestoneStep();
-
   // เวลาเลือก milestone
   const handleSelect = async (id: string) => {
     if (!selectedItems.includes(id)) {
@@ -170,8 +251,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
 
     // โหลด step ของ milestone นี้
     const s = await fetchMilestoneStepsByMilestone(id);
-
-    console.log('FETCHED STEPS FOR:', id, s);
 
     // เก็บลง map
     setStepsByMilestone((prev) => ({
@@ -204,6 +283,8 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     })
     .filter((ms) => ms !== undefined);
 
+  console.log(selectedMilestonesWithSteps);
+
   const [lockModalOpen, setLockModalOpen] = useState(false);
   const [targetLock, setTargetLock] = useState<{
     type: 'milestone' | 'step';
@@ -229,6 +310,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
 
   const handleConfirmSave = async () => {
     try {
+      // 1. save position
       const positionPayload = selectedItems.map((milestoneId, index) => ({
         id: milestoneId,
         position: index + 1,
@@ -236,47 +318,78 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       }));
 
       await reorderPositions(positionPayload);
+
+      // 2. build prerequisite payload
       const dto = buildPrerequisiteDTO();
       console.log('DTO TO SEND:', dto);
 
-      await createMany(dto);
+      // 3. 🔥 sync ทั้งชุด
+      await update(courseId!, dto);
 
       setConfirmOpen(false);
-      // toast.success("บันทึกสำเร็จ");
     } catch (err) {
       console.error('Error saving prerequisites', err);
     }
   };
+
   interface PrerequisiteDTO {
     targetMilestoneId?: string;
     targetStepId?: string;
     requiredMilestoneId?: string;
     requiredStepId?: string;
-  }
-
-  function detectTargetType(targetId: string): 'milestone' | 'step' {
-    if (selectedItems.includes(targetId)) return 'milestone';
-    return 'step';
+    courseId?: string;
   }
 
   function willCauseLoop(targetId: string, requiredId: string): boolean {
     if (!targetId || !requiredId) return false;
 
-    // depth-first search
-    const visit = (current: string, visited = new Set<string>()): boolean => {
-      if (visited.has(current)) return false;
-      visited.add(current);
+    // Helper: หา ID ทั้งหมดที่อยู่ในกลุ่มเดียวกัน (Milestone + Steps ของมัน)
+    const getRelatedHierarchyIds = (id: string) => {
+      const ids = new Set<string>([id]);
+      // ถ้าเป็น Milestone ให้รวม Step ลูกทั้งหมด
+      const ms = milestones.find((m) => m.id === id);
+      if (ms) {
+        ms.steps?.forEach((s) => ids.add(s.id));
+      } else {
+        // ถ้าเป็น Step ให้รวม Milestone แม่ของมัน
+        const parentId = findMilestoneIdByStepId(id);
+        if (parentId) ids.add(parentId);
+      }
+      return ids;
+    };
 
-      const conditions = prerequisites[current];
-      if (!conditions) return false;
+    const targetRelated = getRelatedHierarchyIds(targetId);
 
-      // ถ้าพบว่า current → target = loop
-      if (conditions.some((c) => c.id === targetId)) {
-        return true;
+    const visit = (currentId: string, visited = new Set<string>()): boolean => {
+      if (visited.has(currentId)) return false;
+      visited.add(currentId);
+
+      // 1. ดึงเงื่อนไขตรงๆ ของ ID นี้
+      const directConditions = prerequisites[currentId] ?? [];
+
+      // 2. ถ้าเป็น Step ต้องดึงเงื่อนไขของ "Milestone แม่" มาเช็คด้วย (เพราะ Step ต้องรอตามแม่)
+      const parentId = findMilestoneIdByStepId(currentId);
+      const parentConditions =
+        parentId && parentId !== currentId
+          ? (prerequisites[parentId] ?? [])
+          : [];
+
+      const allPrereqs = [...directConditions, ...parentConditions];
+
+      for (const cond of allPrereqs) {
+        const condRelated = getRelatedHierarchyIds(cond.id);
+
+        // ถ้าเงื่อนไขที่เรากำลังเช็ค มีความเกี่ยวข้องกับ Target -> เกิด LOOP
+        const hasIntersection = Array.from(condRelated).some((id) =>
+          targetRelated.has(id),
+        );
+        if (hasIntersection) return true;
+
+        // ค้นหาลึกลงไปใน Graph
+        if (visit(cond.id, visited)) return true;
       }
 
-      // เดินต่อในกราฟ
-      return conditions.some((c) => visit(c.id, visited));
+      return false;
     };
 
     return visit(requiredId);
@@ -285,20 +398,42 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   const buildPrerequisiteDTO = (): PrerequisiteDTO[] => {
     const result: PrerequisiteDTO[] = [];
 
-    Object.entries(prerequisites).forEach(([targetId, conditions]) => {
-      const targetType = detectTargetType(targetId);
+    // 1️⃣ รวม target ทั้งหมด (milestone ที่เลือก + step ที่ถูก lock)
+    const targetIds = new Set<string>();
 
+    selectedItems.forEach((id) => targetIds.add(id));
+    Object.keys(prerequisites).forEach((id) => targetIds.add(id));
+
+    // 2️⃣ build DTO จากทุก target
+    targetIds.forEach((targetId) => {
+      const conditions = prerequisites[targetId] ?? [];
+      const isMilestone = selectedItems.includes(targetId);
+
+      // 🟢 milestone ที่ไม่มี condition → ส่ง target เปล่า
+      if (conditions.length === 0) {
+        if (isMilestone) {
+          result.push({
+            targetMilestoneId: targetId,
+            courseId: courseId || undefined,
+          });
+        }
+        return;
+      }
+
+      // 🔗 มี condition → ส่งตามจริง (รองรับ milestone + step)
       conditions.forEach((cond) => {
         result.push({
-          targetMilestoneId: targetType === 'milestone' ? targetId : undefined,
-          targetStepId: targetType === 'step' ? targetId : undefined,
+          targetMilestoneId: isMilestone ? targetId : undefined,
+          targetStepId: !isMilestone ? targetId : undefined,
 
           requiredMilestoneId: cond.type === 'milestone' ? cond.id : undefined,
-
           requiredStepId: cond.type === 'step' ? cond.id : undefined,
+
+          courseId: courseId || undefined,
         });
       });
     });
+
     return result;
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { IMilestone } from '@/types/milestone';
 import { useTranslations } from 'next-intl';
 
@@ -70,37 +70,38 @@ export default function UnlockConditionModal({
   const allSteps = Object.values(milestones).flatMap((m) => m.steps ?? []);
 
   const isDisabled = (type: 'milestone' | 'step', id: string) => {
-    const isAlreadySelected = selected.some((s) => s.id === id);
+    // 1. ห้ามเลือกตัวเองเป็นเงื่อนไข
+    if (id === target.id) return true;
 
+    // 2. ถ้าเรากำลังตั้งเงื่อนไขให้ Step: ห้ามเลือก Milestone แม่ของตัวเอง (ป้องกัน Loop ในตัว)
+    if (
+      target.type === 'step' &&
+      type === 'milestone' &&
+      id === target.milestoneId
+    ) {
+      return true;
+    }
+
+    // 3. เช็ค Loop ผ่านฟังก์ชันที่เราปรับปรุงใหม่ด้านบน
+    if (isLoop(id)) return true;
+
+    // 4. เช็คสถานะ Lock พื้นฐาน
     if (type === 'step') {
       const step = allSteps.find((s) => s.id === id);
       if (step?.status === 'locked') return true;
     }
 
-    if (id === target.id) return true;
-
-    if (!isAlreadySelected) {
-      if (initialSelected?.some((c) => c.id === id)) return true;
-      if (isLoop(id)) return true;
-    }
-
+    // 5. ป้องกันการเลือกซ้ำซ้อน: ถ้าเลือก Milestone แม่ไปแล้ว ไม่ต้องให้เลือก Step ในนั้นอีก
     if (type === 'step') {
       const msOfStep = milestones.find((m) =>
         (m.steps ?? []).some((s) => s.id === id),
       );
-
-      if (msOfStep) {
-        const milestoneLocked = selected.some(
-          (c) => c.type === 'milestone' && c.id === msOfStep.id,
-        );
-
-        if (milestoneLocked) return true;
+      if (
+        msOfStep &&
+        selected.some((c) => c.type === 'milestone' && c.id === msOfStep.id)
+      ) {
+        return true;
       }
-    }
-
-    if (target.type === 'step' && id === target.id) {
-      const anyMilestoneSelected = selected.some((c) => c.type === 'milestone');
-      if (anyMilestoneSelected) return true;
     }
 
     return false;
@@ -203,7 +204,7 @@ export default function UnlockConditionModal({
           </button>
 
           <button
-            className="rounded-lg bg-purple-600 px-4 py-2 text-white"
+            className="rounded-lg bg-black px-4 py-2 text-white"
             onClick={() => onSave(selected)}
           >
             {tSelectedMilestone('unlock-condition.save')}
