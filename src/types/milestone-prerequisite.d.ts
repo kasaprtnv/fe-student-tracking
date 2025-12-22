@@ -6,6 +6,7 @@ export interface IMilestonePrerequisite {
   requiredStepId?: string;
   createdAt?: string;
   updatedAt?: string;
+  courseId?: string;
 }
 
 export interface MilestonePrerequisiteState {
@@ -24,4 +25,5 @@ export interface MilestonePrerequisiteDTO {
 
   requiredMilestoneId?: string;
   requiredStepId?: string;
+  courseId?: string;
 }

@@ -11,6 +11,7 @@ import {
   IMilestonePrerequisite,
   MilestonePrerequisiteDTO,
 } from '@/types/milestone-prerequisite';
+import { UUID } from 'crypto';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -28,9 +29,9 @@ class MilestonePrerequisiteService extends APIService {
   }
 
   async getById(
-    id: string,
+    courseId: UUID,
   ): Promise<IApiGetByIdResponse<IMilestonePrerequisite>> {
-    return this.get(`/milestone-prerequisites/${id}`)
+    return this.get(`/milestone-prerequisites/${courseId}`)
       .then((res) => res?.data)
       .catch((err) => {
         throw err?.response?.data;
@@ -58,11 +59,11 @@ class MilestonePrerequisiteService extends APIService {
   }
 
   async update(
-    id: string,
-    data: Partial<IMilestonePrerequisite>,
-  ): Promise<IApiPatchResponse<IMilestonePrerequisite>> {
-    return this.patch(`/milestone-prerequisites/${id}`, data)
-      .then((res) => res?.data)
+    courseId: string,
+    data: MilestonePrerequisiteDTO[],
+  ): Promise<IApiPatchResponse<IMilestonePrerequisite[]>> {
+    return this.patch(`/milestone-prerequisites/${courseId}`, data)
+      .then((res) => res.data)
       .catch((err) => {
         throw err?.response?.data;
       });

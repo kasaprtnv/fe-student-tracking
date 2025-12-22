@@ -14,11 +14,8 @@ export type ViewMode = 'readonly' | 'upload' | 'edit';
 
 export interface IMilestone {
   id: string;
-  courseId: string;
   name: string;
   description?: string;
-  position: number;
-  notifyReceiverEmail: string;
   dayPeriod: number;
   notifyBeforeDays: number;
   isUsed: boolean;
@@ -46,7 +43,6 @@ export interface MilestoneStep {
 export interface IMilestoneCreateDTO {
   name: string;
   description?: string;
-  notifyReceiverEmail: string;
   dayPeriod: number;
   notifyBeforeDays: number;
 }
@@ -55,9 +51,28 @@ export interface MilestoneState {
   // Data
   milestoneMap: Record<string, IMilestone>;
   allMilestoneIds: string[];
+  // course-milestone
+  courseMilestones: {
+    byCourseId: Record<
+      string,
+      {
+        order: string[]; // array of courseMilestoneId
+        map: Record<string, ICourseMilestone>;
+      }
+    >;
+  };
   // UI States
   searchQuery: string;
   storeAction: StoreAction;
   loader: boolean;
   error: string | null;
+}
+
+export interface ICourseMilestone {
+  id: string;
+  courseId: string;
+  milestoneId: string;
+  position: number;
+
+  milestone: IMilestone;
 }
