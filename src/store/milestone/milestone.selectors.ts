@@ -27,8 +27,7 @@ export const selectFilteredMilestoneIds = createSelector(
     const filtered = milestones.filter(
       (milestone) =>
         milestone.name?.toLowerCase().includes(lowerSearchQuery) ||
-        milestone.description?.toLowerCase().includes(lowerSearchQuery) ||
-        milestone.notifyReceiverEmail?.toLowerCase().includes(lowerSearchQuery),
+        milestone.description?.toLowerCase().includes(lowerSearchQuery),
     );
     return filtered.map((milestone) => milestone.id);
   },
@@ -37,11 +36,6 @@ export const selectFilteredMilestoneIds = createSelector(
 export const selectAllMilestoneIds = createSelector(
   [selectMilestoneMap],
   (milestoneMap) => {
-    const sortedMilestones = Object.values(milestoneMap).sort((a, b) => {
-      const posA = a.position ?? 999999;
-      const posB = b.position ?? 999999;
-      return posA - posB;
-    });
-    return sortedMilestones.map((milestone) => milestone.id);
+    return Object.keys(milestoneMap);
   },
 );

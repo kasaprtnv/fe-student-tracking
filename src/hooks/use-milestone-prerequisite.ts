@@ -7,7 +7,7 @@ import { AppDispatch } from '@/store';
 // Thunks
 import {
   fetchAllPrerequisites,
-  fetchPrerequisiteById,
+  fetchPrerequisiteByCourseId,
   createPrerequisite,
   createManyPrerequisites,
   updatePrerequisite,
@@ -31,6 +31,7 @@ import {
   IMilestonePrerequisite,
   MilestonePrerequisiteDTO,
 } from '@/types/milestone-prerequisite';
+import { UUID } from 'crypto';
 
 export const useMilestonePrerequisite = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -56,8 +57,8 @@ export const useMilestonePrerequisite = () => {
   }, [dispatch]);
 
   const fetchById = useCallback(
-    (id: string) => {
-      return dispatch(fetchPrerequisiteById(id)).unwrap();
+    (courseId: UUID) => {
+      return dispatch(fetchPrerequisiteByCourseId(courseId)).unwrap();
     },
     [dispatch],
   );
@@ -76,9 +77,9 @@ export const useMilestonePrerequisite = () => {
     [dispatch],
   );
 
-  const updateOne = useCallback(
-    (id: string, data: Partial<IMilestonePrerequisite>) => {
-      return dispatch(updatePrerequisite({ id, data })).unwrap();
+  const update = useCallback(
+    (courseId: string, data: MilestonePrerequisiteDTO[]) => {
+      return dispatch(updatePrerequisite({ courseId, data })).unwrap();
     },
     [dispatch],
   );
@@ -119,7 +120,7 @@ export const useMilestonePrerequisite = () => {
     fetchById,
     createOne,
     createMany,
-    updateOne,
+    update,
     removeOne,
 
     // UI state

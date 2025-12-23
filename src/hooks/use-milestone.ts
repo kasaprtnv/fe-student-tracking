@@ -10,6 +10,8 @@ import {
   deleteMilestone,
   deleteMilestones,
   fetchMilestonesWithStatusByCourseId,
+  fetchMilestonesByCourseIdWithPosition,
+  removeCourseMilestone,
   reorderMilestones,
 } from '@/store/milestone/milestone.thunks';
 
@@ -84,6 +86,22 @@ export const useMilestone = () => {
     [dispatch],
   );
 
+  const fetchCourseMilestones = useCallback(
+    (courseId: string) => {
+      return dispatch(fetchMilestonesByCourseIdWithPosition(courseId)).unwrap();
+    },
+    [dispatch],
+  );
+
+  const removeCourseMilestoneFromCourse = useCallback(
+    (courseId: string, milestoneId: string) => {
+      return dispatch(
+        removeCourseMilestone({ courseId, milestoneId }),
+      ).unwrap();
+    },
+    [dispatch],
+  );
+
   const removeMilestone = useCallback(
     (id: string) => {
       return dispatch(deleteMilestone(id)).unwrap();
@@ -122,7 +140,8 @@ export const useMilestone = () => {
 
     // Methods
     getMilestoneById,
-
+    fetchCourseMilestones,
+    removeCourseMilestoneFromCourse,
     // CRUD Operations
     fetchAllMilestones,
     fetchMilestoneDetails,

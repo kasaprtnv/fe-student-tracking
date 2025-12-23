@@ -1,6 +1,10 @@
 import { milestoneService } from '@/services/milestone.service';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { IMilestone, IMilestoneCreateDTO } from '@/types/milestone';
+import {
+  IMilestone,
+  IMilestoneCreateDTO,
+  ICourseMilestone,
+} from '@/types/milestone';
 
 export const fetchMilestones = createAsyncThunk(
   'milestones/fetchAll',
@@ -100,6 +104,52 @@ export const reorderMilestones = createAsyncThunk(
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to reorder milestones');
+    }
+  },
+);
+
+export const fetchMilestonesByCourseIdWithPosition = createAsyncThunk(
+  'milestones/fetchByCourseIdWithPosition',
+  async (courseId: string, { rejectWithValue }) => {
+    try {
+      const res =
+        await milestoneService.getMilestonesByCourseIdWithPosition(courseId);
+
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue(
+        'Failed to fetch milestones by course with position',
+      );
+    }
+  },
+);
+
+export const removeCourseMilestone = createAsyncThunk(
+  'milestones/removeCourseMilestone',
+  async (
+    { courseId, milestoneId }: { courseId: string; milestoneId: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await milestoneService.removeCourseMilestone(
+        courseId,
+        milestoneId,
+      );
+
+      return { courseId, milestoneId, success: res.success };
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+
+      if (typeof err === 'string') {
+        return rejectWithValue(err);
+      }
+
+      return rejectWithValue('Remove course milestone failed');
     }
   },
 );

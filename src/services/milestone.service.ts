@@ -7,7 +7,7 @@ import {
   IApiGetByIdResponse,
 } from '@/types/index';
 import { APIService } from './api.service';
-import { IMilestone } from '@/types/milestone';
+import { IMilestone, ICourseMilestone } from '@/types/milestone';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -71,6 +71,31 @@ class MilestoneService extends APIService {
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
+      });
+  }
+
+  async getMilestonesByCourseIdWithPosition(
+    courseId: string,
+  ): Promise<IApiGetResponse<ICourseMilestone>> {
+    return this.get(`/milestones/course/${courseId}/with-position`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async removeCourseMilestone(
+    courseId: string,
+    milestoneId: string,
+  ): Promise<{ success: boolean }> {
+    return this.delete(
+      `/milestones/course/${courseId}/milestone/${milestoneId}`,
+    )
+      .then((res) => res.data)
+      .catch((error) => {
+        const message =
+          error?.response?.data?.message || error?.message || 'Unknown error';
+        throw new Error(message);
       });
   }
 

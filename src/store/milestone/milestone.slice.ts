@@ -8,12 +8,17 @@ import {
   deleteMilestone,
   deleteMilestones,
   fetchMilestonesWithStatusByCourseId,
+  fetchMilestonesByCourseIdWithPosition,
+  removeCourseMilestone,
   reorderMilestones,
 } from './milestone.thunks';
 
 const initialState: MilestoneState = {
   milestoneMap: {},
   allMilestoneIds: [],
+  courseMilestones: {
+    byCourseId: {},
+  },
   searchQuery: '',
   storeAction: 'none',
   loader: false,
@@ -139,27 +144,73 @@ const milestoneSlice = createSlice({
         state.loader = true;
         state.storeAction = 'reorder';
       })
-      .addCase(reorderMilestones.fulfilled, (state, action) => {
-        state.loader = false;
-        state.storeAction = null;
-
-        // Update local state ordering
-        const updates = action.payload.payload;
-        updates.forEach(({ id, position }) => {
-          if (state.milestoneMap[id]) {
-            state.milestoneMap[id].position = position;
-          }
-        });
-
-        state.allMilestoneIds = Object.keys(state.milestoneMap).sort((a, b) => {
-          const posA = state.milestoneMap[a].position ?? 999999;
-          const posB = state.milestoneMap[b].position ?? 999999;
-          return posA - posB;
-        });
-      })
       .addCase(reorderMilestones.rejected, (state, action) => {
         state.loader = false;
         state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchMilestonesByCourseIdWithPosition.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchMilestonesByCourseIdWithPosition.fulfilled,
+        (state, action) => {
+          state.loader = false;
+
+          const courseId = action.meta.arg;
+          const list = action.payload.data;
+
+          state.courseMilestones.byCourseId[courseId] = {
+            order: list.map((cm) => cm.id),
+            map: {},
+          };
+
+          list.forEach((cm) => {
+            state.courseMilestones.byCourseId[courseId].map[cm.id] = cm;
+
+            // cache milestone master
+            state.milestoneMap[cm.milestone.id] = cm.milestone;
+          });
+        },
+      )
+      .addCase(
+        fetchMilestonesByCourseIdWithPosition.rejected,
+        (state, action) => {
+          state.loader = false;
+          state.error =
+            action.error.message || 'Failed to fetch milestones with position';
+        },
+      );
+
+    builder
+      .addCase(removeCourseMilestone.pending, (state) => {
+        state.storeAction = 'deleting';
+        state.error = null;
+      })
+      .addCase(removeCourseMilestone.fulfilled, (state, action) => {
+        state.storeAction = 'none';
+
+        const { success } = action.payload;
+        const { courseId, milestoneId } = action.meta.arg;
+
+        if (success && state.courseMilestones.byCourseId[courseId]) {
+          state.courseMilestones.byCourseId[courseId].order =
+            state.courseMilestones.byCourseId[courseId].order.filter(
+              (id) => id !== milestoneId,
+            );
+
+          delete state.courseMilestones.byCourseId[courseId].map[milestoneId];
+        }
+      })
+
+      .addCase(removeCourseMilestone.rejected, (state, action) => {
+        state.storeAction = 'none';
+        state.error =
+          (action.payload as string) ||
+          action.error.message ||
+          'Failed to remove course milestone';
       });
 
     // Delete milestone

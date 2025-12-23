@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchAllPrerequisites,
-  fetchPrerequisiteById,
+  fetchPrerequisiteByCourseId,
   createPrerequisite,
   createManyPrerequisites,
   updatePrerequisite,
@@ -53,18 +53,18 @@ const milestonePrerequisiteSlice = createSlice({
       });
 
     builder
-      .addCase(fetchPrerequisiteById.pending, (state) => {
+      .addCase(fetchPrerequisiteByCourseId.pending, (state) => {
         state.loader = true;
         state.error = null;
       })
-      .addCase(fetchPrerequisiteById.fulfilled, (state, action) => {
+      .addCase(fetchPrerequisiteByCourseId.fulfilled, (state, action) => {
         state.loader = false;
         const item = action.payload.data;
         if (item?.id) {
           state.prerequisiteMap[item.id] = item;
         }
       })
-      .addCase(fetchPrerequisiteById.rejected, (state, action) => {
+      .addCase(fetchPrerequisiteByCourseId.rejected, (state, action) => {
         state.loader = false;
         state.error =
           (action.payload as string) || 'Failed to fetch prerequisite';
@@ -119,15 +119,18 @@ const milestonePrerequisiteSlice = createSlice({
       })
       .addCase(updatePrerequisite.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        const updated = action.payload.updatedFields;
+        state.loader = false;
 
-        if (updated.id) {
-          state.prerequisiteMap[updated.id] = {
-            ...state.prerequisiteMap[updated.id],
-            ...updated,
-          };
+        const list = action.payload.updatedFields; // ✅ ตรงนี้
+
+        state.prerequisiteMap = {};
+
+        for (const item of list) {
+          if (!item || !item.id) continue;
+          state.prerequisiteMap[item.id] = item;
         }
       })
+
       .addCase(updatePrerequisite.rejected, (state, action) => {
         state.storeAction = 'none';
         state.error =

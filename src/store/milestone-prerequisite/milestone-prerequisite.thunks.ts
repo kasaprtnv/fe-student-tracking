@@ -4,6 +4,7 @@ import {
   MilestonePrerequisiteDTO,
 } from '@/types/milestone-prerequisite';
 import { milestonePrerequisiteService } from '@/services/milestone-prerequisite.service';
+import { UUID } from 'crypto';
 
 // GET ALL
 export const fetchAllPrerequisites = createAsyncThunk(
@@ -11,6 +12,9 @@ export const fetchAllPrerequisites = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await milestonePrerequisiteService.getAll();
+      if (Array.isArray(res)) {
+        return { data: res, pageCount: res.length || 0 };
+      }
       return res;
     } catch (err: unknown) {
       return rejectWithValue(
@@ -21,11 +25,11 @@ export const fetchAllPrerequisites = createAsyncThunk(
 );
 
 // GET BY ID
-export const fetchPrerequisiteById = createAsyncThunk(
-  'prerequisite/getById',
-  async (id: string, { rejectWithValue }) => {
+export const fetchPrerequisiteByCourseId = createAsyncThunk(
+  'prerequisite/getByCourseId',
+  async (courseId: UUID, { rejectWithValue }) => {
     try {
-      const res = await milestonePrerequisiteService.getById(id);
+      const res = await milestonePrerequisiteService.getById(courseId);
       return res;
     } catch (err: unknown) {
       return rejectWithValue(
@@ -69,11 +73,17 @@ export const createManyPrerequisites = createAsyncThunk(
 export const updatePrerequisite = createAsyncThunk(
   'prerequisite/update',
   async (
-    { id, data }: { id: string; data: Partial<IMilestonePrerequisite> },
+    {
+      courseId,
+      data,
+    }: {
+      courseId: string;
+      data: MilestonePrerequisiteDTO[];
+    },
     { rejectWithValue },
   ) => {
     try {
-      const res = await milestonePrerequisiteService.update(id, data);
+      const res = await milestonePrerequisiteService.update(courseId, data);
       return res;
     } catch (err: unknown) {
       return rejectWithValue(

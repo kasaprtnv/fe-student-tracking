@@ -45,7 +45,6 @@ export function CreateMilestoneFormSheet({
     defaultValues: {
       name: '',
       description: '',
-      notifyReceiverEmail: '',
       notifyBeforeDays: 0,
       dayPeriod: 0,
     },
@@ -166,26 +165,6 @@ export function CreateMilestoneFormSheet({
 
             <FormField
               control={form.control}
-              name="notifyReceiverEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.notifyReceiverEmail')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('placeholder.notifyReceiverEmail')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="notifyBeforeDays"
               render={({ field }) => (
                 <FormItem>
@@ -220,7 +199,7 @@ export function CreateMilestoneFormSheet({
                     <Loader className="mr-2 size-4 animate-spin" />
                   )}
 
-                  {tCommon('submit')}
+                  {tCommon('save')}
                 </Button>
               </div>
             </DialogFooter>
