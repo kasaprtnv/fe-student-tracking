@@ -4,7 +4,7 @@ export type UserRole = 'admin' | 'teacher' | 'student';
 
 export interface User {
   id: string;
-  supabaseId?: string;
+  profileImageUrl?: string;
   code: string;
   title?: string;
   firstName: string;

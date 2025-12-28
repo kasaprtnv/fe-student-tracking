@@ -8,6 +8,7 @@ import {
   updateUser,
   deleteUser,
   deleteMultipleUsers,
+  uploadUserProfileImage,
 } from './user.thunks';
 import { User, UserState } from '@/types/user';
 
@@ -123,6 +124,20 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserById.rejected, (state, action) => {
         state.loader = false;
+        state.error = action.payload as string;
+      });
+
+    // Upload profile image
+    builder
+      .addCase(uploadUserProfileImage.pending, (state) => {
+        state.storeAction = 'updating';
+        state.error = null;
+      })
+      .addCase(uploadUserProfileImage.fulfilled, (state) => {
+        state.storeAction = 'none';
+      })
+      .addCase(uploadUserProfileImage.rejected, (state, action) => {
+        state.storeAction = 'none';
         state.error = action.payload as string;
       });
 

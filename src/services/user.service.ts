@@ -64,6 +64,19 @@ class UserService extends APIService {
       });
   }
 
+  async uploadProfile(
+    id: string,
+    file: File,
+  ): Promise<IApiPostResponse<{ profileUrl: string }>> {
+    const formData = new FormData();
+    formData.append('profile', file);
+    return this.post(`/users/upload-profile-image/${id}`, formData)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async createUser(data: Partial<User>): Promise<IApiPostResponse<User>> {
     // Determine allowed fields based on role
     const isTeacher = data.role === 'teacher';

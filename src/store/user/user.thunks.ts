@@ -62,6 +62,21 @@ export const fetchUserById = createAsyncThunk(
   },
 );
 
+export const uploadUserProfileImage = createAsyncThunk(
+  'users/uploadProfileImage',
+  async ({ id, file }: { id: string; file: File }, { rejectWithValue }) => {
+    try {
+      const res = await userService.uploadProfile(id, file);
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to upload profile image');
+    }
+  },
+);
+
 export const createUser = createAsyncThunk(
   'users/create',
   async (data: Partial<User>, { rejectWithValue }) => {

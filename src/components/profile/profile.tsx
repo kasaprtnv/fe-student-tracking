@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { User } from '@/types/user';
+import { UploadProfileDialog } from './upload-profile-dialog';
 
 interface ProfilePageProps {
   user: User | null;
@@ -13,6 +14,8 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({
 }) => {
   const t = useTranslations('profile');
   const role = user?.role === 'student' ? 'student' : user?.role;
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   if (isLoading) {
     return (
@@ -41,11 +44,24 @@ export const ProfileComponent: React.FC<ProfilePageProps> = ({
       </div>
       <div className="flex flex-row items-center gap-8">
         {/* Profile Image */}
-        <div>
+        <div className="relative">
           <Avatar className="h-60 w-60 bg-white">
-            <AvatarImage src="/profile.png" />
+            <AvatarImage
+              src={
+                user?.profileImageUrl
+                  ? `${API_BASE_URL}${user.profileImageUrl}`
+                  : '/profile.png'
+              }
+            />
             <AvatarFallback>{`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`}</AvatarFallback>
           </Avatar>
+          <div className="absolute right-4 bottom-4">
+            <UploadProfileDialog
+              userId={user?.id}
+              firstName={user?.firstName}
+              lastName={user?.lastName}
+            />
+          </div>
         </div>
         {/* Information */}
         <div className="flex-1">
