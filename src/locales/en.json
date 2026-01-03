@@ -671,5 +671,22 @@
       "not-graduated": "Not Graduated",
       "total": "Total"
     }
+  },
+  "merge-files": {
+    "title": "Approved Evidence Files",
+    "description": "Display all approved evidence files",
+    "loading": "Loading data...",
+    "error-loading": "Error loading data",
+    "filename": "Filename",
+    "fullname": "Full Name",
+    "email": "Email",
+    "education_level": "Education Level",
+    "grad_year": "Year",
+    "course": "Course",
+    "course_name": "Course Name",
+    "milestone_step": "Milestone Step",
+    "enroll_date": "Submit Date",
+    "actions": "Download",
+    "no-files": "No approved files"
   }
 }

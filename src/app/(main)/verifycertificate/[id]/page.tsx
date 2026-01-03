@@ -359,7 +359,7 @@ export default function VerifyDetailPage() {
                   <Button
                     onClick={handleApprove}
                     disabled={submitting}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-black hover:bg-gray-900"
                   >
                     {submitting ? <Spinner className="mr-2 h-4 w-4" /> : null}
                     {t('review.approve')}

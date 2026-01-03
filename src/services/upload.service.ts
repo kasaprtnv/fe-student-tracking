@@ -32,7 +32,6 @@ class UploadService extends APIService {
     super(API_BASE_URL);
   }
 
-  // อัปโหลดไฟล์จริงๆ พร้อมสร้าง attachment record
   async createAttachment(
     stepId: string,
     file: File,
@@ -51,11 +50,10 @@ class UploadService extends APIService {
       formData.append('file', file);
 
       const response = await fetch(
-        `${API_BASE_URL}/attachment/upload?stepId=${stepId}&userId=${uploadedByUserId}`,
+        `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`,
         {
           method: 'POST',
           body: formData,
-          // ไม่ต้องใส่ Content-Type เพราะ browser จะใส่ให้อัตโนมัติพร้อม boundary
         },
       );
 
