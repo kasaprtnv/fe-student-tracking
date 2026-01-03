@@ -26,6 +26,8 @@ export interface IStudentStepProgress {
   stepName?: string;
   fileName?: string;
   fileUrl?: string;
+  studentDegree?: string;
+  studentYear?: string;
   // Joined fields (alternative structure)
   student?: {
     id: string;
@@ -33,6 +35,8 @@ export interface IStudentStepProgress {
     firstName: string;
     lastName: string;
     courseName?: string;
+    degree?: string;
+    year?: string;
   };
   step?: {
     id: string;

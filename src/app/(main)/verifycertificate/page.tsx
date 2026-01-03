@@ -72,20 +72,34 @@ export default function VerifyCertificatePage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const params: { status?: string } = {};
-      if (statusFilter !== 'all') {
-        params.status = statusFilter;
+      // เมื่อเลือก "ทั้งหมด" ให้ดึงข้อมูลทุก status ที่เกี่ยวข้องกับการตรวจสอบ
+      if (statusFilter === 'all') {
+        const [pendingRes, approvedRes, declinedRes] = await Promise.all([
+          studentStepProgressService.getAll({ status: 'pending approval' }),
+          studentStepProgressService.getAll({ status: 'approved' }),
+          studentStepProgressService.getAll({ status: 'declined' }),
+        ]);
+        const allData = [
+          ...(pendingRes.data || []),
+          ...(approvedRes.data || []),
+          ...(declinedRes.data || []),
+        ];
+        console.log('All Data:', allData);
+        setData(allData);
+      } else {
+        const response = await studentStepProgressService.getAll({
+          status: statusFilter,
+        });
+        console.log('API Response:', response);
+        console.log('Data:', response.data);
+        if (response.data && response.data.length > 0) {
+          console.log(
+            'First item structure:',
+            JSON.stringify(response.data[0], null, 2),
+          );
+        }
+        setData(response.data || []);
       }
-      const response = await studentStepProgressService.getAll(params);
-      console.log('API Response:', response);
-      console.log('Data:', response.data);
-      if (response.data && response.data.length > 0) {
-        console.log(
-          'First item structure:',
-          JSON.stringify(response.data[0], null, 2),
-        );
-      }
-      setData(response.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -127,14 +141,26 @@ export default function VerifyCertificatePage() {
       }
     }
 
-    return matchesSearch && matchesDateRange;
+    // กรองสถานะ
+    if (statusFilter === 'all') {
+      return matchesSearch && matchesDateRange;
+    } else {
+      return matchesSearch && matchesDateRange && item.status === statusFilter;
+    }
+  });
+
+  // เรียงตามวันที่ส่ง (ใหม่สุดก่อน)
+  const sortedData = [...filteredData].sort((a, b) => {
+    const dateA = a.submittedAt ? new Date(a.submittedAt).getTime() : 0;
+    const dateB = b.submittedAt ? new Date(b.submittedAt).getTime() : 0;
+    return dateB - dateA;
   });
 
   // Pagination
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
+  const paginatedData = sortedData.slice(startIndex, endIndex);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
