@@ -109,6 +109,8 @@ export function UpdateMilestoneFormSheet({
       toast.error(t('toast.update-failed'));
     }
   };
+  const dayPeriod = form.watch('dayPeriod');
+  const notifyBeforeDays = form.watch('notifyBeforeDays');
 
   return (
     <Dialog {...props} onOpenChange={(open) => onOpenChange?.(open)}>
@@ -133,7 +135,9 @@ export function UpdateMilestoneFormSheet({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('label.name')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.name')}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder={t('placeholder.name')}
@@ -152,7 +156,9 @@ export function UpdateMilestoneFormSheet({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('label.description')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.description')}
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder={t('placeholder.description')}
@@ -171,14 +177,34 @@ export function UpdateMilestoneFormSheet({
               name="dayPeriod"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('label.dayPeriod')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.dayPeriod')}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
                       min={0}
                       disabled={isMilestoneUsed}
+                      {...field}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+
+                        if (
+                          notifyBeforeDays !== undefined &&
+                          value < notifyBeforeDays
+                        ) {
+                          form.setError('notifyBeforeDays', {
+                            type: 'manual',
+                            message: t(
+                              'errors.notifyBeforeDays-greater-than-dayPeriod',
+                            ),
+                          });
+                          return; // 🔒 lock ไม่ให้เปลี่ยนค่า
+                        }
+
+                        form.clearErrors('notifyBeforeDays');
+                        field.onChange(value); // ✅ ผ่านเท่านั้น
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -192,14 +218,31 @@ export function UpdateMilestoneFormSheet({
               name="notifyBeforeDays"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('label.notifyBeforeDays')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.notifyBeforeDays')}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
                       min={0}
                       disabled={isMilestoneUsed}
+                      {...field}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+
+                        if (dayPeriod !== undefined && value > dayPeriod) {
+                          form.setError('notifyBeforeDays', {
+                            type: 'manual',
+                            message: t(
+                              'errors.notifyBeforeDays-greater-than-dayPeriod',
+                            ),
+                          });
+                          return; // 🔒 lock
+                        }
+
+                        form.clearErrors('notifyBeforeDays');
+                        field.onChange(value); // ✅ ผ่านเท่านั้น
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

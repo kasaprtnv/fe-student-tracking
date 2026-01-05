@@ -19,8 +19,8 @@ export interface IMilestone {
   dayPeriod: number;
   notifyBeforeDays: number;
   isUsed: boolean;
-  updatedAt: Date;
-  createdAt: Date;
+  updatedAt: string | Date;
+  createdAt: string | Date;
   steps?: MilestoneStep[];
 }
 
