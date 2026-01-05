@@ -124,6 +124,7 @@ export function UpdateUserFormDialog({
         phone: user?.phone || '',
         degree: user?.degree || '',
         year: user?.year || '',
+        studyPlan: user?.studyPlan || '',
         courseId: user?.courseId || '',
         enrollDate: user?.enrollDate || '',
       };
@@ -135,6 +136,7 @@ export function UpdateUserFormDialog({
         lastName: user?.lastName || '',
         email: user?.email || '',
         phone: user?.phone || '',
+        teacherDegree: user?.teacherDegree || '',
         courseIds: [],
       };
     }
@@ -614,6 +616,29 @@ export function UpdateUserFormDialog({
                 />
               )}
 
+              {/* Student-specific field: studyPlan */}
+              {selectedRole === 'student' && (
+                <FormField
+                  control={form.control}
+                  name="studyPlan"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.study-plan')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('placeholder.study-plan')}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               {/* Student-specific field: enrollDate */}
               {selectedRole === 'student' && (
                 <FormField
@@ -630,6 +655,29 @@ export function UpdateUserFormDialog({
                           onChange={field.onChange}
                         />
                       </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Teacher-specific field: teacherDegree */}
+              {selectedRole === 'teacher' && (
+                <FormField
+                  control={form.control}
+                  name="teacherDegree"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.teacher-degree')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t('placeholder.teacher-degree')}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -137,6 +137,7 @@ export function ImportUsersDialog({
       'year',
       'courseName',
       'enrollDate',
+      'teacherDegree',
     ];
 
     // Create a worksheet with just the headers

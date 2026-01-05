@@ -113,6 +113,25 @@ export const StudentFormFields = ({
       />
       <FormField
         control={form.control}
+        name="studyPlan"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium text-gray-700">
+              {t('label.study-plan')}
+            </FormLabel>
+            <FormControl>
+              <Input
+                placeholder={t('placeholder.study-plan')}
+                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
         name="enrollDate"
         render={({ field }) => (
           <FormItem className="flex flex-col">

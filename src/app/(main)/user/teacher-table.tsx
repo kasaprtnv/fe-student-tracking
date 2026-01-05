@@ -189,6 +189,7 @@ export const TeacherTable = () => {
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
         defaultRole="teacher"
+        onUserCreated={refetchCourseStaff}
       />
       <UpdateUserFormDialog
         open={isEdit.isEditing}
