@@ -116,21 +116,25 @@ export default function FileListPage() {
   }
 
   return (
-    <div className="p-6">
+    <>
       <PageHeader
         breadcrumbs={[{ label: t('homepage.mergeFiles'), isPage: true }]}
       />
-      <h1 className="mb-2 text-2xl font-bold">{t('merge-files.title')}</h1>
-      <p className="text-muted-foreground mb-6">
-        {t('merge-files.description')}
-      </p>
-      <DataTableClickable
-        columns={createFileColumns(handleDownload, t)}
-        data={displayFiles}
-        onSearch={setSearchQuery}
-        searchQuery={searchQuery}
-        enabledPagination={true}
-      />
-    </div>
+      <div className="container mx-auto pt-2 pb-8">
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold">{t('merge-files.title')}</h1>
+          <p className="text-muted-foreground">
+            {t('merge-files.description')}
+          </p>
+        </div>
+        <DataTableClickable
+          columns={createFileColumns(handleDownload, t)}
+          data={displayFiles}
+          onSearch={setSearchQuery}
+          searchQuery={searchQuery}
+          enabledPagination={true}
+        />
+      </div>
+    </>
   );
 }
