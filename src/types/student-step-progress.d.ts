@@ -19,6 +19,8 @@ export interface IStudentStepProgress {
   dueDate?: string;
   createdAt?: string;
   updatedAt?: string;
+  // Staff attachment for decline with additional file
+  staffAttachmentId?: string;
   // Flat fields from API
   studentCode?: string;
   studentName?: string;
@@ -44,6 +46,14 @@ export interface IStudentStepProgress {
     milestoneId: string;
   };
   attachment?: {
+    id: string;
+    fileName: string;
+    fileKey?: string;
+    fileUrl?: string;
+    mimeType?: string;
+  };
+  // Staff attachment (for decline case)
+  staffAttachment?: {
     id: string;
     fileName: string;
     fileKey?: string;

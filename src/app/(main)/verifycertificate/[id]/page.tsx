@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -24,18 +24,27 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ZoomIn, ZoomOut, Download, CheckCircle2 } from 'lucide-react';
+import {
+  ZoomIn,
+  ZoomOut,
+  Download,
+  CheckCircle2,
+  Upload,
+  X,
+} from 'lucide-react';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
 import { uploadService, AttachmentDTO } from '@/services/upload.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
 import { useAuth } from '@/hooks/use-auth';
 import { Spinner } from '@/components/ui/spinner';
+import { usePendingCount } from '@/hooks/use-pending-count';
 
 export default function VerifyDetailPage() {
   const t = useTranslations('verify-certificate');
   const router = useRouter();
   const params = useParams();
   const { user } = useAuth();
+  const { refresh: refreshPendingCount } = usePendingCount();
   const id = params.id as string;
 
   const [data, setData] = useState<IStudentStepProgress | null>(null);
@@ -46,6 +55,13 @@ export default function VerifyDetailPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [zoom, setZoom] = useState(100);
+
+  // Staff attachment states
+  const [staffAttachmentFile, setStaffAttachmentFile] = useState<File | null>(
+    null,
+  );
+  const [uploadingStaffFile, setUploadingStaffFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,6 +97,7 @@ export default function VerifyDetailPage() {
     setSubmitting(true);
     try {
       await studentStepProgressService.approve(id, user.id);
+      refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.approved'));
       setShowSuccessModal(true);
     } catch (error) {
@@ -94,13 +111,52 @@ export default function VerifyDetailPage() {
     if (!user?.id || !declineReason.trim()) return;
     setSubmitting(true);
     try {
-      await studentStepProgressService.decline(id, user.id, declineReason);
+      let staffAttachmentId: string | undefined;
+
+      // Upload staff attachment if exists
+      if (staffAttachmentFile) {
+        setUploadingStaffFile(true);
+        const uploadResult = await uploadService.uploadStaffAttachment(
+          id,
+          staffAttachmentFile,
+          user.id,
+        );
+        if (uploadResult.success && uploadResult.data?.id) {
+          staffAttachmentId = uploadResult.data.id;
+        }
+        setUploadingStaffFile(false);
+      }
+
+      await studentStepProgressService.decline(
+        id,
+        user.id,
+        declineReason,
+        staffAttachmentId,
+      );
+      refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.declined'));
       setShowSuccessModal(true);
     } catch (error) {
       console.error('Error declining:', error);
     } finally {
       setSubmitting(false);
+      setUploadingStaffFile(false);
+    }
+  };
+
+  // Handle staff file selection
+  const handleStaffFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setStaffAttachmentFile(file);
+    }
+  };
+
+  // Remove selected staff file
+  const removeStaffFile = () => {
+    setStaffAttachmentFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -347,13 +403,63 @@ export default function VerifyDetailPage() {
                     {declineReason.length}/50
                   </p>
                 </div>
+
+                {/* Staff Attachment Upload */}
+                <div>
+                  <Label>{t('review.staff_attachment')}</Label>
+                  <div
+                    className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-gray-400"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {staffAttachmentFile ? (
+                      <div className="flex w-full items-center justify-between rounded-md bg-gray-50 p-3">
+                        <span className="truncate text-sm">
+                          {staffAttachmentFile.name}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeStaffFile();
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="mb-2 h-8 w-8 text-gray-400" />
+                        <p className="text-center text-sm text-gray-500">
+                          {t('review.click_to_upload')}
+                        </p>
+                        <p className="mt-1 text-xs text-gray-400">
+                          PDF, docx, PNG
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.docx,.png,.jpg,.jpeg"
+                    className="hidden"
+                    onChange={handleStaffFileChange}
+                  />
+                </div>
+
                 <div className="flex justify-end gap-3">
                   <Button
                     variant="outline"
                     onClick={handleDecline}
-                    disabled={submitting || !declineReason.trim()}
+                    disabled={
+                      submitting || uploadingStaffFile || !declineReason.trim()
+                    }
                   >
-                    {submitting ? <Spinner className="mr-2 h-4 w-4" /> : null}
+                    {submitting || uploadingStaffFile ? (
+                      <Spinner className="mr-2 h-4 w-4" />
+                    ) : null}
                     {t('review.decline')}
                   </Button>
                   <Button

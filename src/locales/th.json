@@ -186,7 +186,10 @@
     "confirm": "ยืนยัน",
     "submit_success_title": "ส่งสำเร็จ",
     "submit_success_description": "ไฟล์ของคุณถูกส่งเรียบร้อยแล้ว",
-    "ok": "ตกลง"
+    "ok": "ตกลง",
+    "student_attachment_label": "เอกสารที่แนบส่งมา",
+    "decline_reason_label": "เหตุผลในการปฏิเสธ",
+    "staff_attachment_label": "ไฟล์เพิ่มเติมจากเจ้าหน้าที่"
   },
   "milestone": {
     "title": "ขั้นตอนการศึกษา",
@@ -599,7 +602,9 @@
       "decline_reason": "เหตุผลที่ไม่อนุมัติ",
       "decline_reason_placeholder": "กรุณาระบุเหตุผลให้ชัดเจน",
       "approve": "อนุมัติ",
-      "decline": "ไม่อนุมัติ"
+      "decline": "ไม่อนุมัติ",
+      "staff_attachment": "แนบไฟล์เอกสารเพิ่มเติม (กรณีแก้ไข/ไม่อนุมัติ)",
+      "click_to_upload": "คลิกเพื่ออัปโหลด หรือลากวางไฟล์มาวาง"
     },
     "success": {
       "title": "สำเร็จ",

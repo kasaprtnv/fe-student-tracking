@@ -9,8 +9,10 @@ export const usePendingCount = () => {
       return response?.data?.length || 0;
     },
     {
-      refreshInterval: 30000,
+      refreshInterval: 5000,
       revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+      dedupingInterval: 2000,
     },
   );
 

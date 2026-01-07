@@ -186,7 +186,10 @@
     "confirm": "Confirm",
     "submit_success_title": "Submission Successful",
     "submit_success_description": "Your file has been submitted successfully.",
-    "ok": "OK"
+    "ok": "OK",
+    "student_attachment_label": "Submitted Document",
+    "decline_reason_label": "Reason for Decline",
+    "staff_attachment_label": "Additional File from Staff"
   },
   "milestone": {
     "title": "Milestones",
@@ -600,7 +603,9 @@
       "decline_reason": "Decline Reason",
       "decline_reason_placeholder": "Please specify the reason",
       "approve": "Approve",
-      "decline": "Decline"
+      "decline": "Decline",
+      "staff_attachment": "Attach Additional Document (for revision/decline)",
+      "click_to_upload": "Click to upload or drag and drop"
     },
     "success": {
       "title": "Success",
