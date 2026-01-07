@@ -474,7 +474,8 @@
         "no-course-found": "No course found",
         "search-year": "Search year...",
         "no-year-found": "No year found",
-        "study-plan": "Enter study plan (e.g., A, B, C)"
+        "study-plan": "Enter study plan",
+        "teacher-degree": "Type teacher degree"
       },
       "role": {
         "student": "Student",
@@ -511,7 +512,8 @@
         "year-required": "Year is required",
         "year-max": "Year must not exceed 10 characters",
         "course-required": "Course is required",
-        "enroll-date-required": "Enroll date is required"
+        "enroll-date-required": "Enroll date is required",
+        "study-plan-required": "Study plan is required"
       },
       "toast": {
         "created-successfully": "User created successfully",

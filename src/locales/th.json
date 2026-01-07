@@ -472,7 +472,7 @@
         "no-course-found": "ไม่พบหลักสูตร",
         "search-year": "ค้นหาปีการศึกษา...",
         "no-year-found": "ไม่พบปีการศึกษา",
-        "study-plan": "กรอกแผนการเรียน เช่น ก, ข",
+        "study-plan": "กรอกแผนการเรียน",
         "teacher-degree": "ระบุวุฒิการศึกษา"
       },
       "role": {
@@ -510,7 +510,8 @@
         "year-required": "กรุณากรอกปี",
         "year-max": "ปีต้องไม่เกิน 10 ตัวอักษร",
         "course-required": "กรุณาเลือกหลักสูตร",
-        "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน"
+        "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน",
+        "study-plan-required": "กรุณากรอกแผนการเรียน"
       },
       "toast": {
         "created-successfully": "เพิ่มผู้ใช้สำเร็จ",

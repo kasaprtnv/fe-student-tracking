@@ -40,7 +40,7 @@ const studentSchema = (t: (key: string) => string) =>
       .string()
       .min(1, t('errors.year-required'))
       .max(10, t('errors.year-max')),
-    studyPlan: z.string().optional(),
+    studyPlan: z.string().min(1, t('errors.study-plan-required')),
     courseId: z.string().min(1, t('errors.course-required')),
     enrollDate: z.string().min(1, t('errors.enroll-date-required')),
   });
