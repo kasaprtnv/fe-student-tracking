@@ -124,26 +124,27 @@ export function ImportUsersDialog({
   };
 
   const handleDownloadTemplate = () => {
-    // Define the headers for the template
+    // Define the headers for the template (Thai)
     const headers = [
-      'email',
-      'title',
-      'firstName',
-      'lastName',
-      'phone',
-      'role',
-      'code',
-      'degree',
-      'year',
-      'courseName',
-      'enrollDate',
+      'อีเมล',
+      'คำนำหน้า',
+      'ชื่อ',
+      'นามสกุล',
+      'เบอร์โทร',
+      'บทบาท',
+      'รหัส',
+      'ระดับการศึกษา',
+      'ปีการศึกษา',
+      'ชื่อหลักสูตร/รหัสหลักสูตร',
+      'วันที่ลงทะเบียน',
+      'วุฒิการศึกษาอาจารย์',
     ];
 
     // Create a worksheet with just the headers
     const worksheet = XLSX.utils.aoa_to_sheet([headers]);
 
     // Set column widths for better readability
-    worksheet['!cols'] = headers.map(() => ({ wch: 15 }));
+    worksheet['!cols'] = headers.map(() => ({ wch: 20 }));
 
     // Create a workbook and add the worksheet
     const workbook = XLSX.utils.book_new();
@@ -172,16 +173,33 @@ export function ImportUsersDialog({
       const jsonData =
         XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
-      // Map courseName to courseId if courseName exists
+      // Thai to English header mapping
+      const thaiToEnglishMap: Record<string, string> = {
+        อีเมล: 'email',
+        คำนำหน้า: 'title',
+        ชื่อ: 'firstName',
+        นามสกุล: 'lastName',
+        เบอร์โทร: 'phone',
+        บทบาท: 'role',
+        รหัส: 'code',
+        ระดับการศึกษา: 'degree',
+        ปีการศึกษา: 'year',
+        'ชื่อหลักสูตร/รหัสหลักสูตร': 'courseName',
+        วันที่ลงทะเบียน: 'enrollDate',
+        วุฒิการศึกษาอาจารย์: 'teacherDegree',
+      };
+
+      // Map courseName to courseId and convert Thai keys to English
       const processedData = jsonData.map((row) => {
         const newRow: Record<string, unknown> = {};
 
-        // Trim all string values to remove whitespace/tabs
+        // Convert Thai keys to English and trim all string values
         for (const [key, value] of Object.entries(row)) {
+          const englishKey = thaiToEnglishMap[key] || key;
           if (typeof value === 'string') {
-            newRow[key] = value.trim();
+            newRow[englishKey] = value.trim();
           } else {
-            newRow[key] = value;
+            newRow[englishKey] = value;
           }
         }
 

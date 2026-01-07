@@ -15,6 +15,8 @@ export interface User {
   degree?: string;
   major?: string;
   year?: string;
+  studyPlan?: string;
+  teacherDegree?: string;
   courseId?: string;
   courseName?: string;
   enrollDate?: string;

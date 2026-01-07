@@ -78,6 +78,11 @@ export const createAllStudentColumns = (
       },
     },
     {
+      header: t('teacher-degree'),
+      accessorKey: 'teacherDegree',
+      cell: ({ row }) => row.original.teacherDegree || '-',
+    },
+    {
       header: t('year'),
       accessorKey: 'year',
       cell: ({ row }) => row.original.year || '-',
@@ -86,6 +91,11 @@ export const createAllStudentColumns = (
       header: t('course-name'),
       accessorKey: 'courseName',
       cell: ({ row }) => row.original.courseName || '-',
+    },
+    {
+      header: t('study-plan'),
+      accessorKey: 'studyPlan',
+      cell: ({ row }) => row.original.studyPlan || '-',
     },
     {
       id: 'enrollDate',

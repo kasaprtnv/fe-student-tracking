@@ -40,6 +40,7 @@ const studentSchema = (t: (key: string) => string) =>
       .string()
       .min(1, t('errors.year-required'))
       .max(10, t('errors.year-max')),
+    studyPlan: z.string().min(1, t('errors.study-plan-required')),
     courseId: z.string().min(1, t('errors.course-required')),
     enrollDate: z.string().min(1, t('errors.enroll-date-required')),
   });
@@ -48,6 +49,7 @@ const studentSchema = (t: (key: string) => string) =>
 const teacherSchema = (t: (key: string) => string) =>
   baseSchema(t).extend({
     role: z.literal('teacher'),
+    teacherDegree: z.string().optional(),
     courseIds: z.array(z.string()).optional(),
   });
 
@@ -73,5 +75,7 @@ export interface UserFormValues {
   code?: string;
   degree?: string;
   year?: string;
+  studyPlan?: string;
+  teacherDegree?: string;
   enrollDate?: string;
 }

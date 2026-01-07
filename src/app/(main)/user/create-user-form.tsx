@@ -37,6 +37,7 @@ interface CreateUserFormDialogProps {
   onOpenChange: (open: boolean) => void;
   courseOptions: SelectOption[];
   defaultRole?: UserRole;
+  onUserCreated?: () => void;
 }
 
 export function CreateUserFormDialog({
@@ -44,6 +45,7 @@ export function CreateUserFormDialog({
   onOpenChange,
   courseOptions,
   defaultRole = 'student',
+  onUserCreated,
 }: CreateUserFormDialogProps) {
   const t = useTranslations('user.user-form');
   const tCommon = useTranslations('common');
@@ -74,6 +76,7 @@ export function CreateUserFormDialog({
         code: '',
         degree: '',
         year: '',
+        studyPlan: '',
         enrollDate: '',
       }),
     } as UserFormValues,
@@ -94,6 +97,7 @@ export function CreateUserFormDialog({
           phone: '',
           degree: '',
           year: '',
+          studyPlan: '',
           courseId: '',
           enrollDate: '',
         });
@@ -105,6 +109,7 @@ export function CreateUserFormDialog({
           lastName: '',
           email: '',
           phone: '',
+          teacherDegree: '',
           courseId: '',
         });
       }
@@ -127,6 +132,7 @@ export function CreateUserFormDialog({
         phone: currentValues.phone || '',
         degree: '',
         year: '',
+        studyPlan: '',
         courseId: '',
         enrollDate: '',
       });
@@ -189,6 +195,7 @@ export function CreateUserFormDialog({
       setSelectedRole(defaultRole);
       onOpenChange(false);
       toast.success(t('toast.created-successfully'));
+      onUserCreated?.();
     } catch (error: unknown) {
       console.error('Error creating user:', error);
 

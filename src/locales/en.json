@@ -65,7 +65,9 @@
     "course": "Course",
     "academic-year": "Academic Year",
     "degree": "Degree",
-    "managed-courses": "Managed Courses"
+    "study-plan": "Study Plan",
+    "managed-courses": "Managed Courses",
+    "teacher-degree": "Degree"
   },
   "common": {
     "submit": "Submit",
@@ -449,16 +451,18 @@
         "role": "Role",
         "code": "Code",
         "student-course": "Enroll Course",
-        "teacher-course": "Responsible Courses",
+        "teacher-course": "Responsibility Course (Can select multiple)",
         "title": "Title",
         "first-name": "First Name",
         "last-name": "Last Name",
         "email": "Email",
         "phone": "Phone",
         "degree": "Education Level",
-        "year": "Year",
+        "year": "Academic Year",
         "enroll-date": "Enroll Date",
-        "is-active": "Is Active"
+        "is-active": "Is Active",
+        "study-plan": "Study Plan",
+        "teacher-degree": "Type your degree"
       },
       "placeholder": {
         "role": "Select role",
@@ -475,7 +479,9 @@
         "search-course": "Search course...",
         "no-course-found": "No course found",
         "search-year": "Search year...",
-        "no-year-found": "No year found"
+        "no-year-found": "No year found",
+        "study-plan": "Enter study plan",
+        "teacher-degree": "Type teacher degree"
       },
       "role": {
         "student": "Student",
@@ -512,7 +518,8 @@
         "year-required": "Year is required",
         "year-max": "Year must not exceed 10 characters",
         "course-required": "Course is required",
-        "enroll-date-required": "Enroll date is required"
+        "enroll-date-required": "Enroll date is required",
+        "study-plan-required": "Study plan is required"
       },
       "toast": {
         "created-successfully": "User created successfully",

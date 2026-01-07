@@ -37,8 +37,12 @@ export const createTeacherColumns = (
     },
     {
       header: t('phone'),
-      accessorKey: 'phone',
       cell: ({ row }) => formatPhoneNumber(row.original.phone),
+    },
+    {
+      header: t('teacher-degree'),
+      accessorKey: 'teacherDegree',
+      cell: ({ row }) => row.original.teacherDegree || '-',
     },
     {
       header: t('managed-courses'),

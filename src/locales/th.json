@@ -65,7 +65,9 @@
     "course": "หลักสูตร",
     "academic-year": "ปีการศึกษา",
     "degree": "วุฒิการศึกษา",
-    "managed-courses": "ดูแลหลักสูตร"
+    "study-plan": "แผนการเรียน",
+    "managed-courses": "ดูแลหลักสูตร",
+    "teacher-degree": "วุฒิการศึกษา"
   },
   "common": {
     "submit": "ส่ง",
@@ -442,7 +444,6 @@
         "create-teacher": "กรอกข้อมูลเพื่อเพิ่มอาจารย์ใหม่",
         "edit": "แก้ไขข้อมูลผู้ใช้งาน"
       },
-
       "label": {
         "role": "บทบาท",
         "code": "รหัส",
@@ -457,7 +458,9 @@
         "year": "ปีการศึกษา",
         "enroll-date": "วันที่ลงทะเบียน",
         "is-active": "สถานะการใช้งาน",
-        "course": "หลักสูตร"
+        "course": "หลักสูตร",
+        "study-plan": "แผนการเรียน",
+        "teacher-degree": "วุฒิการศึกษา"
       },
       "placeholder": {
         "role": "เลือกประเภทผู้ใช้",
@@ -474,7 +477,9 @@
         "search-course": "ค้นหาหลักสูตร...",
         "no-course-found": "ไม่พบหลักสูตร",
         "search-year": "ค้นหาปีการศึกษา...",
-        "no-year-found": "ไม่พบปีการศึกษา"
+        "no-year-found": "ไม่พบปีการศึกษา",
+        "study-plan": "กรอกแผนการเรียน",
+        "teacher-degree": "ระบุวุฒิการศึกษา"
       },
       "role": {
         "student": "นักศึกษา",
@@ -511,7 +516,8 @@
         "year-required": "กรุณากรอกปี",
         "year-max": "ปีต้องไม่เกิน 10 ตัวอักษร",
         "course-required": "กรุณาเลือกหลักสูตร",
-        "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน"
+        "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน",
+        "study-plan-required": "กรุณากรอกแผนการเรียน"
       },
       "toast": {
         "created-successfully": "เพิ่มผู้ใช้สำเร็จ",

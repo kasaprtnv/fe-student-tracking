@@ -74,6 +74,11 @@ export const createStudentColumns = (
       cell: ({ row }) => row.original.courseName || '-',
     },
     {
+      header: t('study-plan'),
+      accessorKey: 'studyPlan',
+      cell: ({ row }) => row.original.studyPlan || '-',
+    },
+    {
       id: 'enrollDate',
       header: t('enroll-date'),
       accessorKey: 'enrollDate',
