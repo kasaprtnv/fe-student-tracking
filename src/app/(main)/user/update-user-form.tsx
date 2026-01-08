@@ -581,9 +581,16 @@ export function UpdateUserFormDialog({
                   render={({ field }) => {
                     // Generate years from current year back 5 years (in Buddhist Era)
                     const currentYear = new Date().getFullYear() + 543;
-                    const years = Array.from({ length: 5 }, (_, i) =>
+                    const generatedYears = Array.from({ length: 5 }, (_, i) =>
                       (currentYear - i).toString(),
                     );
+                    // Include user's existing year if not in the list
+                    const years =
+                      field.value && !generatedYears.includes(field.value)
+                        ? [...generatedYears, field.value].sort(
+                            (a, b) => Number(b) - Number(a),
+                          )
+                        : generatedYears;
 
                     return (
                       <FormItem>
