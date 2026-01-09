@@ -654,6 +654,8 @@
       "total-students": "นักศึกษาทั้งหมด",
       "total-teachers": "อาจารย์",
       "total-courses": "หลักสูตรทั้งหมด",
+      "students-in-courses": "นักศึกษาทั้งหมดในหลักสูตร",
+      "managed-courses": "ดูแลหลักสูตรทั้งหมด",
       "unit-people": "คน",
       "unit-courses": "หลักสูตร"
     },

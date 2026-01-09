@@ -658,6 +658,8 @@
       "total-students": "Total Students",
       "total-teachers": "Teachers",
       "total-courses": "Total Courses",
+      "students-in-courses": "Students in My Courses",
+      "managed-courses": "Managed Courses",
       "unit-people": "people",
       "unit-courses": "courses"
     },

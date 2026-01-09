@@ -26,7 +26,7 @@ export const sidebarItems: SidebarItem[] = [
     title: 'homepage.dashboard',
     icon: LayoutDashboard,
     route: '/dashboard',
-    roles: ['admin'],
+    roles: ['admin', 'teacher'],
   },
   {
     title: 'student-page.title',
