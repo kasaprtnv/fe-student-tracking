@@ -22,7 +22,6 @@ import {
 import {
   CheckCircle2,
   Circle,
-  Upload,
   ChevronDown,
   Calendar,
   Paperclip,
@@ -40,6 +39,7 @@ import { IMilestone, ViewMode } from '@/types/milestone';
 import { useLocale, useTranslations } from 'next-intl';
 import { Spinner } from '../ui/spinner';
 import { uploadService } from '@/services/upload.service';
+import { UploadFileDialog } from './upload-file-dialog';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
@@ -96,7 +96,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [pendingStepId, setPendingStepId] = useState<string | null>(null);
-  const allowedFileTypes = '.pdf,.docx';
   const stepDeadlineMap = useMemo(() => {
     if (!enrollDate) return {};
     const map: Record<string, Date> = {};
@@ -139,21 +138,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       ...prev,
       [milestoneId]: !prev[milestoneId],
     }));
-  };
-
-  const handleFileChange = (
-    stepId: string,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setInternalFiles((prev) => ({ ...prev, [stepId]: file }));
-      setInternalFileNames((prev) => ({ ...prev, [stepId]: file.name }));
-
-      if (onFileUpload) {
-        onFileUpload(stepId, file);
-      }
-    }
   };
 
   const openConfirmModal = (stepId: string) => {
@@ -266,7 +250,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
               )}
 
               {/* Milestone Number Badge */}
-              <div className="bg-primary absolute top-0 left-0 z-10 flex h-[60px] w-[60px] items-center justify-center rounded-2xl bg-red-800 text-xl font-bold text-white shadow-lg">
+              <div className="absolute top-0 left-0 z-10 flex h-[60px] w-[60px] items-center justify-center rounded-2xl bg-red-800 text-xl font-bold text-white shadow-lg">
                 {index + 1}
               </div>
 
@@ -409,10 +393,23 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                     )}
                                   </div>
 
-                                  <p className="text-muted-foreground mb-2 text-sm">
-                                    {step.description}
-                                  </p>
-
+                                  <div className="mb-2 flex flex-row items-center gap-6">
+                                    <p className="text-muted-foreground text-sm">
+                                      {step.description}
+                                    </p>
+                                    {/* Upload Button */}
+                                    {mode === 'upload' &&
+                                      step.requiresAttachment &&
+                                      (available || declined) && (
+                                        <div>
+                                          <UploadFileDialog
+                                            step={step}
+                                            isUploading={isUploading}
+                                            onFileUpload={onFileUpload}
+                                          />
+                                        </div>
+                                      )}
+                                  </div>
                                   <div className="text-muted-foreground flex items-center gap-4 text-xs">
                                     <div className="flex items-center gap-1">
                                       <Calendar className="h-3 w-3" />
@@ -452,78 +449,32 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       </Badge>
                                     )}
                                   </div>
-
-                                  {/* Upload Button */}
                                   {mode === 'upload' &&
                                     step.requiresAttachment &&
                                     (available || declined) && (
-                                      <div className="mt-3">
+                                      <div className="mt-2 flex justify-end">
                                         <Button
-                                          variant="outline"
-                                          size="sm"
-                                          disabled={isUploading?.[step.id]}
+                                          className="text-white"
+                                          disabled={
+                                            (!uploadedFiles?.[step.id] &&
+                                              !internalFiles[step.id]) ||
+                                            isSubmitting?.[step.id] ||
+                                            internalSubmitting[step.id]
+                                          }
                                           onClick={() =>
-                                            document
-                                              .getElementById(`file-${step.id}`)
-                                              ?.click()
+                                            openConfirmModal(step.id)
                                           }
                                         >
-                                          {isUploading?.[step.id] ? (
-                                            <Spinner className="mr-2 h-4 w-4" />
+                                          {isSubmitting?.[step.id] ||
+                                          internalSubmitting[step.id] ? (
+                                            <>
+                                              <Spinner className="mr-2 h-4 w-4" />
+                                              {t('submitting')}
+                                            </>
                                           ) : (
-                                            <Upload className="mr-2 h-4 w-4" />
+                                            t('submit_button')
                                           )}
-                                          {isUploading?.[step.id]
-                                            ? t('uploading')
-                                            : t('upload_button')}
                                         </Button>
-                                        <input
-                                          id={`file-${step.id}`}
-                                          type="file"
-                                          accept={allowedFileTypes}
-                                          onChange={(e) =>
-                                            handleFileChange(step.id, e)
-                                          }
-                                          className="hidden"
-                                        />
-                                        <p className="text-muted-foreground mt-1 text-xs">
-                                          {t('accept_file_type')}
-                                          {' : '}
-                                          {allowedFileTypes}
-                                        </p>
-                                        {(uploadedFiles?.[step.id] ||
-                                          internalFileNames[step.id]) && (
-                                          <p className="mt-1 text-xs text-green-700">
-                                            {t('uploaded_file')}
-                                            {' : '}
-                                            {uploadedFiles?.[step.id] ||
-                                              internalFileNames[step.id]}
-                                          </p>
-                                        )}
-                                        <div className="mt-2 flex justify-end">
-                                          <Button
-                                            className="bg-green-600 text-white hover:bg-green-700"
-                                            disabled={
-                                              (!uploadedFiles?.[step.id] &&
-                                                !internalFiles[step.id]) ||
-                                              isSubmitting?.[step.id] ||
-                                              internalSubmitting[step.id]
-                                            }
-                                            onClick={() =>
-                                              openConfirmModal(step.id)
-                                            }
-                                          >
-                                            {isSubmitting?.[step.id] ||
-                                            internalSubmitting[step.id] ? (
-                                              <>
-                                                <Spinner className="mr-2 h-4 w-4" />
-                                                {t('submitting')}
-                                              </>
-                                            ) : (
-                                              t('submit_button')
-                                            )}
-                                          </Button>
-                                        </div>
                                       </div>
                                     )}
                                 </div>

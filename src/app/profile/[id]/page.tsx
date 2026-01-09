@@ -4,13 +4,15 @@ import { useTranslations } from 'next-intl';
 import { Separator } from '@/components/ui/separator';
 import MilestoneComponent from '@/components/milestone-progress/milestone-progress';
 import { useEffect, useState, useCallback } from 'react';
-import { ProfileComponent } from '@/components/profile/profile';
+import { ProfileStudentComponent } from '@/components/profile/profile-student';
 import { UploadedFilesMap, ViewMode } from '@/types/milestone';
 import { useMilestone } from '@/hooks/use-milestone';
 import { useAuth } from '@/hooks/use-auth';
 import useSWR from 'swr';
 import { useParams, useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/use-user';
+import { PageHeader } from '@/components/page-header';
+import { ProfileTeacherComponent } from '@/components/profile/profile-teacher';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
@@ -88,16 +90,26 @@ export default function ProfilePage() {
     </>
   );
 
-  const renderTeacherView = () => (
-    <>
-      <Separator className="my-6" />
-      <label className="mr-4 font-medium">teacher</label>
-    </>
-  );
-
   return (
     <div>
-      <ProfileComponent user={profileUser ?? null} isLoading={!initialized} />
+      <PageHeader
+        breadcrumbs={[{ label: t('personal_information.title'), isPage: true }]}
+      />
+      {/* Student */}
+      {profileUser?.role === 'student' && (
+        <ProfileStudentComponent
+          user={profileUser ?? null}
+          isLoading={!initialized}
+        />
+      )}
+
+      {/* Teacher */}
+      {profileUser?.role === 'teacher' && (
+        <ProfileTeacherComponent
+          user={profileUser ?? null}
+          isLoading={!initialized}
+        />
+      )}
 
       {/* Admin - no progress */}
       {profileUser?.role === 'admin' && null}
@@ -114,9 +126,6 @@ export default function ProfilePage() {
 
       {/* Student with course */}
       {profileUser?.role === 'student' && profileCourseId && renderMilestones()}
-
-      {/* Teacher */}
-      {profileUser?.role === 'teacher' && renderTeacherView()}
     </div>
   );
 }
