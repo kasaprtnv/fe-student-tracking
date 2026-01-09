@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
@@ -43,24 +43,28 @@ const DashboardPage = () => {
   const [teacherCourseIds, setTeacherCourseIds] = useState<string[]>([]);
   const [teacherCoursesLoaded, setTeacherCoursesLoaded] = useState(false);
 
-  // Fetch teacher's managed courses
-  const fetchTeacherCourses = useCallback(async () => {
-    if (user?.role === 'teacher' && user.id) {
-      try {
-        const response = await fetchCourseStaffByUser(user.id);
-        const courseIds = response.data.map(
-          (cs: { courseId: string }) => cs.courseId,
-        );
-        setTeacherCourseIds(courseIds);
-      } catch (error) {
-        console.error('Failed to fetch teacher courses:', error);
-        setTeacherCourseIds([]);
+  // Fetch teacher's managed courses when user is loaded
+  useEffect(() => {
+    const fetchTeacherCourses = async () => {
+      if (!user || !initialized) return;
+
+      if (user.role === 'teacher' && user.id) {
+        try {
+          const response = await fetchCourseStaffByUser(user.id);
+          const courseIds = response.data.map(
+            (cs: { courseId: string }) => cs.courseId,
+          );
+          setTeacherCourseIds(courseIds);
+        } catch (error) {
+          console.error('Failed to fetch teacher courses:', error);
+          setTeacherCourseIds([]);
+        }
       }
       setTeacherCoursesLoaded(true);
-    } else if (user?.role === 'admin') {
-      setTeacherCoursesLoaded(true);
-    }
-  }, [user, fetchCourseStaffByUser]);
+    };
+
+    fetchTeacherCourses();
+  }, [user, initialized, fetchCourseStaffByUser]);
 
   useSWR(
     'fetch-dashboard-data',
@@ -68,7 +72,6 @@ const DashboardPage = () => {
       await fetchStudents();
       await fetchAllCourses();
       await fetchStats();
-      await fetchTeacherCourses();
     },
     {
       revalidateOnFocus: false,
@@ -137,6 +140,7 @@ const DashboardPage = () => {
           totalTeachers={totalTeachers}
           totalCourses={totalCourses}
           isLoading={isLoading}
+          userRole={user.role}
         />
 
         {/* Charts Grid */}
