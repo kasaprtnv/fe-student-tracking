@@ -607,7 +607,9 @@
       "student_name": "Submitted By",
       "step": "Step",
       "submit_date": "Submit Date",
-      "reason": "Reason"
+      "reason": "Reason",
+      "decline_reason": "Decline Reason",
+      "staff_attachment": "Attached Document"
     },
     "review": {
       "title": "Review Submission",
