@@ -604,7 +604,9 @@
       "student_name": "ชื่อผู้ส่ง",
       "step": "หัวข้อที่ดำเนินการ",
       "submit_date": "วันที่ส่ง",
-      "reason": "เหตุผล"
+      "reason": "เหตุผล",
+      "decline_reason": "เหตุผลในการปฏิเสธ",
+      "staff_attachment": "เอกสารที่แนบมา"
     },
     "review": {
       "title": "ตรวจสอบการดำเนินการ",

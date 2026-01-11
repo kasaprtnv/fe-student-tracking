@@ -71,12 +71,10 @@ class StudentStepProgressService extends APIService {
     id: string,
     reviewedBy: string,
     declineReason: string,
-    staffAttachmentId?: string,
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
     return this.patch(`/student-step-progress/${id}/decline`, {
       reviewedBy,
       declineReason,
-      staffAttachmentId,
     })
       .then((response) => response?.data)
       .catch((error) => {

@@ -49,6 +49,9 @@ export default function VerifyDetailPage() {
 
   const [data, setData] = useState<IStudentStepProgress | null>(null);
   const [attachment, setAttachment] = useState<AttachmentDTO | null>(null);
+  const [staffAttachment, setStaffAttachment] = useState<AttachmentDTO | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [declineReason, setDeclineReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -72,12 +75,31 @@ export default function VerifyDetailPage() {
         console.log('Detail API Response:', response);
         setData(response.data);
 
-        // ดึงไฟล์แนบ
+        // ดึงไฟล์แนบทั้งหมด
         try {
           const attachments = await uploadService.getAttachmentsByProgress(id);
           console.log('Attachments:', attachments);
+
           if (attachments && attachments.length > 0) {
-            setAttachment(attachments[0]); // ใช้ไฟล์แรก
+            // หา attachment ที่ student ส่งมา (ไฟล์แรกที่ไม่ใช่ staff upload)
+            const studentAttachment =
+              attachments.find(
+                (att) => att.uploadedByUserId === response.data?.studentId,
+              ) || attachments[0];
+            setAttachment(studentAttachment);
+
+            // หา staff attachment (ไฟล์ที่ staff upload - uploadedByUserId ไม่ใช่ student)
+            if (
+              response.data?.status === 'declined' &&
+              attachments.length > 1
+            ) {
+              const staffAtt = attachments.find(
+                (att) => att.uploadedByUserId !== response.data?.studentId,
+              );
+              if (staffAtt) {
+                setStaffAttachment(staffAtt);
+              }
+            }
           }
         } catch (attachError) {
           console.error('Error fetching attachments:', attachError);
@@ -111,28 +133,34 @@ export default function VerifyDetailPage() {
     if (!user?.id || !declineReason.trim()) return;
     setSubmitting(true);
     try {
-      let staffAttachmentId: string | undefined;
-
-      // Upload staff attachment if exists
-      if (staffAttachmentFile) {
+      // Upload staff attachment if exists - ใช้ stepId จาก data
+      if (staffAttachmentFile && data) {
         setUploadingStaffFile(true);
-        const uploadResult = await uploadService.uploadStaffAttachment(
-          id,
-          staffAttachmentFile,
-          user.id,
-        );
-        if (uploadResult.success && uploadResult.data?.id) {
-          staffAttachmentId = uploadResult.data.id;
+        try {
+          // ใช้ stepId จาก data เพื่อ upload attachment
+          const stepId = data.stepId || data.step?.id;
+          if (stepId) {
+            const uploadResult = await uploadService.uploadStaffAttachment(
+              stepId,
+              staffAttachmentFile,
+              user.id,
+            );
+            if (!uploadResult.success) {
+              console.warn(
+                'Staff attachment upload failed:',
+                uploadResult.error,
+              );
+            }
+          } else {
+            console.warn('No stepId found, skipping staff attachment upload');
+          }
+        } catch (uploadError) {
+          console.warn('Staff attachment upload error:', uploadError);
         }
         setUploadingStaffFile(false);
       }
 
-      await studentStepProgressService.decline(
-        id,
-        user.id,
-        declineReason,
-        staffAttachmentId,
-      );
+      await studentStepProgressService.decline(id, user.id, declineReason);
       refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.declined'));
       setShowSuccessModal(true);
@@ -478,17 +506,64 @@ export default function VerifyDetailPage() {
           {/* Already Reviewed */}
           {data.status !== 'pending approval' && (
             <Card>
-              <CardContent className="py-6 text-center">
-                <p className="text-muted-foreground">
+              <CardHeader>
+                <CardTitle>
                   {data.status === 'approved'
                     ? t('already_approved')
                     : t('already_declined')}
-                </p>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Staff Attachment - เอกสารที่แนบมา */}
+                {(staffAttachment || data.staffAttachment) && (
+                  <div>
+                    <Label className="text-muted-foreground">
+                      {t('detail.staff_attachment')}
+                    </Label>
+                    <div className="mt-2 flex items-center justify-between rounded-lg border bg-gray-50 p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">
+                          {staffAttachment?.fileName ||
+                            data.staffAttachment?.fileName ||
+                            'Document'}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => {
+                          const fileKey =
+                            staffAttachment?.fileKey ||
+                            staffAttachment?.fileUrl ||
+                            data.staffAttachment?.fileKey ||
+                            data.staffAttachment?.fileUrl;
+                          if (fileKey) {
+                            window.open(
+                              uploadService.getFileUrl(fileKey),
+                              '_blank',
+                            );
+                          }
+                        }}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Decline Reason - เหตุผลในการปฏิเสธ */}
                 {data.declineReason && (
-                  <p className="mt-2 text-sm">
-                    <span className="font-medium">{t('detail.reason')}:</span>{' '}
-                    {data.declineReason}
-                  </p>
+                  <div>
+                    <Label className="text-red-500">
+                      {t('detail.decline_reason')}
+                    </Label>
+                    <div className="mt-2 rounded-lg border border-red-200 bg-red-50 p-3">
+                      <p className="text-sm text-red-700">
+                        {data.declineReason}
+                      </p>
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>

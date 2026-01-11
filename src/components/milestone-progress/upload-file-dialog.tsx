@@ -54,16 +54,23 @@ export const UploadFileDialog = ({
   // สำหรับลบไฟล์ที่เลือก
   const handleRemoveFile = () => {
     setFile(null);
-    setInternalFiles((prev) => {
-      const newFiles = { ...prev };
-      delete newFiles[step.id];
-      return newFiles;
-    });
-    setInternalFileNames((prev) => {
-      const newNames = { ...prev };
-      delete newNames[step.id];
-      return newNames;
-    });
+  };
+
+  // เมื่อกดปุ่มอัปโหลด
+  const handleUpload = () => {
+    if (file && onFileUpload) {
+      onFileUpload(step.id, file);
+      setFile(null);
+      setOpen(false);
+    }
+  };
+
+  // เมื่อปิด dialog ให้ reset file
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      setFile(null);
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -78,7 +85,7 @@ export const UploadFileDialog = ({
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <Upload className="h-4 w-4" />
@@ -137,7 +144,13 @@ export const UploadFileDialog = ({
           <DialogClose asChild>
             <Button variant="outline">ยกเลิก</Button>
           </DialogClose>
-          <Button type="submit">อัปโหลด</Button>
+          <Button
+            type="button"
+            onClick={handleUpload}
+            disabled={!file || isUploading?.[step.id]}
+          >
+            {isUploading?.[step.id] ? 'กำลังอัปโหลด...' : 'อัปโหลด'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

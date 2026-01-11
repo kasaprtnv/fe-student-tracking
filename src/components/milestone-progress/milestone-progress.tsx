@@ -405,8 +405,23 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           <UploadFileDialog
                                             step={step}
                                             isUploading={isUploading}
-                                            onFileUpload={onFileUpload}
+                                            onFileUpload={(stepId, file) => {
+                                              setInternalFiles((prev) => ({
+                                                ...prev,
+                                                [stepId]: file,
+                                              }));
+                                              setInternalFileNames((prev) => ({
+                                                ...prev,
+                                                [stepId]: file.name,
+                                              }));
+                                              onFileUpload?.(stepId, file);
+                                            }}
                                           />
+                                          {internalFileNames[step.id] && (
+                                            <span className="ml-2 text-sm text-green-600">
+                                              ✓ {internalFileNames[step.id]}
+                                            </span>
+                                          )}
                                         </div>
                                       )}
                                   </div>

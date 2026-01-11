@@ -144,7 +144,7 @@ class UploadService extends APIService {
 
   // อัพโหลดไฟล์แนบสำหรับ staff (กรณีปฏิเสธพร้อมแนบไฟล์)
   async uploadStaffAttachment(
-    progressId: string,
+    stepId: string,
     file: File,
     uploadedByUserId: string,
   ): Promise<UploadResponse> {
@@ -159,8 +159,9 @@ class UploadService extends APIService {
       const formData = new FormData();
       formData.append('file', file);
 
+      // ใช้ endpoint upload-by-step เหมือน attachment ปกติ
       const response = await fetch(
-        `${API_BASE_URL}/attachment/upload-staff?progressId=${progressId}&userId=${uploadedByUserId}`,
+        `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`,
         {
           method: 'POST',
           body: formData,
