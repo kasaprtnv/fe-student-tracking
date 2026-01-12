@@ -5,6 +5,7 @@ import {
 } from '@/types/index';
 import { APIService } from './api.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
+import { StudentStepAttempts } from '@/types/student-step-attempts';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -49,6 +50,20 @@ class StudentStepProgressService extends APIService {
   ): Promise<IApiGetByIdResponse<IStudentStepProgress>> {
     return this.get(`/student-step-progress/${id}`)
       .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async getAttemptsByUserId(
+    userId: string,
+  ): Promise<IApiGetResponse<StudentStepAttempts>> {
+    return this.get(`/student-step-progress/${userId}/attempts`)
+      .then((response) => {
+        console.log(response);
+
+        return response?.data;
+      })
       .catch((error) => {
         throw error?.response?.data;
       });

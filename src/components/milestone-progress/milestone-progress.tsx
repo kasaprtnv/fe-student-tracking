@@ -28,6 +28,9 @@ import {
   Lock,
   Unlock,
   TrendingUp,
+  File,
+  Upload,
+  Download,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -40,9 +43,13 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Spinner } from '../ui/spinner';
 import { uploadService } from '@/services/upload.service';
 import { UploadFileDialog } from './upload-file-dialog';
+import { StudentStepAttempts } from '@/types/student-step-attempts';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
+  stepAttempts: StudentStepAttempts[];
   mode?: ViewMode;
   enrollDate?: string;
   onFileUpload?: (stepId: string, file: File) => void;
@@ -68,6 +75,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   milestones,
   mode = 'readonly',
   onFileUpload,
+  stepAttempts,
   onSubmit,
   onSubmitSuccess,
   onToggleLock,
@@ -84,6 +92,17 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const [openMilestones, setOpenMilestones] = useState<Record<string, boolean>>(
     () => Object.fromEntries(milestones.map((m) => [m.id, true])),
   );
+  console.log(stepAttempts);
+  const attemptMap = useMemo(() => {
+    const map: Record<string, StudentStepAttempts> = {};
+    stepAttempts.forEach((attempt) => {
+      const stepId = attempt.stepProgress.mileStoneStepId;
+      if (!map[stepId] || attempt.attemptNo > map[stepId].attemptNo) {
+        map[stepId] = attempt;
+      }
+    });
+    return map;
+  }, [stepAttempts]);
 
   const [internalFiles, setInternalFiles] = useState<Record<string, File>>({});
   const [internalFileNames, setInternalFileNames] = useState<
@@ -334,8 +353,8 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             className={cn(
                               'border-2 transition-colors',
                               completed && 'border-green-200 bg-green-50',
-                              declined && 'border-red-200 bg-red-50',
-                              pending && 'border-yellow-200 bg-yellow-50',
+                              declined && 'border-red-200',
+                              pending && 'border-yellow-200',
                               locked &&
                                 'border-muted bg-muted text-muted-foreground opacity-70',
                             )}
@@ -462,6 +481,37 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         <Lock className="mr-1 h-3 w-3" />
                                         {t('locked')}
                                       </Badge>
+                                    )}
+                                  </div>
+                                  <div>
+                                    {/* Attachment Preview */}
+                                    {attemptMap[step.id] && declined && (
+                                      <>
+                                        {attemptMap[step.id]
+                                          .staffAttachment && (
+                                          <>
+                                            <div className="mt-3 font-bold">
+                                              {t('file_attachment')}
+                                            </div>
+                                            <div className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4">
+                                              <File className="mr-2" />
+                                              {
+                                                attemptMap[step.id]
+                                                  .staffAttachment?.fileName
+                                              }
+                                              <div className="ml-auto">
+                                                <Download className="hover:cursor-pointer" />
+                                              </div>
+                                            </div>
+                                          </>
+                                        )}
+                                        <div className="mt-3 font-bold text-red-500">
+                                          {t('reason_for_decline')}
+                                        </div>
+                                        <div className="mt-3 h-24 w-1/2 rounded-2xl border p-4">
+                                          {attemptMap[step.id].staffComment}
+                                        </div>
+                                      </>
                                     )}
                                   </div>
                                   {mode === 'upload' &&
