@@ -26,10 +26,12 @@ class StudentStepProgressService extends APIService {
   async getAll(params?: {
     status?: string;
     stepId?: string;
+    studentId?: string;
   }): Promise<IApiGetResponse<IStudentStepProgress>> {
     const queryParams = new URLSearchParams();
     if (params?.status) queryParams.append('status', params.status);
     if (params?.stepId) queryParams.append('stepId', params.stepId);
+    if (params?.studentId) queryParams.append('studentId', params.studentId);
 
     const queryString = queryParams.toString();
     return this.get(

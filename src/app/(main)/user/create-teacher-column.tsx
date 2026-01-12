@@ -1,4 +1,5 @@
 import { User } from '@/types/user';
+import { ITitle } from '@/types/title';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { ColumnDef } from '@tanstack/react-table';
 import {
@@ -20,14 +21,17 @@ interface ColumnActions {
 
 export const createTeacherColumns = (
   t: (key: string) => string,
+  titleMap: Record<string, ITitle>,
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
       header: t('full-name'),
       accessorFn: (row) => {
-        const titleName = `${row.title || ''}${row.firstName || ''}`.trim();
+        const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
+        const firstName = row.firstName || '';
         const lastName = row.lastName || '';
-        return `${titleName} ${lastName}`.trim() || '-';
+        const fullName = `${titleName}${firstName} ${lastName}`.trim();
+        return fullName || '-';
       },
     },
     {
@@ -37,8 +41,12 @@ export const createTeacherColumns = (
     },
     {
       header: t('phone'),
-      accessorKey: 'phone',
       cell: ({ row }) => formatPhoneNumber(row.original.phone),
+    },
+    {
+      header: t('teacher-degree'),
+      accessorKey: 'teacherDegree',
+      cell: ({ row }) => row.original.teacherDegree || '-',
     },
     {
       header: t('managed-courses'),

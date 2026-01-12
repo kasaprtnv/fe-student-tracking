@@ -141,6 +141,64 @@ class UploadService extends APIService {
       };
     }
   }
+
+  // อัพโหลดไฟล์แนบสำหรับ staff (กรณีปฏิเสธพร้อมแนบไฟล์)
+  async uploadStaffAttachment(
+    stepId: string,
+    file: File,
+    uploadedByUserId: string,
+  ): Promise<UploadResponse> {
+    if (!uploadedByUserId) {
+      return {
+        success: false,
+        error: 'User ID is required. Please make sure you are logged in.',
+      };
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // ใช้ endpoint upload-by-step เหมือน attachment ปกติ
+      const response = await fetch(
+        `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Upload failed');
+      }
+
+      const data = await response.json();
+      return {
+        success: true,
+        data: data.data || data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Upload failed',
+      };
+    }
+  }
+
+  // ดึง staff attachment ตาม progressId
+  async getStaffAttachmentByProgress(
+    progressId: string,
+  ): Promise<AttachmentDTO | null> {
+    try {
+      const response = await this.get(
+        `/attachment/staff-progress/${progressId}`,
+      );
+      return response.data || null;
+    } catch {
+      return null;
+    }
+  }
 }
 
 export const uploadService = new UploadService();

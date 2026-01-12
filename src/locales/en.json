@@ -65,7 +65,9 @@
     "course": "Course",
     "academic-year": "Academic Year",
     "degree": "Degree",
-    "managed-courses": "Managed Courses"
+    "study-plan": "Study Plan",
+    "managed-courses": "Managed Courses",
+    "teacher-degree": "Degree"
   },
   "common": {
     "submit": "Submit",
@@ -151,17 +153,57 @@
       "confirm": "Are you sure you want to delete this course? This action cannot be undone."
     }
   },
+  "title": {
+    "page-title": "Title Prefix",
+    "sub_title": "Manage your title prefixes here.",
+    "title-form": {
+      "errors": {
+        "name-required": "Title name is required",
+        "name-duplicate": "Title name already exists"
+      },
+      "label": {
+        "name": "Title Name"
+      },
+      "placeholder": {
+        "name": "Enter title name"
+      },
+      "toast": {
+        "created-successfully": "Title created successfully!",
+        "creation-failed": "Failed to create title. Please try again.",
+        "updated-successfully": "Title updated successfully!",
+        "update-failed": "Failed to update title. Please try again.",
+        "deleted-successfully": "Title deleted successfully!",
+        "deletion-failed": "Failed to delete title. Please try again."
+      },
+      "header": {
+        "create": "Create New Title",
+        "edit": "Edit Title"
+      },
+      "header_description": {
+        "create": "Fill out the form below to create a new title.",
+        "edit": "Update the title details below."
+      }
+    },
+    "delete": {
+      "header": "Delete Title",
+      "confirm": "Are you sure you want to delete this title? This action cannot be undone."
+    }
+  },
   "profile": {
     "personal_information": {
       "title": "Personal Information",
       "name": "Name",
       "email": "Email",
+      "phone": "Phone",
       "address": "Address",
       "year": "Year of Enrollment",
       "student_id": "Student ID",
-      "department": "Department",
+      "major": "Department",
       "faculty": "Faculty",
       "degree": "Degree",
+      "teacher_position": "Academic Position",
+      "academic_position": "Academic Position",
+      "education": "Education",
       "polsci-law": "Political Science And Law"
     },
     "progress_title": "Graduate Progress",
@@ -186,7 +228,12 @@
     "confirm": "Confirm",
     "submit_success_title": "Submission Successful",
     "submit_success_description": "Your file has been submitted successfully.",
-    "ok": "OK"
+    "ok": "OK",
+    "student_attachment_label": "Submitted Document",
+    "decline_reason_label": "Reason for Decline",
+    "staff_attachment_label": "Additional File from Staff",
+    "decline_reason": "Decline Reason",
+    "download": "Download"
   },
   "milestone": {
     "title": "Milestones",
@@ -446,16 +493,18 @@
         "role": "Role",
         "code": "Code",
         "student-course": "Enroll Course",
-        "teacher-course": "Responsible Courses",
+        "teacher-course": "Responsibility Course (Can select multiple)",
         "title": "Title",
         "first-name": "First Name",
         "last-name": "Last Name",
         "email": "Email",
         "phone": "Phone",
         "degree": "Education Level",
-        "year": "Year",
+        "year": "Academic Year",
         "enroll-date": "Enroll Date",
-        "is-active": "Is Active"
+        "is-active": "Is Active",
+        "study-plan": "Study Plan",
+        "teacher-degree": "Type your degree"
       },
       "placeholder": {
         "role": "Select role",
@@ -472,7 +521,9 @@
         "search-course": "Search course...",
         "no-course-found": "No course found",
         "search-year": "Search year...",
-        "no-year-found": "No year found"
+        "no-year-found": "No year found",
+        "study-plan": "Enter study plan",
+        "teacher-degree": "Type teacher degree"
       },
       "role": {
         "student": "Student",
@@ -509,7 +560,8 @@
         "year-required": "Year is required",
         "year-max": "Year must not exceed 10 characters",
         "course-required": "Course is required",
-        "enroll-date-required": "Enroll date is required"
+        "enroll-date-required": "Enroll date is required",
+        "study-plan-required": "Study plan is required"
       },
       "toast": {
         "created-successfully": "User created successfully",
@@ -593,14 +645,18 @@
       "student_name": "Submitted By",
       "step": "Step",
       "submit_date": "Submit Date",
-      "reason": "Reason"
+      "reason": "Reason",
+      "decline_reason": "Decline Reason",
+      "staff_attachment": "Attached Document"
     },
     "review": {
       "title": "Review Submission",
       "decline_reason": "Decline Reason",
       "decline_reason_placeholder": "Please specify the reason",
       "approve": "Approve",
-      "decline": "Decline"
+      "decline": "Decline",
+      "staff_attachment": "Attach Additional Document (for revision/decline)",
+      "click_to_upload": "Click to upload or drag and drop"
     },
     "success": {
       "title": "Success",
@@ -646,6 +702,8 @@
       "total-students": "Total Students",
       "total-teachers": "Teachers",
       "total-courses": "Total Courses",
+      "students-in-courses": "Students in My Courses",
+      "managed-courses": "Managed Courses",
       "unit-people": "people",
       "unit-courses": "courses"
     },

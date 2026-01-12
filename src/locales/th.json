@@ -65,7 +65,9 @@
     "course": "หลักสูตร",
     "academic-year": "ปีการศึกษา",
     "degree": "วุฒิการศึกษา",
-    "managed-courses": "ดูแลหลักสูตร"
+    "study-plan": "แผนการเรียน",
+    "managed-courses": "ดูแลหลักสูตร",
+    "teacher-degree": "วุฒิการศึกษา"
   },
   "common": {
     "submit": "ส่ง",
@@ -151,17 +153,56 @@
       "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบหลักสูตรนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
     }
   },
+  "title": {
+    "page-title": "คำนำหน้า",
+    "sub_title": "จัดการคำนำหน้า",
+    "title-form": {
+      "errors": {
+        "name-required": "กรุณากรอกชื่อคำนำหน้า",
+        "name-duplicate": "ชื่อคำนำหน้านี้มีอยู่แล้ว"
+      },
+      "label": {
+        "name": "ชื่อคำนำหน้า"
+      },
+      "placeholder": {
+        "name": "กรอกชื่อคำนำหน้า"
+      },
+      "toast": {
+        "created-successfully": "สร้างคำนำหน้าสำเร็จ!",
+        "creation-failed": "ไม่สามารถสร้างคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
+        "updated-successfully": "อัปเดตคำนำหน้าสำเร็จ!",
+        "update-failed": "ไม่สามารถอัปเดตคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
+        "deleted-successfully": "ลบคำนำหน้าสำเร็จ!",
+        "deletion-failed": "ไม่สามารถลบคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง"
+      },
+      "header": {
+        "create": "สร้างคำนำหน้าใหม่",
+        "edit": "แก้ไขคำนำหน้า"
+      },
+      "header_description": {
+        "create": "กรอกแบบฟอร์มด้านล่างเพื่อสร้างคำนำหน้าใหม่",
+        "edit": "อัปเดตรายละเอียดคำนำหน้าด้านล่าง"
+      }
+    },
+    "delete": {
+      "header": "ลบคำนำหน้า",
+      "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบคำนำหน้านี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+    }
+  },
   "profile": {
     "personal_information": {
-      "title": "ข้อมูลส่วนตัว",
+      "title": "รายละเอียดข้อมูลส่วนตัว",
       "name": "ชื่อ-นามสกุล",
       "email": "อีเมล",
       "phone": "เบอร์โทรศัพท์",
       "year": "ปีที่เข้าศึกษา",
       "student_id": "รหัสนักศึกษา",
-      "department": "สาขาวิชา",
+      "major": "สาขาวิชา",
       "faculty": "คณะ",
-      "degree": "หลักสูตร",
+      "course": "หลักสูตร",
+      "teacher_position": "อาจารย์ประจำหลักสูตร",
+      "academic_position": "ตำแหน่งทางวิชาการ",
+      "degree": "วุฒิการศึกษา",
       "polsci-law": "รัฐศาสตร์และนิติศาสตร์"
     },
     "progress_title": "ความคืบหน้าของนักศึกษา",
@@ -186,7 +227,12 @@
     "confirm": "ยืนยัน",
     "submit_success_title": "ส่งสำเร็จ",
     "submit_success_description": "ไฟล์ของคุณถูกส่งเรียบร้อยแล้ว",
-    "ok": "ตกลง"
+    "ok": "ตกลง",
+    "student_attachment_label": "เอกสารที่แนบส่งมา",
+    "decline_reason_label": "เหตุผลในการปฏิเสธ",
+    "staff_attachment_label": "ไฟล์เพิ่มเติมจากเจ้าหน้าที่",
+    "decline_reason": "เหตุผลที่ปฏิเสธ",
+    "download": "ดาวน์โหลด"
   },
   "milestone": {
     "title": "ขั้นตอนการศึกษา",
@@ -439,7 +485,6 @@
         "create-teacher": "กรอกข้อมูลเพื่อเพิ่มอาจารย์ใหม่",
         "edit": "แก้ไขข้อมูลผู้ใช้งาน"
       },
-
       "label": {
         "role": "บทบาท",
         "code": "รหัส",
@@ -454,7 +499,9 @@
         "year": "ปีการศึกษา",
         "enroll-date": "วันที่ลงทะเบียน",
         "is-active": "สถานะการใช้งาน",
-        "course": "หลักสูตร"
+        "course": "หลักสูตร",
+        "study-plan": "แผนการเรียน",
+        "teacher-degree": "วุฒิการศึกษา"
       },
       "placeholder": {
         "role": "เลือกประเภทผู้ใช้",
@@ -471,7 +518,9 @@
         "search-course": "ค้นหาหลักสูตร...",
         "no-course-found": "ไม่พบหลักสูตร",
         "search-year": "ค้นหาปีการศึกษา...",
-        "no-year-found": "ไม่พบปีการศึกษา"
+        "no-year-found": "ไม่พบปีการศึกษา",
+        "study-plan": "กรอกแผนการเรียน",
+        "teacher-degree": "ระบุวุฒิการศึกษา"
       },
       "role": {
         "student": "นักศึกษา",
@@ -508,7 +557,8 @@
         "year-required": "กรุณากรอกปี",
         "year-max": "ปีต้องไม่เกิน 10 ตัวอักษร",
         "course-required": "กรุณาเลือกหลักสูตร",
-        "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน"
+        "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน",
+        "study-plan-required": "กรุณากรอกแผนการเรียน"
       },
       "toast": {
         "created-successfully": "เพิ่มผู้ใช้สำเร็จ",
@@ -592,14 +642,18 @@
       "student_name": "ชื่อผู้ส่ง",
       "step": "หัวข้อที่ดำเนินการ",
       "submit_date": "วันที่ส่ง",
-      "reason": "เหตุผล"
+      "reason": "เหตุผล",
+      "decline_reason": "เหตุผลในการปฏิเสธ",
+      "staff_attachment": "เอกสารที่แนบมา"
     },
     "review": {
       "title": "ตรวจสอบการดำเนินการ",
       "decline_reason": "เหตุผลที่ไม่อนุมัติ",
       "decline_reason_placeholder": "กรุณาระบุเหตุผลให้ชัดเจน",
       "approve": "อนุมัติ",
-      "decline": "ไม่อนุมัติ"
+      "decline": "ไม่อนุมัติ",
+      "staff_attachment": "แนบไฟล์เอกสารเพิ่มเติม (กรณีแก้ไข/ไม่อนุมัติ)",
+      "click_to_upload": "คลิกเพื่ออัปโหลด หรือลากวางไฟล์มาวาง"
     },
     "success": {
       "title": "สำเร็จ",
@@ -643,6 +697,8 @@
       "total-students": "นักศึกษาทั้งหมด",
       "total-teachers": "อาจารย์",
       "total-courses": "หลักสูตรทั้งหมด",
+      "students-in-courses": "นักศึกษาทั้งหมดในหลักสูตร",
+      "managed-courses": "ดูแลหลักสูตรทั้งหมด",
       "unit-people": "คน",
       "unit-courses": "หลักสูตร"
     },

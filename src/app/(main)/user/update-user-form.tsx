@@ -46,6 +46,7 @@ import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
+import { useTitle } from '@/hooks/use-title';
 import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useSWRConfig } from 'swr';
 import { toast } from 'sonner';
@@ -82,7 +83,15 @@ export function UpdateUserFormDialog({
   const { updateExistingUser, storeAction, userMap, getStudentProgressCount } =
     useUser();
   const { fetchAllCourses, updateExistingCourse, getCourseById } = useCourse();
+  const { titleMap, allTitleId, fetchAllTitles } = useTitle();
   const { mutate } = useSWRConfig();
+
+  // Fetch titles when dialog opens
+  React.useEffect(() => {
+    if (open && allTitleId.length === 0) {
+      fetchAllTitles();
+    }
+  }, [open, allTitleId.length, fetchAllTitles]);
 
   // Check if email already exists (excluding current user)
   const isEmailExists = (email: string): boolean => {
@@ -116,7 +125,7 @@ export function UpdateUserFormDialog({
     if (userRole === 'student') {
       return {
         role: 'student',
-        title: user?.title || '',
+        titleId: user?.titleId || '',
         code: user?.code || '',
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
@@ -124,17 +133,19 @@ export function UpdateUserFormDialog({
         phone: user?.phone || '',
         degree: user?.degree || '',
         year: user?.year || '',
+        studyPlan: user?.studyPlan || '',
         courseId: user?.courseId || '',
         enrollDate: user?.enrollDate || '',
       };
     } else {
       return {
         role: 'teacher',
-        title: user?.title || '',
+        titleId: user?.titleId || '',
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
         email: user?.email || '',
         phone: user?.phone || '',
+        teacherDegree: user?.teacherDegree || '',
         courseIds: [],
       };
     }
@@ -384,19 +395,32 @@ export function UpdateUserFormDialog({
               <div className="grid grid-cols-2 items-start gap-4">
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="titleId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
                         {t('label.title')}
                       </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t('placeholder.title')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          {...field}
-                        />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <SelectValue placeholder={t('placeholder.title')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {allTitleId.map((id) => {
+                            const title = titleMap[id];
+                            return (
+                              <SelectItem key={id} value={id}>
+                                {title?.name || id}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -579,9 +603,16 @@ export function UpdateUserFormDialog({
                   render={({ field }) => {
                     // Generate years from current year back 5 years (in Buddhist Era)
                     const currentYear = new Date().getFullYear() + 543;
-                    const years = Array.from({ length: 5 }, (_, i) =>
+                    const generatedYears = Array.from({ length: 5 }, (_, i) =>
                       (currentYear - i).toString(),
                     );
+                    // Include user's existing year if not in the list
+                    const years =
+                      field.value && !generatedYears.includes(field.value)
+                        ? [...generatedYears, field.value].sort(
+                            (a, b) => Number(b) - Number(a),
+                          )
+                        : generatedYears;
 
                     return (
                       <FormItem>
@@ -614,6 +645,29 @@ export function UpdateUserFormDialog({
                 />
               )}
 
+              {/* Student-specific field: studyPlan */}
+              {selectedRole === 'student' && (
+                <FormField
+                  control={form.control}
+                  name="studyPlan"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.study-plan')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('placeholder.study-plan')}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               {/* Student-specific field: enrollDate */}
               {selectedRole === 'student' && (
                 <FormField
@@ -630,6 +684,29 @@ export function UpdateUserFormDialog({
                           onChange={field.onChange}
                         />
                       </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Teacher-specific field: teacherDegree */}
+              {selectedRole === 'teacher' && (
+                <FormField
+                  control={form.control}
+                  name="teacherDegree"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.teacher-degree')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t('placeholder.teacher-degree')}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

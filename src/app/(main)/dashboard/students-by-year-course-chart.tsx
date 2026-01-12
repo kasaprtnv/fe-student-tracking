@@ -25,6 +25,7 @@ import {
 import { User } from '@/types/user';
 import { ICourse } from '@/types/course';
 import { useTranslations } from 'next-intl';
+import { CompactMultiCombobox } from '@/components/ui/combobox/compact-multi-combobox';
 
 interface StudentsByYearCourseChartProps {
   students: User[];
@@ -40,7 +41,7 @@ export function StudentsByYearCourseChart({
   const tDegree = useTranslations('degree');
   const tLegend = useTranslations('dashboard.legend');
   const tSummary = useTranslations('dashboard.summary-cards');
-  const [selectedCourse, setSelectedCourse] = React.useState<string>('all');
+  const [selectedCourses, setSelectedCourses] = React.useState<string[]>([]);
   const [yearRange, setYearRange] = React.useState<string>('3');
   const [selectedDegree, setSelectedDegree] = React.useState<string>('all');
 
@@ -98,6 +99,14 @@ export function StudentsByYearCourseChart({
       };
     }, [students, courseMap, selectedDegree]);
 
+  // Prepare course options for selection
+  const courseOptions = React.useMemo(() => {
+    return Object.entries(courseNames).map(([id, name]) => ({
+      label: name,
+      value: id,
+    }));
+  }, [courseNames]);
+
   // Filter data based on year range and course selection
   const filteredData = React.useMemo(() => {
     let filtered = [...chartData];
@@ -118,22 +127,24 @@ export function StudentsByYearCourseChart({
     return filtered;
   }, [chartData, yearRange, allYears]);
 
-  // Filter course colors/names if specific course is selected
+  // Filter course colors/names if specific courses are selected
   const displayCourseColors = React.useMemo(() => {
-    if (selectedCourse === 'all') return courseColors;
-    if (courseColors[selectedCourse]) {
-      return { [selectedCourse]: courseColors[selectedCourse] };
-    }
-    return courseColors;
-  }, [selectedCourse, courseColors]);
+    if (selectedCourses.length === 0) return courseColors;
+    return Object.fromEntries(
+      Object.entries(courseColors).filter(([id]) =>
+        selectedCourses.includes(id),
+      ),
+    );
+  }, [selectedCourses, courseColors]);
 
   const displayCourseNames = React.useMemo(() => {
-    if (selectedCourse === 'all') return courseNames;
-    if (courseNames[selectedCourse]) {
-      return { [selectedCourse]: courseNames[selectedCourse] };
-    }
-    return courseNames;
-  }, [selectedCourse, courseNames]);
+    if (selectedCourses.length === 0) return courseNames;
+    return Object.fromEntries(
+      Object.entries(courseNames).filter(([id]) =>
+        selectedCourses.includes(id),
+      ),
+    );
+  }, [selectedCourses, courseNames]);
 
   return (
     <Card className="min-h-[420px] overflow-hidden">
@@ -142,33 +153,27 @@ export function StudentsByYearCourseChart({
           <CardTitle className="text-lg font-bold">
             {t('charts.students-by-course')}
           </CardTitle>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Select value={selectedDegree} onValueChange={setSelectedDegree}>
               <SelectTrigger className="w-auto min-w-[100px]">
                 <SelectValue placeholder={tFilters('degree')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{tFilters('all-degrees')}</SelectItem>
-                <SelectItem value="bachelor">{tDegree('bachelor')}</SelectItem>
                 <SelectItem value="master">{tDegree('master')}</SelectItem>
                 <SelectItem value="doctorate">
                   {tDegree('doctorate')}
                 </SelectItem>
               </SelectContent>
             </Select>
-            <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-              <SelectTrigger className="w-auto min-w-[100px]">
-                <SelectValue placeholder={tFilters('course')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{tFilters('all-courses')}</SelectItem>
-                {Object.entries(courseNames).map(([id, name]) => (
-                  <SelectItem key={id} value={id}>
-                    {name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <CompactMultiCombobox
+              value={selectedCourses}
+              onChange={setSelectedCourses}
+              options={courseOptions}
+              placeholder={tFilters('all-courses')}
+              placeholderSearch={tFilters('course')}
+              placeholderEmpty={t('charts.no-data')}
+            />
             <Select value={yearRange} onValueChange={setYearRange}>
               <SelectTrigger className="w-auto min-w-[80px]">
                 <SelectValue placeholder="ช่วงปี" />

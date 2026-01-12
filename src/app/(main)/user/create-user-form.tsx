@@ -37,6 +37,7 @@ interface CreateUserFormDialogProps {
   onOpenChange: (open: boolean) => void;
   courseOptions: SelectOption[];
   defaultRole?: UserRole;
+  onUserCreated?: () => void;
 }
 
 export function CreateUserFormDialog({
@@ -44,6 +45,7 @@ export function CreateUserFormDialog({
   onOpenChange,
   courseOptions,
   defaultRole = 'student',
+  onUserCreated,
 }: CreateUserFormDialogProps) {
   const t = useTranslations('user.user-form');
   const tCommon = useTranslations('common');
@@ -64,7 +66,7 @@ export function CreateUserFormDialog({
     resolver: zodResolver(createUserSchema(t)) as Resolver<UserFormValues>,
     defaultValues: {
       role: defaultRole,
-      title: '',
+      titleId: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -74,6 +76,7 @@ export function CreateUserFormDialog({
         code: '',
         degree: '',
         year: '',
+        studyPlan: '',
         enrollDate: '',
       }),
     } as UserFormValues,
@@ -86,7 +89,7 @@ export function CreateUserFormDialog({
       if (defaultRole === 'student') {
         form.reset({
           role: 'student',
-          title: '',
+          titleId: '',
           code: '',
           firstName: '',
           lastName: '',
@@ -94,17 +97,19 @@ export function CreateUserFormDialog({
           phone: '',
           degree: '',
           year: '',
+          studyPlan: '',
           courseId: '',
           enrollDate: '',
         });
       } else {
         form.reset({
           role: 'teacher',
-          title: '',
+          titleId: '',
           firstName: '',
           lastName: '',
           email: '',
           phone: '',
+          teacherDegree: '',
           courseId: '',
         });
       }
@@ -119,7 +124,7 @@ export function CreateUserFormDialog({
     if (role === 'student') {
       form.reset({
         role: 'student',
-        title: currentValues.title || '',
+        titleId: currentValues.titleId || '',
         code: '',
         firstName: currentValues.firstName || '',
         lastName: currentValues.lastName || '',
@@ -127,13 +132,14 @@ export function CreateUserFormDialog({
         phone: currentValues.phone || '',
         degree: '',
         year: '',
+        studyPlan: '',
         courseId: '',
         enrollDate: '',
       });
     } else {
       form.reset({
         role: 'teacher',
-        title: currentValues.title || '',
+        titleId: currentValues.titleId || '',
         firstName: currentValues.firstName || '',
         lastName: currentValues.lastName || '',
         email: currentValues.email || '',
@@ -189,6 +195,7 @@ export function CreateUserFormDialog({
       setSelectedRole(defaultRole);
       onOpenChange(false);
       toast.success(t('toast.created-successfully'));
+      onUserCreated?.();
     } catch (error: unknown) {
       console.error('Error creating user:', error);
 

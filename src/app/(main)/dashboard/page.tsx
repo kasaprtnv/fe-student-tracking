@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
@@ -9,6 +9,7 @@ import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
 import { useDashboard } from '@/hooks/use-dashboard';
 import { useAuth } from '@/hooks/use-auth';
+import { useCourseStaff } from '@/hooks/use-course_staff';
 
 import { SummaryCards } from './summary-cards';
 import { StudentsByYearCourseChart } from './students-by-year-course-chart';
@@ -23,7 +24,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!initialized) return;
-    if (user && user.role !== 'admin') {
+    if (user && user.role !== 'admin' && user.role !== 'teacher') {
       router.replace(`/profile/${user.id}`);
     }
   }, [user, initialized, router]);
@@ -36,6 +37,34 @@ const DashboardPage = () => {
     loader: courseLoader,
   } = useCourse();
   const { stats, loader: dashboardLoader, fetchStats } = useDashboard();
+  const { fetchCourseStaffByUser } = useCourseStaff();
+
+  // State for teacher's managed course IDs
+  const [teacherCourseIds, setTeacherCourseIds] = useState<string[]>([]);
+  const [teacherCoursesLoaded, setTeacherCoursesLoaded] = useState(false);
+
+  // Fetch teacher's managed courses when user is loaded
+  useEffect(() => {
+    const fetchTeacherCourses = async () => {
+      if (!user || !initialized) return;
+
+      if (user.role === 'teacher' && user.id) {
+        try {
+          const response = await fetchCourseStaffByUser(user.id);
+          const courseIds = response.data.map(
+            (cs: { courseId: string }) => cs.courseId,
+          );
+          setTeacherCourseIds(courseIds);
+        } catch (error) {
+          console.error('Failed to fetch teacher courses:', error);
+          setTeacherCourseIds([]);
+        }
+      }
+      setTeacherCoursesLoaded(true);
+    };
+
+    fetchTeacherCourses();
+  }, [user, initialized, fetchCourseStaffByUser]);
 
   useSWR(
     'fetch-dashboard-data',
@@ -49,24 +78,51 @@ const DashboardPage = () => {
     },
   );
 
-  // Calculate totals for summary cards
-  const totalStudents = studentUsers.length;
+  // Filter course IDs based on role
+  const filteredCourseIds = React.useMemo(() => {
+    if (user?.role === 'admin') return allCourseId;
+    return allCourseId.filter((id) => teacherCourseIds.includes(id));
+  }, [user, allCourseId, teacherCourseIds]);
+
+  // Filter course map based on role
+  const filteredCourseMap = React.useMemo(() => {
+    if (user?.role === 'admin') return courseMap;
+    return Object.fromEntries(
+      Object.entries(courseMap).filter(([id]) => teacherCourseIds.includes(id)),
+    );
+  }, [user, courseMap, teacherCourseIds]);
+
+  // Filter students based on role
+  const filteredStudents = React.useMemo(() => {
+    if (user?.role === 'admin') return studentUsers;
+    return studentUsers.filter(
+      (s) => s.courseId && teacherCourseIds.includes(s.courseId),
+    );
+  }, [user, studentUsers, teacherCourseIds]);
+
+  // Calculate totals for summary cards (using filtered data)
+  const totalStudents = filteredStudents.length;
   const totalTeachers = stats?.totalTeachers ?? 0;
-  const totalCourses = allCourseId.length;
+  const totalCourses = filteredCourseIds.length;
 
-  const isLoading = userLoader || courseLoader || dashboardLoader;
+  const isLoading =
+    userLoader || courseLoader || dashboardLoader || !teacherCoursesLoaded;
 
-  // Get all unique years from students
+  // Get all unique years from filtered students
   const allYears = React.useMemo(() => {
     const yearSet = new Set<string>();
-    studentUsers.forEach((s) => {
+    filteredStudents.forEach((s) => {
       if (s.year) yearSet.add(s.year);
     });
     return Array.from(yearSet).sort();
-  }, [studentUsers]);
+  }, [filteredStudents]);
 
-  // Don't render anything until we confirm user is admin
-  if (!initialized || !user || user.role !== 'admin') {
+  // Don't render anything until we confirm user is admin or teacher
+  if (
+    !initialized ||
+    !user ||
+    (user.role !== 'admin' && user.role !== 'teacher')
+  ) {
     return null;
   }
 
@@ -84,25 +140,26 @@ const DashboardPage = () => {
           totalTeachers={totalTeachers}
           totalCourses={totalCourses}
           isLoading={isLoading}
+          userRole={user.role}
         />
 
         {/* Charts Grid */}
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="lg:col-span-2">
             <StudentsByYearCourseChart
-              students={studentUsers}
-              courseMap={courseMap}
+              students={filteredStudents}
+              courseMap={filteredCourseMap}
             />
           </div>
           <StudentsByDegreeChart
-            students={studentUsers}
-            courseMap={courseMap}
-            allCourseIds={allCourseId}
+            students={filteredStudents}
+            courseMap={filteredCourseMap}
+            allCourseIds={filteredCourseIds}
             allYears={allYears}
           />
           <GraduationByYearChart
-            courseMap={courseMap}
-            allCourseIds={allCourseId}
+            courseMap={filteredCourseMap}
+            allCourseIds={filteredCourseIds}
           />
         </div>
       </div>
