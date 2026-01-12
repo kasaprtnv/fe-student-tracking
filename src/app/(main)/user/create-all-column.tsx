@@ -1,6 +1,7 @@
 import { formatThaiDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
+import { ITitle } from '@/types/title';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   DropdownMenu,
@@ -24,6 +25,7 @@ export const createAllStudentColumns = (
   t: (key: string) => string,
   tDegree: (key: string) => string,
   tRole: (key: string) => string,
+  titleMap: Record<string, ITitle>,
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
@@ -34,9 +36,11 @@ export const createAllStudentColumns = (
     {
       header: t('full-name'),
       accessorFn: (row) => {
-        const titleName = `${row.title || ''}${row.firstName || ''}`.trim();
+        const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
+        const firstName = row.firstName || '';
         const lastName = row.lastName || '';
-        return `${titleName} ${lastName}`.trim() || '-';
+        const fullName = `${titleName}${firstName} ${lastName}`.trim();
+        return fullName || '-';
       },
     },
     {

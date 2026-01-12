@@ -66,7 +66,7 @@ export function CreateUserFormDialog({
     resolver: zodResolver(createUserSchema(t)) as Resolver<UserFormValues>,
     defaultValues: {
       role: defaultRole,
-      title: '',
+      titleId: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -89,7 +89,7 @@ export function CreateUserFormDialog({
       if (defaultRole === 'student') {
         form.reset({
           role: 'student',
-          title: '',
+          titleId: '',
           code: '',
           firstName: '',
           lastName: '',
@@ -104,7 +104,7 @@ export function CreateUserFormDialog({
       } else {
         form.reset({
           role: 'teacher',
-          title: '',
+          titleId: '',
           firstName: '',
           lastName: '',
           email: '',
@@ -124,7 +124,7 @@ export function CreateUserFormDialog({
     if (role === 'student') {
       form.reset({
         role: 'student',
-        title: currentValues.title || '',
+        titleId: currentValues.titleId || '',
         code: '',
         firstName: currentValues.firstName || '',
         lastName: currentValues.lastName || '',
@@ -139,7 +139,7 @@ export function CreateUserFormDialog({
     } else {
       form.reset({
         role: 'teacher',
-        title: currentValues.title || '',
+        titleId: currentValues.titleId || '',
         firstName: currentValues.firstName || '',
         lastName: currentValues.lastName || '',
         email: currentValues.email || '',

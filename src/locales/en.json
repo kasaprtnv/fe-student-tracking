@@ -153,6 +153,42 @@
       "confirm": "Are you sure you want to delete this course? This action cannot be undone."
     }
   },
+  "title": {
+    "page-title": "Title Prefix",
+    "sub_title": "Manage your title prefixes here.",
+    "title-form": {
+      "errors": {
+        "name-required": "Title name is required",
+        "name-duplicate": "Title name already exists"
+      },
+      "label": {
+        "name": "Title Name"
+      },
+      "placeholder": {
+        "name": "Enter title name"
+      },
+      "toast": {
+        "created-successfully": "Title created successfully!",
+        "creation-failed": "Failed to create title. Please try again.",
+        "updated-successfully": "Title updated successfully!",
+        "update-failed": "Failed to update title. Please try again.",
+        "deleted-successfully": "Title deleted successfully!",
+        "deletion-failed": "Failed to delete title. Please try again."
+      },
+      "header": {
+        "create": "Create New Title",
+        "edit": "Edit Title"
+      },
+      "header_description": {
+        "create": "Fill out the form below to create a new title.",
+        "edit": "Update the title details below."
+      }
+    },
+    "delete": {
+      "header": "Delete Title",
+      "confirm": "Are you sure you want to delete this title? This action cannot be undone."
+    }
+  },
   "profile": {
     "personal_information": {
       "title": "Personal Information",
@@ -195,7 +231,9 @@
     "ok": "OK",
     "student_attachment_label": "Submitted Document",
     "decline_reason_label": "Reason for Decline",
-    "staff_attachment_label": "Additional File from Staff"
+    "staff_attachment_label": "Additional File from Staff",
+    "decline_reason": "Decline Reason",
+    "download": "Download"
   },
   "milestone": {
     "title": "Milestones",

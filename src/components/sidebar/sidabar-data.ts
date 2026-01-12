@@ -63,6 +63,10 @@ export const sidebarItems: SidebarItem[] = [
         title: 'homepage.userManagement',
         route: '/user',
       },
+      {
+        title: 'title.page-title',
+        route: '/title',
+      },
     ],
   },
 ];

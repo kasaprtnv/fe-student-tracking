@@ -38,6 +38,14 @@ export interface MilestoneStep {
   updatedAt: Date;
   milestoneName?: string;
   status: MilestoneStepStatus;
+  declineReason?: string;
+  staffAttachment?: {
+    id: string;
+    fileName: string;
+    fileKey?: string;
+    fileUrl?: string;
+  };
+  staffAttachmentId?: string;
 }
 
 export interface IMilestoneCreateDTO {
