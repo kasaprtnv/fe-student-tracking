@@ -7,8 +7,17 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
+import { useTitle } from '@/hooks/use-title';
+import React from 'react';
 
 interface CommonFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
@@ -16,24 +25,43 @@ interface CommonFormFieldsProps {
 
 export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
   const t = useTranslations('user.user-form');
+  const { titleMap, allTitleId, fetchAllTitles } = useTitle();
+
+  // Fetch titles on mount
+  React.useEffect(() => {
+    if (allTitleId.length === 0) {
+      fetchAllTitles();
+    }
+  }, [allTitleId.length, fetchAllTitles]);
+
   return (
     <>
       <div className="grid grid-cols-2 items-start gap-4">
         <FormField
           control={form.control}
-          name="title"
+          name="titleId"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-sm font-medium text-gray-700">
                 {t('label.title')}
               </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('placeholder.title')}
-                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                  {...field}
-                />
-              </FormControl>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    <SelectValue placeholder={t('placeholder.title')} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {allTitleId.map((id) => {
+                    const title = titleMap[id];
+                    return (
+                      <SelectItem key={id} value={id}>
+                        {title?.name || id}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

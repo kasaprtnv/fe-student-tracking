@@ -6,7 +6,7 @@ export type UserRole = 'student' | 'teacher';
 const baseSchema = (t: (key: string) => string) =>
   z.object({
     role: z.enum(['student', 'teacher']),
-    title: z.string().optional(),
+    titleId: z.string().optional(),
     firstName: z
       .string()
       .min(1, t('errors.first-name-required'))
@@ -65,7 +65,7 @@ export type UpdateUserFormData = z.infer<ReturnType<typeof updateUserSchema>>;
 
 export interface UserFormValues {
   role: UserRole;
-  title?: string;
+  titleId?: string;
   firstName: string;
   lastName: string;
   email: string;
