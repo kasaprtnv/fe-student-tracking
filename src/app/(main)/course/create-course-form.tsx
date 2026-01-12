@@ -241,7 +241,7 @@ export function CreateCourseFormDialog({
                       aria-hidden="true"
                     />
                   )}
-                  {tCommon('submit')}
+                  {tCommon('save')}
                 </Button>
               </div>
             </DialogFooter>

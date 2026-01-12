@@ -261,7 +261,7 @@ export function CreateUserFormDialog({
                       aria-hidden="true"
                     />
                   )}
-                  {tCommon('submit')}
+                  {tCommon('save')}
                 </Button>
               </div>
             </DialogFooter>
