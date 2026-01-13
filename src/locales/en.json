@@ -162,10 +162,12 @@
         "name-duplicate": "Title name already exists"
       },
       "label": {
-        "name": "Title Name"
+        "name": "Title Name",
+        "description": "Description"
       },
       "placeholder": {
-        "name": "Enter title name"
+        "name": "Enter title name",
+        "description": "Enter description"
       },
       "toast": {
         "created-successfully": "Title created successfully!",

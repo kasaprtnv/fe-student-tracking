@@ -46,6 +46,7 @@ export function CreateTitleFormDialog({
     resolver: zodResolver(createTitleSchema(t)),
     defaultValues: {
       name: '',
+      description: '',
     },
   });
 
@@ -94,6 +95,24 @@ export function CreateTitleFormDialog({
                   <FormLabel>{t('label.name')}</FormLabel>
                   <FormControl>
                     <Input placeholder={t('placeholder.name')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('label.description') || 'คำอธิบาย'}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={
+                        t('placeholder.description') || 'กรอกคำอธิบาย'
+                      }
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
