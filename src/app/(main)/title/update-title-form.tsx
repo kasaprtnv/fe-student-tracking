@@ -50,6 +50,7 @@ export function UpdateTitleFormDialog({
     resolver: zodResolver(updateTitleSchema(t)),
     defaultValues: {
       name: title?.name || '',
+      description: title?.description || '',
     },
   });
 
@@ -77,9 +78,24 @@ export function UpdateTitleFormDialog({
       form.reset();
       onOpenChange(false);
       toast.success(t('toast.updated-successfully'));
-    } catch (error) {
-      console.error('Failed to update title:', error);
-      toast.error(t('toast.update-failed'));
+    } catch (error: unknown) {
+      // เพิ่มการแสดงรายละเอียด error
+      let errorMessage = '';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (
+        typeof error === 'object' &&
+        error !== null &&
+        'message' in error
+      ) {
+        errorMessage = String((error as { message?: string }).message);
+      } else {
+        errorMessage = String(error);
+      }
+      console.error('Failed to update title:', errorMessage);
+      toast.error(
+        t('toast.update-failed') + (errorMessage ? `: ${errorMessage}` : ''),
+      );
     }
   };
 
@@ -87,6 +103,7 @@ export function UpdateTitleFormDialog({
     if (title) {
       form.reset({
         name: title.name || '',
+        description: title.description || '',
       });
     }
   }, [title, form]);
@@ -108,6 +125,26 @@ export function UpdateTitleFormDialog({
                   <FormLabel>{t('label.name')}</FormLabel>
                   <FormControl>
                     <Input placeholder={t('placeholder.name')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('label.description') || 'Description'}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={
+                        t('placeholder.description') || 'Description'
+                      }
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
