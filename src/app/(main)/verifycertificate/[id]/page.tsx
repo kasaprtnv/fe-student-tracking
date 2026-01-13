@@ -15,6 +15,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { PageHeader } from '@/components/page-header';
+import { Home } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -304,23 +306,12 @@ export default function VerifyDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/verifycertificate">
-              {t('breadcrumb.verify')}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{t('breadcrumb.detail')}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      {/* Title */}
-      <h1 className="text-2xl font-bold">{t('title')}</h1>
+      <PageHeader
+        breadcrumbs={[
+          { label: t('breadcrumb.verify'), href: '/verifycertificate' },
+          { label: t('breadcrumb.detail'), isPage: true },
+        ]}
+      />
 
       {/* Content */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -451,12 +442,16 @@ export default function VerifyDetailPage() {
                     id="declineReason"
                     placeholder={t('review.decline_reason_placeholder')}
                     value={declineReason}
-                    onChange={(e) => setDeclineReason(e.target.value)}
+                    maxLength={1000}
+                    onChange={(e) => {
+                      const value = e.target.value.slice(0, 1000);
+                      setDeclineReason(value);
+                    }}
                     className="mt-2"
                     rows={4}
                   />
                   <p className="text-muted-foreground mt-1 text-right text-xs">
-                    {declineReason.length}/50
+                    {declineReason.length}/1000
                   </p>
                 </div>
 
@@ -466,6 +461,13 @@ export default function VerifyDetailPage() {
                   <div
                     className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-gray-400"
                     onClick={() => fileInputRef.current?.click()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        setStaffAttachmentFile(e.dataTransfer.files[0]);
+                      }
+                    }}
+                    onDragOver={(e) => e.preventDefault()}
                   >
                     {staffAttachmentFile ? (
                       <div className="flex w-full items-center justify-between rounded-md bg-gray-50 p-3">
@@ -492,6 +494,10 @@ export default function VerifyDetailPage() {
                         </p>
                         <p className="mt-1 text-xs text-gray-400">
                           PDF, docx, PNG
+                          <br />
+                          <span className="block text-xs text-gray-400">
+                            ลากไฟล์มาวางที่นี่ได้
+                          </span>
                         </p>
                       </>
                     )}
@@ -612,7 +618,7 @@ export default function VerifyDetailPage() {
           <AlertDialogFooter>
             <AlertDialogAction
               onClick={handleSuccessClose}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-black hover:bg-black"
             >
               {t('success.ok')}
             </AlertDialogAction>

@@ -19,18 +19,18 @@ export interface IStudentStepProgress {
   dueDate?: string;
   createdAt?: string;
   updatedAt?: string;
-  // Staff attachment for decline with additional file
   staffAttachmentId?: string;
-  // Flat fields from API
   studentCode?: string;
   studentName?: string;
   courseName?: string;
   stepName?: string;
   fileName?: string;
   fileUrl?: string;
+  fileKey?: string;
   studentDegree?: string;
   studentYear?: string;
-  // Joined fields (alternative structure)
+  degree?: string;
+  year?: string;
   student?: {
     id: string;
     code: string;
