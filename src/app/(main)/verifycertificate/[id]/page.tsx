@@ -78,14 +78,42 @@ export default function VerifyDetailPage() {
         // ดึงไฟล์แนบทั้งหมด
         try {
           const attachments = await uploadService.getAttachmentsByProgress(id);
-          console.log('Attachments:', attachments);
+          // DEBUG LOG: attachments array, studentId, รายละเอียดไฟล์แนบ
+          console.log('DEBUG attachments (raw):', attachments);
+          const studentId =
+            response.data?.studentId || response.data?.student?.id;
+          console.log('DEBUG studentId:', studentId);
+          if (attachments && attachments.length > 0) {
+            console.log(
+              'DEBUG attachments summary:',
+              attachments.map((a) => ({
+                fileKey: a.fileKey,
+                uploadedByUserId: a.uploadedByUserId,
+                createdAt: a.createdAt,
+              })),
+            );
+          } else {
+            console.log('DEBUG attachments: ไม่มีไฟล์แนบ');
+          }
 
           if (attachments && attachments.length > 0) {
-            // หา attachment ที่ student ส่งมา (ไฟล์แรกที่ไม่ใช่ staff upload)
-            const studentAttachment =
-              attachments.find(
-                (att) => att.uploadedByUserId === response.data?.studentId,
-              ) || attachments[0];
+            // ตรวจสอบ studentId และ uploadedByUserId
+            const studentId =
+              response.data?.studentId || response.data?.student?.id;
+            console.log('studentId:', studentId);
+            console.log(
+              'attachments uploadedByUserId:',
+              attachments.map((a) => a.uploadedByUserId),
+            );
+            // หาไฟล์ที่ student ส่ง (ไฟล์ล่าสุด)
+            const studentSorted = [...attachments]
+              .filter((att) => att.uploadedByUserId === studentId)
+              .sort(
+                (a, b) =>
+                  new Date(b.createdAt || 0).getTime() -
+                  new Date(a.createdAt || 0).getTime(),
+              );
+            const studentAttachment = studentSorted[0] || attachments[0];
             setAttachment(studentAttachment);
 
             // หา staff attachment (ไฟล์ที่ staff upload - uploadedByUserId ไม่ใช่ student)

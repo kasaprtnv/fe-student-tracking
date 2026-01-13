@@ -94,9 +94,19 @@ class UploadService extends APIService {
     const response = await this.get(
       `/attachment/progress/${studentStepProgressId}`,
     );
-    return response.data || [];
+    console.log('DEBUG getAttachmentsByProgress response:', response);
+    // Axios: response.data.data (array)
+    if (Array.isArray(response)) {
+      return response;
+    }
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    return [];
   }
-
   // ดึง URL สำหรับดู/ดาวน์โหลดไฟล์
   getFileUrl(fileKey: string): string {
     if (!fileKey) return '';
