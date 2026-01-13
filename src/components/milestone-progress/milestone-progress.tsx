@@ -570,7 +570,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
             <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmSubmit}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-black hover:bg-black"
             >
               {t('confirm')}
             </AlertDialogAction>
@@ -593,7 +593,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
           <AlertDialogFooter>
             <AlertDialogAction
               onClick={() => setSuccessModalOpen(false)}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-black hover:bg-black"
             >
               {t('ok')}
             </AlertDialogAction>
