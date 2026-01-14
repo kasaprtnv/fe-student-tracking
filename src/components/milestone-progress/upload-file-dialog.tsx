@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, X } from 'lucide-react';
 import { IMilestoneStep } from '@/types/milestone-step';
@@ -19,7 +19,7 @@ interface UploadFileDialogProps {
   userId?: string;
   step: IMilestoneStep;
   isUploading?: Record<string, boolean>;
-  onFileUpload?: (stepId: string, file: File) => void;
+  onFileUpload?: (stepId: string, files: File[]) => void;
 }
 
 export const UploadFileDialog = ({
@@ -49,14 +49,20 @@ export const UploadFileDialog = ({
         if (getTotalFileSize(allFiles) > limitFileSize) {
           return prev;
         }
-        if (onFileUpload) {
-          newFiles.forEach((f) => onFileUpload(step.id, f));
-        }
         return allFiles;
       });
     },
-    [onFileUpload, step.id, limitFileSize],
+    [limitFileSize],
   );
+
+  // เรียก onFileUpload เฉพาะตอนกดปุ่มอัปโหลด
+  const handleUpload = () => {
+    if (file.length > 0 && onFileUpload) {
+      onFileUpload(step.id, file);
+      setFile([]);
+      setOpen(false);
+    }
+  };
 
   // ตรวจสอบขนาดรวมไฟล์ทั้งหมด
   const isLimitFileSize = () => getTotalFileSize(file) > limitFileSize;
@@ -162,7 +168,7 @@ export const UploadFileDialog = ({
           </DialogClose>
           <Button
             type="button"
-            // onClick={handleUpload}
+            onClick={handleUpload}
             disabled={
               file.length === 0 || isUploading?.[step.id] || isLimitFileSize()
             }

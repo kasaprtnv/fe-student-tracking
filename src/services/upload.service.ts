@@ -32,9 +32,12 @@ class UploadService extends APIService {
     super(API_BASE_URL);
   }
 
+  /**
+   * รองรับทั้งไฟล์เดียวและหลายไฟล์ (file: File | File[])
+   */
   async createAttachment(
     stepId: string,
-    file: File,
+    fileOrFiles: File | File[],
     uploadedByUserId?: string,
   ): Promise<UploadResponse> {
     if (!uploadedByUserId) {
@@ -45,28 +48,41 @@ class UploadService extends APIService {
     }
 
     try {
-      // สร้าง FormData สำหรับอัปโหลดไฟล์ (เฉพาะ file ตามตัวอย่าง)
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(
-        `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`,
-        {
+      // ถ้าเป็น array ให้ส่งทีละไฟล์ (field 'file')
+      if (Array.isArray(fileOrFiles)) {
+        for (const file of fileOrFiles) {
+          const formData = new FormData();
+          formData.append('file', file);
+          const endpoint = `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            body: formData,
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Upload failed');
+          }
+        }
+        return { success: true };
+      } else {
+        // ไฟล์เดียว
+        const formData = new FormData();
+        formData.append('file', fileOrFiles);
+        const endpoint = `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`;
+        const response = await fetch(endpoint, {
           method: 'POST',
           body: formData,
-        },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Upload failed');
+        });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Upload failed');
+        }
+        const data = await response.json();
+        return {
+          success: true,
+          data: data.data || data,
+        };
       }
-
-      const data = await response.json();
-      return {
-        success: true,
-        data: data.data || data,
-      };
     } catch (error) {
       return {
         success: false,
