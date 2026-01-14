@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -50,7 +50,15 @@ export default function VerifyDetailPage() {
   const id = params.id as string;
 
   const [data, setData] = useState<IStudentStepProgress | null>(null);
-  const [attachment, setAttachment] = useState<AttachmentDTO | null>(null);
+  // Grouped attachments by batch
+  const [studentAttachments, setStudentAttachments] = useState<AttachmentDTO[]>(
+    [],
+  );
+  const [attachmentBatches, setAttachmentBatches] = useState<AttachmentDTO[][]>(
+    [],
+  );
+  const [selectedBatchIdx, setSelectedBatchIdx] = useState(0);
+  const [selectedAttachmentIdx, setSelectedAttachmentIdx] = useState(0);
   const [staffAttachment, setStaffAttachment] = useState<AttachmentDTO | null>(
     null,
   );
@@ -74,62 +82,53 @@ export default function VerifyDetailPage() {
       try {
         // ดึงข้อมูล student step progress
         const response = await studentStepProgressService.getById(id);
-        console.log('Detail API Response:', response);
         setData(response.data);
 
         // ดึงไฟล์แนบทั้งหมด
         try {
           const attachments = await uploadService.getAttachmentsByProgress(id);
-          // DEBUG LOG: attachments array, studentId, รายละเอียดไฟล์แนบ
-          console.log('DEBUG attachments (raw):', attachments);
           const studentId =
             response.data?.studentId || response.data?.student?.id;
-          console.log('DEBUG studentId:', studentId);
-          if (attachments && attachments.length > 0) {
-            console.log(
-              'DEBUG attachments summary:',
-              attachments.map((a) => ({
-                fileKey: a.fileKey,
-                uploadedByUserId: a.uploadedByUserId,
-                createdAt: a.createdAt,
-              })),
-            );
-          } else {
-            console.log('DEBUG attachments: ไม่มีไฟล์แนบ');
-          }
-
-          if (attachments && attachments.length > 0) {
-            // ตรวจสอบ studentId และ uploadedByUserId
-            const studentId =
-              response.data?.studentId || response.data?.student?.id;
-            console.log('studentId:', studentId);
-            console.log(
-              'attachments uploadedByUserId:',
-              attachments.map((a) => a.uploadedByUserId),
-            );
-            // หาไฟล์ที่ student ส่ง (ไฟล์ล่าสุด)
-            const studentSorted = [...attachments]
-              .filter((att) => att.uploadedByUserId === studentId)
-              .sort(
-                (a, b) =>
-                  new Date(b.createdAt || 0).getTime() -
-                  new Date(a.createdAt || 0).getTime(),
-              );
-            const studentAttachment = studentSorted[0] || attachments[0];
-            setAttachment(studentAttachment);
-
-            // หา staff attachment (ไฟล์ที่ staff upload - uploadedByUserId ไม่ใช่ student)
+          // filter เฉพาะไฟล์ที่ student ส่ง
+          const studentFiles = (attachments || []).filter(
+            (att) => att.uploadedByUserId === studentId,
+          );
+          // sort ล่าสุดไว้หน้าแรก
+          studentFiles.sort(
+            (a, b) =>
+              new Date(b.createdAt || 0).getTime() -
+              new Date(a.createdAt || 0).getTime(),
+          );
+          setStudentAttachments(studentFiles);
+          setSelectedAttachmentIdx(0);
+          // --- Group attachments by batch (createdAt within 1 minute) ---
+          const batches: AttachmentDTO[][] = [];
+          let currentBatch: AttachmentDTO[] = [];
+          let lastTime: number | null = null;
+          const BATCH_WINDOW_MS = 60 * 1000; // 1 minute
+          studentFiles.forEach((att) => {
+            const attTime = new Date(att.createdAt || 0).getTime();
             if (
-              response.data?.status === 'declined' &&
-              attachments.length > 1
+              lastTime === null ||
+              Math.abs(lastTime - attTime) > BATCH_WINDOW_MS
             ) {
-              const staffAtt = attachments.find(
-                (att) => att.uploadedByUserId !== response.data?.studentId,
-              );
-              if (staffAtt) {
-                setStaffAttachment(staffAtt);
-              }
+              if (currentBatch.length > 0) batches.push(currentBatch);
+              currentBatch = [att];
+            } else {
+              currentBatch.push(att);
             }
+            lastTime = attTime;
+          });
+          if (currentBatch.length > 0) batches.push(currentBatch);
+          setAttachmentBatches(batches);
+          setSelectedBatchIdx(0);
+
+          // หา staff attachment (ไฟล์ที่ staff upload - uploadedByUserId ไม่ใช่ student)
+          if (response.data?.status === 'declined' && attachments.length > 1) {
+            const staffAtt = attachments.find(
+              (att) => att.uploadedByUserId !== studentId,
+            );
+            if (staffAtt) setStaffAttachment(staffAtt);
           }
         } catch (attachError) {
           console.error('Error fetching attachments:', attachError);
@@ -140,7 +139,6 @@ export default function VerifyDetailPage() {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [id]);
 
@@ -236,40 +234,20 @@ export default function VerifyDetailPage() {
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 25, 200));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 25, 50));
 
-  const handleDownload = () => {
-    const fileUrl = getFileUrl();
-    if (fileUrl) {
-      window.open(fileUrl, '_blank');
-    }
-  };
-
-  // Get the file URL for preview - ใช้ fileKey จาก attachment ที่ดึงมา
+  // Helpers for selected batch & file
+  // Always show only the latest batch
+  const selectedBatch = attachmentBatches[0] || [];
+  const selectedAttachment = selectedBatch[selectedAttachmentIdx] || null;
   const getFileUrl = () => {
-    const fileKey =
-      attachment?.fileKey ||
-      attachment?.fileUrl ||
-      data?.fileUrl ||
-      data?.attachment?.fileUrl ||
-      data?.attachment?.fileKey;
-
+    if (!selectedAttachment) return null;
+    const fileKey = selectedAttachment.fileKey || selectedAttachment.fileUrl;
     if (!fileKey) return null;
-
     return uploadService.getFileUrl(fileKey);
   };
-
-  // Get the file name for display
-  const getFileName = () => {
-    return (
-      attachment?.fileName ||
-      data?.fileName ||
-      data?.attachment?.fileName ||
-      'Document.pdf'
-    );
-  };
-
-  // Check if file is an image
+  const getFileName = () => selectedAttachment?.fileName || 'Document.pdf';
   const isImage = () => {
-    const mimeType = attachment?.mimeType || '';
+    if (!selectedAttachment) return false;
+    const mimeType = selectedAttachment.mimeType || '';
     const fileName = getFileName().toLowerCase();
     return (
       mimeType.startsWith('image/') ||
@@ -280,12 +258,17 @@ export default function VerifyDetailPage() {
       fileName.endsWith('.webp')
     );
   };
-
-  // Check if file is a PDF
   const isPdf = () => {
-    const mimeType = attachment?.mimeType || '';
+    if (!selectedAttachment) return false;
+    const mimeType = selectedAttachment.mimeType || '';
     const fileName = getFileName().toLowerCase();
     return mimeType === 'application/pdf' || fileName.endsWith('.pdf');
+  };
+  const handleDownload = () => {
+    const fileUrl = getFileUrl();
+    if (fileUrl) {
+      window.open(fileUrl, '_blank');
+    }
   };
 
   if (loading) {
@@ -315,23 +298,39 @@ export default function VerifyDetailPage() {
 
       {/* Content */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Document Preview */}
+        {/* Document Preview (with batch & file tabs) */}
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
-              <CardTitle className="text-base font-medium">
-                {getFileName()}
-              </CardTitle>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" onClick={handleZoomIn}>
-                  <ZoomIn className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={handleZoomOut}>
-                  <ZoomOut className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={handleDownload}>
-                  <Download className="h-4 w-4" />
-                </Button>
+            <CardHeader className="flex flex-col gap-2 border-b pb-4">
+              {/* Batch tab bar ถูกลบออก */}
+              {/* File tab bar for latest batch only */}
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                {(attachmentBatches[0] || []).map((att, idx) => (
+                  <button
+                    key={att.id || att.fileKey || idx}
+                    className={`rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                    onClick={() => setSelectedAttachmentIdx(idx)}
+                    type="button"
+                  >
+                    {att.fileName || `ไฟล์ที่ ${idx + 1}`}
+                  </button>
+                ))}
+              </div>
+              <div className="flex w-full items-center justify-between gap-2">
+                <CardTitle className="text-base font-medium">
+                  {getFileName()}
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" onClick={handleZoomIn}>
+                    <ZoomIn className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={handleZoomOut}>
+                    <ZoomOut className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={handleDownload}>
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="p-6">
@@ -341,7 +340,6 @@ export default function VerifyDetailPage() {
               >
                 {getFileUrl() ? (
                   isImage() ? (
-                    // แสดงรูปภาพ
                     <img
                       src={getFileUrl() || ''}
                       alt={getFileName()}
@@ -352,7 +350,6 @@ export default function VerifyDetailPage() {
                       }}
                     />
                   ) : isPdf() ? (
-                    // แสดง PDF
                     <iframe
                       src={getFileUrl() || ''}
                       className="h-full w-full"
@@ -363,7 +360,6 @@ export default function VerifyDetailPage() {
                       title="Document Preview"
                     />
                   ) : (
-                    // ไฟล์ประเภทอื่น - แสดงลิงก์ดาวน์โหลด
                     <div className="flex flex-col items-center justify-center gap-4 text-center">
                       <p className="text-gray-600">{getFileName()}</p>
                       <Button onClick={handleDownload}>
