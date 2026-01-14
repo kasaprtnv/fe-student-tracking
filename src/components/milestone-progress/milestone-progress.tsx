@@ -48,6 +48,7 @@ import { UploadFileDialog } from './upload-file-dialog';
 import { StudentStepAttempts } from '@/types/student-step-attempts';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
+import { studentStepProgressService } from '@/services/student-step-progress.service';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
@@ -198,8 +199,15 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     setConfirmModalOpen(false);
 
     if (!file) {
-      console.error('Missing file');
-      return;
+      const res = await studentStepProgressService.submitForReview(
+        stepId,
+        userId || '',
+      );
+      if (res.success) {
+        onSubmitSuccess?.(stepId);
+      }
+      onSubmit?.(stepId);
+      return res;
     }
 
     setInternalSubmitting((prev) => ({ ...prev, [stepId]: true }));
@@ -556,7 +564,8 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                     )}
                                   </div>
                                   {mode === 'upload' &&
-                                    (available || declined) && (
+                                    (available || declined) &&
+                                    step.requiresAttachment && (
                                       <div className="mt-2 flex justify-end">
                                         <Button
                                           className="text-white"
@@ -579,6 +588,20 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           ) : (
                                             t('submit_button')
                                           )}
+                                        </Button>
+                                      </div>
+                                    )}
+                                  {mode === 'upload' &&
+                                    available &&
+                                    !step.requiresAttachment && (
+                                      <div className="mt-2 flex justify-end">
+                                        <Button
+                                          className="text-white"
+                                          onClick={() =>
+                                            openConfirmModal(step.id)
+                                          }
+                                        >
+                                          {t('submit_button')}
                                         </Button>
                                       </div>
                                     )}
