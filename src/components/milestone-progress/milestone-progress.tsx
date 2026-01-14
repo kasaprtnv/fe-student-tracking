@@ -31,6 +31,8 @@ import {
   File,
   Upload,
   Download,
+  CircleX,
+  CircleCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -92,7 +94,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const [openMilestones, setOpenMilestones] = useState<Record<string, boolean>>(
     () => Object.fromEntries(milestones.map((m) => [m.id, true])),
   );
-  console.log(stepAttempts);
   const attemptMap = useMemo(() => {
     const map: Record<string, StudentStepAttempts> = {};
     stepAttempts.forEach((attempt) => {
@@ -162,6 +163,30 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const openConfirmModal = (stepId: string) => {
     setPendingStepId(stepId);
     setConfirmModalOpen(true);
+  };
+
+  const downloadFile = async (fileKey: string) => {
+    const url = uploadService.getFileUrl(fileKey);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Network response was not ok');
+      const blob = await res.blob();
+      const cd = res.headers.get('content-disposition') || '';
+      const match = cd.match(/filename\*?=(?:UTF-8'')?["']?([^;"']+)/i);
+      const filename = match
+        ? decodeURIComponent(match[1])
+        : fileKey.split('/').pop() || 'download';
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      window.open(url, '_blank');
+    }
   };
 
   const handleConfirmSubmit = async () => {
@@ -436,11 +461,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                               onFileUpload?.(stepId, file);
                                             }}
                                           />
-                                          {internalFileNames[step.id] && (
+                                          {/* {internalFileNames[step.id] && (
                                             <span className="ml-2 text-sm text-green-600">
                                               ✓ {internalFileNames[step.id]}
                                             </span>
-                                          )}
+                                          )} */}
                                         </div>
                                       )}
                                   </div>
@@ -450,37 +475,44 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       <span>{formatDate(deadline)}</span>
                                     </div>
                                     {completed && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="bg-green-100 text-green-700 hover:bg-green-100"
-                                      >
-                                        ✓ {t('completed')}
-                                      </Badge>
+                                      <>
+                                        <div className="flex items-center gap-1.5">
+                                          <CircleCheck className="size-5 text-green-600" />
+                                          <span className="text-lg text-green-600">
+                                            {t('completed')}
+                                          </span>
+                                        </div>
+                                      </>
                                     )}
                                     {declined && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="bg-red-100 text-red-700 hover:bg-red-100"
-                                      >
-                                        X {t('declined')}
-                                      </Badge>
+                                      <>
+                                        <div className="flex items-center gap-1.5">
+                                          <CircleX className="size-5 text-red-600" />
+                                          <span className="text-lg text-red-600">
+                                            {t('declined')}
+                                          </span>
+                                        </div>
+                                      </>
                                     )}
                                     {pending && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100"
-                                      >
-                                        <Spinner /> {t('pending')}
-                                      </Badge>
+                                      <>
+                                        <div className="flex items-center gap-1.5">
+                                          <Spinner className="size-5 text-yellow-400" />
+                                          <span className="text-lg text-yellow-400">
+                                            {t('pending')}
+                                          </span>
+                                        </div>
+                                      </>
                                     )}
                                     {locked && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="bg-muted text-muted-foreground hover:bg-muted"
-                                      >
-                                        <Lock className="mr-1 h-3 w-3" />
-                                        {t('locked')}
-                                      </Badge>
+                                      <>
+                                        <div className="flex items-center gap-1.5">
+                                          <Lock className="size-5 text-gray-600" />
+                                          <span className="text-lg text-gray-600">
+                                            {t('locked')}
+                                          </span>
+                                        </div>
+                                      </>
                                     )}
                                   </div>
                                   <div>
@@ -500,7 +532,16 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                                   .staffAttachment?.fileName
                                               }
                                               <div className="ml-auto">
-                                                <Download className="hover:cursor-pointer" />
+                                                <Download
+                                                  className="hover:cursor-pointer"
+                                                  onClick={() =>
+                                                    downloadFile(
+                                                      attemptMap[step.id]
+                                                        .staffAttachment
+                                                        ?.fileKey || '',
+                                                    )
+                                                  }
+                                                />
                                               </div>
                                             </div>
                                           </>
@@ -515,7 +556,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                     )}
                                   </div>
                                   {mode === 'upload' &&
-                                    step.requiresAttachment &&
                                     (available || declined) && (
                                       <div className="mt-2 flex justify-end">
                                         <Button

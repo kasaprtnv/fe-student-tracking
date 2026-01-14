@@ -211,8 +211,8 @@
     "contact_admin": "โปรดติดต่อเจ้าหน้าที่เพื่อลงทะเบียนหลักสูตร"
   },
   "milestone-progress": {
-    "completed": "สำเร็จ",
-    "pending": "รอดำเนินการ",
+    "completed": "อนุมัติ",
+    "pending": "รอตรวจสอบ",
     "declined": "ไม่อนุมัติ",
     "locked": "ไม่สามารถทำได้",
     "upload_button": "อัปโหลดไฟล์",
