@@ -59,11 +59,7 @@ class StudentStepProgressService extends APIService {
     userId: string,
   ): Promise<IApiGetResponse<StudentStepAttempts>> {
     return this.get(`/student-step-progress/${userId}/attempts`)
-      .then((response) => {
-        console.log(response);
-
-        return response?.data;
-      })
+      .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
