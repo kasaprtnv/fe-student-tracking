@@ -67,7 +67,10 @@
     "degree": "วุฒิการศึกษา",
     "study-plan": "แผนการเรียน",
     "managed-courses": "ดูแลหลักสูตร",
-    "teacher-degree": "วุฒิการศึกษา"
+    "teacher-degree": "วุฒิการศึกษา",
+    "graduated": "สำเร็จการศึกษา",
+    "graduated-yes": "สำเร็จ",
+    "graduated-no": "ยังไม่สำเร็จ"
   },
   "common": {
     "submit": "ส่ง",
@@ -511,7 +514,7 @@
         "role": "เลือกประเภทผู้ใช้",
         "code": "กรอกรหัส",
         "course": "เลือกหลักสูตร",
-        "title": "กรอกคำนำหน้า",
+        "title": "เลือกคำนำหน้า",
         "first-name": "กรอกชื่อ",
         "last-name": "กรอกนามสกุล",
         "email": "กรอกอีเมล",
@@ -523,8 +526,14 @@
         "no-course-found": "ไม่พบหลักสูตร",
         "search-year": "ค้นหาปีการศึกษา...",
         "no-year-found": "ไม่พบปีการศึกษา",
-        "study-plan": "กรอกแผนการเรียน",
+        "study-plan": "เลือกแผนการเรียน",
+        "search-study-plan": "ค้นหาแผนการเรียน...",
+        "no-study-plan-found": "ไม่พบแผนการเรียน",
         "teacher-degree": "ระบุวุฒิการศึกษา"
+      },
+      "study-plan-options": {
+        "plan-a": "แผน ก",
+        "plan-b": "แผน ข"
       },
       "role": {
         "student": "นักศึกษา",
@@ -748,5 +757,36 @@
     "enroll_date": "วันที่ส่ง",
     "actions": "ดาวน์โหลด",
     "no-files": "ไม่มีไฟล์ที่อนุมัติ"
+  },
+  "advanced-filter": {
+    "title": "ตัวกรองขั้นสูง",
+    "description": "กรองข้อมูลนักศึกษาตามเงื่อนไขที่ต้องการ",
+    "code": "รหัส",
+    "code-placeholder": "ค้นหารหัส...",
+    "full-name": "ชื่อ-นามสกุล",
+    "full-name-placeholder": "ค้นหาชื่อ-นามสกุล...",
+    "email": "อีเมล",
+    "email-placeholder": "ค้นหาอีเมล...",
+    "phone": "เบอร์โทร",
+    "phone-placeholder": "ค้นหาเบอร์โทร...",
+    "degree": "ระดับการศึกษา",
+    "degree-placeholder": "เลือกระดับการศึกษา",
+    "year": "ปีการศึกษา",
+    "year-placeholder": "เลือกปีการศึกษา",
+    "course": "หลักสูตร",
+    "course-placeholder": "เลือกหลักสูตร",
+    "study-plan": "แผนการเรียน",
+    "study-plan-placeholder": "เลือกแผนการเรียน",
+    "enroll-date-from": "วันที่ลงทะเบียน (เริ่มต้น)",
+    "enroll-date-to": "วันที่ลงทะเบียน (สิ้นสุด)",
+    "graduated": "สำเร็จการศึกษา",
+    "graduated-placeholder": "เลือกสถานะ",
+    "search": "ค้นหา...",
+    "no-results": "ไม่พบผลลัพธ์",
+    "apply": "ค้นหา",
+    "cancel": "ยกเลิก",
+    "reset": "รีเซ็ต",
+    "filter-button": "ตัวกรองขั้นสูง",
+    "date-format": "วว/ดด/ปปปป"
   }
 }

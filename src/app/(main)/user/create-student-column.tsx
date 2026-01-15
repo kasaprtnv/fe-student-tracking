@@ -93,6 +93,17 @@ export const createStudentColumns = (
         return <span>{localString}</span>;
       },
     },
+    {
+      id: 'graduated',
+      header: t('graduated'),
+      accessorKey: 'graduated',
+      cell: ({ row }) => {
+        const graduated = row.original.graduated;
+        return (
+          <span>{graduated ? t('graduated-yes') : t('graduated-no')}</span>
+        );
+      },
+    },
   ];
   columns.push({
     id: 'actions',

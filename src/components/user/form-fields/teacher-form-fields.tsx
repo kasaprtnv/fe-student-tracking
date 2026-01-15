@@ -30,7 +30,9 @@ export const TeacherFormFields = ({
         name="teacherDegree"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t('label.teacher-degree')}</FormLabel>
+            <FormLabel className="text-sm font-medium text-gray-700">
+              {t('label.teacher-degree')}
+            </FormLabel>
             <FormControl>
               <Input {...field} placeholder={t('placeholder.teacher-degree')} />
             </FormControl>
