@@ -91,6 +91,7 @@ class UserService extends APIService {
           'role',
           'courseId',
           'teacherDegree',
+          'academicPosition',
         ]
       : [
           'code',
@@ -140,6 +141,7 @@ class UserService extends APIService {
           'role',
           'courseId',
           'teacherDegree',
+          'academicPosition',
         ]
       : [
           'code',

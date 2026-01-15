@@ -50,6 +50,7 @@ const teacherSchema = (t: (key: string) => string) =>
   baseSchema(t).extend({
     role: z.literal('teacher'),
     teacherDegree: z.string().optional(),
+    academicPosition: z.string().optional(),
     courseIds: z.array(z.string()).optional(),
   });
 
@@ -77,5 +78,6 @@ export interface UserFormValues {
   year?: string;
   studyPlan?: string;
   teacherDegree?: string;
+  academicPosition?: string;
   enrollDate?: string;
 }
