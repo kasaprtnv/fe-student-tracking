@@ -223,6 +223,7 @@ export default function StudentPage() {
       if (advancedFilters.enrollDateFrom && student.enrollDate) {
         const enrollDate = new Date(student.enrollDate);
         const fromDate = new Date(advancedFilters.enrollDateFrom);
+        fromDate.setHours(0, 0, 0, 0);
         if (enrollDate < fromDate) {
           return false;
         }
@@ -230,6 +231,7 @@ export default function StudentPage() {
       if (advancedFilters.enrollDateTo && student.enrollDate) {
         const enrollDate = new Date(student.enrollDate);
         const toDate = new Date(advancedFilters.enrollDateTo);
+        toDate.setHours(23, 59, 59, 999);
         if (enrollDate > toDate) {
           return false;
         }

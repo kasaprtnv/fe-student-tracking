@@ -146,6 +146,7 @@ export function UpdateUserFormDialog({
         email: user?.email || '',
         phone: user?.phone || '',
         teacherDegree: user?.teacherDegree || '',
+        academicPosition: user?.academicPosition || '',
         courseIds: [],
       };
     }

@@ -42,6 +42,24 @@ export const TeacherFormFields = ({
       />
       <FormField
         control={form.control}
+        name="academicPosition"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium text-gray-700">
+              {t('label.academic-position')}
+            </FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                placeholder={t('placeholder.academic-position')}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
         name="courseIds"
         render={({ field }) => (
           <FormItem>

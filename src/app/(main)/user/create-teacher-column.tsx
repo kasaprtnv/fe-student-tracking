@@ -49,6 +49,11 @@ export const createTeacherColumns = (
       cell: ({ row }) => row.original.teacherDegree || '-',
     },
     {
+      header: t('academic-position'),
+      accessorKey: 'academicPosition',
+      cell: ({ row }) => row.original.academicPosition || '-',
+    },
+    {
       header: t('managed-courses'),
       accessorKey: 'managedCourses',
       cell: ({ row }) => {

@@ -110,6 +110,7 @@ export function CreateUserFormDialog({
           email: '',
           phone: '',
           teacherDegree: '',
+          academicPosition: '',
           courseId: '',
         });
       }

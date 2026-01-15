@@ -10,8 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
+import { Calendar } from '@/components/ui/calendar';
 import { useTranslations } from 'next-intl';
-import { Filter, RotateCcw } from 'lucide-react';
+import { Filter, RotateCcw, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { th, enUS } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import { useLocale } from 'next-intl';
 
 export interface AdvancedFilterValues {
   code: string;
@@ -22,8 +27,8 @@ export interface AdvancedFilterValues {
   year: string[];
   courseId: string[];
   studyPlan: string[];
-  enrollDateFrom: string;
-  enrollDateTo: string;
+  enrollDateFrom: Date | undefined;
+  enrollDateTo: Date | undefined;
   graduated: string[];
 }
 
@@ -36,8 +41,8 @@ export const defaultFilterValues: AdvancedFilterValues = {
   year: [],
   courseId: [],
   studyPlan: [],
-  enrollDateFrom: '',
-  enrollDateTo: '',
+  enrollDateFrom: undefined,
+  enrollDateTo: undefined,
   graduated: [],
 };
 
@@ -63,6 +68,8 @@ export function AdvancedFilterPopover({
   isActive,
 }: AdvancedFilterPopoverProps) {
   const t = useTranslations('advanced-filter');
+  const locale = useLocale();
+  const dateLocale = locale === 'th' ? th : enUS;
   const [open, setOpen] = React.useState(false);
   const [filters, setFilters] =
     React.useState<AdvancedFilterValues>(currentFilters);
@@ -211,44 +218,103 @@ export function AdvancedFilterPopover({
             />
           </div>
 
-          {/* Row 5: Enroll Date Range */}
+          {/* Row 5: Enroll Date Range - Now uses Calendar picker */}
           <div className="space-y-1">
-            <Label htmlFor="enrollDateFrom" className="text-xs">
-              {t('enroll-date-from')}
-            </Label>
-            <Input
-              id="enrollDateFrom"
-              type="text"
-              placeholder={t('date-format')}
-              value={filters.enrollDateFrom}
-              onChange={(e) =>
-                setFilters({ ...filters, enrollDateFrom: e.target.value })
-              }
-              onFocus={(e) => (e.target.type = 'date')}
-              onBlur={(e) => {
-                if (!e.target.value) e.target.type = 'text';
-              }}
-              className="h-8 text-sm"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="enrollDateTo" className="text-xs">
-              {t('enroll-date-to')}
-            </Label>
-            <Input
-              id="enrollDateTo"
-              type="text"
-              placeholder={t('date-format')}
-              value={filters.enrollDateTo}
-              onChange={(e) =>
-                setFilters({ ...filters, enrollDateTo: e.target.value })
-              }
-              onFocus={(e) => (e.target.type = 'date')}
-              onBlur={(e) => {
-                if (!e.target.value) e.target.type = 'text';
-              }}
-              className="h-8 text-sm"
-            />
+            <Label className="text-xs">{t('enroll-date-range')}</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    'border-input min-h-[38px] w-full justify-start px-3 py-2 text-left text-sm font-normal',
+                    !filters.enrollDateFrom &&
+                      !filters.enrollDateTo &&
+                      'text-muted-foreground',
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {filters.enrollDateFrom && filters.enrollDateTo ? (
+                    <>
+                      {format(filters.enrollDateFrom, 'dd MMM yyyy', {
+                        locale: dateLocale,
+                      })}{' '}
+                      -{' '}
+                      {format(filters.enrollDateTo, 'dd MMM yyyy', {
+                        locale: dateLocale,
+                      })}
+                    </>
+                  ) : filters.enrollDateFrom ? (
+                    <>
+                      {format(filters.enrollDateFrom, 'dd MMM yyyy', {
+                        locale: dateLocale,
+                      })}{' '}
+                      - ...
+                    </>
+                  ) : filters.enrollDateTo ? (
+                    <>
+                      ... -{' '}
+                      {format(filters.enrollDateTo, 'dd MMM yyyy', {
+                        locale: dateLocale,
+                      })}
+                    </>
+                  ) : (
+                    <span>{t('select-date-range')}</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <div className="flex">
+                  <div className="border-r p-2">
+                    <p className="mb-2 text-center text-sm font-medium">
+                      {t('enroll-date-from')}
+                    </p>
+                    <Calendar
+                      mode="single"
+                      selected={filters.enrollDateFrom}
+                      onSelect={(date) =>
+                        setFilters({ ...filters, enrollDateFrom: date })
+                      }
+                      initialFocus
+                    />
+                  </div>
+                  <div className="p-2">
+                    <p className="mb-2 text-center text-sm font-medium">
+                      {t('enroll-date-to')}
+                    </p>
+                    <Calendar
+                      mode="single"
+                      selected={filters.enrollDateTo}
+                      onSelect={(date) =>
+                        setFilters({ ...filters, enrollDateTo: date })
+                      }
+                      disabled={(date) =>
+                        filters.enrollDateFrom
+                          ? date < filters.enrollDateFrom
+                          : false
+                      }
+                    />
+                  </div>
+                </div>
+                {(filters.enrollDateFrom || filters.enrollDateTo) && (
+                  <div className="border-t p-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full"
+                      onClick={() =>
+                        setFilters({
+                          ...filters,
+                          enrollDateFrom: undefined,
+                          enrollDateTo: undefined,
+                        })
+                      }
+                    >
+                      {t('clear-date')}
+                    </Button>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Row 6: Graduated */}

@@ -68,6 +68,7 @@
     "study-plan": "แผนการเรียน",
     "managed-courses": "ดูแลหลักสูตร",
     "teacher-degree": "วุฒิการศึกษา",
+    "academic-position": "ตำแหน่งทางวิชาการ",
     "graduated": "สำเร็จการศึกษา",
     "graduated-yes": "สำเร็จ",
     "graduated-no": "ยังไม่สำเร็จ"
@@ -508,7 +509,8 @@
         "is-active": "สถานะการใช้งาน",
         "course": "หลักสูตร",
         "study-plan": "แผนการเรียน",
-        "teacher-degree": "วุฒิการศึกษา"
+        "teacher-degree": "วุฒิการศึกษา",
+        "academic-position": "ตำแหน่งทางวิชาการ"
       },
       "placeholder": {
         "role": "เลือกประเภทผู้ใช้",
@@ -529,7 +531,8 @@
         "study-plan": "เลือกแผนการเรียน",
         "search-study-plan": "ค้นหาแผนการเรียน...",
         "no-study-plan-found": "ไม่พบแผนการเรียน",
-        "teacher-degree": "ระบุวุฒิการศึกษา"
+        "teacher-degree": "ระบุวุฒิการศึกษา",
+        "academic-position": "ระบุตำแหน่งทางวิชาการ"
       },
       "study-plan-options": {
         "plan-a": "แผน ก",
@@ -587,6 +590,8 @@
       "file-format": "รองรับไฟล์ .xlsx และ .xls (สูงสุด 5MB)",
       "upload-button": "อัปโหลด",
       "download-template": "ดาวน์โหลดไฟล์ตัวอย่าง",
+      "download-student-template": "ไฟล์ตัวอย่างนักศึกษา",
+      "download-teacher-template": "ไฟล์ตัวอย่างอาจารย์",
       "errors": {
         "invalid-file-type": "กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls)",
         "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด"
@@ -787,6 +792,9 @@
     "cancel": "ยกเลิก",
     "reset": "รีเซ็ต",
     "filter-button": "ตัวกรองขั้นสูง",
-    "date-format": "วว/ดด/ปปปป"
+    "date-format": "วว/ดด/ปปปป",
+    "select-date-range": "เลือกช่วงวันที่",
+    "enroll-date-range": "วันที่ลงทะเบียน",
+    "clear-date": "ล้างวันที่"
   }
 }
