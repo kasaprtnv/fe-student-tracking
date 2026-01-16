@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
-import { Download, RefreshCw, Filter } from 'lucide-react';
+import { Download, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { DataTableClickable } from '@/components/data-table/data-table-clickable';
@@ -27,7 +27,6 @@ export default function StudentPage() {
   const t = useTranslations('student-page');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
-  const tAdvFilter = useTranslations('advanced-filter');
 
   const { user } = useAuth();
   const { fetchAllCourses, allCourseId, courseMap } = useCourse();
@@ -310,13 +309,16 @@ export default function StudentPage() {
     advancedFilters,
   ]);
 
-  const handleViewProfile = (id: string) => {
-    router.push(`/profile/${id}`);
-  };
+  const handleViewProfile = useCallback(
+    (id: string) => {
+      router.push(`/profile/${id}`);
+    },
+    [router],
+  );
 
   const studentColumns = useMemo(
     () => createStudentColumns(tColumn, tDegree, handleViewProfile),
-    [tColumn, tDegree],
+    [tColumn, tDegree, handleViewProfile],
   );
 
   const filterColumns = useMemo<DataTableFilterField<User>[]>(() => {
