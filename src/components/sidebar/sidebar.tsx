@@ -27,6 +27,8 @@ export default function Sidebar() {
   const [, startTransition] = useTransition();
   const { pendingCount } = usePendingCount();
   const hiddenRoutes = [`/login`];
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   const t = useTranslations();
   const locale = useLocale();
@@ -319,7 +321,13 @@ export default function Sidebar() {
             onClick={() => router.push(`/profile/${user?.id}`)}
           >
             <Avatar className="h-10 w-10">
-              <AvatarImage src="/avatar.png" alt="Avatar" />
+              <AvatarImage
+                src={
+                  user?.profileImageUrl
+                    ? `${API_BASE_URL}${user.profileImageUrl}`
+                    : '/profile.png'
+                }
+              />
               <AvatarFallback>{`${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`}</AvatarFallback>
             </Avatar>
             {open && (
