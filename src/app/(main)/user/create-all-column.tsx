@@ -29,11 +29,6 @@ export const createAllStudentColumns = (
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
-      accessorKey: 'code',
-      header: t('code'),
-      cell: ({ row }) => row.original.code || '-',
-    },
-    {
       header: t('full-name'),
       accessorFn: (row) => {
         const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
@@ -65,51 +60,6 @@ export const createAllStudentColumns = (
           admin: tRole('admin'),
         };
         return roleMap[role] || role;
-      },
-    },
-    {
-      header: t('education-level'),
-      accessorKey: 'degree',
-      cell: ({ row }) => {
-        const degree = row.original.degree;
-        if (!degree) return '-';
-        const degreeMap: Record<string, string> = {
-          bachelor: tDegree('bachelor'),
-          master: tDegree('master'),
-          doctorate: tDegree('doctorate'),
-        };
-        return degreeMap[degree] || degree;
-      },
-    },
-    {
-      header: t('teacher-degree'),
-      accessorKey: 'teacherDegree',
-      cell: ({ row }) => row.original.teacherDegree || '-',
-    },
-    {
-      header: t('year'),
-      accessorKey: 'year',
-      cell: ({ row }) => row.original.year || '-',
-    },
-    {
-      header: t('course-name'),
-      accessorKey: 'courseName',
-      cell: ({ row }) => row.original.courseName || '-',
-    },
-    {
-      header: t('study-plan'),
-      accessorKey: 'studyPlan',
-      cell: ({ row }) => row.original.studyPlan || '-',
-    },
-    {
-      id: 'enrollDate',
-      header: t('enroll-date'),
-      accessorKey: 'enrollDate',
-      cell: (row) => {
-        const rawDate = row.getValue<string>();
-        if (!rawDate) return <span>-</span>;
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
       },
     },
   ];
