@@ -5,6 +5,7 @@ import {
 } from '@/types/index';
 import { APIService } from './api.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
+import { StudentStepAttempts } from '@/types/student-step-attempts';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -54,6 +55,16 @@ class StudentStepProgressService extends APIService {
       });
   }
 
+  async getAttemptsByUserId(
+    userId: string,
+  ): Promise<IApiGetResponse<StudentStepAttempts>> {
+    return this.get(`/student-step-progress/${userId}/attempts`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   // อนุมัติ
   async approve(
     id: string,
@@ -71,12 +82,10 @@ class StudentStepProgressService extends APIService {
     id: string,
     reviewedBy: string,
     declineReason: string,
-    staffAttachmentId?: string,
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
     return this.patch(`/student-step-progress/${id}/decline`, {
       reviewedBy,
       declineReason,
-      staffAttachmentId,
     })
       .then((response) => response?.data)
       .catch((error) => {

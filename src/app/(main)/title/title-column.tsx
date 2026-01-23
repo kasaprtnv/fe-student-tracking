@@ -1,74 +1,62 @@
 import { formatThaiDate } from '@/lib/format-date';
-import { formatPhoneNumber } from '@/lib/format-phone';
-import { User } from '@/types/user';
 import { ITitle } from '@/types/title';
 import { ColumnDef } from '@tanstack/react-table';
+
 import {
   DropdownMenu,
+  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 
-interface ColumnActions {
-  onEdit?: (data: User) => void;
+type ColumnActions = {
+  onEdit?: (record: ITitle) => void;
   onDelete?: (id: string) => void;
-  onActiveChange?: (id: string, isActive: boolean) => void;
   onLink?: (id: string) => void;
   t?: (key: string) => string;
-}
+};
 
-export const createAllStudentColumns = (
-  t: (key: string) => string,
-  tDegree: (key: string) => string,
-  tRole: (key: string) => string,
-  titleMap: Record<string, ITitle>,
-): ColumnDef<User>[] => {
-  const columns: ColumnDef<User>[] = [
+export const createTitleColumns = (): ColumnDef<ITitle>[] => {
+  const columns: ColumnDef<ITitle>[] = [
     {
-      header: t('full-name'),
-      accessorFn: (row) => {
-        const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
-        const firstName = row.firstName || '';
-        const lastName = row.lastName || '';
-        const fullName = `${titleName}${firstName} ${lastName}`.trim();
-        return fullName || '-';
+      accessorKey: 'name',
+      header: 'name',
+    },
+    {
+      accessorKey: 'description',
+      header: 'description',
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'created_at',
+      cell: (info) => {
+        const rawDate = info.getValue<string>();
+        const localString = formatThaiDate(rawDate);
+        return <span>{localString}</span>;
       },
     },
     {
-      header: t('email'),
-      accessorKey: 'email',
-      cell: ({ row }) => row.original.email || '-',
-    },
-    {
-      header: t('phone'),
-      accessorKey: 'phone',
-      cell: ({ row }) => formatPhoneNumber(row.original.phone),
-    },
-    {
-      header: t('role'),
-      accessorKey: 'role',
-      cell: ({ row }) => {
-        const role = row.original.role;
-        if (!role) return '-';
-        const roleMap: Record<string, string> = {
-          student: tRole('student'),
-          teacher: tRole('teacher'),
-          admin: tRole('admin'),
-        };
-        return roleMap[role] || role;
+      accessorKey: 'updatedAt',
+      header: 'updated_at',
+      cell: (info) => {
+        const rawDate = info.getValue<string>();
+        const localString = formatThaiDate(rawDate);
+        return <span>{localString}</span>;
       },
     },
   ];
+
+  // เพิ่มคอลัมน์ actions
   columns.push({
     id: 'actions',
     size: 40,
     cell: ({ row, table }) => {
       const record = row.original;
-      const { onEdit, onDelete, t } = table.options.meta as ColumnActions;
+      const { onEdit, onDelete, t, onLink } = table.options
+        .meta as ColumnActions;
 
       return (
         <DropdownMenu>
@@ -84,10 +72,7 @@ export const createAllStudentColumns = (
           <DropdownMenuContent align="end" className="w-40">
             {onEdit && (
               <>
-                <DropdownMenuItem
-                  onSelect={() => onEdit(record)}
-                  disabled={record.role === 'admin'}
-                >
+                <DropdownMenuItem onSelect={() => onEdit(record)}>
                   <div className="flex items-center gap-2">
                     <Pencil size={14} />
                     {t?.('edit')}
@@ -102,6 +87,15 @@ export const createAllStudentColumns = (
                 <div className="flex items-center gap-2">
                   <Trash2 size={14} color="#e7000b" />
                   {t?.('delete')}
+                </div>
+              </DropdownMenuItem>
+            )}
+
+            {onLink && (
+              <DropdownMenuItem onSelect={() => onLink(record.id)}>
+                <div className="flex items-center gap-2">
+                  <NotebookPen size={14} />
+                  {t?.('select-milestone')}
                 </div>
               </DropdownMenuItem>
             )}

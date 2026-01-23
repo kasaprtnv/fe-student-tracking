@@ -28,6 +28,11 @@ import {
   Lock,
   Unlock,
   TrendingUp,
+  File,
+  Upload,
+  Download,
+  CircleX,
+  CircleCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -40,9 +45,14 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Spinner } from '../ui/spinner';
 import { uploadService } from '@/services/upload.service';
 import { UploadFileDialog } from './upload-file-dialog';
+import { StudentStepAttempts } from '@/types/student-step-attempts';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
+import { studentStepProgressService } from '@/services/student-step-progress.service';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
+  stepAttempts: StudentStepAttempts[];
   mode?: ViewMode;
   enrollDate?: string;
   onFileUpload?: (stepId: string, file: File) => void;
@@ -68,6 +78,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   milestones,
   mode = 'readonly',
   onFileUpload,
+  stepAttempts,
   onSubmit,
   onSubmitSuccess,
   onToggleLock,
@@ -84,6 +95,16 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const [openMilestones, setOpenMilestones] = useState<Record<string, boolean>>(
     () => Object.fromEntries(milestones.map((m) => [m.id, true])),
   );
+  const attemptMap = useMemo(() => {
+    const map: Record<string, StudentStepAttempts> = {};
+    stepAttempts.forEach((attempt) => {
+      const stepId = attempt.stepProgress.mileStoneStepId;
+      if (!map[stepId] || attempt.attemptNo > map[stepId].attemptNo) {
+        map[stepId] = attempt;
+      }
+    });
+    return map;
+  }, [stepAttempts]);
 
   const [internalFiles, setInternalFiles] = useState<Record<string, File>>({});
   const [internalFileNames, setInternalFileNames] = useState<
@@ -145,6 +166,30 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     setConfirmModalOpen(true);
   };
 
+  const downloadFile = async (fileKey: string) => {
+    const url = uploadService.getFileUrl(fileKey);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Network response was not ok');
+      const blob = await res.blob();
+      const cd = res.headers.get('content-disposition') || '';
+      const match = cd.match(/filename\*?=(?:UTF-8'')?["']?([^;"']+)/i);
+      const filename = match
+        ? decodeURIComponent(match[1])
+        : fileKey.split('/').pop() || 'download';
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      window.open(url, '_blank');
+    }
+  };
+
   const handleConfirmSubmit = async () => {
     if (!pendingStepId) return;
 
@@ -154,8 +199,15 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     setConfirmModalOpen(false);
 
     if (!file) {
-      console.error('Missing file');
-      return;
+      const res = await studentStepProgressService.submitForReview(
+        stepId,
+        userId || '',
+      );
+      if (res.success) {
+        onSubmitSuccess?.(stepId);
+      }
+      onSubmit?.(stepId);
+      return res;
     }
 
     setInternalSubmitting((prev) => ({ ...prev, [stepId]: true }));
@@ -334,8 +386,8 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             className={cn(
                               'border-2 transition-colors',
                               completed && 'border-green-200 bg-green-50',
-                              declined && 'border-red-200 bg-red-50',
-                              pending && 'border-yellow-200 bg-yellow-50',
+                              declined && 'border-red-200',
+                              pending && 'border-yellow-200',
                               locked &&
                                 'border-muted bg-muted text-muted-foreground opacity-70',
                             )}
@@ -405,8 +457,23 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           <UploadFileDialog
                                             step={step}
                                             isUploading={isUploading}
-                                            onFileUpload={onFileUpload}
+                                            onFileUpload={(stepId, file) => {
+                                              setInternalFiles((prev) => ({
+                                                ...prev,
+                                                [stepId]: file,
+                                              }));
+                                              setInternalFileNames((prev) => ({
+                                                ...prev,
+                                                [stepId]: file.name,
+                                              }));
+                                              onFileUpload?.(stepId, file);
+                                            }}
                                           />
+                                          {/* {internalFileNames[step.id] && (
+                                            <span className="ml-2 text-sm text-green-600">
+                                              ✓ {internalFileNames[step.id]}
+                                            </span>
+                                          )} */}
                                         </div>
                                       )}
                                   </div>
@@ -416,42 +483,89 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       <span>{formatDate(deadline)}</span>
                                     </div>
                                     {completed && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="bg-green-100 text-green-700 hover:bg-green-100"
-                                      >
-                                        ✓ {t('completed')}
-                                      </Badge>
+                                      <>
+                                        <div className="flex items-center gap-1.5">
+                                          <CircleCheck className="size-5 text-green-600" />
+                                          <span className="text-lg text-green-600">
+                                            {t('completed')}
+                                          </span>
+                                        </div>
+                                      </>
                                     )}
                                     {declined && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="bg-red-100 text-red-700 hover:bg-red-100"
-                                      >
-                                        X {t('declined')}
-                                      </Badge>
+                                      <>
+                                        <div className="flex items-center gap-1.5">
+                                          <CircleX className="size-5 text-red-600" />
+                                          <span className="text-lg text-red-600">
+                                            {t('declined')}
+                                          </span>
+                                        </div>
+                                      </>
                                     )}
                                     {pending && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100"
-                                      >
-                                        <Spinner /> {t('pending')}
-                                      </Badge>
+                                      <>
+                                        <div className="flex items-center gap-1.5">
+                                          <Spinner className="size-5 text-yellow-400" />
+                                          <span className="text-lg text-yellow-400">
+                                            {t('pending')}
+                                          </span>
+                                        </div>
+                                      </>
                                     )}
                                     {locked && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="bg-muted text-muted-foreground hover:bg-muted"
-                                      >
-                                        <Lock className="mr-1 h-3 w-3" />
-                                        {t('locked')}
-                                      </Badge>
+                                      <>
+                                        <div className="flex items-center gap-1.5">
+                                          <Lock className="size-5 text-gray-600" />
+                                          <span className="text-lg text-gray-600">
+                                            {t('locked')}
+                                          </span>
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                  <div>
+                                    {/* Attachment Preview */}
+                                    {attemptMap[step.id] && declined && (
+                                      <>
+                                        {attemptMap[step.id]
+                                          .staffAttachment && (
+                                          <>
+                                            <div className="mt-3 font-bold">
+                                              {t('file_attachment')}
+                                            </div>
+                                            <div className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4">
+                                              <File className="mr-2" />
+                                              {
+                                                attemptMap[step.id]
+                                                  .staffAttachment?.fileName
+                                              }
+                                              <div className="ml-auto">
+                                                <Download
+                                                  className="hover:cursor-pointer"
+                                                  onClick={() =>
+                                                    downloadFile(
+                                                      attemptMap[step.id]
+                                                        .staffAttachment
+                                                        ?.fileKey || '',
+                                                    )
+                                                  }
+                                                />
+                                              </div>
+                                            </div>
+                                          </>
+                                        )}
+                                        <div className="mt-3 font-bold text-red-500">
+                                          {t('reason_for_decline')}
+                                        </div>
+                                        <div className="mt-3 h-24 w-1/2 rounded-2xl border p-4">
+                                          {attemptMap[step.id].staffComment}
+                                        </div>
+                                      </>
                                     )}
                                   </div>
                                   {mode === 'upload' &&
-                                    step.requiresAttachment &&
-                                    (available || declined) && (
+                                    (available || declined) &&
+                                    step.requiresAttachment && (
                                       <div className="mt-2 flex justify-end">
                                         <Button
                                           className="text-white"
@@ -474,6 +588,20 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           ) : (
                                             t('submit_button')
                                           )}
+                                        </Button>
+                                      </div>
+                                    )}
+                                  {mode === 'upload' &&
+                                    available &&
+                                    !step.requiresAttachment && (
+                                      <div className="mt-2 flex justify-end">
+                                        <Button
+                                          className="text-white"
+                                          onClick={() =>
+                                            openConfirmModal(step.id)
+                                          }
+                                        >
+                                          {t('submit_button')}
                                         </Button>
                                       </div>
                                     )}
@@ -505,7 +633,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
             <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmSubmit}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-black hover:bg-black"
             >
               {t('confirm')}
             </AlertDialogAction>
@@ -528,7 +656,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
           <AlertDialogFooter>
             <AlertDialogAction
               onClick={() => setSuccessModalOpen(false)}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-black hover:bg-black"
             >
               {t('ok')}
             </AlertDialogAction>

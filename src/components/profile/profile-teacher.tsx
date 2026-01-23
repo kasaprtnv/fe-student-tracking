@@ -127,7 +127,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
                 <span className="text-center">
                   <ScrollText className="size-6 text-red-800" />
                 </span>
-                <span className="text-xl">{/* {user?.degree ?? '-'} */}</span>
+                <span className="text-xl">{user?.teacherDegree ?? '-'}</span>
               </div>
             </div>
             <Separator />
@@ -169,9 +169,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
                 <span className="text-center">
                   <Medal className="size-6 text-red-800" />
                 </span>
-                <span className="text-xl">
-                  {/* {user?.academicPosition ?? '-'} */}
-                </span>
+                <span className="text-xl">{user?.academicPosition ?? '-'}</span>
               </div>
             </div>
             <Separator />

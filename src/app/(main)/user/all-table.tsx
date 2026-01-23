@@ -4,6 +4,7 @@ import React from 'react';
 import { DataTable } from '@/components/data-table/data-table';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
+import { useTitle } from '@/hooks/use-title';
 import { createAllStudentColumns } from './create-all-column';
 import { CreateUserFormDialog } from './create-user-form';
 import { UpdateUserFormDialog } from './update-user-form';
@@ -35,16 +36,18 @@ export const AllTable = () => {
     getStudentProgressCount,
   } = useUser();
   const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
+  const { titleMap, fetchAllTitles } = useTitle();
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
   const tRole = useTranslations('role');
   const tCommon = useTranslations('common');
 
-  // Fetch courses on mount
+  // Fetch courses and titles on mount
   React.useEffect(() => {
     fetchAllCourses();
-  }, [fetchAllCourses]);
+    fetchAllTitles();
+  }, [fetchAllCourses, fetchAllTitles]);
 
   // Get all users data directly from Redux store userMap and enrich with courseName
   const allUsers = React.useMemo(() => {
@@ -53,8 +56,11 @@ export const AllTable = () => {
       .filter((user) => {
         if (!query) return true;
         // Create full name to allow searching like "นายสมชาย ใจดี"
+        const titleName = user.titleId
+          ? titleMap[user.titleId]?.name || ''
+          : '';
         const fullName =
-          `${user.title || ''}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+          `${titleName}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
         // Strip non-digit characters for phone search
         const queryDigits = query.replace(/\D/g, '');
         const phoneDigits = user.phone?.replace(/\D/g, '') || '';
@@ -97,7 +103,7 @@ export const AllTable = () => {
                 ? 'admin'
                 : '';
         return (
-          user.title?.toLowerCase().includes(query) ||
+          titleName.toLowerCase().includes(query) ||
           user.firstName?.toLowerCase().includes(query) ||
           user.lastName?.toLowerCase().includes(query) ||
           user.code?.toLowerCase().includes(query) ||
@@ -135,7 +141,7 @@ export const AllTable = () => {
         }
         return user;
       });
-  }, [userMap, searchQuery, getCourseById]);
+  }, [userMap, searchQuery, getCourseById, titleMap]);
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId
@@ -146,7 +152,7 @@ export const AllTable = () => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const allColumns = createAllStudentColumns(tColumn, tDegree, tRole);
+  const allColumns = createAllStudentColumns(tColumn, tDegree, tRole, titleMap);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;

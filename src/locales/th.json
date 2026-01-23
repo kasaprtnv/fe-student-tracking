@@ -67,7 +67,11 @@
     "degree": "วุฒิการศึกษา",
     "study-plan": "แผนการเรียน",
     "managed-courses": "ดูแลหลักสูตร",
-    "teacher-degree": "วุฒิการศึกษา"
+    "teacher-degree": "วุฒิการศึกษา",
+    "academic-position": "ตำแหน่งทางวิชาการ",
+    "graduated": "สำเร็จการศึกษา",
+    "graduated-yes": "สำเร็จ",
+    "graduated-no": "ยังไม่สำเร็จ"
   },
   "common": {
     "submit": "ส่ง",
@@ -153,6 +157,44 @@
       "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบหลักสูตรนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
     }
   },
+  "title": {
+    "page-title": "คำนำหน้า",
+    "sub_title": "จัดการคำนำหน้า",
+    "title-form": {
+      "errors": {
+        "name-required": "กรุณากรอกชื่อคำนำหน้า",
+        "name-duplicate": "ชื่อคำนำหน้านี้มีอยู่แล้ว"
+      },
+      "label": {
+        "name": "ชื่อคำนำหน้า",
+        "description": "คำอธิบายคำนำหน้า"
+      },
+      "placeholder": {
+        "name": "กรอกชื่อคำนำหน้า",
+        "description": "กรอกคำอธิบายคำนำหน้า"
+      },
+      "toast": {
+        "created-successfully": "สร้างคำนำหน้าสำเร็จ!",
+        "creation-failed": "ไม่สามารถสร้างคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
+        "updated-successfully": "อัปเดตคำนำหน้าสำเร็จ!",
+        "update-failed": "ไม่สามารถอัปเดตคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
+        "deleted-successfully": "ลบคำนำหน้าสำเร็จ!",
+        "deletion-failed": "ไม่สามารถลบคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง"
+      },
+      "header": {
+        "create": "สร้างคำนำหน้าใหม่",
+        "edit": "แก้ไขคำนำหน้า"
+      },
+      "header_description": {
+        "create": "กรอกแบบฟอร์มด้านล่างเพื่อสร้างคำนำหน้าใหม่",
+        "edit": "อัปเดตรายละเอียดคำนำหน้าด้านล่าง"
+      }
+    },
+    "delete": {
+      "header": "ลบคำนำหน้า",
+      "confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบคำนำหน้านี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+    }
+  },
   "profile": {
     "personal_information": {
       "title": "รายละเอียดข้อมูลส่วนตัว",
@@ -173,9 +215,9 @@
     "contact_admin": "โปรดติดต่อเจ้าหน้าที่เพื่อลงทะเบียนหลักสูตร"
   },
   "milestone-progress": {
-    "completed": "สำเร็จ",
-    "pending": "รอดำเนินการ",
-    "declined": "ถูกปฏิเสธ",
+    "completed": "อนุมัติ",
+    "pending": "รอตรวจสอบ",
+    "declined": "ไม่อนุมัติ",
     "locked": "ไม่สามารถทำได้",
     "upload_button": "อัปโหลดไฟล์",
     "uploading": "กำลังอัปโหลด...",
@@ -185,6 +227,8 @@
     "overall_progress": "ความคืบหน้า",
     "accept_file_type": "รองรับไฟล์ประเภท",
     "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน",
+    "reason_for_decline": "เหตุผลที่ปฏิเสธ",
+    "file_attachment": "เอกสารที่แนบส่งมา",
     "confirm_submit_title": "ยืนยันการส่ง",
     "confirm_submit_description": "คุณต้องการยืนยันการส่งไฟล์นี้หรือไม่?",
     "cancel": "ยกเลิก",
@@ -194,7 +238,9 @@
     "ok": "ตกลง",
     "student_attachment_label": "เอกสารที่แนบส่งมา",
     "decline_reason_label": "เหตุผลในการปฏิเสธ",
-    "staff_attachment_label": "ไฟล์เพิ่มเติมจากเจ้าหน้าที่"
+    "staff_attachment_label": "ไฟล์เพิ่มเติมจากเจ้าหน้าที่",
+    "decline_reason": "เหตุผลที่ปฏิเสธ",
+    "download": "ดาวน์โหลด"
   },
   "milestone": {
     "title": "ขั้นตอนการศึกษา",
@@ -463,13 +509,14 @@
         "is-active": "สถานะการใช้งาน",
         "course": "หลักสูตร",
         "study-plan": "แผนการเรียน",
-        "teacher-degree": "วุฒิการศึกษา"
+        "teacher-degree": "วุฒิการศึกษา",
+        "academic-position": "ตำแหน่งทางวิชาการ"
       },
       "placeholder": {
         "role": "เลือกประเภทผู้ใช้",
         "code": "กรอกรหัส",
         "course": "เลือกหลักสูตร",
-        "title": "กรอกคำนำหน้า",
+        "title": "เลือกคำนำหน้า",
         "first-name": "กรอกชื่อ",
         "last-name": "กรอกนามสกุล",
         "email": "กรอกอีเมล",
@@ -481,8 +528,15 @@
         "no-course-found": "ไม่พบหลักสูตร",
         "search-year": "ค้นหาปีการศึกษา...",
         "no-year-found": "ไม่พบปีการศึกษา",
-        "study-plan": "กรอกแผนการเรียน",
-        "teacher-degree": "ระบุวุฒิการศึกษา"
+        "study-plan": "เลือกแผนการเรียน",
+        "search-study-plan": "ค้นหาแผนการเรียน...",
+        "no-study-plan-found": "ไม่พบแผนการเรียน",
+        "teacher-degree": "ระบุวุฒิการศึกษา",
+        "academic-position": "ระบุตำแหน่งทางวิชาการ"
+      },
+      "study-plan-options": {
+        "plan-a": "แผน ก",
+        "plan-b": "แผน ข"
       },
       "role": {
         "student": "นักศึกษา",
@@ -536,6 +590,8 @@
       "file-format": "รองรับไฟล์ .xlsx และ .xls (สูงสุด 5MB)",
       "upload-button": "อัปโหลด",
       "download-template": "ดาวน์โหลดไฟล์ตัวอย่าง",
+      "download-student-template": "ไฟล์ตัวอย่างนักศึกษา",
+      "download-teacher-template": "ไฟล์ตัวอย่างอาจารย์",
       "errors": {
         "invalid-file-type": "กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls)",
         "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด"
@@ -604,7 +660,9 @@
       "student_name": "ชื่อผู้ส่ง",
       "step": "หัวข้อที่ดำเนินการ",
       "submit_date": "วันที่ส่ง",
-      "reason": "เหตุผล"
+      "reason": "เหตุผล",
+      "decline_reason": "เหตุผลในการปฏิเสธ",
+      "staff_attachment": "เอกสารที่แนบมา"
     },
     "review": {
       "title": "ตรวจสอบการดำเนินการ",
@@ -704,5 +762,39 @@
     "enroll_date": "วันที่ส่ง",
     "actions": "ดาวน์โหลด",
     "no-files": "ไม่มีไฟล์ที่อนุมัติ"
+  },
+  "advanced-filter": {
+    "title": "ตัวกรองขั้นสูง",
+    "description": "กรองข้อมูลนักศึกษาตามเงื่อนไขที่ต้องการ",
+    "code": "รหัส",
+    "code-placeholder": "ค้นหารหัส...",
+    "full-name": "ชื่อ-นามสกุล",
+    "full-name-placeholder": "ค้นหาชื่อ-นามสกุล...",
+    "email": "อีเมล",
+    "email-placeholder": "ค้นหาอีเมล...",
+    "phone": "เบอร์โทร",
+    "phone-placeholder": "ค้นหาเบอร์โทร...",
+    "degree": "ระดับการศึกษา",
+    "degree-placeholder": "เลือกระดับการศึกษา",
+    "year": "ปีการศึกษา",
+    "year-placeholder": "เลือกปีการศึกษา",
+    "course": "หลักสูตร",
+    "course-placeholder": "เลือกหลักสูตร",
+    "study-plan": "แผนการเรียน",
+    "study-plan-placeholder": "เลือกแผนการเรียน",
+    "enroll-date-from": "วันที่ลงทะเบียน (เริ่มต้น)",
+    "enroll-date-to": "วันที่ลงทะเบียน (สิ้นสุด)",
+    "graduated": "สำเร็จการศึกษา",
+    "graduated-placeholder": "เลือกสถานะ",
+    "search": "ค้นหา...",
+    "no-results": "ไม่พบผลลัพธ์",
+    "apply": "ค้นหา",
+    "cancel": "ยกเลิก",
+    "reset": "รีเซ็ต",
+    "filter-button": "ตัวกรองขั้นสูง",
+    "date-format": "วว/ดด/ปปปป",
+    "select-date-range": "เลือกช่วงวันที่",
+    "enroll-date-range": "วันที่ลงทะเบียน",
+    "clear-date": "ล้างวันที่"
   }
 }

@@ -1,5 +1,6 @@
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
+import { useTitle } from '@/hooks/use-title';
 import { useCourseStaff } from '@/hooks/use-course_staff';
 import { createTeacherColumns } from './create-teacher-column';
 import { User } from '@/types/user';
@@ -23,6 +24,7 @@ export const TeacherTable = () => {
     userMap,
   } = useUser();
   const { allCourseId, getCourseById } = useCourse();
+  const { titleMap, fetchAllTitles } = useTitle();
   const { fetchAllCourseStaff } = useCourseStaff();
   const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
     [],
@@ -30,16 +32,17 @@ export const TeacherTable = () => {
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
 
-  // Fetch courses and course_staff on mount
+  // Fetch courses, titles and course_staff on mount
   React.useEffect(() => {
+    fetchAllTitles();
     fetchAllCourseStaff().then((response) => {
       if (response.data) {
         setAllCourseStaff(response.data);
       }
     });
-  }, [fetchAllCourseStaff]);
+  }, [fetchAllCourseStaff, fetchAllTitles]);
 
-  // Refetch course_staff data (called after form save)
+  // Refetch course_staff data (called after form save or import)
   const refetchCourseStaff = React.useCallback(() => {
     fetchAllCourseStaff().then((response) => {
       if (response.data) {
@@ -47,6 +50,18 @@ export const TeacherTable = () => {
       }
     });
   }, [fetchAllCourseStaff]);
+
+  // Listen for user import events to refetch course_staff
+  React.useEffect(() => {
+    const handleUserImported = () => {
+      refetchCourseStaff();
+    };
+
+    window.addEventListener('user-imported', handleUserImported);
+    return () => {
+      window.removeEventListener('user-imported', handleUserImported);
+    };
+  }, [refetchCourseStaff]);
 
   // Get teacher data directly from Redux store userMap and enrich with managedCourses
   const filterTeacher = React.useMemo(() => {
@@ -56,8 +71,11 @@ export const TeacherTable = () => {
         if (user.role !== 'teacher') return false;
         if (!query) return true;
         // Create full name to allow searching like "นายสมชาย ใจดี"
+        const titleName = user.titleId
+          ? titleMap[user.titleId]?.name || ''
+          : '';
         const fullName =
-          `${user.title || ''}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+          `${titleName}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
         // Strip non-digit characters for phone search
         const queryDigits = query.replace(/\D/g, '');
         const phoneDigits = user.phone?.replace(/\D/g, '') || '';
@@ -76,7 +94,7 @@ export const TeacherTable = () => {
           .join(' ');
 
         return (
-          user.title?.toLowerCase().includes(query) ||
+          titleName.toLowerCase().includes(query) ||
           user.firstName?.toLowerCase().includes(query) ||
           user.lastName?.toLowerCase().includes(query) ||
           user.code?.toLowerCase().includes(query) ||
@@ -104,7 +122,7 @@ export const TeacherTable = () => {
           managedCourses: managedCourses,
         };
       });
-  }, [userMap, searchQuery, getCourseById, allCourseStaff]);
+  }, [userMap, searchQuery, getCourseById, allCourseStaff, titleMap]);
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId
@@ -115,7 +133,7 @@ export const TeacherTable = () => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const teacherColumns = createTeacherColumns(tColumn);
+  const teacherColumns = createTeacherColumns(tColumn, titleMap);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;

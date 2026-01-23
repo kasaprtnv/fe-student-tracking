@@ -39,6 +39,15 @@ export default function LoginPage() {
     }
   };
 
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLDivElement | HTMLFormElement>,
+  ) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleLogin();
+    }
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="hidden h-full flex-col items-center justify-center bg-[#7b1f1f] p-12 lg:flex lg:w-1/2">
@@ -60,7 +69,14 @@ export default function LoginPage() {
         <p className="text-xl text-white">ระบบติดตามการเรียน</p>
       </div>
       <div className="flex h-full w-full items-center justify-center bg-gray-100 px-4 py-8 sm:p-8 lg:w-1/2">
-        <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-10 md:max-w-lg md:p-12 lg:max-w-2xl lg:p-16">
+        <form
+          className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-10 md:max-w-lg md:p-12 lg:max-w-2xl lg:p-16"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+          onKeyDown={handleKeyDown}
+        >
           <div className="mb-6 flex justify-center sm:mb-8 lg:mb-10">
             <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-[#7b1f1f] sm:h-32 sm:w-32 lg:h-40 lg:w-40 lg:border-[5px]">
               <svg
@@ -125,7 +141,7 @@ export default function LoginPage() {
             </div>
           </div>
           <button
-            onClick={handleLogin}
+            type="submit"
             className="w-full rounded-full bg-[#7b1f1f] px-6 py-3 text-base font-bold tracking-wider text-white uppercase transition-colors duration-300 hover:bg-[#5c1717] sm:px-8 sm:py-4 sm:text-lg lg:px-10 lg:py-5 lg:text-xl"
           >
             เข้าสู่ระบบ
@@ -137,7 +153,7 @@ export default function LoginPage() {
               {message}
             </p>
           )}
-        </div>
+        </form>
       </div>
     </div>
   );

@@ -17,9 +17,36 @@ export type FileItem = {
 type TranslationFunction = (key: string) => string;
 
 export function createFileColumns(
-  handleDownload: (file: FileItem) => void,
+  _handleDownload: (file: FileItem) => void,
   t?: TranslationFunction,
 ) {
+  // ฟังก์ชันดาวน์โหลดไฟล์โดยตรง ไม่เปิดแท็บใหม่
+  async function directDownload(file: FileItem) {
+    if (!file.file_url) return;
+    try {
+      const url = file.file_url.startsWith('http')
+        ? file.file_url
+        : (await import('@/services/upload.service')).uploadService.getFileUrl(
+            file.file_url,
+          );
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = file.filename || 'download';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(downloadUrl);
+      }, 100);
+    } catch (e) {
+      alert('ไม่สามารถดาวน์โหลดไฟล์ได้');
+    }
+  }
   return [
     {
       accessorKey: 'filename',
@@ -78,7 +105,7 @@ export function createFileColumns(
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleDownload(row.original)}
+          onClick={() => directDownload(row.original)}
         >
           <Download className="h-5 w-5" />
         </Button>

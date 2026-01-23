@@ -43,37 +43,25 @@ export default function VerifyCertificatePage() {
   const [data, setData] = useState<IStudentStepProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  // Only show pending approval status
+  const [statusFilter, setStatusFilter] = useState<string>('pending approval');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      if (statusFilter === 'all') {
-        const [pendingRes, approvedRes, declinedRes] = await Promise.all([
-          studentStepProgressService.getAll({ status: 'pending approval' }),
-          studentStepProgressService.getAll({ status: 'approved' }),
-          studentStepProgressService.getAll({ status: 'declined' }),
-        ]);
-        const allData = [
-          ...(pendingRes.data || []),
-          ...(approvedRes.data || []),
-          ...(declinedRes.data || []),
-        ];
-        setData(allData);
-      } else {
-        const response = await studentStepProgressService.getAll({
-          status: statusFilter,
-        });
-        setData(response.data || []);
-      }
+      // Always fetch only pending approval
+      const response = await studentStepProgressService.getAll({
+        status: 'pending approval',
+      });
+      setData(response.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }, [statusFilter]);
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -168,23 +156,7 @@ export default function VerifyCertificatePage() {
           enabledPagination={true}
           extraToolbarAction={() => (
             <div className="flex items-center gap-4">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder={t('filter.status')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('filter.all_status')}</SelectItem>
-                  <SelectItem value="pending approval">
-                    {t('status.pending')}
-                  </SelectItem>
-                  <SelectItem value="approved">
-                    {t('status.approved')}
-                  </SelectItem>
-                  <SelectItem value="declined">
-                    {t('status.declined')}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Status dropdown removed, only date picker remains */}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button

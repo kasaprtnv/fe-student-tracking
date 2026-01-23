@@ -46,6 +46,7 @@ import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
+import { useTitle } from '@/hooks/use-title';
 import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useSWRConfig } from 'swr';
 import { toast } from 'sonner';
@@ -82,7 +83,15 @@ export function UpdateUserFormDialog({
   const { updateExistingUser, storeAction, userMap, getStudentProgressCount } =
     useUser();
   const { fetchAllCourses, updateExistingCourse, getCourseById } = useCourse();
+  const { titleMap, allTitleId, fetchAllTitles } = useTitle();
   const { mutate } = useSWRConfig();
+
+  // Fetch titles when dialog opens
+  React.useEffect(() => {
+    if (open && allTitleId.length === 0) {
+      fetchAllTitles();
+    }
+  }, [open, allTitleId.length, fetchAllTitles]);
 
   // Check if email already exists (excluding current user)
   const isEmailExists = (email: string): boolean => {
@@ -116,7 +125,7 @@ export function UpdateUserFormDialog({
     if (userRole === 'student') {
       return {
         role: 'student',
-        title: user?.title || '',
+        titleId: user?.titleId || '',
         code: user?.code || '',
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
@@ -131,12 +140,13 @@ export function UpdateUserFormDialog({
     } else {
       return {
         role: 'teacher',
-        title: user?.title || '',
+        titleId: user?.titleId || '',
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
         email: user?.email || '',
         phone: user?.phone || '',
         teacherDegree: user?.teacherDegree || '',
+        academicPosition: user?.academicPosition || '',
         courseIds: [],
       };
     }
@@ -386,19 +396,32 @@ export function UpdateUserFormDialog({
               <div className="grid grid-cols-2 items-start gap-4">
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="titleId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
                         {t('label.title')}
                       </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t('placeholder.title')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          {...field}
-                        />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <SelectValue placeholder={t('placeholder.title')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {allTitleId.map((id) => {
+                            const title = titleMap[id];
+                            return (
+                              <SelectItem key={id} value={id}>
+                                {title?.name || id}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -633,13 +656,26 @@ export function UpdateUserFormDialog({
                       <FormLabel className="text-sm font-medium text-gray-700">
                         {t('label.study-plan')}
                       </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t('placeholder.study-plan')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          {...field}
-                        />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <SelectValue
+                              placeholder={t('placeholder.study-plan')}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="ก">
+                            {t('study-plan-options.plan-a')}
+                          </SelectItem>
+                          <SelectItem value="ข">
+                            {t('study-plan-options.plan-b')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

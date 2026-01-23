@@ -13,12 +13,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/use-user';
 import { PageHeader } from '@/components/page-header';
 import { ProfileTeacherComponent } from '@/components/profile/profile-teacher';
+import { useAttempt } from '@/hooks/use-attempt';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
   const { user, initialized } = useAuth();
   const { fetchUserDetails, userMap } = useUser();
   const { fetchMilestonesWithStatus, milestoneMap } = useMilestone();
+  const { getAttemptByUserId, stepAttemptsMap } = useAttempt();
   const router = useRouter();
   const params = useParams();
   const rawId = params.id;
@@ -33,6 +35,21 @@ export default function ProfilePage() {
       });
     }
   }, [isOwnProfile, id, userMap, fetchUserDetails, router, user?.id]);
+
+  useSWR(
+    user?.role === 'student' && user?.id
+      ? ['getStudentStepAttempts', user.id]
+      : null,
+    user?.role === 'student' && user?.id
+      ? async () => {
+          await getAttemptByUserId(user?.id ?? '');
+        }
+      : null,
+    {
+      revalidateOnFocus: true, // Refresh เมื่อกลับมาที่หน้านี้
+      refreshInterval: 30000, // Refresh ทุก 30 วินาที เพื่อให้เห็นการเปลี่ยนแปลงสถานะ
+    },
+  );
 
   const courseId = isOwnProfile ? user?.courseId : userMap[id ?? '']?.courseId;
   useSWR(
@@ -80,6 +97,7 @@ export default function ProfilePage() {
       <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
       <MilestoneComponent
         milestones={Object.values(milestoneMap)}
+        stepAttempts={Object.values(stepAttemptsMap)}
         mode={mode}
         enrollDate={profileEnrollDate}
         onFileUpload={handleFileUpload}

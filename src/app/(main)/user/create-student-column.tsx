@@ -1,6 +1,7 @@
 import { formatThaiDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
+import { ITitle } from '@/types/title';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   DropdownMenu,
@@ -24,6 +25,7 @@ interface ColumnActions {
 export const createStudentColumns = (
   t: (key: string) => string,
   tDegree: (key: string) => string,
+  titleMap: Record<string, ITitle>,
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
@@ -34,9 +36,11 @@ export const createStudentColumns = (
     {
       header: t('full-name'),
       accessorFn: (row) => {
-        const titleName = `${row.title || ''}${row.firstName || ''}`.trim();
+        const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
+        const firstName = row.firstName || '';
         const lastName = row.lastName || '';
-        return `${titleName} ${lastName}`.trim() || '-';
+        const fullName = `${titleName}${firstName} ${lastName}`.trim();
+        return fullName || '-';
       },
     },
     {
@@ -87,6 +91,17 @@ export const createStudentColumns = (
         if (!rawDate) return <span>-</span>;
         const localString = formatThaiDate(rawDate);
         return <span>{localString}</span>;
+      },
+    },
+    {
+      id: 'graduated',
+      header: t('graduated'),
+      accessorKey: 'graduated',
+      cell: ({ row }) => {
+        const graduated = row.original.graduated;
+        return (
+          <span>{graduated ? t('graduated-yes') : t('graduated-no')}</span>
+        );
       },
     },
   ];

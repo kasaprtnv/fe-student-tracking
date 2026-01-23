@@ -8,6 +8,26 @@ import { IStudentStepProgress } from '@/types/student-step-progress';
 import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 import { formatDate } from '@/lib/format-date';
+import { uploadService } from '@/services/upload.service';
+
+function mapDegree(degree?: string) {
+  switch (degree) {
+    case 'bachelor':
+      return 'ปริญญาตรี';
+    case 'master':
+      return 'ปริญญาโท';
+    case 'doctorate':
+      return 'ปริญญาเอก';
+    default:
+      return degree || '-';
+  }
+}
+
+function mapYear(year?: string) {
+  if (!year || year === '-') return '-';
+  if (/^\d+$/.test(year)) return `${year}`;
+  return year;
+}
 
 export default function FileListPage() {
   const t = useTranslations();
@@ -16,9 +36,7 @@ export default function FileListPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // แปลงข้อมูลจาก API เป็น FileItem
   const transformToFileItem = (item: IStudentStepProgress): FileItem => {
-    // รองรับทั้งโครงสร้างแบบ flat และแบบ nested
     const studentName =
       item.studentName ||
       (item.student
@@ -27,10 +45,15 @@ export default function FileListPage() {
     const studentCode = item.studentCode || item.student?.code || '-';
     const courseName = item.courseName || item.student?.courseName || '-';
     const stepName = item.stepName || item.step?.name || '-';
-    const fileName = item.fileName || item.attachment?.fileName || '-';
-    const fileUrl = item.fileUrl || item.attachment?.fileUrl || '';
-    const educationLevel = item.studentDegree || item.student?.degree || '-';
-    const gradYear = item.studentYear || item.student?.year || '-';
+    // รองรับข้อมูลไฟล์จาก API
+    const fileName = item.fileName || '-';
+    const fileUrl = item.fileUrl || item.fileKey || ''; // รองรับทั้ง fileUrl และ fileKey
+
+    const degreeRaw =
+      item.studentDegree ?? item.degree ?? item.student?.degree ?? '-';
+    const yearRaw = item.studentYear ?? item.year ?? item.student?.year ?? '-';
+    const educationLevel = mapDegree(degreeRaw);
+    const gradYear = mapYear(yearRaw);
 
     return {
       filename: fileName,
@@ -75,7 +98,10 @@ export default function FileListPage() {
   // จัดการดาวน์โหลดไฟล์
   function handleDownload(file: FileItem) {
     if (file.file_url) {
-      window.open(file.file_url, '_blank');
+      const url = file.file_url.startsWith('http')
+        ? file.file_url
+        : uploadService.getFileUrl(file.file_url);
+      window.open(url, '_blank');
     }
   }
 
