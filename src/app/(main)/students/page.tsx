@@ -130,8 +130,8 @@ export default function StudentPage() {
       advancedFilters.year.length > 0 ||
       advancedFilters.courseId.length > 0 ||
       advancedFilters.studyPlan.length > 0 ||
-      advancedFilters.enrollDateFrom !== '' ||
-      advancedFilters.enrollDateTo !== '' ||
+      advancedFilters.enrollDateFrom !== undefined ||
+      advancedFilters.enrollDateTo !== undefined ||
       advancedFilters.graduated.length > 0
     );
   }, [advancedFilters]);
