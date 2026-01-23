@@ -266,8 +266,28 @@ export default function VerifyDetailPage() {
   };
   const handleDownload = () => {
     const fileUrl = getFileUrl();
+    const fileName = getFileName();
     if (fileUrl) {
-      window.open(fileUrl, '_blank');
+      fetch(fileUrl)
+        .then((response) => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.blob();
+        })
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }, 100);
+        })
+        .catch((error) => {
+          console.error('Download error:', error);
+        });
     }
   };
 
