@@ -130,7 +130,7 @@ const UpdateMilestoneStepForm = ({
                       type="number"
                       placeholder={tForm('placeholder.dayPeriod')}
                       {...field}
-                      value={field.value ?? ''}
+                      value={Number(field.value ?? 0).toString()}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
@@ -149,7 +149,7 @@ const UpdateMilestoneStepForm = ({
                       type="number"
                       placeholder={tForm('placeholder.notifyBeforeDays')}
                       {...field}
-                      value={field.value ?? ''}
+                      value={Number(field.value ?? 0).toString()}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
