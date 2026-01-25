@@ -81,7 +81,7 @@ export const createCourseColumns = (
                     title={`${user.firstName} ${user.lastName || ''}`}
                   >
                     <AvatarImage
-                      src={'https://github.com/shadcn.png'}
+                      src={user.profileImageUrl}
                       alt={user.firstName}
                     />
                     <AvatarFallback className="bg-indigo-500 text-white">
