@@ -7,6 +7,7 @@
     "userManagement": "User",
     "studentReport": "Student Report",
     "progressVerify": "Progress Verify",
+    "stepProgressReport": "Step Progress Report",
     "mergeFiles": "Merge Files",
     "settings": "Settings",
     "logout": "Logout"
@@ -67,7 +68,12 @@
     "degree": "Degree",
     "study-plan": "Study Plan",
     "managed-courses": "Managed Courses",
-    "teacher-degree": "Degree"
+    "teacher-degree": "Degree",
+    "student-code": "Student Code",
+    "milestone-name": "Milestone Name",
+    "step-name": "Step Name",
+    "status": "Status",
+    "due-date": "Due Date"
   },
   "common": {
     "submit": "Submit",
@@ -749,5 +755,42 @@
     "enroll_date": "Submit Date",
     "actions": "Download",
     "no-files": "No approved files"
+  },
+  "status": {
+    "locked": "Locked",
+    "pending": "Pending",
+    "declined": "Declined",
+    "approved": "Approved",
+    "available": "Available"
+  },
+  "step-progress-report": {
+    "title": "Step Progress Report",
+    "sub_title": "Generate and view reports on student progress for each milestone step.",
+    "please-select-filters": "Please select filters to generate the report",
+    "filter_instruction-line-1": "Select academic year, course, milestone, milestone step, education level",
+    "filter_instruction-line-2": "Status, and click the 'Apply Filters' button to display data",
+    "filter_instruction-line-3": "Graduate progress",
+    "loading": "Loading report data...",
+    "filter-form": {
+      "year": "Academic Year",
+      "course": "Course",
+      "milestone": "Milestone",
+      "step": "Milestone Step",
+      "degree": "Education Level",
+      "status": "Status",
+      "apply-filters": "Apply Filters",
+      "export-excel": "Export as Excel"
+    }
+  },
+  "components": {
+    "multi-select": {
+      "placeholder": "Select options...",
+      "selected_items": "{count} items selected",
+      "search_placeholder": "Search...",
+      "no_results": "No results found."
+    },
+    "loading-dot": {
+      "loading": "Loading"
+    }
   }
 }

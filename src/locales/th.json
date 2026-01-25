@@ -7,6 +7,7 @@
     "userManagement": "ผู้ใช้งาน",
     "studentReport": "รายงานบัณฑิต",
     "progressVerify": "ตรวจสอบหลักฐาน",
+    "stepProgressReport": "รายงานความก้าวหน้า",
     "mergeFiles": "รวมไฟล์",
     "settings": "การตั้งค่า",
     "logout": "ออกจากระบบ"
@@ -744,5 +745,41 @@
     "enroll_date": "วันที่ส่ง",
     "actions": "ดาวน์โหลด",
     "no-files": "ไม่มีไฟล์ที่อนุมัติ"
+  },
+  "status": {
+    "locked": "ยังไม่เริ่มดำเนินการ",
+    "pending": "อยู่ระหว่างรอการอนุมัติ",
+    "declined": "ไม่ผ่านการพิจารณา",
+    "approved": "ผ่านการพิจารณา",
+    "available": "เริ่มดำเนินการ"
+  },
+  "step-progress-report": {
+    "title": "รายงานความก้าวหน้าของขั้นตอนการศึกษา",
+    "sub_title": "สร้างและดูรายงานความก้าวหน้าของนักศึกษาสำหรับแต่ละขั้นตอนของเป้าหมาย",
+    "please-select-filters": "กรุณาเลือกตัวกรองเพื่อสร้างรายงาน",
+    "filter_instruction-line-1": "เลือกปีการศึกษา หลักสูตร ขั้นตอนการศึกษา ขั้นตอนการศึกษาย่อยระดับการศึกษา",
+    "filter_instruction-line-2": "สถานะ และกดปุ่ม 'ใช้ตัวกรอง' เพื่อแสดงข้อมูล",
+    "filter_instruction-line-3": "ความก้าวหน้าของบัณฑิตศึกษา",
+    "filter-form": {
+      "year": "ปีการศึกษา",
+      "course": "หลักสูตร",
+      "milestone": "ขั้นตอนการศึกษา",
+      "step": "ขั้นตอนการศึกษาย่อย",
+      "degree": "ระดับการศึกษา",
+      "status": "สถานะ",
+      "apply-filters": "ใช้ตัวกรอง",
+      "export-excel": " ส่งออกรายงาน"
+    }
+  },
+  "components": {
+    "multi-select": {
+      "placeholder": "เลือกรายการ...",
+      "selected_items": "เลือกแล้ว {count} รายการ",
+      "search_placeholder": "ค้นหา...",
+      "no_results": "ไม่พบผลลัพธ์"
+    }
+  },
+  "loading-dot": {
+    "loading": "กำลังโหลด"
   }
 }
