@@ -67,7 +67,6 @@ interface MilestoneProgressProps {
   userId?: string;
 }
 
-// Utility: แปลง status เป็น completed/isActive
 const isStepCompleted = (status: string) => status === 'approved';
 const isStepDeclined = (status: string) => status === 'declined';
 const isStepPending = (status: string) => status === 'pending approval';
@@ -106,7 +105,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     return map;
   }, [stepAttempts]);
 
-  // รองรับหลายไฟล์ (สูงสุด 2 ไฟล์)
   const [internalFiles, setInternalFiles] = useState<Record<string, File[]>>(
     {},
   );
