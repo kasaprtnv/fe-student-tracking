@@ -55,7 +55,14 @@ export function SingleCombobox({
           className={`w-full justify-between overflow-hidden font-normal ${errorMessage && 'border-red-500'} dark:bg-neutral-800 dark:text-gray-200`}
           disabled={disabled}
         >
-          <span className="block min-w-0 flex-1 truncate text-left">
+          <span
+            className="block min-w-0 flex-1 truncate text-left"
+            title={
+              value
+                ? options.find((option) => option.value === value)?.label
+                : undefined
+            }
+          >
             {value ? (
               options.find((option) => option.value === value)?.label
             ) : (
@@ -102,7 +109,10 @@ export function SingleCombobox({
                     }}
                     className="flex items-center gap-2"
                   >
-                    <span className="min-w-0 flex-1 truncate">
+                    <span
+                      className="min-w-0 flex-1 truncate"
+                      title={option.label}
+                    >
                       {option.label}
                     </span>
                     <Check
