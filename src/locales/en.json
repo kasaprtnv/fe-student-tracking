@@ -502,6 +502,7 @@
       "label": {
         "role": "Role",
         "code": "Code",
+        "student-code": "Student ID",
         "student-course": "Enroll Course",
         "teacher-course": "Responsibility Course (Can select multiple)",
         "title": "Title",
@@ -520,6 +521,7 @@
       "placeholder": {
         "role": "Select role",
         "code": "Enter code",
+        "student-code": "Enter student ID",
         "course": "Select course",
         "title": "Select title",
         "first-name": "Enter first name",
