@@ -67,7 +67,11 @@
     "degree": "Degree",
     "study-plan": "Study Plan",
     "managed-courses": "Managed Courses",
-    "teacher-degree": "Degree"
+    "teacher-degree": "Degree",
+    "academic-position": "Academic Position",
+    "graduated": "Graduated",
+    "graduated-yes": "Graduated",
+    "graduated-no": "Not Graduated"
   },
   "common": {
     "submit": "Submit",
@@ -509,13 +513,14 @@
         "enroll-date": "Enroll Date",
         "is-active": "Is Active",
         "study-plan": "Study Plan",
-        "teacher-degree": "Type your degree"
+        "teacher-degree": "Type your degree",
+        "academic-position": "Academic Position"
       },
       "placeholder": {
         "role": "Select role",
         "code": "Enter code",
         "course": "Select course",
-        "title": "Enter title",
+        "title": "Select title",
         "first-name": "Enter first name",
         "last-name": "Enter last name",
         "email": "Enter email",
@@ -527,8 +532,15 @@
         "no-course-found": "No course found",
         "search-year": "Search year...",
         "no-year-found": "No year found",
-        "study-plan": "Enter study plan",
-        "teacher-degree": "Type teacher degree"
+        "study-plan": "Select study plan",
+        "search-study-plan": "Search study plan...",
+        "no-study-plan-found": "No study plan found",
+        "teacher-degree": "Type teacher degree",
+        "academic-position": "Type academic position"
+      },
+      "study-plan-options": {
+        "plan-a": "Plan ก",
+        "plan-b": "Plan ข"
       },
       "role": {
         "student": "Student",
@@ -582,6 +594,8 @@
       "file-format": "Supports .xlsx and .xls files (max 5MB)",
       "upload-button": "Upload",
       "download-template": "Download Template",
+      "download-student-template": "Student Template",
+      "download-teacher-template": "Teacher Template",
       "errors": {
         "invalid-file-type": "Please select an Excel file (.xlsx or .xls)",
         "no-file-selected": "Please select a file before uploading"
@@ -688,8 +702,8 @@
     }
   },
   "student-page": {
-    "title": "Graduate List",
-    "description": "View all graduate information. Click on a row to view profile.",
+    "title": "Student List",
+    "description": "View all student information. Click on a row to view profile.",
     "export-button": "Export Data"
   },
   "degree": {
@@ -754,5 +768,39 @@
     "enroll_date": "Submit Date",
     "actions": "Download",
     "no-files": "No approved files"
+  },
+  "advanced-filter": {
+    "title": "Advanced Filter",
+    "description": "Filter student data by specific criteria",
+    "code": "Code",
+    "code-placeholder": "Search code...",
+    "full-name": "Full Name",
+    "full-name-placeholder": "Search name...",
+    "email": "Email",
+    "email-placeholder": "Search email...",
+    "phone": "Phone",
+    "phone-placeholder": "Search phone...",
+    "degree": "Education Level",
+    "degree-placeholder": "Select education level",
+    "year": "Academic Year",
+    "year-placeholder": "Select year",
+    "course": "Course",
+    "course-placeholder": "Select course",
+    "study-plan": "Study Plan",
+    "study-plan-placeholder": "Select study plan",
+    "enroll-date-from": "Enroll Date (From)",
+    "enroll-date-to": "Enroll Date (To)",
+    "graduated": "Graduated",
+    "graduated-placeholder": "Select status",
+    "search": "Search...",
+    "no-results": "No results found",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "filter-button": "Advanced Filter",
+    "date-format": "mm/dd/yyyy",
+    "select-date-range": "Select date range",
+    "enroll-date-range": "Enroll Date",
+    "clear-date": "Clear date"
   }
 }

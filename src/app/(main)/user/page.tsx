@@ -43,8 +43,12 @@ const UserPage = () => {
   );
 
   const handleImportSuccess = async () => {
-    // Refresh user list after successful import
+    // Refresh user list and courses after successful import
     await fetchAllUsers();
+    await fetchAllCourses();
+
+    // Dispatch event to notify tables to refetch their data
+    window.dispatchEvent(new Event('user-imported'));
   };
 
   // Don't render anything until we confirm user is admin
