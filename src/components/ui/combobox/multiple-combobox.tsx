@@ -63,7 +63,7 @@ export function MultiCombobox({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen} modal={true}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -72,7 +72,7 @@ export function MultiCombobox({
           aria-expanded={open}
           tabIndex={0}
           className={cn(
-            'border-input bg-background h-[max-content] w-full rounded-md border px-3 py-2 text-sm font-normal transition-all',
+            'border-input bg-background h-[max-content] w-full rounded-md border px-3 py-2 text-sm transition-all',
             'focus:ring-ring focus:ring-1 focus:outline-none',
             'flex items-center justify-between',
             errorMessage && 'border-red-500',

@@ -71,7 +71,8 @@
     "academic-position": "Academic Position",
     "graduated": "Graduated",
     "graduated-yes": "Graduated",
-    "graduated-no": "Not Graduated"
+    "graduated-no": "Not Graduated",
+    "student-code": "Student Code"
   },
   "common": {
     "submit": "Submit",

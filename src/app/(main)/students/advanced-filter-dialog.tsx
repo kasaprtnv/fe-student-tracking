@@ -9,7 +9,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 import { Calendar } from '@/components/ui/calendar';
 import { useTranslations } from 'next-intl';
 import { Filter, RotateCcw, CalendarIcon } from 'lucide-react';
@@ -17,6 +16,14 @@ import { format } from 'date-fns';
 import { th, enUS } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useLocale } from 'next-intl';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandInput,
+} from '@/components/ui/command';
+import { Check, ChevronsUpDown } from 'lucide-react';
 
 export interface AdvancedFilterValues {
   code: string;
@@ -73,13 +80,18 @@ export function AdvancedFilterPopover({
   const [open, setOpen] = React.useState(false);
   const [filters, setFilters] =
     React.useState<AdvancedFilterValues>(currentFilters);
-  const [resetKey, setResetKey] = React.useState(0);
 
   React.useEffect(() => {
     if (open) {
       setFilters(currentFilters);
     }
   }, [open, currentFilters]);
+
+  const toggleArrayValue = (arr: string[], value: string) => {
+    return arr.includes(value)
+      ? arr.filter((v) => v !== value)
+      : [...arr, value];
+  };
 
   const handleApply = () => {
     onApply(filters);
@@ -88,7 +100,6 @@ export function AdvancedFilterPopover({
 
   const handleReset = () => {
     setFilters(defaultFilterValues);
-    setResetKey((prev) => prev + 1); // Force re-render of MultiCombobox components
   };
 
   const handleCancel = () => {
@@ -171,57 +182,263 @@ export function AdvancedFilterPopover({
           {/* Row 3: Degree, Year */}
           <div className="space-y-1">
             <Label className="text-xs">{t('degree')}</Label>
-            <MultiCombobox
-              key={`degree-${resetKey}`}
-              options={degreeOptions}
-              defaultValue={filters.degree}
-              onChange={(values) => setFilters({ ...filters, degree: values })}
-              placeholder={t('degree-placeholder')}
-              placeholderSearch={t('search')}
-              placeholderEmpty={t('no-results')}
-            />
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className="w-full justify-between text-sm font-normal"
+                >
+                  <div className="flex flex-wrap gap-1">
+                    {filters.degree.length > 0 ? (
+                      filters.degree.map((val) => (
+                        <span
+                          key={val}
+                          className="bg-muted rounded px-2 py-0.5 text-xs"
+                        >
+                          {degreeOptions.find((o) => o.value === val)?.label ??
+                            val}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-muted-foreground">
+                        {t('degree-placeholder')}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                <Command>
+                  <CommandInput placeholder={t('search')} />
+                  <CommandEmpty>{t('no-results')}</CommandEmpty>
+                  <CommandGroup>
+                    {degreeOptions.map((option) => (
+                      <CommandItem
+                        key={option.value}
+                        onSelect={() =>
+                          setFilters({
+                            ...filters,
+                            degree: toggleArrayValue(
+                              filters.degree,
+                              option.value,
+                            ),
+                          })
+                        }
+                      >
+                        <span>{option.label}</span>
+                        <Check
+                          className={cn(
+                            'ml-auto h-4 w-4',
+                            filters.degree.includes(option.value)
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           <div className="space-y-1">
             <Label className="text-xs">{t('year')}</Label>
-            <MultiCombobox
-              key={`year-${resetKey}`}
-              options={yearOptions}
-              defaultValue={filters.year}
-              onChange={(values) => setFilters({ ...filters, year: values })}
-              placeholder={t('year-placeholder')}
-              placeholderSearch={t('search')}
-              placeholderEmpty={t('no-results')}
-            />
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className="w-full justify-between text-sm font-normal"
+                >
+                  <div className="flex flex-wrap gap-1">
+                    {filters.year.length > 0 ? (
+                      filters.year.map((val) => (
+                        <span
+                          key={val}
+                          className="bg-muted rounded px-2 py-0.5 text-xs"
+                        >
+                          {yearOptions.find((o) => o.value === val)?.label ??
+                            val}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-muted-foreground">
+                        {t('year-placeholder')}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                <Command>
+                  <CommandInput placeholder={t('search')} />
+                  <CommandEmpty>{t('no-results')}</CommandEmpty>
+                  <CommandGroup>
+                    {yearOptions.map((option) => (
+                      <CommandItem
+                        key={option.value}
+                        onSelect={() =>
+                          setFilters({
+                            ...filters,
+                            year: toggleArrayValue(filters.year, option.value),
+                          })
+                        }
+                      >
+                        <span>{option.label}</span>
+                        <Check
+                          className={cn(
+                            'ml-auto h-4 w-4',
+                            filters.year.includes(option.value)
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Row 4: Course, Study Plan */}
           <div className="space-y-1">
             <Label className="text-xs">{t('course')}</Label>
-            <MultiCombobox
-              key={`course-${resetKey}`}
-              options={courseOptions}
-              defaultValue={filters.courseId}
-              onChange={(values) =>
-                setFilters({ ...filters, courseId: values })
-              }
-              placeholder={t('course-placeholder')}
-              placeholderSearch={t('search')}
-              placeholderEmpty={t('no-results')}
-            />
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className="w-full justify-between text-sm font-normal"
+                >
+                  <div className="flex flex-wrap gap-1">
+                    {filters.courseId.length > 0 ? (
+                      filters.courseId.map((val) => (
+                        <span
+                          key={val}
+                          className="bg-muted rounded px-2 py-0.5 text-xs"
+                        >
+                          {courseOptions.find((o) => o.value === val)?.label ??
+                            val}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-muted-foreground">
+                        {t('course-placeholder')}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                <Command>
+                  <CommandInput placeholder={t('search')} />
+                  <CommandEmpty>{t('no-results')}</CommandEmpty>
+                  <CommandGroup>
+                    {courseOptions.map((option) => (
+                      <CommandItem
+                        key={option.value}
+                        onSelect={() =>
+                          setFilters({
+                            ...filters,
+                            courseId: toggleArrayValue(
+                              filters.courseId,
+                              option.value,
+                            ),
+                          })
+                        }
+                      >
+                        <span>{option.label}</span>
+                        <Check
+                          className={cn(
+                            'ml-auto h-4 w-4',
+                            filters.courseId.includes(option.value)
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
+
           <div className="space-y-1">
             <Label className="text-xs">{t('study-plan')}</Label>
-            <MultiCombobox
-              key={`studyPlan-${resetKey}`}
-              options={studyPlanOptions}
-              defaultValue={filters.studyPlan}
-              onChange={(values) =>
-                setFilters({ ...filters, studyPlan: values })
-              }
-              placeholder={t('study-plan-placeholder')}
-              placeholderSearch={t('search')}
-              placeholderEmpty={t('no-results')}
-            />
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className="w-full justify-between text-sm font-normal"
+                >
+                  <div className="flex flex-wrap gap-1">
+                    {filters.studyPlan.length > 0 ? (
+                      filters.studyPlan.map((val) => (
+                        <span
+                          key={val}
+                          className="bg-muted rounded px-2 py-0.5 text-xs"
+                        >
+                          {studyPlanOptions.find((o) => o.value === val)
+                            ?.label ?? val}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-muted-foreground">
+                        {t('study-plan-placeholder')}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                <Command>
+                  <CommandInput placeholder={t('search')} />
+                  <CommandEmpty>{t('no-results')}</CommandEmpty>
+                  <CommandGroup>
+                    {studyPlanOptions.map((option) => (
+                      <CommandItem
+                        key={option.value}
+                        onSelect={() =>
+                          setFilters({
+                            ...filters,
+                            studyPlan: toggleArrayValue(
+                              filters.studyPlan,
+                              option.value,
+                            ),
+                          })
+                        }
+                      >
+                        <span>{option.label}</span>
+                        <Check
+                          className={cn(
+                            'ml-auto h-4 w-4',
+                            filters.studyPlan.includes(option.value)
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Row 5: Enroll Date Range - Now uses Calendar picker */}
@@ -326,17 +543,68 @@ export function AdvancedFilterPopover({
           {/* Row 6: Graduated */}
           <div className="space-y-1">
             <Label className="text-xs">{t('graduated')}</Label>
-            <MultiCombobox
-              key={`graduated-${resetKey}`}
-              options={graduatedOptions}
-              defaultValue={filters.graduated}
-              onChange={(values) =>
-                setFilters({ ...filters, graduated: values })
-              }
-              placeholder={t('graduated-placeholder')}
-              placeholderSearch={t('search')}
-              placeholderEmpty={t('no-results')}
-            />
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className="w-full justify-between text-sm font-normal"
+                >
+                  <div className="flex flex-wrap gap-1">
+                    {filters.graduated.length > 0 ? (
+                      filters.graduated.map((val) => (
+                        <span
+                          key={val}
+                          className="bg-muted rounded px-2 py-0.5 text-xs"
+                        >
+                          {graduatedOptions.find((o) => o.value === val)
+                            ?.label ?? val}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-muted-foreground">
+                        {t('graduated-placeholder')}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                <Command>
+                  <CommandInput placeholder={t('search')} />
+                  <CommandEmpty>{t('no-results')}</CommandEmpty>
+                  <CommandGroup>
+                    {graduatedOptions.map((option) => (
+                      <CommandItem
+                        key={option.value}
+                        onSelect={() =>
+                          setFilters({
+                            ...filters,
+                            graduated: toggleArrayValue(
+                              filters.graduated,
+                              option.value,
+                            ),
+                          })
+                        }
+                      >
+                        <span>{option.label}</span>
+                        <Check
+                          className={cn(
+                            'ml-auto h-4 w-4',
+                            filters.graduated.includes(option.value)
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
