@@ -1,6 +1,7 @@
 import { APIService } from './api.service';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_STATIC_URL = process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
 
 export interface AttachmentDTO {
   id?: string;
@@ -136,7 +137,7 @@ class UploadService extends APIService {
         .replace(/^attachments\//, '')
         .replace(/^attachments\//, '');
     }
-    return `${API_BASE_URL}/attachments/${cleanKey}`;
+    return `${API_STATIC_URL}/attachments/${cleanKey}`;
   }
 
   // อัพเดท attachment
