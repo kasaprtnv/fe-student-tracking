@@ -52,26 +52,28 @@ export function SummaryCards({
         </Card>
       </Link>
       {!isTeacher && (
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t('total-teachers')}
-            </CardTitle>
-            <GraduationCap className="text-muted-foreground h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Loader2 className="h-6 w-6 animate-spin" />
-            ) : (
-              <>
-                <div className="text-2xl font-bold">{totalTeachers}</div>
-                <p className="text-muted-foreground text-xs">
-                  {t('unit-people')}
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+        <Link href="/user?tab=teachers" className="block">
+          <Card className="cursor-pointer transition-shadow hover:shadow-md">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t('total-teachers')}
+              </CardTitle>
+              <GraduationCap className="text-muted-foreground h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Loader2 className="h-6 w-6 animate-spin" />
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{totalTeachers}</div>
+                  <p className="text-muted-foreground text-xs">
+                    {t('unit-people')}
+                  </p>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
       )}
       {userRole === 'admin' ? (
         <Link href="/course" className="block">

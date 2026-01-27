@@ -11,7 +11,7 @@ export const createStudentColumns = (
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'code',
-      header: t('code'),
+      header: t('student-code'),
       cell: ({ row }) => {
         const code = row.original.code;
         const id = row.original.id;

@@ -30,7 +30,7 @@ export const createStudentColumns = (
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'code',
-      header: t('code'),
+      header: t('student-code'),
       cell: ({ row }) => row.original.code || '-',
     },
     {
