@@ -82,14 +82,24 @@ class StudentStepProgressService extends APIService {
     id: string,
     reviewedBy: string,
     declineReason: string,
+    staffAttachmentFile?: File,
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
-    return this.patch(`/student-step-progress/${id}/decline`, {
-      reviewedBy,
-      declineReason,
+    const formData = new FormData();
+    formData.append('reviewedBy', reviewedBy);
+    formData.append('declineReason', declineReason);
+    if (staffAttachmentFile) {
+      formData.append('staffAttachmentFile', staffAttachmentFile);
+    }
+    return fetch(`${this.baseURL}/student-step-progress/${id}/decline`, {
+      method: 'PATCH',
+      body: formData,
     })
-      .then((response) => response?.data)
+      .then(async (response) => {
+        if (!response.ok) throw await response.json();
+        return response.json();
+      })
       .catch((error) => {
-        throw error?.response?.data;
+        throw error;
       });
   }
 

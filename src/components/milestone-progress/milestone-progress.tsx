@@ -164,9 +164,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   };
 
   const downloadFile = async (fileKey: string) => {
-    const url = uploadService.getFileUrl(fileKey);
+    const fileUrl = fileKey.startsWith('attachments')
+      ? `${process.env.NEXT_PUBLIC_API_URL}/${fileKey}`
+      : fileKey;
     try {
-      const res = await fetch(url);
+      const res = await fetch(fileUrl);
       if (!res.ok) throw new Error('Network response was not ok');
       const blob = await res.blob();
       const cd = res.headers.get('content-disposition') || '';
@@ -183,7 +185,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       a.remove();
       URL.revokeObjectURL(objectUrl);
     } catch {
-      window.open(url, '_blank');
+      window.open(fileUrl, '_blank');
     }
   };
 
@@ -592,7 +594,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       </div>
                                     )}
                                   {mode === 'upload' &&
-                                    available &&
+                                    (available || declined) &&
                                     !step.requiresAttachment && (
                                       <div className="mt-2 flex justify-end">
                                         <Button
