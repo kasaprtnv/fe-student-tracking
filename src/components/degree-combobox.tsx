@@ -37,10 +37,6 @@ export function DegreesCombobox({
 
   const degrees = [
     {
-      value: 'bachelor',
-      label: t('bachelor'),
-    },
-    {
       value: 'master',
       label: t('master'),
     },

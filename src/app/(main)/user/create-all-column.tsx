@@ -1,6 +1,7 @@
 import { formatThaiDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
+import { ITitle } from '@/types/title';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   DropdownMenu,
@@ -24,19 +25,17 @@ export const createAllStudentColumns = (
   t: (key: string) => string,
   tDegree: (key: string) => string,
   tRole: (key: string) => string,
+  titleMap: Record<string, ITitle>,
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
-      accessorKey: 'code',
-      header: t('code'),
-      cell: ({ row }) => row.original.code || '-',
-    },
-    {
       header: t('full-name'),
       accessorFn: (row) => {
-        const titleName = `${row.title || ''}${row.firstName || ''}`.trim();
+        const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
+        const firstName = row.firstName || '';
         const lastName = row.lastName || '';
-        return `${titleName} ${lastName}`.trim() || '-';
+        const fullName = `${titleName}${firstName} ${lastName}`.trim();
+        return fullName || '-';
       },
     },
     {
@@ -61,41 +60,6 @@ export const createAllStudentColumns = (
           admin: tRole('admin'),
         };
         return roleMap[role] || role;
-      },
-    },
-    {
-      header: t('education-level'),
-      accessorKey: 'degree',
-      cell: ({ row }) => {
-        const degree = row.original.degree;
-        if (!degree) return '-';
-        const degreeMap: Record<string, string> = {
-          bachelor: tDegree('bachelor'),
-          master: tDegree('master'),
-          doctorate: tDegree('doctorate'),
-        };
-        return degreeMap[degree] || degree;
-      },
-    },
-    {
-      header: t('year'),
-      accessorKey: 'year',
-      cell: ({ row }) => row.original.year || '-',
-    },
-    {
-      header: t('course-name'),
-      accessorKey: 'courseName',
-      cell: ({ row }) => row.original.courseName || '-',
-    },
-    {
-      id: 'enrollDate',
-      header: t('enroll-date'),
-      accessorKey: 'enrollDate',
-      cell: (row) => {
-        const rawDate = row.getValue<string>();
-        if (!rawDate) return <span>-</span>;
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
       },
     },
   ];

@@ -26,6 +26,7 @@ import { Loader2 } from 'lucide-react';
 import { dashboardService } from '@/services/dashboard.service';
 import { ICourse } from '@/types/course';
 import { useTranslations } from 'next-intl';
+import { CompactMultiCombobox } from '@/components/ui/combobox/compact-multi-combobox';
 
 interface GraduationByYearChartProps {
   courseMap: Record<string, ICourse>;
@@ -46,7 +47,7 @@ export function GraduationByYearChart({
   const tLegend = useTranslations('dashboard.legend');
   const tSummary = useTranslations('dashboard.summary-cards');
   const tDegree = useTranslations('degree');
-  const [selectedCourse, setSelectedCourse] = React.useState<string>('all');
+  const [selectedCourses, setSelectedCourses] = React.useState<string[]>([]);
   const [selectedDegree, setSelectedDegree] = React.useState<string>('all');
   const [yearRange, setYearRange] = React.useState<string>('3');
   const [rawData, setRawData] = React.useState<
@@ -54,12 +55,22 @@ export function GraduationByYearChart({
   >([]);
   const [loading, setLoading] = React.useState(false);
 
+  // Prepare course options for selection
+  const courseOptions = React.useMemo(() => {
+    return allCourseIds.map((id) => ({
+      label: courseMap[id]?.name || id,
+      value: id,
+    }));
+  }, [allCourseIds, courseMap]);
+
   // Fetch graduation stats when filter changes
   React.useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
       try {
-        const courseId = selectedCourse === 'all' ? undefined : selectedCourse;
+        // Use first selected course or undefined if none selected
+        const courseId =
+          selectedCourses.length === 1 ? selectedCourses[0] : undefined;
         const degree = selectedDegree === 'all' ? undefined : selectedDegree;
         const response = await dashboardService.getGraduationStatsByYear(
           courseId,
@@ -75,7 +86,7 @@ export function GraduationByYearChart({
       }
     };
     fetchStats();
-  }, [selectedCourse, selectedDegree]);
+  }, [selectedCourses, selectedDegree]);
 
   // Filter data by year range
   const data = React.useMemo(() => {
@@ -96,26 +107,20 @@ export function GraduationByYearChart({
             {t('charts.graduation-by-year')}
           </CardTitle>
           <div className="flex flex-wrap gap-2">
-            <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-              <SelectTrigger className="w-auto min-w-[100px]">
-                <SelectValue placeholder="หลักสูตร" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{tFilters('all-courses')}</SelectItem>
-                {allCourseIds.map((id) => (
-                  <SelectItem key={id} value={id}>
-                    {courseMap[id]?.name || id}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <CompactMultiCombobox
+              value={selectedCourses}
+              onChange={setSelectedCourses}
+              options={courseOptions}
+              placeholder={tFilters('all-courses')}
+              placeholderSearch={tFilters('course')}
+              placeholderEmpty={t('charts.no-data')}
+            />
             <Select value={selectedDegree} onValueChange={setSelectedDegree}>
               <SelectTrigger className="w-auto min-w-[100px]">
                 <SelectValue placeholder={tFilters('degree')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{tFilters('all-degrees')}</SelectItem>
-                <SelectItem value="bachelor">{tDegree('bachelor')}</SelectItem>
                 <SelectItem value="master">{tDegree('master')}</SelectItem>
                 <SelectItem value="doctorate">
                   {tDegree('doctorate')}

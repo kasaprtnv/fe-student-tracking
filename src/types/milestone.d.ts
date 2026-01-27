@@ -19,8 +19,8 @@ export interface IMilestone {
   dayPeriod: number;
   notifyBeforeDays: number;
   isUsed: boolean;
-  updatedAt: Date;
-  createdAt: Date;
+  updatedAt: string | Date;
+  createdAt: string | Date;
   steps?: MilestoneStep[];
 }
 
@@ -38,6 +38,14 @@ export interface MilestoneStep {
   updatedAt: Date;
   milestoneName?: string;
   status: MilestoneStepStatus;
+  declineReason?: string;
+  staffAttachment?: {
+    id: string;
+    fileName: string;
+    fileKey?: string;
+    fileUrl?: string;
+  };
+  staffAttachmentId?: string;
 }
 
 export interface IMilestoneCreateDTO {

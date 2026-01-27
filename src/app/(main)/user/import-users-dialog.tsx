@@ -123,34 +123,62 @@ export function ImportUsersDialog({
     );
   };
 
-  const handleDownloadTemplate = () => {
-    // Define the headers for the template
+  const handleDownloadStudentTemplate = () => {
+    // Student template headers
     const headers = [
-      'email',
-      'title',
-      'firstName',
-      'lastName',
-      'phone',
-      'role',
-      'code',
-      'degree',
-      'year',
-      'courseName',
-      'enrollDate',
+      'คำนำหน้า',
+      'ชื่อ',
+      'นามสกุล',
+      'อีเมล',
+      'รหัสนักศึกษา',
+      'เบอร์โทร',
+      'ระดับการศึกษา',
+      'ปีการศึกษา',
+      'รหัสหลักสูตร',
+      'แผนการเรียน',
+      'วันที่ลงทะเบียน',
     ];
 
     // Create a worksheet with just the headers
     const worksheet = XLSX.utils.aoa_to_sheet([headers]);
 
     // Set column widths for better readability
-    worksheet['!cols'] = headers.map(() => ({ wch: 15 }));
+    worksheet['!cols'] = headers.map(() => ({ wch: 20 }));
 
     // Create a workbook and add the worksheet
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
 
     // Generate and download the file
-    XLSX.writeFile(workbook, 'user_import_template.xlsx');
+    XLSX.writeFile(workbook, 'student_import_template.xlsx');
+    toast.success(t('toast.template-downloaded'));
+  };
+
+  const handleDownloadTeacherTemplate = () => {
+    // Teacher template headers
+    const headers = [
+      'คำนำหน้า',
+      'ชื่อ',
+      'นามสกุล',
+      'อีเมล',
+      'เบอร์โทร',
+      'วุฒิการศึกษา',
+      'รหัสหลักสูตร',
+      'ตำแหน่งทางวิชาการ',
+    ];
+
+    // Create a worksheet with just the headers
+    const worksheet = XLSX.utils.aoa_to_sheet([headers]);
+
+    // Set column widths for better readability
+    worksheet['!cols'] = headers.map(() => ({ wch: 20 }));
+
+    // Create a workbook and add the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Teachers');
+
+    // Generate and download the file
+    XLSX.writeFile(workbook, 'teacher_import_template.xlsx');
     toast.success(t('toast.template-downloaded'));
   };
 
@@ -172,36 +200,96 @@ export function ImportUsersDialog({
       const jsonData =
         XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
-      // Map courseName to courseId if courseName exists
+      // Thai to English header mapping
+      const thaiToEnglishMap: Record<string, string> = {
+        อีเมล: 'email',
+        คำนำหน้า: 'title',
+        ชื่อ: 'firstName',
+        นามสกุล: 'lastName',
+        เบอร์โทร: 'phone',
+        บทบาท: 'role',
+        รหัส: 'code',
+        รหัสนักศึกษา: 'code',
+        ระดับการศึกษา: 'degree',
+        ปีการศึกษา: 'year',
+        ชื่อหลักสูตร: 'courseName',
+        รหัสหลักสูตร: 'courseName',
+        'ชื่อหลักสูตร/รหัสหลักสูตร': 'courseName',
+        วันที่ลงทะเบียน: 'enrollDate',
+        แผนการเรียน: 'studyPlan',
+        วุฒิการศึกษาอาจารย์: 'teacherDegree',
+        วุฒิการศึกษา: 'teacherDegree',
+        ตำแหน่งทางวิชาการ: 'academicPosition',
+      };
+
+      // Map courseName to courseId and convert Thai keys to English
       const processedData = jsonData.map((row) => {
         const newRow: Record<string, unknown> = {};
 
-        // Trim all string values to remove whitespace/tabs
+        // Convert Thai keys to English and trim all string values
         for (const [key, value] of Object.entries(row)) {
+          const englishKey = thaiToEnglishMap[key] || key;
           if (typeof value === 'string') {
-            newRow[key] = value.trim();
+            newRow[englishKey] = value.trim();
           } else {
-            newRow[key] = value;
+            newRow[englishKey] = value;
           }
         }
 
-        // If courseName exists and courseId doesn't, try to find courseId
+        // If courseName exists and courseId doesn't, try to find courseId(s)
         if (newRow.courseName && !newRow.courseId) {
-          const courseId = getCourseIdByNameOrCode(String(newRow.courseName));
-          if (courseId) {
-            newRow.courseId = courseId;
-          } else {
-            // Store invalid course name for error reporting
-            newRow.__invalidCourseName = newRow.courseName;
+          const courseNamesOrCodes = String(newRow.courseName)
+            .split(',')
+            .map((c) => c.trim())
+            .filter((c) => c.length > 0);
+
+          if (courseNamesOrCodes.length > 0) {
+            const courseIds: string[] = [];
+            const invalidCourseNames: string[] = [];
+
+            for (const nameOrCode of courseNamesOrCodes) {
+              const courseId = getCourseIdByNameOrCode(nameOrCode);
+              if (courseId) {
+                courseIds.push(courseId);
+              } else {
+                invalidCourseNames.push(nameOrCode);
+              }
+            }
+
+            // If we have valid course IDs, use them
+            if (courseIds.length > 0) {
+              // For single course, use courseId (backward compatible)
+              // For multiple courses, use courseIds array
+              if (courseIds.length === 1) {
+                newRow.courseId = courseIds[0];
+              } else {
+                newRow.courseIds = courseIds;
+              }
+            }
+
+            // Store invalid course names for error reporting
+            if (invalidCourseNames.length > 0) {
+              newRow.__invalidCourseName = invalidCourseNames.join(', ');
+            }
           }
-          delete newRow.courseName; // Remove courseName as backend expects courseId
+          delete newRow.courseName; // Remove courseName as backend expects courseId/courseIds
         }
 
         return newRow;
       });
 
+      // Convert arrays to comma-separated strings for Excel compatibility
+      const excelCompatibleData = processedData.map((row) => {
+        const newRow = { ...row };
+        // Convert courseIds array to comma-separated string
+        if (newRow.courseIds && Array.isArray(newRow.courseIds)) {
+          newRow.courseIds = newRow.courseIds.join(',');
+        }
+        return newRow;
+      });
+
       // Create a new worksheet with processed data
-      const newWorksheet = XLSX.utils.json_to_sheet(processedData);
+      const newWorksheet = XLSX.utils.json_to_sheet(excelCompatibleData);
       const newWorkbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, 'Users');
 
@@ -274,17 +362,25 @@ export function ImportUsersDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Download Template Button */}
-          <div className="flex justify-end">
+          {/* Download Template Buttons */}
+          <div className="flex justify-end gap-2">
             <Button
               type="button"
               variant="outline"
               size="sm"
-              onClick={handleDownloadTemplate}
-              className="text-blue-600 hover:text-blue-700"
+              onClick={handleDownloadStudentTemplate}
             >
               <Download className="mr-2 h-4 w-4" />
-              {t('download-template')}
+              {t('download-student-template')}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadTeacherTemplate}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {t('download-teacher-template')}
             </Button>
           </div>
 

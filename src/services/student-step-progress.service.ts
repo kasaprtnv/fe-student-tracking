@@ -5,6 +5,7 @@ import {
 } from '@/types/index';
 import { APIService } from './api.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
+import { StudentStepAttempts } from '@/types/student-step-attempts';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -26,10 +27,12 @@ class StudentStepProgressService extends APIService {
   async getAll(params?: {
     status?: string;
     stepId?: string;
+    studentId?: string;
   }): Promise<IApiGetResponse<IStudentStepProgress>> {
     const queryParams = new URLSearchParams();
     if (params?.status) queryParams.append('status', params.status);
     if (params?.stepId) queryParams.append('stepId', params.stepId);
+    if (params?.studentId) queryParams.append('studentId', params.studentId);
 
     const queryString = queryParams.toString();
     return this.get(
@@ -46,6 +49,16 @@ class StudentStepProgressService extends APIService {
     id: string,
   ): Promise<IApiGetByIdResponse<IStudentStepProgress>> {
     return this.get(`/student-step-progress/${id}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async getAttemptsByUserId(
+    userId: string,
+  ): Promise<IApiGetResponse<StudentStepAttempts>> {
+    return this.get(`/student-step-progress/${userId}/attempts`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

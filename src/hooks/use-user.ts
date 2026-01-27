@@ -11,6 +11,7 @@ import {
   updateUser,
   deleteUser,
   deleteMultipleUsers,
+  uploadUserProfileImage,
 } from '@/store/user/user.thunks';
 import { userService } from '@/services/user.service';
 
@@ -74,6 +75,13 @@ export const useUser = () => {
       return dispatch(fetchUserById(id)).unwrap();
     },
     [dispatch, userMap],
+  );
+
+  // Upload profile image
+  const uploadProfileImage = useCallback(
+    ({ id, file }: { id: string; file: File }) =>
+      dispatch(uploadUserProfileImage({ id, file })).unwrap(),
+    [dispatch],
   );
 
   // Get user profile
@@ -152,6 +160,7 @@ export const useUser = () => {
     fetchStudents,
     fetchTeachers,
     fetchUserDetails,
+    uploadProfileImage,
     getUserProfile,
     createNewUser,
     updateExistingUser,

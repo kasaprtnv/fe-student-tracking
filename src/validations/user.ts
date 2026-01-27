@@ -6,7 +6,7 @@ export type UserRole = 'student' | 'teacher';
 const baseSchema = (t: (key: string) => string) =>
   z.object({
     role: z.enum(['student', 'teacher']),
-    title: z.string().optional(),
+    titleId: z.string().optional(),
     firstName: z
       .string()
       .min(1, t('errors.first-name-required'))
@@ -40,6 +40,7 @@ const studentSchema = (t: (key: string) => string) =>
       .string()
       .min(1, t('errors.year-required'))
       .max(10, t('errors.year-max')),
+    studyPlan: z.string().min(1, t('errors.study-plan-required')),
     courseId: z.string().min(1, t('errors.course-required')),
     enrollDate: z.string().min(1, t('errors.enroll-date-required')),
   });
@@ -48,6 +49,8 @@ const studentSchema = (t: (key: string) => string) =>
 const teacherSchema = (t: (key: string) => string) =>
   baseSchema(t).extend({
     role: z.literal('teacher'),
+    teacherDegree: z.string().optional(),
+    academicPosition: z.string().optional(),
     courseIds: z.array(z.string()).optional(),
   });
 
@@ -63,7 +66,7 @@ export type UpdateUserFormData = z.infer<ReturnType<typeof updateUserSchema>>;
 
 export interface UserFormValues {
   role: UserRole;
-  title?: string;
+  titleId?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -73,5 +76,8 @@ export interface UserFormValues {
   code?: string;
   degree?: string;
   year?: string;
+  studyPlan?: string;
+  teacherDegree?: string;
+  academicPosition?: string;
   enrollDate?: string;
 }

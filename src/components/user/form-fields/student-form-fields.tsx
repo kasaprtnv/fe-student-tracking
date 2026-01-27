@@ -113,6 +113,35 @@ export const StudentFormFields = ({
       />
       <FormField
         control={form.control}
+        name="studyPlan"
+        render={({ field }) => {
+          const studyPlanOptions = [
+            { label: t('study-plan-options.plan-a'), value: 'ก' },
+            { label: t('study-plan-options.plan-b'), value: 'ข' },
+          ];
+
+          return (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-gray-700">
+                {t('label.study-plan')}
+              </FormLabel>
+              <FormControl>
+                <SingleCombobox
+                  placeholder={t('placeholder.study-plan')}
+                  placeholderSearch={t('placeholder.search-study-plan')}
+                  placeholderEmpty={t('placeholder.no-study-plan-found')}
+                  options={studyPlanOptions}
+                  defaultValue={field.value || ''}
+                  onChange={(value) => field.onChange(value)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
+      <FormField
+        control={form.control}
         name="enrollDate"
         render={({ field }) => (
           <FormItem className="flex flex-col">

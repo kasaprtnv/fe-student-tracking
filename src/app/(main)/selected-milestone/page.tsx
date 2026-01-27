@@ -101,48 +101,31 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     const allSteps = swrData.stepResult?.data || [];
     const allPrereqs = swrData.prereqRes?.data || [];
 
-    // Map สำหรับ position จาก courseMs
-    const positionMap = new Map(
-      courseMs.map((c) => [c.milestone.id, c.position ?? 0]),
-    );
-
-    console.log('courseMs data', courseMs);
-
-    const filteredPrereqs = allPrereqs.filter((p) => p.courseId === courseId);
-
-    // Build selectedItems
-    const selectedItemsSet = new Set<string>();
-    filteredPrereqs.forEach((p) => {
-      if (p.targetMilestoneId) selectedItemsSet.add(p.targetMilestoneId);
-      if (p.requiredMilestoneId) selectedItemsSet.add(p.requiredMilestoneId);
-
-      if (p.targetStepId) {
-        const step = allSteps.find((s) => s.id === p.targetStepId);
-        if (step?.milestoneId) selectedItemsSet.add(step.milestoneId);
-      }
-
-      if (p.requiredStepId) {
-        const step = allSteps.find((s) => s.id === p.requiredStepId);
-        if (step?.milestoneId) selectedItemsSet.add(step.milestoneId);
-      }
+    // map milestoneId -> position
+    const positionMap = new Map<string, number>();
+    courseMs.forEach((c) => {
+      positionMap.set(c.milestone.id, c.position ?? 0);
     });
 
-    // Build selectedMilestones โดยเอา position จาก courseMs
+    // build selectedMilestones
     const selectedMilestones: (IMilestone & { position: number })[] = allMs
-      .filter((m) => selectedItemsSet.has(m.id)) // เฉพาะที่เกี่ยวข้อง
-      .map((m) => ({ ...m, position: positionMap.get(m.id) ?? 0 }))
+      .filter((m) => positionMap.has(m.id)) // ✅ เอาจาก course_milestone เท่านั้น
+      .map((m) => ({
+        ...m,
+        position: positionMap.get(m.id)!,
+      }))
       .sort((a, b) => a.position - b.position);
 
-    const selectedIds = selectedMilestones.map((m) => m.id); // เรียงตาม position จริง
+    const selectedIds = selectedMilestones.map((m) => m.id);
 
-    // Build stepsByMilestone
     const stepsMap: Record<string, IMilestoneStep[]> = {};
     allSteps.forEach((s) => {
       if (!stepsMap[s.milestoneId]) stepsMap[s.milestoneId] = [];
       stepsMap[s.milestoneId].push(s);
     });
 
-    // Build prerequisites
+    const filteredPrereqs = allPrereqs.filter((p) => p.courseId === courseId);
+
     const loadedPrereqs: Record<string, UnlockCondition[]> = {};
     const loadedLockedItems: Record<string, boolean> = {};
 
@@ -156,19 +139,25 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           ? { type: 'step', id: p.requiredStepId }
           : null;
 
-      if (condition) {
-        if (!loadedPrereqs[targetId]) loadedPrereqs[targetId] = [];
-        loadedPrereqs[targetId].push(condition);
-        loadedLockedItems[targetId] = true;
+      if (!condition) return;
+
+      if (!loadedPrereqs[targetId]) {
+        loadedPrereqs[targetId] = [];
       }
+
+      loadedPrereqs[targetId].push(condition);
+      loadedLockedItems[targetId] = true;
     });
 
-    // set state
+    /* -----------------------------
+     * 4. set state
+     * ----------------------------- */
+
     setSelectedItems(selectedIds);
     setStepsByMilestone(stepsMap);
     setPrerequisites(loadedPrereqs);
     setLockedItems(loadedLockedItems);
-  }, [swrData]);
+  }, [swrData, courseId]);
 
   const milestones = allMilestoneIds
     .map((id) => getMilestoneById(id))
@@ -409,17 +398,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       const conditions = prerequisites[targetId] ?? [];
       const isMilestone = selectedItems.includes(targetId);
 
-      // 🟢 milestone ที่ไม่มี condition → ส่ง target เปล่า
-      if (conditions.length === 0) {
-        if (isMilestone) {
-          result.push({
-            targetMilestoneId: targetId,
-            courseId: courseId || undefined,
-          });
-        }
-        return;
-      }
-
       // 🔗 มี condition → ส่งตามจริง (รองรับ milestone + step)
       conditions.forEach((cond) => {
         result.push({
@@ -588,6 +566,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
                 milestones={selectedMilestonesWithSteps}
                 lockedItems={lockedItems}
                 mode="edit"
+                stepAttempts={[]}
                 onToggleLock={(id, type) => {
                   setTargetLock({
                     id,

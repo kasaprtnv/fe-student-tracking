@@ -83,6 +83,8 @@ export function CreateMilestoneFormSheet({
     if (!open) form.reset();
     props.onOpenChange?.(open);
   };
+  const dayPeriod = form.watch('dayPeriod');
+  const notifyBeforeDays = form.watch('notifyBeforeDays');
 
   return (
     <Dialog {...props} onOpenChange={handleOpenChange}>
@@ -146,16 +148,30 @@ export function CreateMilestoneFormSheet({
               name="dayPeriod"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    {t('label.dayPeriod')}
-                  </FormLabel>
+                  <FormLabel>{t('label.dayPeriod')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder={t('placeholder.dayPeriod')}
-                      className="resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))} // แปลงค่าเป็น number
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+
+                        if (
+                          notifyBeforeDays !== undefined &&
+                          value < notifyBeforeDays
+                        ) {
+                          form.setError('notifyBeforeDays', {
+                            type: 'manual',
+                            message: t(
+                              'errors.notifyBeforeDays-greater-than-dayPeriod',
+                            ),
+                          });
+                          return; // 🔒 ไม่ให้ค่าเข้า
+                        }
+
+                        form.clearErrors('notifyBeforeDays');
+                        field.onChange(value); // ✅ เรียกเฉพาะตอนผ่าน
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -172,9 +188,24 @@ export function CreateMilestoneFormSheet({
                   <FormControl>
                     <Input
                       type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
                       min={0}
+                      {...field}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+
+                        if (dayPeriod !== undefined && value > dayPeriod) {
+                          form.setError('notifyBeforeDays', {
+                            type: 'manual',
+                            message: t(
+                              'errors.notifyBeforeDays-greater-than-dayPeriod',
+                            ),
+                          });
+                          return; // 🔒 lock
+                        }
+
+                        form.clearErrors('notifyBeforeDays');
+                        field.onChange(value); // ✅ ผ่านเงื่อนไขเท่านั้น
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

@@ -65,6 +65,8 @@ const MilestonePage = () => {
     .map((id) => getMilestoneById(id))
     .filter((m) => m !== undefined) as IMilestone[];
 
+  console.log('Filtered Milestones: ', filteredMilestoneData);
+
   const onDeleteMilestone = (id: string) => {
     setIsDelete({ isDeleting: true, milestoneId: [id] });
   };

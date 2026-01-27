@@ -19,20 +19,26 @@ export interface IStudentStepProgress {
   dueDate?: string;
   createdAt?: string;
   updatedAt?: string;
-  // Flat fields from API
+  staffAttachmentId?: string;
   studentCode?: string;
   studentName?: string;
   courseName?: string;
   stepName?: string;
   fileName?: string;
   fileUrl?: string;
-  // Joined fields (alternative structure)
+  fileKey?: string;
+  studentDegree?: string;
+  studentYear?: string;
+  degree?: string;
+  year?: string;
   student?: {
     id: string;
     code: string;
     firstName: string;
     lastName: string;
     courseName?: string;
+    degree?: string;
+    year?: string;
   };
   step?: {
     id: string;
@@ -40,6 +46,14 @@ export interface IStudentStepProgress {
     milestoneId: string;
   };
   attachment?: {
+    id: string;
+    fileName: string;
+    fileKey?: string;
+    fileUrl?: string;
+    mimeType?: string;
+  };
+  // Staff attachment (for decline case)
+  staffAttachment?: {
     id: string;
     fileName: string;
     fileKey?: string;

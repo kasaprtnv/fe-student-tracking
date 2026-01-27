@@ -51,6 +51,11 @@ export function MultiCombobox({
     new Set(defaultValue),
   );
 
+  // Sync internal state with defaultValue when it changes (for controlled reset)
+  React.useEffect(() => {
+    setValues(new Set(defaultValue));
+  }, [defaultValue]);
+
   const toggleValue = (val: string) => {
     const newSet = new Set(values);
     if (newSet.has(val)) {
@@ -63,7 +68,7 @@ export function MultiCombobox({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"

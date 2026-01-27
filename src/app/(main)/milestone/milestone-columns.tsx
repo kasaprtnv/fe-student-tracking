@@ -20,6 +20,15 @@ interface ColumnActions {
   t?: (key: string) => string;
 }
 
+const formatDate = (date?: string | Date) => {
+  if (!date) return '-';
+  return new Intl.DateTimeFormat('th-TH', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(new Date(date));
+};
+
 export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
   const columns: ColumnDef<IMilestone>[] = [
     {
@@ -35,15 +44,30 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
       header: 'day-period',
     },
     {
-      accessorKey: 'notifyReceiverEmail',
-      header: 'notify-receiver-email',
+      accessorKey: 'createdAt',
+      header: 'created_at',
+      cell: ({ row }) => formatDate(row.original.createdAt),
     },
+    {
+      accessorKey: 'updatedAt',
+      header: 'updated_at',
+      cell: ({ row }) => formatDate(row.original.updatedAt),
+    },
+    {
+      accessorKey: 'notifyBeforeDays',
+      header: 'notify-before-days',
+    },
+
     {
       accessorKey: 'isUsed',
       header: 'is_used',
       size: 110,
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
         const record = row.original;
+
+        const { t } = table.options.meta as {
+          t: (key: string) => string;
+        };
 
         return (
           <div className="flex w-[110px] items-center justify-center">
@@ -55,7 +79,7 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
                   : 'bg-red-100 text-red-800',
               )}
             >
-              {record.isUsed ? 'Yes' : 'No'}
+              {record.isUsed ? t('yes') : t('no')}
             </Badge>
           </div>
         );

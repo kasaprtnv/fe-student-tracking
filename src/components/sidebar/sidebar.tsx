@@ -9,6 +9,11 @@ import Image from 'next/image';
 import { ArrowRight, LogOut, ChevronDown, ChevronUp } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { sidebarItems } from './sidabar-data';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/use-auth';
 import { usePendingCount } from '@/hooks/use-pending-count';
@@ -22,6 +27,8 @@ export default function Sidebar() {
   const [, startTransition] = useTransition();
   const { pendingCount } = usePendingCount();
   const hiddenRoutes = [`/login`];
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   const t = useTranslations();
   const locale = useLocale();
@@ -107,32 +114,77 @@ export default function Sidebar() {
           const childActive = hasChildren && isChildActive(item.children!);
 
           if (hasChildren) {
+            // Popover for collapsed sidebar
+            if (!open) {
+              return (
+                <Popover key={index}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        'w-full justify-center rounded-xl px-0 font-medium transition-colors',
+                        childActive
+                          ? 'bg-red-100 text-red-600'
+                          : 'hover:bg-gray-100',
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    sideOffset={8}
+                    className="w-48 p-2"
+                  >
+                    <div className="flex flex-col gap-1">
+                      {item.children!.map((child, childIndex) => {
+                        const isChildItemActive = pathname === child.route;
+                        return (
+                          <Button
+                            key={childIndex}
+                            variant="ghost"
+                            className={cn(
+                              'w-full justify-start rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                              isChildItemActive
+                                ? 'bg-red-500 text-white hover:bg-red-500'
+                                : 'hover:bg-gray-100',
+                            )}
+                            onClick={() => router.push(child.route)}
+                          >
+                            {t(child.title)}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              );
+            }
+            // Expanded sidebar (open)
             return (
               <div key={index} className="flex flex-col">
                 <Button
                   variant="ghost"
                   className={cn(
                     'w-full justify-start rounded-xl font-medium transition-colors',
-                    open ? 'px-4' : 'justify-center px-0',
+                    'px-4',
                     childActive
                       ? 'bg-red-100 text-red-600'
                       : 'hover:bg-gray-100',
                   )}
                   onClick={() => toggleSubmenu(item.title)}
                 >
-                  <Icon className={cn('h-5 w-5', open && 'mr-3')} />
-                  {open && (
-                    <>
-                      <span className="flex-1 text-left">{t(item.title)}</span>
-                      {isExpanded ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </>
-                  )}
+                  <Icon className={cn('h-5 w-5', 'mr-3')} />
+                  <>
+                    <span className="flex-1 text-left">{t(item.title)}</span>
+                    {isExpanded ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </>
                 </Button>
-                {open && isExpanded && (
+                {isExpanded && (
                   <div className="mt-1 ml-4 flex flex-col gap-1 border-l-2 border-gray-200 pl-4">
                     {item.children!.map((child, childIndex) => {
                       const isChildItemActive = pathname === child.route;
@@ -233,16 +285,23 @@ export default function Sidebar() {
             </button>
           </div>
         ) : (
-          <Image
-            src={
-              locale === 'th'
-                ? 'https://flagcdn.com/w40/th.png'
-                : 'https://flagcdn.com/w40/gb.png'
-            }
-            alt={locale === 'th' ? 'TH' : 'EN'}
-            width={locale === 'th' ? 21 : 27}
-            height={14}
-          />
+          <button
+            type="button"
+            aria-label="Change language"
+            onClick={() => changeLanguage(locale === 'th' ? 'en' : 'th')}
+            className="focus:outline-none"
+          >
+            <Image
+              src={
+                locale === 'th'
+                  ? 'https://flagcdn.com/w40/th.png'
+                  : 'https://flagcdn.com/w40/gb.png'
+              }
+              alt={locale === 'th' ? 'TH' : 'EN'}
+              width={locale === 'th' ? 21 : 27}
+              height={14}
+            />
+          </button>
         )}
       </div>
       <div className="border-t-2 border-gray-200 p-3">
@@ -262,7 +321,13 @@ export default function Sidebar() {
             onClick={() => router.push(`/profile/${user?.id}`)}
           >
             <Avatar className="h-10 w-10">
-              <AvatarImage src="/avatar.png" alt="Avatar" />
+              <AvatarImage
+                src={
+                  user?.profileImageUrl
+                    ? `${API_BASE_URL}${user.profileImageUrl}`
+                    : '/profile.png'
+                }
+              />
               <AvatarFallback>{`${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`}</AvatarFallback>
             </Avatar>
             {open && (
