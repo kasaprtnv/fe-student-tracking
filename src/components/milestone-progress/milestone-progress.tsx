@@ -165,7 +165,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
 
   const downloadFile = async (fileKey: string) => {
     const fileUrl = fileKey.startsWith('attachments')
-      ? `${process.env.NEXT_PUBLIC_API_URL}/${fileKey}`
+      ? `${process.env.NEXT_PUBLIC_STATIC_URL}/${fileKey}`
       : fileKey;
     try {
       const res = await fetch(fileUrl);
