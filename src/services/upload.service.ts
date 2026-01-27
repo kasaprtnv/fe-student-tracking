@@ -1,7 +1,8 @@
 import { APIService } from './api.service';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-const API_STATIC_URL = process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
+const API_STATIC_URL =
+  process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
 
 export interface AttachmentDTO {
   id?: string;
