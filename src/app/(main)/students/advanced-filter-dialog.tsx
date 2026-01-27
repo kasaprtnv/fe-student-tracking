@@ -73,6 +73,7 @@ export function AdvancedFilterPopover({
   const [open, setOpen] = React.useState(false);
   const [filters, setFilters] =
     React.useState<AdvancedFilterValues>(currentFilters);
+  const [resetKey, setResetKey] = React.useState(0);
 
   React.useEffect(() => {
     if (open) {
@@ -87,6 +88,7 @@ export function AdvancedFilterPopover({
 
   const handleReset = () => {
     setFilters(defaultFilterValues);
+    setResetKey((prev) => prev + 1); // Force re-render of MultiCombobox components
   };
 
   const handleCancel = () => {
@@ -170,6 +172,7 @@ export function AdvancedFilterPopover({
           <div className="space-y-1">
             <Label className="text-xs">{t('degree')}</Label>
             <MultiCombobox
+              key={`degree-${resetKey}`}
               options={degreeOptions}
               defaultValue={filters.degree}
               onChange={(values) => setFilters({ ...filters, degree: values })}
@@ -181,6 +184,7 @@ export function AdvancedFilterPopover({
           <div className="space-y-1">
             <Label className="text-xs">{t('year')}</Label>
             <MultiCombobox
+              key={`year-${resetKey}`}
               options={yearOptions}
               defaultValue={filters.year}
               onChange={(values) => setFilters({ ...filters, year: values })}
@@ -194,6 +198,7 @@ export function AdvancedFilterPopover({
           <div className="space-y-1">
             <Label className="text-xs">{t('course')}</Label>
             <MultiCombobox
+              key={`course-${resetKey}`}
               options={courseOptions}
               defaultValue={filters.courseId}
               onChange={(values) =>
@@ -207,6 +212,7 @@ export function AdvancedFilterPopover({
           <div className="space-y-1">
             <Label className="text-xs">{t('study-plan')}</Label>
             <MultiCombobox
+              key={`studyPlan-${resetKey}`}
               options={studyPlanOptions}
               defaultValue={filters.studyPlan}
               onChange={(values) =>
@@ -321,6 +327,7 @@ export function AdvancedFilterPopover({
           <div className="space-y-1">
             <Label className="text-xs">{t('graduated')}</Label>
             <MultiCombobox
+              key={`graduated-${resetKey}`}
               options={graduatedOptions}
               defaultValue={filters.graduated}
               onChange={(values) =>
