@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +28,6 @@ import {
   Unlock,
   TrendingUp,
   File,
-  Upload,
   Download,
   CircleX,
   CircleCheck,
@@ -46,13 +44,11 @@ import { Spinner } from '../ui/spinner';
 import { uploadService } from '@/services/upload.service';
 import { UploadFileDialog } from './upload-file-dialog';
 import { StudentStepAttempts } from '@/types/student-step-attempts';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
-  stepAttempts: StudentStepAttempts[];
+  stepAttempts?: StudentStepAttempts[];
   mode?: ViewMode;
   enrollDate?: string;
   onFileUpload?: (stepId: string, file: File) => void;
@@ -96,7 +92,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   );
   const attemptMap = useMemo(() => {
     const map: Record<string, StudentStepAttempts> = {};
-    stepAttempts.forEach((attempt) => {
+    stepAttempts?.forEach((attempt) => {
       const stepId = attempt.stepProgress.mileStoneStepId;
       if (!map[stepId] || attempt.attemptNo > map[stepId].attemptNo) {
         map[stepId] = attempt;

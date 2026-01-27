@@ -566,6 +566,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
                 milestones={selectedMilestonesWithSteps}
                 lockedItems={lockedItems}
                 mode="edit"
+                stepAttempts={[]}
                 onToggleLock={(id, type) => {
                   setTargetLock({
                     id,
