@@ -67,7 +67,6 @@ interface MilestoneProgressProps {
   userId?: string;
 }
 
-// Utility: แปลง status เป็น completed/isActive
 const isStepCompleted = (status: string) => status === 'approved';
 const isStepDeclined = (status: string) => status === 'declined';
 const isStepPending = (status: string) => status === 'pending approval';
@@ -106,9 +105,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     return map;
   }, [stepAttempts]);
 
-  const [internalFiles, setInternalFiles] = useState<Record<string, File>>({});
+  const [internalFiles, setInternalFiles] = useState<Record<string, File[]>>(
+    {},
+  );
   const [internalFileNames, setInternalFileNames] = useState<
-    Record<string, string>
+    Record<string, string[]>
   >({});
   const [internalSubmitting, setInternalSubmitting] = useState<
     Record<string, boolean>
@@ -192,13 +193,10 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
 
   const handleConfirmSubmit = async () => {
     if (!pendingStepId) return;
-
     const stepId = pendingStepId;
-    const file = internalFiles[stepId];
-
+    const files = internalFiles[stepId];
     setConfirmModalOpen(false);
-
-    if (!file) {
+    if (!files || files.length === 0) {
       const res = await studentStepProgressService.submitForReview(
         stepId,
         userId || '',
@@ -209,17 +207,14 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       onSubmit?.(stepId);
       return res;
     }
-
     setInternalSubmitting((prev) => ({ ...prev, [stepId]: true }));
-
     try {
       const progressId = stepProgressMap[stepId] || stepId;
       const response = await uploadService.createAttachment(
         progressId,
-        file,
+        files,
         userId,
       );
-
       if (response.success) {
         setSuccessModalOpen(true);
         onSubmitSuccess?.(stepId);
@@ -242,7 +237,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       setInternalSubmitting((prev) => ({ ...prev, [stepId]: false }));
       setPendingStepId(null);
     }
-
     onSubmit?.(stepId);
   };
 
@@ -457,16 +451,26 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           <UploadFileDialog
                                             step={step}
                                             isUploading={isUploading}
-                                            onFileUpload={(stepId, file) => {
+                                            onFileUpload={(stepId, files) => {
+                                              const filesToSet = Array.isArray(
+                                                files,
+                                              )
+                                                ? files
+                                                : [files];
                                               setInternalFiles((prev) => ({
                                                 ...prev,
-                                                [stepId]: file,
+                                                [stepId]: filesToSet,
                                               }));
                                               setInternalFileNames((prev) => ({
                                                 ...prev,
-                                                [stepId]: file.name,
+                                                [stepId]: filesToSet.map(
+                                                  (f) => f.name,
+                                                ),
                                               }));
-                                              onFileUpload?.(stepId, file);
+                                              onFileUpload?.(
+                                                stepId,
+                                                filesToSet[0],
+                                              );
                                             }}
                                           />
                                           {/* {internalFileNames[step.id] && (
