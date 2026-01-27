@@ -92,7 +92,7 @@ export default function Sidebar() {
           {open ? (
             <div className="h-10 w-full max-w-[220px]">
               <Image
-                src={`${API_STATIC_URL}/logobuu.png`}
+                src={`/logobuu.png`}
                 alt="BUU Logo"
                 width={220}
                 height={40}
