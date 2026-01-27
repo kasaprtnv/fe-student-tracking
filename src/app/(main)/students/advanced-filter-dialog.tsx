@@ -9,7 +9,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 import { Calendar } from '@/components/ui/calendar';
 import { useTranslations } from 'next-intl';
 import { Filter, RotateCcw, CalendarIcon } from 'lucide-react';
@@ -81,7 +80,6 @@ export function AdvancedFilterPopover({
   const [open, setOpen] = React.useState(false);
   const [filters, setFilters] =
     React.useState<AdvancedFilterValues>(currentFilters);
-  const [resetKey, setResetKey] = React.useState(0);
 
   React.useEffect(() => {
     if (open) {
@@ -102,7 +100,6 @@ export function AdvancedFilterPopover({
 
   const handleReset = () => {
     setFilters(defaultFilterValues);
-    setResetKey((prev) => prev + 1); // Force re-render of MultiCombobox components
   };
 
   const handleCancel = () => {
