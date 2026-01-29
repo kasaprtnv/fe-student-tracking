@@ -42,7 +42,7 @@ export const TeacherTable = () => {
     });
   }, [fetchAllCourseStaff, fetchAllTitles]);
 
-  // Refetch course_staff data (called after form save)
+  // Refetch course_staff data (called after form save or import)
   const refetchCourseStaff = React.useCallback(() => {
     fetchAllCourseStaff().then((response) => {
       if (response.data) {
@@ -50,6 +50,18 @@ export const TeacherTable = () => {
       }
     });
   }, [fetchAllCourseStaff]);
+
+  // Listen for user import events to refetch course_staff
+  React.useEffect(() => {
+    const handleUserImported = () => {
+      refetchCourseStaff();
+    };
+
+    window.addEventListener('user-imported', handleUserImported);
+    return () => {
+      window.removeEventListener('user-imported', handleUserImported);
+    };
+  }, [refetchCourseStaff]);
 
   // Get teacher data directly from Redux store userMap and enrich with managedCourses
   const filterTeacher = React.useMemo(() => {

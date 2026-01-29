@@ -104,7 +104,7 @@ const TitlePage = () => {
           columns={titleColumns}
           data={filterTitleData ?? []}
           onAdd={() => setIsAdd(true)}
-          onEdit={(title) => setIsEdit({ isEditing: true, title: title })}
+          onEdit={(title) => setIsEdit({ isEditing: true, title })}
           onDelete={onDeleteTitle}
           onSearch={onSearchChange}
           searchQuery={searchQuery}

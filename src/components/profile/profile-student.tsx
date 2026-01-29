@@ -25,8 +25,8 @@ export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
 }) => {
   const t = useTranslations('profile');
   const role = user?.role === 'student' ? 'student' : user?.role;
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const API_STATIC_URL =
+    process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
 
   if (isLoading) {
     return (
@@ -61,7 +61,7 @@ export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
             <AvatarImage
               src={
                 user?.profileImageUrl
-                  ? `${API_BASE_URL}${user.profileImageUrl}`
+                  ? `${API_STATIC_URL}${user.profileImageUrl}`
                   : '/profile.png'
               }
             />

@@ -30,7 +30,7 @@ export const createStudentColumns = (
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'code',
-      header: t('code'),
+      header: t('student-code'),
       cell: ({ row }) => row.original.code || '-',
     },
     {
@@ -91,6 +91,17 @@ export const createStudentColumns = (
         if (!rawDate) return <span>-</span>;
         const localString = formatThaiDate(rawDate);
         return <span>{localString}</span>;
+      },
+    },
+    {
+      id: 'graduated',
+      header: t('graduated'),
+      accessorKey: 'graduated',
+      cell: ({ row }) => {
+        const graduated = row.original.graduated;
+        return (
+          <span>{graduated ? t('graduated-yes') : t('graduated-no')}</span>
+        );
       },
     },
   ];

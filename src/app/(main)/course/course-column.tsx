@@ -192,9 +192,15 @@ export const createCourseColumns = (
             )}
 
             {onDelete && (
-              <DropdownMenuItem onSelect={() => onDelete(record.id)}>
+              <DropdownMenuItem
+                onSelect={() => onDelete(record.id)}
+                disabled={record.isUsed}
+              >
                 <div className="flex items-center gap-2">
-                  <Trash2 size={14} color="#e7000b" />
+                  <Trash2
+                    size={14}
+                    color={record.isUsed ? '#9ca3af' : '#e7000b'}
+                  />
                   {t?.('delete')}
                 </div>
               </DropdownMenuItem>

@@ -32,11 +32,11 @@ export const StudentFormFields = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-sm font-medium text-gray-700">
-              {t('label.code')}
+              {t('label.student-code')}
             </FormLabel>
             <FormControl>
               <Input
-                placeholder={t('placeholder.code')}
+                placeholder={t('placeholder.student-code')}
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 {...field}
               />
@@ -114,21 +114,31 @@ export const StudentFormFields = ({
       <FormField
         control={form.control}
         name="studyPlan"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium text-gray-700">
-              {t('label.study-plan')}
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder={t('placeholder.study-plan')}
-                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        render={({ field }) => {
+          const studyPlanOptions = [
+            { label: t('study-plan-options.plan-a'), value: 'ก' },
+            { label: t('study-plan-options.plan-b'), value: 'ข' },
+          ];
+
+          return (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-gray-700">
+                {t('label.study-plan')}
+              </FormLabel>
+              <FormControl>
+                <SingleCombobox
+                  placeholder={t('placeholder.study-plan')}
+                  placeholderSearch={t('placeholder.search-study-plan')}
+                  placeholderEmpty={t('placeholder.no-study-plan-found')}
+                  options={studyPlanOptions}
+                  defaultValue={field.value || ''}
+                  onChange={(value) => field.onChange(value)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
       />
       <FormField
         control={form.control}

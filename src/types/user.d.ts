@@ -17,6 +17,7 @@ export interface User {
   year?: string;
   studyPlan?: string;
   teacherDegree?: string;
+  academicPosition?: string;
   courseId?: string;
   courseName?: string;
   enrollDate?: string;

@@ -132,6 +132,7 @@ export function DataTableClickable<TData, TValue>({
     pageIndex: page - 1,
     pageSize: pageSize,
   });
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
@@ -243,12 +244,12 @@ export function DataTableClickable<TData, TValue>({
               )}
             </>
           )}
+          {actionHeader}
+        </div>
+        <div className="flex items-center gap-2">
           {typeof extraToolbarAction === 'function'
             ? extraToolbarAction(table)
             : extraToolbarAction}
-          {actionHeader}
-        </div>
-        <div className="flex items-center gap-4">
           {enabledMultiSelect && Object.keys(rowSelection).length > 0 && (
             <Button onClick={handleMultiDelete} variant="destructive">
               <Trash2 />

@@ -45,7 +45,8 @@ class TitleService extends APIService {
     return this.patch(`/titles/${id}`, data)
       .then((response) => response?.data)
       .catch((error) => {
-        throw error?.response?.data;
+        // ส่ง error ที่ละเอียดขึ้น
+        throw error?.response?.data || error?.message || error;
       });
   }
 

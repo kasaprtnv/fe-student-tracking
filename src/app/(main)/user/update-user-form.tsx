@@ -146,6 +146,7 @@ export function UpdateUserFormDialog({
         email: user?.email || '',
         phone: user?.phone || '',
         teacherDegree: user?.teacherDegree || '',
+        academicPosition: user?.academicPosition || '',
         courseIds: [],
       };
     }
@@ -525,11 +526,11 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.code')}
+                        {t('label.student-code')}
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t('placeholder.code')}
+                          placeholder={t('placeholder.student-code')}
                           className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           {...field}
                         />
@@ -655,13 +656,26 @@ export function UpdateUserFormDialog({
                       <FormLabel className="text-sm font-medium text-gray-700">
                         {t('label.study-plan')}
                       </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t('placeholder.study-plan')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          {...field}
-                        />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <SelectValue
+                              placeholder={t('placeholder.study-plan')}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="ก">
+                            {t('study-plan-options.plan-a')}
+                          </SelectItem>
+                          <SelectItem value="ข">
+                            {t('study-plan-options.plan-b')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

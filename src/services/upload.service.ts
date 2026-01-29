@@ -1,6 +1,7 @@
 import { APIService } from './api.service';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_STATIC_URL = process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
 
 export interface AttachmentDTO {
   id?: string;
@@ -32,9 +33,12 @@ class UploadService extends APIService {
     super(API_BASE_URL);
   }
 
+  /**
+   * รองรับทั้งไฟล์เดียวและหลายไฟล์ (file: File | File[])
+   */
   async createAttachment(
     stepId: string,
-    file: File,
+    fileOrFiles: File | File[],
     uploadedByUserId?: string,
   ): Promise<UploadResponse> {
     if (!uploadedByUserId) {
@@ -45,28 +49,41 @@ class UploadService extends APIService {
     }
 
     try {
-      // สร้าง FormData สำหรับอัปโหลดไฟล์ (เฉพาะ file ตามตัวอย่าง)
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(
-        `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`,
-        {
+      // ถ้าเป็น array ให้ส่งทีละไฟล์ (field 'file')
+      if (Array.isArray(fileOrFiles)) {
+        for (const file of fileOrFiles) {
+          const formData = new FormData();
+          formData.append('file', file);
+          const endpoint = `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            body: formData,
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Upload failed');
+          }
+        }
+        return { success: true };
+      } else {
+        // ไฟล์เดียว
+        const formData = new FormData();
+        formData.append('file', fileOrFiles);
+        const endpoint = `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`;
+        const response = await fetch(endpoint, {
           method: 'POST',
           body: formData,
-        },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Upload failed');
+        });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Upload failed');
+        }
+        const data = await response.json();
+        return {
+          success: true,
+          data: data.data || data,
+        };
       }
-
-      const data = await response.json();
-      return {
-        success: true,
-        data: data.data || data,
-      };
     } catch (error) {
       return {
         success: false,
@@ -94,20 +111,33 @@ class UploadService extends APIService {
     const response = await this.get(
       `/attachment/progress/${studentStepProgressId}`,
     );
-    return response.data || [];
+    console.log('DEBUG getAttachmentsByProgress response:', response);
+    // Axios: response.data.data (array)
+    if (Array.isArray(response)) {
+      return response;
+    }
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    return [];
   }
-
   // ดึง URL สำหรับดู/ดาวน์โหลดไฟล์
+
   getFileUrl(fileKey: string): string {
     if (!fileKey) return '';
-
-    // ถ้าเป็น URL เต็มแล้ว
     if (fileKey.startsWith('http://') || fileKey.startsWith('https://')) {
       return fileKey;
     }
-
-    // ถ้าเป็น path ให้เติม base URL
-    return `${API_BASE_URL}/attachment/file/${fileKey}`;
+    let cleanKey = fileKey;
+    if (cleanKey.startsWith('attachments/')) {
+      cleanKey = cleanKey
+        .replace(/^attachments\//, '')
+        .replace(/^attachments\//, '');
+    }
+    return `${API_STATIC_URL}/attachments/${cleanKey}`;
   }
 
   // อัพเดท attachment

@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'standalone',
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['10.44.1.49:8085', '10.44.1.49', 'localhost:3000'],
+    },
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
