@@ -18,14 +18,14 @@ export interface IStepProgressReportFilter {
   stepIds?: string[];
   milestoneIds?: string[];
   courseIds?: string[];
-  status?:
+  statuses?:
     | 'locked'
     | 'pending_approval'
     | 'declined'
     | 'approved'
     | 'available'[];
-  degree?: string[];
-  year?: string[];
+  degrees?: string[];
+  years?: string[];
 }
 
 export interface StepProgressReportState {

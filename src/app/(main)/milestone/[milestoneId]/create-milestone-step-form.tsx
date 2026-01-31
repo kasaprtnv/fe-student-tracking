@@ -87,8 +87,15 @@ const CreateMilestoneStepForm = ({
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset();
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{tForm('header.create')}</DialogTitle>
@@ -138,6 +145,10 @@ const CreateMilestoneStepForm = ({
                           placeholder={tForm('placeholder.dayPeriod')}
                           {...field}
                           value={Number(field.value ?? 0).toString()}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/^0+(?=\d)/, '');
+                            field.onChange(Number(val));
+                          }}
                         />
                       </InputGroup>
                       <ButtonGroupText className="whitespace-nowrap">

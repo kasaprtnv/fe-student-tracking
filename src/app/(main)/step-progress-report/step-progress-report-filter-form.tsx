@@ -42,9 +42,9 @@ export function FilterStepProgressReportForm({
       stepIds: [],
       milestoneIds: [],
       courseIds: [],
-      year: [],
-      degree: [],
-      status: [],
+      years: [],
+      degrees: [],
+      statuses: [],
     },
   });
 
@@ -147,7 +147,7 @@ export function FilterStepProgressReportForm({
             {/* ปีการศึกษา */}
             <FormField
               control={form.control}
-              name="year"
+              name="years"
               render={({ field }) => (
                 <FormItem className="min-w-[180px] flex-1">
                   <FormLabel>{t('year')}</FormLabel>
@@ -231,7 +231,7 @@ export function FilterStepProgressReportForm({
             {/* ระดับการศึกษา */}
             <FormField
               control={form.control}
-              name="degree"
+              name="degrees"
               render={({ field }) => (
                 <FormItem className="min-w-[180px] flex-1">
                   <FormLabel>{t('degree')}</FormLabel>
@@ -252,7 +252,7 @@ export function FilterStepProgressReportForm({
             {/* สถานะ */}
             <FormField
               control={form.control}
-              name="status"
+              name="statuses"
               render={({ field }) => (
                 <FormItem className="min-w-[180px] flex-1">
                   <FormLabel>{t('status')}</FormLabel>

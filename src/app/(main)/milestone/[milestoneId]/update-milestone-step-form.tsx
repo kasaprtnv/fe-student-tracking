@@ -131,7 +131,10 @@ const UpdateMilestoneStepForm = ({
                       placeholder={tForm('placeholder.dayPeriod')}
                       {...field}
                       value={Number(field.value ?? 0).toString()}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/^0+(?=\d)/, '');
+                        field.onChange(Number(val));
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -150,7 +153,10 @@ const UpdateMilestoneStepForm = ({
                       placeholder={tForm('placeholder.notifyBeforeDays')}
                       {...field}
                       value={Number(field.value ?? 0).toString()}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/^0+(?=\d)/, '');
+                        field.onChange(Number(val));
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
