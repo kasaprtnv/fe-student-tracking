@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+'use client';
+import React, { useMemo, useRef } from 'react';
 import { useCourse } from '@/hooks/use-course';
 import { useMilestone } from '@/hooks/use-milestone';
 import { SelectOption } from '@/types';
@@ -55,6 +56,7 @@ export function FilterStepProgressReportForm({
     SelectOption[]
   >([]);
   const [stepOptions, setStepOptions] = React.useState<SelectOption[]>([]);
+  const [isSubmit, setIsSubmit] = React.useState<boolean>(false);
 
   const selectedCourseIds = useWatch({
     control: form.control,
@@ -74,6 +76,10 @@ export function FilterStepProgressReportForm({
     [allCourseId, courseMap],
   );
 
+  // เพิ่ม useRef เพื่อเก็บค่า previous
+  const prevCourseIds = useRef<string[]>([]);
+  const prevMilestoneIds = useRef<string[]>([]);
+
   // เมื่อ Course เปลี่ยน: Fetch Milestone และ เคลียร์ค่า Milestone/Step
   React.useEffect(() => {
     const updateMilestones = async () => {
@@ -82,13 +88,19 @@ export function FilterStepProgressReportForm({
           const results = await Promise.all(
             selectedCourseIds.map((id) => fetchMilestonesByCourse(id)),
           );
-
-          // รวม Milestone จากทุก Course ที่เลือก
           const flatMilestones = results.flatMap((r) => r.data);
 
-          setAllMilestoneData(flatMilestones);
+          const uniqMilestonesMap: Record<string, IMilestone> = {};
+          flatMilestones.forEach((milestone) => {
+            uniqMilestonesMap[milestone.id] = milestone;
+          });
+
+          setAllMilestoneData(Object.values(uniqMilestonesMap));
           setMilestoneOptions(
-            flatMilestones.map((m) => ({ label: m.name, value: m.id })),
+            Object.values(uniqMilestonesMap).map((m) => ({
+              label: m.name,
+              value: m.id,
+            })),
           );
         } catch (error) {
           console.error('Failed to fetch milestones', error);
@@ -98,9 +110,15 @@ export function FilterStepProgressReportForm({
         setMilestoneOptions([]);
       }
 
-      // เมื่อเปลี่ยน Course ให้เคลียร์ Milestone และ Step ที่เลือกไว้
-      form.setValue('milestoneIds', []);
-      form.setValue('stepIds', []);
+      // เช็คว่า courseIds เปลี่ยนจริงหรือไม่
+      if (
+        JSON.stringify(prevCourseIds.current) !==
+        JSON.stringify(selectedCourseIds)
+      ) {
+        form.setValue('milestoneIds', []);
+        form.setValue('stepIds', []);
+        prevCourseIds.current = selectedCourseIds ? [...selectedCourseIds] : [];
+      }
     };
 
     updateMilestones();
@@ -110,7 +128,6 @@ export function FilterStepProgressReportForm({
   // เมื่อ Milestone เปลี่ยน: กรอง Steps และ เคลียร์ค่า Step
   React.useEffect(() => {
     if (selectedMilestoneIds && selectedMilestoneIds.length > 0) {
-      // กรองเฉพาะ Milestone ที่ถูกเลือกใน UI
       const filteredSteps = allMilestoneData
         .filter((m) => selectedMilestoneIds.includes(m.id))
         .flatMap((m) => m.steps || [])
@@ -124,8 +141,16 @@ export function FilterStepProgressReportForm({
       setStepOptions([]);
     }
 
-    // เมื่อเปลี่ยน Milestone ให้เคลียร์ Step ที่เคยเลือกไว้
-    form.setValue('stepIds', []);
+    // เช็คว่า milestoneIds เปลี่ยนจริงหรือไม่
+    if (
+      JSON.stringify(prevMilestoneIds.current) !==
+      JSON.stringify(selectedMilestoneIds)
+    ) {
+      form.setValue('stepIds', []);
+      prevMilestoneIds.current = selectedMilestoneIds
+        ? [...selectedMilestoneIds]
+        : [];
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMilestoneIds, allMilestoneData]);
 
@@ -133,6 +158,7 @@ export function FilterStepProgressReportForm({
     if (onApplyFilter) {
       onApplyFilter(data);
     }
+    setIsSubmit(true);
   };
 
   return (
@@ -278,6 +304,7 @@ export function FilterStepProgressReportForm({
               variant="outline"
               className="min-w-[120px]"
               onClick={onExportExcel}
+              disabled={isSubmit === false}
             >
               <Table className="h-4 w-4" />
               <span className="flex items-center gap-2">

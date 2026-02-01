@@ -14,7 +14,7 @@ import { useStepProgressReport } from '@/hooks/use-step-progress-report';
 import React from 'react';
 import { Search } from 'lucide-react';
 import { SkeletonTable } from '@/components/loading-skeleton-table';
-import { exportToExcel } from '@/lib/export-datatable';
+import { exportToExcel } from './export-step-progress-report';
 const StepProgressReportPage = () => {
   const tProgressReport = useTranslations('step-progress-report');
   const tDegree = useTranslations('degree');
@@ -22,6 +22,7 @@ const StepProgressReportPage = () => {
   const tStatus = useTranslations('status');
 
   const { fetchAllCourses } = useCourse();
+
   const { fetchStepProgressReportByFilter, loader } = useStepProgressReport();
 
   const [reportData, setReportData] = React.useState<IStepProgressReport[]>([]);
@@ -80,13 +81,14 @@ const StepProgressReportPage = () => {
   };
 
   const onExportExcel = () => {
-    const exportColumns = reportColumn
-      .filter((col) => typeof col.header === 'string' && !!col.id)
-      .map((col) => ({
-        header: col.header as string,
-        accessorKey: col.id as string,
-      }));
-    exportToExcel(reportData, exportColumns, 'step-progress-report.xlsx');
+    exportToExcel(
+      reportData,
+      {
+        tColumn,
+        tStatus,
+      },
+      'step-progress-report.xlsx',
+    );
   };
 
   return (

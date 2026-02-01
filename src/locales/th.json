@@ -73,7 +73,11 @@
     "academic-position": "ตำแหน่งทางวิชาการ",
     "graduated": "สำเร็จการศึกษา",
     "graduated-yes": "สำเร็จ",
-    "graduated-no": "ยังไม่สำเร็จ"
+    "graduated-no": "ยังไม่สำเร็จ",
+    "due-date": "กำหนดส่ง",
+    "status": "สถานะ",
+    "milestone-name": "ชื่อขั้นตอนการศึกษา",
+    "step-name": "ชื่อขั้นตอนการศึกษาย่อย"
   },
   "common": {
     "submit": "ส่ง",
