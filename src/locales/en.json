@@ -206,6 +206,7 @@
       "title": "Personal Information",
       "name": "Name",
       "email": "Email",
+      "course": "Course",
       "phone": "Phone",
       "address": "Address",
       "year": "Year of Enrollment",

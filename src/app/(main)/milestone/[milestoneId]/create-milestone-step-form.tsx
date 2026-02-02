@@ -62,19 +62,8 @@ const CreateMilestoneStepForm = ({
     },
   });
 
-  const milestone = getMilestoneById(milestoneId) as IMilestone;
-
   const onSubmit = async (data: CreateMilestoneStepFormData) => {
     try {
-      if ((data?.dayPeriod ?? 0) > milestone.dayPeriod) {
-        form.setError('dayPeriod', {
-          type: 'manual',
-          message: tForm('errors.dayPeriod-exceeds', {
-            value: milestone.dayPeriod,
-          }),
-        });
-        return;
-      }
       await createNewMilestoneStep({
         ...data,
         milestoneId,
@@ -151,9 +140,6 @@ const CreateMilestoneStepForm = ({
                           }}
                         />
                       </InputGroup>
-                      <ButtonGroupText className="whitespace-nowrap">
-                        {`${milestone?.dayPeriod} ${tCommon('days')}`}
-                      </ButtonGroupText>
                     </ButtonGroup>
                   </FormControl>
                   <FormMessage />
