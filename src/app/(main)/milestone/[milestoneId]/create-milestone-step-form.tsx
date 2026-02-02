@@ -15,7 +15,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
+  DialogClose,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -29,10 +31,9 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader } from 'lucide-react';
-import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
-import { InputGroup, InputGroupInput } from '@/components/ui/input-group';
 import { useMilestone } from '@/hooks/use-milestone';
 import { IMilestone } from '@/types/milestone';
+
 interface CreateMilestoneStepFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -78,7 +79,7 @@ const CreateMilestoneStepForm = ({
       await createNewMilestoneStep({
         ...data,
         milestoneId,
-        position: stepsLength + 1, // Default position
+        position: stepsLength + 1,
       });
       form.reset();
       onClose();
@@ -96,65 +97,35 @@ const CreateMilestoneStepForm = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{tForm('header.create')}</DialogTitle>
+      <DialogContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-xl font-semibold text-gray-800">
+            {tForm('header.create')}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
+            {tForm('header_description.create')}
+          </DialogDescription>
         </DialogHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-1 flex-col gap-4 overflow-y-auto px-4"
+          >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tForm('label.name')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.name')}
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder={tForm('placeholder.name')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{tForm('label.description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={tForm('placeholder.description')}
+                    <Input
+                      placeholder={tForm('placeholder.name')}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dayPeriod"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{tForm('label.dayPeriod')}</FormLabel>
-                  <FormControl>
-                    <ButtonGroup className="w-full flex-nowrap">
-                      <InputGroup>
-                        <InputGroupInput
-                          type="number"
-                          placeholder={tForm('placeholder.dayPeriod')}
-                          {...field}
-                          value={Number(field.value ?? 0).toString()}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/^0+(?=\d)/, '');
-                            field.onChange(Number(val));
-                          }}
-                        />
-                      </InputGroup>
-                      <ButtonGroupText className="whitespace-nowrap">
-                        {`${milestone?.dayPeriod} ${tCommon('days')}`}
-                      </ButtonGroupText>
-                    </ButtonGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -163,14 +134,38 @@ const CreateMilestoneStepForm = ({
 
             <FormField
               control={form.control}
-              name="notifyBeforeDays"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tForm('label.notifyBeforeDays')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.description')}
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={tForm('placeholder.description')}
+                      className="resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="dayPeriod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.dayPeriod')}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder={tForm('placeholder.notifyBeforeDays')}
+                      min={0}
+                      placeholder={tForm('placeholder.dayPeriod')}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
                       value={Number(field.value ?? 0).toString()}
                       onChange={(e) => {
@@ -183,6 +178,34 @@ const CreateMilestoneStepForm = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="notifyBeforeDays"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.notifyBeforeDays')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder={tForm('placeholder.notifyBeforeDays')}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      {...field}
+                      value={Number(field.value ?? 0).toString()}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/^0+(?=\d)/, '');
+                        field.onChange(Number(val));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="requiresAttachment"
@@ -192,20 +215,32 @@ const CreateMilestoneStepForm = ({
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
                   />
-                  <FormLabel>{tForm('label.requiresAttachment')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.requiresAttachment')}
+                  </FormLabel>
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type="button" variant="secondary" onClick={onClose}>
-                {tCommon('cancel')}
-              </Button>
-              <Button type="submit" disabled={storeAction === 'loading'}>
-                {storeAction === 'loading' && (
-                  <Loader className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {tCommon('save')}
-              </Button>
+
+            <DialogFooter className="px-0">
+              <div className="flex flex-1 justify-end space-x-2">
+                <DialogClose asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                  >
+                    {tCommon('cancel')}
+                  </Button>
+                </DialogClose>
+
+                <Button disabled={storeAction === 'loading'} type="submit">
+                  {storeAction === 'loading' && (
+                    <Loader className="mr-2 size-4 animate-spin" />
+                  )}
+                  {tCommon('save')}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         </Form>
