@@ -11,6 +11,7 @@ import {
   fetchMilestonesByCourseIdWithPosition,
   removeCourseMilestone,
   reorderMilestones,
+  fetchMilestonesByCourseId,
 } from './milestone.thunks';
 
 const initialState: MilestoneState = {
@@ -74,6 +75,29 @@ const milestoneSlice = createSlice({
         state.error = action.error.message || 'Failed to fetch milestone';
       });
 
+    // Fetch milestones by course ID
+    builder
+      .addCase(fetchMilestonesByCourseId.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(fetchMilestonesByCourseId.fulfilled, (state, action) => {
+        state.loader = false;
+        const sortedMilestones = action.payload.data.sort((a, b) =>
+          a.name.localeCompare(b.name),
+        );
+        sortedMilestones.forEach((milestone) => {
+          state.milestoneMap[milestone.id] = milestone;
+        });
+        state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
+      })
+      .addCase(fetchMilestonesByCourseId.rejected, (state, action) => {
+        state.loader = false;
+        state.error =
+          action.error.message || 'Failed to fetch milestones by course';
+      });
+
+    // Fetch milestones with status by course ID
     builder
       .addCase(fetchMilestonesWithStatusByCourseId.pending, (state) => {
         state.loader = true;

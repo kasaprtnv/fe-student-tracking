@@ -4,6 +4,7 @@ import {
   ClipboardCheck,
   Files,
   User,
+  Newspaper,
 } from 'lucide-react';
 import { UserRole } from '@/types/user';
 
@@ -45,6 +46,12 @@ export const sidebarItems: SidebarItem[] = [
     icon: Files,
     route: '/merge-files',
     roles: ['admin'],
+  },
+  {
+    title: 'homepage.stepProgressReport',
+    icon: Newspaper,
+    route: '/step-progress-report',
+    roles: ['admin', 'teacher'],
   },
   {
     title: 'homepage.settings',

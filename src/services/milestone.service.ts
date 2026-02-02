@@ -32,6 +32,16 @@ class MilestoneService extends APIService {
       });
   }
 
+  async getMilestonesByCourseId(
+    courseId: string,
+  ): Promise<IApiGetResponse<IMilestone>> {
+    return this.get(`/milestones/course/${courseId}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async getMilestonesWithStatusByCourseId(
     courseId: string,
     userId: string,

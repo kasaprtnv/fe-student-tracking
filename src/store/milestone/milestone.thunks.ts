@@ -1,10 +1,6 @@
 import { milestoneService } from '@/services/milestone.service';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  IMilestone,
-  IMilestoneCreateDTO,
-  ICourseMilestone,
-} from '@/types/milestone';
+import { IMilestone, IMilestoneCreateDTO } from '@/types/milestone';
 
 export const fetchMilestones = createAsyncThunk(
   'milestones/fetchAll',
@@ -32,6 +28,21 @@ export const fetchMilestoneById = createAsyncThunk(
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to fetch milestone');
+    }
+  },
+);
+
+export const fetchMilestonesByCourseId = createAsyncThunk(
+  'milestones/fetchByCourseId',
+  async (courseId: string, { rejectWithValue }) => {
+    try {
+      const res = await milestoneService.getMilestonesByCourseId(courseId);
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to fetch milestones by course');
     }
   },
 );
