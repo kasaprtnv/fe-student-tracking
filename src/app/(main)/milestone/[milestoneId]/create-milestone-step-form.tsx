@@ -61,6 +61,13 @@ const CreateMilestoneStepForm = ({
   });
 
   const onSubmit = async (data: CreateMilestoneStepFormData) => {
+    if (data.notifyBeforeDays > data.dayPeriod) {
+      form.setError('notifyBeforeDays', {
+        type: 'manual',
+        message: tForm('errors.notifyBeforeDays-greater-than-dayPeriod'),
+      });
+      return;
+    }
     try {
       await createNewMilestoneStep({
         ...data,

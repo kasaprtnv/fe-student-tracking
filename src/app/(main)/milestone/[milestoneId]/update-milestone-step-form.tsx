@@ -55,8 +55,8 @@ const UpdateMilestoneStepForm = ({
       name: milestoneStep?.name || '',
       description: milestoneStep?.description || '',
       requiresAttachment: milestoneStep?.requiresAttachment || false,
-      dayPeriod: milestoneStep?.dayPeriod || undefined,
-      notifyBeforeDays: milestoneStep?.notifyBeforeDays || undefined,
+      dayPeriod: milestoneStep?.dayPeriod || 0,
+      notifyBeforeDays: milestoneStep?.notifyBeforeDays || 0,
     },
   });
 
@@ -66,15 +66,21 @@ const UpdateMilestoneStepForm = ({
         name: milestoneStep.name || '',
         description: milestoneStep.description || '',
         requiresAttachment: milestoneStep.requiresAttachment || false,
-        dayPeriod: milestoneStep.dayPeriod || undefined,
-        notifyBeforeDays: milestoneStep.notifyBeforeDays || undefined,
+        dayPeriod: milestoneStep.dayPeriod || 0,
+        notifyBeforeDays: milestoneStep.notifyBeforeDays || 0,
       });
     }
   }, [milestoneStep, form]);
 
   const onSubmit = async (data: UpdateMilestoneStepFormData) => {
     if (!milestoneStep?.id) return;
-
+    if (data.notifyBeforeDays > data.dayPeriod) {
+      form.setError('notifyBeforeDays', {
+        type: 'manual',
+        message: tForm('errors.notifyBeforeDays-greater-than-dayPeriod'),
+      });
+      return;
+    }
     try {
       await updateExistingMilestoneStep(milestoneStep.id, data);
       toast.success(tForm('toast.updated-successfully'));

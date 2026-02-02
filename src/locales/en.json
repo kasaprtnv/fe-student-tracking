@@ -213,7 +213,6 @@
       "student_id": "Student ID",
       "major": "Department",
       "faculty": "Faculty",
-      "course": "Course",
       "degree": "Degree",
       "teacher_position": "Academic Position",
       "academic_position": "Academic Position",
@@ -372,7 +371,7 @@
         "position-min": "Position must be at least 1",
 
         "dayPeriod-integer": "Day period must be a number",
-
+        "notifyBeforeDays-greater-than-dayPeriod": "Notify before days cannot be greater than day period",
         "notifyBeforeDays-integer": "Notify-before-days must be a number",
 
         "dayPeriod-exceeds": "Day period cannot exceed milestone's day period of {value} days"

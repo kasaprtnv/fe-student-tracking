@@ -369,6 +369,8 @@
         "position-min": "ลำดับต้องมีค่าอย่างน้อย 1",
 
         "dayPeriod-integer": "ช่วงเวลาต้องเป็นตัวเลข",
+              
+        "notifyBeforeDays-greater-than-dayPeriod": "จำนวนวันแจ้งเตือนล่วงหน้าต้องไม่มากกว่าระยะเวลา",
 
         "notifyBeforeDays-integer": "จำนวนวันก่อนแจ้งเตือนต้องเป็นตัวเลข",
         "dayPeriod-exceeds": "ช่วงเวลาไม่สามารถเกินช่วงเวลาของขั้นตอนการศึกษาที่ {value} วัน"

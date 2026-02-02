@@ -5,16 +5,16 @@ export const createMilestoneStepSchema = (t: (key: string) => string) =>
     name: z.string().nonempty(t('errors.name-required')),
     description: z.string().optional(),
     requiresAttachment: z.boolean(),
-    dayPeriod: z.number().int().optional(),
-    notifyBeforeDays: z.number().int().optional(),
+    dayPeriod: z.number().int(),
+    notifyBeforeDays: z.number().int(),
   });
 export const updateMilestoneStepSchema = (t: (key: string) => string) =>
   z.object({
     name: z.string().nonempty(t('errors.name-required')),
     description: z.string().optional(),
     requiresAttachment: z.boolean(),
-    dayPeriod: z.number().int().optional(),
-    notifyBeforeDays: z.number().int().optional(),
+    dayPeriod: z.number().int(),
+    notifyBeforeDays: z.number().int(),
     isActive: z.boolean().optional(),
   });
 
