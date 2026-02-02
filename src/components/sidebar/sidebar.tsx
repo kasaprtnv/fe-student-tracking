@@ -27,8 +27,8 @@ export default function Sidebar() {
   const [, startTransition] = useTransition();
   const { pendingCount } = usePendingCount();
   const hiddenRoutes = [`/login`];
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const API_STATIC_URL =
+    process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
 
   const t = useTranslations();
   const locale = useLocale();
@@ -324,7 +324,7 @@ export default function Sidebar() {
               <AvatarImage
                 src={
                   user?.profileImageUrl
-                    ? `${API_BASE_URL}${user.profileImageUrl}`
+                    ? `${API_STATIC_URL}${user.profileImageUrl}`
                     : '/profile.png'
                 }
               />

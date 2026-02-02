@@ -52,21 +52,30 @@ export function SingleCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-full justify-between font-normal ${errorMessage && 'border-red-500'} dark:bg-neutral-800 dark:text-gray-200`}
+          className={`w-full justify-between overflow-hidden font-normal ${errorMessage && 'border-red-500'} dark:bg-neutral-800 dark:text-gray-200`}
           disabled={disabled}
         >
-          {value ? (
-            options.find((option) => option.value === value)?.label
-          ) : (
-            <span className="opacity-60">
-              {placeholder ?? 'Select option...'}
-            </span>
-          )}
-          <ChevronsUpDown className="opacity-50" />
+          <span
+            className="block min-w-0 flex-1 truncate text-left"
+            title={
+              value
+                ? options.find((option) => option.value === value)?.label
+                : undefined
+            }
+          >
+            {value ? (
+              options.find((option) => option.value === value)?.label
+            ) : (
+              <span className="opacity-60">
+                {placeholder ?? 'Select option...'}
+              </span>
+            )}
+          </span>
+          <ChevronsUpDown className="ml-2 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       {!disabled && (
-        <PopoverContent className="w-full min-w-[var(--radix-popover-trigger-width)] p-0">
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[var(--radix-popover-trigger-width)] p-0">
           <Command
             filter={(value, search) => {
               if (
@@ -98,11 +107,17 @@ export function SingleCombobox({
                       onChange?.(newValue);
                       setOpen(false);
                     }}
+                    className="flex items-center gap-2"
                   >
-                    {option.label}
+                    <span
+                      className="min-w-0 flex-1 truncate"
+                      title={option.label}
+                    >
+                      {option.label}
+                    </span>
                     <Check
                       className={cn(
-                        'ml-auto',
+                        'ml-auto shrink-0',
                         value === option.value ? 'opacity-100' : 'opacity-0',
                       )}
                     />

@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +28,6 @@ import {
   Unlock,
   TrendingUp,
   File,
-  Upload,
   Download,
   CircleX,
   CircleCheck,
@@ -46,13 +44,11 @@ import { Spinner } from '../ui/spinner';
 import { uploadService } from '@/services/upload.service';
 import { UploadFileDialog } from './upload-file-dialog';
 import { StudentStepAttempts } from '@/types/student-step-attempts';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
-  stepAttempts: StudentStepAttempts[];
+  stepAttempts?: StudentStepAttempts[];
   mode?: ViewMode;
   enrollDate?: string;
   onFileUpload?: (stepId: string, file: File) => void;
@@ -67,7 +63,6 @@ interface MilestoneProgressProps {
   userId?: string;
 }
 
-// Utility: แปลง status เป็น completed/isActive
 const isStepCompleted = (status: string) => status === 'approved';
 const isStepDeclined = (status: string) => status === 'declined';
 const isStepPending = (status: string) => status === 'pending approval';
@@ -97,7 +92,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   );
   const attemptMap = useMemo(() => {
     const map: Record<string, StudentStepAttempts> = {};
-    stepAttempts.forEach((attempt) => {
+    stepAttempts?.forEach((attempt) => {
       const stepId = attempt.stepProgress.mileStoneStepId;
       if (!map[stepId] || attempt.attemptNo > map[stepId].attemptNo) {
         map[stepId] = attempt;
@@ -106,9 +101,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     return map;
   }, [stepAttempts]);
 
-  const [internalFiles, setInternalFiles] = useState<Record<string, File>>({});
+  const [internalFiles, setInternalFiles] = useState<Record<string, File[]>>(
+    {},
+  );
   const [internalFileNames, setInternalFileNames] = useState<
-    Record<string, string>
+    Record<string, string[]>
   >({});
   const [internalSubmitting, setInternalSubmitting] = useState<
     Record<string, boolean>
@@ -167,9 +164,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   };
 
   const downloadFile = async (fileKey: string) => {
-    const url = uploadService.getFileUrl(fileKey);
+    const fileUrl = fileKey.startsWith('attachments')
+      ? `${process.env.NEXT_PUBLIC_STATIC_URL}/${fileKey}`
+      : fileKey;
     try {
-      const res = await fetch(url);
+      const res = await fetch(fileUrl);
       if (!res.ok) throw new Error('Network response was not ok');
       const blob = await res.blob();
       const cd = res.headers.get('content-disposition') || '';
@@ -186,19 +185,16 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       a.remove();
       URL.revokeObjectURL(objectUrl);
     } catch {
-      window.open(url, '_blank');
+      window.open(fileUrl, '_blank');
     }
   };
 
   const handleConfirmSubmit = async () => {
     if (!pendingStepId) return;
-
     const stepId = pendingStepId;
-    const file = internalFiles[stepId];
-
+    const files = internalFiles[stepId];
     setConfirmModalOpen(false);
-
-    if (!file) {
+    if (!files || files.length === 0) {
       const res = await studentStepProgressService.submitForReview(
         stepId,
         userId || '',
@@ -209,17 +205,14 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       onSubmit?.(stepId);
       return res;
     }
-
     setInternalSubmitting((prev) => ({ ...prev, [stepId]: true }));
-
     try {
       const progressId = stepProgressMap[stepId] || stepId;
       const response = await uploadService.createAttachment(
         progressId,
-        file,
+        files,
         userId,
       );
-
       if (response.success) {
         setSuccessModalOpen(true);
         onSubmitSuccess?.(stepId);
@@ -242,7 +235,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       setInternalSubmitting((prev) => ({ ...prev, [stepId]: false }));
       setPendingStepId(null);
     }
-
     onSubmit?.(stepId);
   };
 
@@ -457,16 +449,26 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           <UploadFileDialog
                                             step={step}
                                             isUploading={isUploading}
-                                            onFileUpload={(stepId, file) => {
+                                            onFileUpload={(stepId, files) => {
+                                              const filesToSet = Array.isArray(
+                                                files,
+                                              )
+                                                ? files
+                                                : [files];
                                               setInternalFiles((prev) => ({
                                                 ...prev,
-                                                [stepId]: file,
+                                                [stepId]: filesToSet,
                                               }));
                                               setInternalFileNames((prev) => ({
                                                 ...prev,
-                                                [stepId]: file.name,
+                                                [stepId]: filesToSet.map(
+                                                  (f) => f.name,
+                                                ),
                                               }));
-                                              onFileUpload?.(stepId, file);
+                                              onFileUpload?.(
+                                                stepId,
+                                                filesToSet[0],
+                                              );
                                             }}
                                           />
                                           {/* {internalFileNames[step.id] && (
@@ -592,7 +594,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       </div>
                                     )}
                                   {mode === 'upload' &&
-                                    available &&
+                                    (available || declined) &&
                                     !step.requiresAttachment && (
                                       <div className="mt-2 flex justify-end">
                                         <Button

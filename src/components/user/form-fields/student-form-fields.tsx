@@ -32,11 +32,11 @@ export const StudentFormFields = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-sm font-medium text-gray-700">
-              {t('label.code')}
+              {t('label.student-code')}
             </FormLabel>
             <FormControl>
               <Input
-                placeholder={t('placeholder.code')}
+                placeholder={t('placeholder.student-code')}
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 {...field}
               />

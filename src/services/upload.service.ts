@@ -1,6 +1,7 @@
 import { APIService } from './api.service';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_STATIC_URL = process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
 
 export interface AttachmentDTO {
   id?: string;
@@ -124,16 +125,19 @@ class UploadService extends APIService {
     return [];
   }
   // ดึง URL สำหรับดู/ดาวน์โหลดไฟล์
+
   getFileUrl(fileKey: string): string {
     if (!fileKey) return '';
-
-    // ถ้าเป็น URL เต็มแล้ว
     if (fileKey.startsWith('http://') || fileKey.startsWith('https://')) {
       return fileKey;
     }
-
-    // ถ้าเป็น path ให้เติม base URL
-    return `${API_BASE_URL}/attachment/file/${fileKey}`;
+    let cleanKey = fileKey;
+    if (cleanKey.startsWith('attachments/')) {
+      cleanKey = cleanKey
+        .replace(/^attachments\//, '')
+        .replace(/^attachments\//, '');
+    }
+    return `${API_STATIC_URL}/attachments/${cleanKey}`;
   }
 
   // อัพเดท attachment

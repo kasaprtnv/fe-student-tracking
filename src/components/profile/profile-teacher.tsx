@@ -24,8 +24,8 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
 }) => {
   const t = useTranslations('profile');
   const tDegree = useTranslations('degree');
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const API_STATIC_URL =
+    process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
 
   const mappedDegree = (degree: string) => {
     if (!degree) return '-';
@@ -68,7 +68,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
             <AvatarImage
               src={
                 user?.profileImageUrl
-                  ? `${API_BASE_URL}${user.profileImageUrl}`
+                  ? `${API_STATIC_URL}${user.profileImageUrl}`
                   : '/profile.png'
               }
             />

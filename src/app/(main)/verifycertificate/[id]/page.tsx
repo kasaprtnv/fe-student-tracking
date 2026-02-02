@@ -188,7 +188,12 @@ export default function VerifyDetailPage() {
         setUploadingStaffFile(false);
       }
 
-      await studentStepProgressService.decline(id, user.id, declineReason);
+      await studentStepProgressService.decline(
+        id,
+        user.id,
+        declineReason,
+        staffAttachmentFile || undefined,
+      );
       refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.declined'));
       setShowSuccessModal(true);
