@@ -204,7 +204,7 @@ const CreateMilestoneStepForm = ({
                 {storeAction === 'loading' && (
                   <Loader className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {tCommon('create')}
+                {tCommon('save')}
               </Button>
             </DialogFooter>
           </form>
