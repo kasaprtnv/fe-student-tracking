@@ -198,12 +198,16 @@ const UpdateMilestoneStepForm = ({
               control={form.control}
               name="requiresAttachment"
               render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
+                <FormItem className="flex items-center gap-3 rounded-md border border-gray-300 bg-transparent p-3 shadow-xs">
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
+                    id="requiresAttachment"
                   />
-                  <FormLabel className="text-sm font-medium text-gray-700">
+                  <FormLabel
+                    htmlFor="requiresAttachment"
+                    className="mb-0 cursor-pointer text-sm font-medium text-gray-700"
+                  >
                     {tForm('label.requiresAttachment')}
                   </FormLabel>
                 </FormItem>

@@ -31,8 +31,6 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader } from 'lucide-react';
-import { useMilestone } from '@/hooks/use-milestone';
-import { IMilestone } from '@/types/milestone';
 
 interface CreateMilestoneStepFormProps {
   isOpen: boolean;
@@ -48,7 +46,6 @@ const CreateMilestoneStepForm = ({
   stepsLength,
 }: CreateMilestoneStepFormProps) => {
   const { createNewMilestoneStep, storeAction } = useMilestoneStep();
-  const { getMilestoneById } = useMilestone();
   const tForm = useTranslations('milestone-step.milestone-step-form');
   const tCommon = useTranslations('common');
 
@@ -114,28 +111,6 @@ const CreateMilestoneStepForm = ({
                       placeholder={tForm('placeholder.name')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dayPeriod"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{tForm('label.dayPeriod')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder={tForm('placeholder.dayPeriod')}
-                      {...field}
-                      value={Number(field.value ?? 0).toString()}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/^0+(?=\d)/, '');
-                        field.onChange(Number(val));
-                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -221,12 +196,16 @@ const CreateMilestoneStepForm = ({
               control={form.control}
               name="requiresAttachment"
               render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
+                <FormItem className="flex items-center gap-3 rounded-md border border-gray-300 bg-transparent p-3 shadow-xs">
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
+                    id="requiresAttachment"
                   />
-                  <FormLabel className="text-sm font-medium text-gray-700">
+                  <FormLabel
+                    htmlFor="requiresAttachment"
+                    className="mb-0 cursor-pointer text-sm font-medium text-gray-700"
+                  >
                     {tForm('label.requiresAttachment')}
                   </FormLabel>
                 </FormItem>
@@ -247,7 +226,7 @@ const CreateMilestoneStepForm = ({
 
                 <Button disabled={storeAction === 'loading'} type="submit">
                   {storeAction === 'loading' && (
-                    <Loader className="mr-2 size-4 animate-spin" />
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   {tCommon('save')}
                 </Button>
