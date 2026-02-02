@@ -172,7 +172,7 @@ export function UpdateMilestoneFormSheet({
             />
 
             {/* dayPeriod */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="dayPeriod"
               render={({ field }) => (
@@ -210,10 +210,10 @@ export function UpdateMilestoneFormSheet({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             {/* notifyBeforeDays */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="notifyBeforeDays"
               render={({ field }) => (
@@ -248,7 +248,7 @@ export function UpdateMilestoneFormSheet({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             {/* footer */}
             <DialogFooter>

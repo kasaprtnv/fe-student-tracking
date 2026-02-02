@@ -39,10 +39,10 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
       accessorKey: 'description',
       header: 'description',
     },
-    {
-      accessorKey: 'dayPeriod',
-      header: 'day-period',
-    },
+    // {
+    //   accessorKey: 'dayPeriod',
+    //   header: 'day-period',
+    // },
     {
       accessorKey: 'createdAt',
       header: 'created_at',
@@ -53,10 +53,10 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
       header: 'updated_at',
       cell: ({ row }) => formatDate(row.original.updatedAt),
     },
-    {
-      accessorKey: 'notifyBeforeDays',
-      header: 'notify-before-days',
-    },
+    // {
+    //   accessorKey: 'notifyBeforeDays',
+    //   header: 'notify-before-days',
+    // },
 
     {
       accessorKey: 'isUsed',

@@ -63,19 +63,8 @@ const CreateMilestoneStepForm = ({
     },
   });
 
-  const milestone = getMilestoneById(milestoneId) as IMilestone;
-
   const onSubmit = async (data: CreateMilestoneStepFormData) => {
     try {
-      if ((data?.dayPeriod ?? 0) > milestone.dayPeriod) {
-        form.setError('dayPeriod', {
-          type: 'manual',
-          message: tForm('errors.dayPeriod-exceeds', {
-            value: milestone.dayPeriod,
-          }),
-        });
-        return;
-      }
       await createNewMilestoneStep({
         ...data,
         milestoneId,
@@ -125,6 +114,28 @@ const CreateMilestoneStepForm = ({
                       placeholder={tForm('placeholder.name')}
                       className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dayPeriod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{tForm('label.dayPeriod')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder={tForm('placeholder.dayPeriod')}
+                      {...field}
+                      value={Number(field.value ?? 0).toString()}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/^0+(?=\d)/, '');
+                        field.onChange(Number(val));
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

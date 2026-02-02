@@ -143,7 +143,7 @@ export function CreateMilestoneFormSheet({
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="dayPeriod"
               render={({ field }) => (
@@ -211,7 +211,7 @@ export function CreateMilestoneFormSheet({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <DialogFooter className="px-0">
               <div className="flex flex-1 justify-end space-x-2">
