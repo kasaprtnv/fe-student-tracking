@@ -37,7 +37,7 @@ import { Loader } from 'lucide-react';
 interface UpdateMilestoneStepFormProps {
   isOpen: boolean;
   onClose: () => void;
-  milestoneStep?: IMilestoneStep | null;
+  milestoneStep: IMilestoneStep;
 }
 
 const UpdateMilestoneStepForm = ({
@@ -45,7 +45,11 @@ const UpdateMilestoneStepForm = ({
   onClose,
   milestoneStep,
 }: UpdateMilestoneStepFormProps) => {
-  const { updateExistingMilestoneStep, storeAction } = useMilestoneStep();
+  const {
+    updateExistingMilestoneStep,
+    getMilestoneStepsByMilestoneId,
+    storeAction,
+  } = useMilestoneStep();
   const tForm = useTranslations('milestone-step.milestone-step-form');
   const tCommon = useTranslations('common');
 
@@ -72,8 +76,24 @@ const UpdateMilestoneStepForm = ({
     }
   }, [milestoneStep, form]);
 
+  const isDuplicateStepName = (name: string) => {
+    const steps = getMilestoneStepsByMilestoneId(milestoneStep.milestoneId);
+    return steps.some(
+      (step) =>
+        step.id !== milestoneStep.id &&
+        step.name.trim().toLowerCase() === name.trim().toLowerCase(),
+    );
+  };
+
   const onSubmit = async (data: UpdateMilestoneStepFormData) => {
     if (!milestoneStep?.id) return;
+    if (isDuplicateStepName(data.name)) {
+      form.setError('name', {
+        type: 'manual',
+        message: tForm('errors.name-duplicate'),
+      });
+      return;
+    }
     if (data.notifyBeforeDays > data.dayPeriod) {
       form.setError('notifyBeforeDays', {
         type: 'manual',

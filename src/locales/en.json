@@ -369,7 +369,6 @@
 
         "position-integer": "Position must be a number",
         "position-min": "Position must be at least 1",
-
         "dayPeriod-integer": "Day period must be a number",
         "notifyBeforeDays-greater-than-dayPeriod": "Notify before days cannot be greater than day period",
         "notifyBeforeDays-integer": "Notify-before-days must be a number",

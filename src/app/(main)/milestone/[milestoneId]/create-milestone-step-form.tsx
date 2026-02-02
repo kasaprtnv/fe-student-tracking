@@ -45,7 +45,11 @@ const CreateMilestoneStepForm = ({
   milestoneId,
   stepsLength,
 }: CreateMilestoneStepFormProps) => {
-  const { createNewMilestoneStep, storeAction } = useMilestoneStep();
+  const {
+    createNewMilestoneStep,
+    getMilestoneStepsByMilestoneId,
+    storeAction,
+  } = useMilestoneStep();
   const tForm = useTranslations('milestone-step.milestone-step-form');
   const tCommon = useTranslations('common');
 
@@ -60,7 +64,20 @@ const CreateMilestoneStepForm = ({
     },
   });
 
+  const isDuplicateStepName = (name: string) => {
+    const steps = getMilestoneStepsByMilestoneId(milestoneId);
+    return steps.some(
+      (step) => step.name.trim().toLowerCase() === name.trim().toLowerCase(),
+    );
+  };
   const onSubmit = async (data: CreateMilestoneStepFormData) => {
+    if (isDuplicateStepName(data.name)) {
+      form.setError('name', {
+        type: 'manual',
+        message: tForm('errors.name-duplicate'),
+      });
+      return;
+    }
     if (data.notifyBeforeDays > data.dayPeriod) {
       form.setError('notifyBeforeDays', {
         type: 'manual',
