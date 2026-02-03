@@ -326,6 +326,8 @@
     "add-step": "เพิ่มขั้นตอนการศึกษาย่อย",
     "requires-attachment": "สามารถแนบไฟล์หลักฐานได้",
     "no-attachment-required": "ไม่สามารถแนบไฟล์หลักฐานได้",
+    "notify-before-days": "แจ้งเตือนล่วงหน้า",
+    "day-period": "ระยะเวลา",
     "milestone-step-form": {
       "header": {
         "create": "เพิ่มขั้นตอนการศึกษาย่อย",

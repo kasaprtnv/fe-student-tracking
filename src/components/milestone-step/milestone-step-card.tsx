@@ -3,7 +3,14 @@ import React from 'react';
 import { IMilestoneStep } from '@/types/milestone-step';
 import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 
-import { GripVertical, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import {
+  Bell,
+  Clock,
+  GripVertical,
+  MoreVertical,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -82,7 +89,7 @@ const MilestoneStepCard = ({
               : t('no-attachment-required')}
           </Badge>
         </div>
-
+        {/* Description */}
         <Tooltip>
           <TooltipTrigger asChild>
             <p className="mt-1 truncate text-sm text-gray-600 sm:max-w-[400px] lg:max-w-[700px]">
@@ -95,6 +102,27 @@ const MilestoneStepCard = ({
             </TooltipContent>
           )}
         </Tooltip>
+        <div className="mt-1 w-fit rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <Clock size={14} />
+              <span>
+                {t('day-period')} {step.dayPeriod} {tCommon('days')}
+              </span>
+            </div>
+
+            <>
+              <span className="text-gray-300">|</span>
+              <div className="flex items-center gap-1">
+                <Bell size={14} />
+                <span>
+                  {t('notify-before-days')} {step.notifyBeforeDays}{' '}
+                  {tCommon('days')}
+                </span>
+              </div>
+            </>
+          </div>
+        </div>
       </div>
 
       <DropdownMenu>

@@ -328,6 +328,8 @@
     "add-step": "Add Milestone Step",
     "requires-attachment": "Requires Attachment",
     "no-attachment-required": "No Attachment Required",
+    "notify-before-days": "Notify Before Days",
+    "day-period": "Day Period",
     "milestone-step-form": {
       "header": {
         "create": "Create Milestone Step",
