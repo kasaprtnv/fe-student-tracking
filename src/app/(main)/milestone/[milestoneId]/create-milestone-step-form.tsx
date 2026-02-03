@@ -31,6 +31,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface CreateMilestoneStepFormProps {
   isOpen: boolean;
@@ -91,6 +92,7 @@ const CreateMilestoneStepForm = ({
         milestoneId,
         position: stepsLength + 1,
       });
+      toast.success(tForm('toast.created-successfully'));
       form.reset();
       onClose();
     } catch (error) {
