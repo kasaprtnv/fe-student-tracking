@@ -360,7 +360,8 @@
         "updated-successfully": "Milestone step updated successfully!",
         "update-failed": "Failed to update milestone step. Please try again.",
         "deleted-successfully": "Milestone step deleted successfully!",
-        "deletion-failed": "Failed to delete milestone step. Please try again."
+        "deletion-failed": "Failed to delete milestone step. Please try again.",
+        "position-updated": "Milestone step positions updated successfully!"
       },
       "errors": {
         "name-required": "Step name is required",

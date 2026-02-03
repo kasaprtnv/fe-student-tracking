@@ -37,7 +37,7 @@ import { Loader } from 'lucide-react';
 interface UpdateMilestoneStepFormProps {
   isOpen: boolean;
   onClose: () => void;
-  milestoneStep: IMilestoneStep;
+  milestoneStep: IMilestoneStep | undefined;
 }
 
 const UpdateMilestoneStepForm = ({
@@ -77,6 +77,7 @@ const UpdateMilestoneStepForm = ({
   }, [milestoneStep, form]);
 
   const isDuplicateStepName = (name: string) => {
+    if (!milestoneStep) return false;
     const steps = getMilestoneStepsByMilestoneId(milestoneStep.milestoneId);
     return steps.some(
       (step) =>
