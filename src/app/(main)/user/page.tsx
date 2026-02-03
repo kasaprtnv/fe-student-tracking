@@ -60,6 +60,10 @@ const UserPage = () => {
     return null;
   }
 
+  const onImport = () => {
+    setIsImportOpen(true);
+  };
+
   return (
     <>
       <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
@@ -69,10 +73,6 @@ const UserPage = () => {
             <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
             <p className="text-muted-foreground">{t('description')}</p>
           </div>
-          <Button onClick={() => setIsImportOpen(true)}>
-            <Upload className="mr-2 h-4 w-4" />
-            {t('import-button')}
-          </Button>
         </div>
 
         <Tabs defaultValue={defaultTab} className="w-full space-y-4">
@@ -82,13 +82,13 @@ const UserPage = () => {
             <TabsTrigger value="teachers">{t('tabs.teachers')}</TabsTrigger>
           </TabsList>
           <TabsContent value="all">
-            <AllTable />
+            <AllTable onImport={onImport} importLabel="import-users" />
           </TabsContent>
           <TabsContent value="students">
-            <StudentTable />
+            <StudentTable onImport={onImport} importLabel="import-users" />
           </TabsContent>
           <TabsContent value="teachers">
-            <TeacherTable />
+            <TeacherTable onImport={onImport} importLabel="import-users" />
           </TabsContent>
         </Tabs>
       </div>

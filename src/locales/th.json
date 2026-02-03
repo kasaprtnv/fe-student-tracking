@@ -31,7 +31,9 @@
     "add": "เพิ่ม",
     "delete_selected": "เลือก {count} รายการ",
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
-    "select-milestone": "ไปยังขั้นตอนการศึกษา"
+    "select-milestone": "ไปยังขั้นตอนการศึกษา",
+    "import": "นำเข้าข้อมูล",
+    "import-users": "อัปโหลดไฟล์ผู้ใช้"
   },
   "column": {
     "name": "ชื่อ",

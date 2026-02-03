@@ -31,7 +31,9 @@
     "add": "Add",
     "delete_selected": "{count} item(s) selected",
     "to-milestone-step": "To Milestone Steps",
-    "select-milestone": "Select Milestone"
+    "select-milestone": "Select Milestone",
+    "import": "Import",
+    "import-users": "Upload Users File"
   },
   "column": {
     "name": "Name",
