@@ -324,8 +324,8 @@
     "title": "ขั้นตอนการศึกษาย่อย",
     "sub_title": "จัดการขั้นตอนการศึกษาย่อยของคุณที่นี่",
     "add-step": "เพิ่มขั้นตอนการศึกษาย่อย",
-    "requires-attachment": "ต้องการไฟล์แนบ",
-    "no-attachment-required": "ไม่ต้องการไฟล์แนบ",
+    "requires-attachment": "สามารถแนบไฟล์หลักฐานได้",
+    "no-attachment-required": "ไม่สามารถแนบไฟล์หลักฐานได้",
     "milestone-step-form": {
       "header": {
         "create": "เพิ่มขั้นตอนการศึกษาย่อย",
@@ -339,7 +339,7 @@
         "name": "ชื่อขั้นตอนการศึกษาย่อย",
         "description": "คำอธิบายขั้นตอนการศึกษาย่อย",
         "position": "ลำดับ",
-        "requiresAttachment": "ต้องการไฟล์แนบ",
+        "requiresAttachment": "สามารถแนบไฟล์หลักฐานได้หรือไม่",
         "dayPeriod": "ระยะเวลา (วัน)",
         "notifyBeforeDays": "แจ้งเตือนล่วงหน้า (วัน)",
         "isActive": "ใช้งานอยู่",
