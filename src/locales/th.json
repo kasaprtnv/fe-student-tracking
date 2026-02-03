@@ -337,7 +337,7 @@
       },
       "label": {
         "name": "ชื่อขั้นตอนการศึกษาย่อย",
-        "description": "คำอธิบาย",
+        "description": "คำอธิบายขั้นตอนการศึกษาย่อย",
         "position": "ลำดับ",
         "requiresAttachment": "ต้องการไฟล์แนบ",
         "dayPeriod": "ระยะเวลา (วัน)",
