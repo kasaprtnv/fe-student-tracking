@@ -328,7 +328,7 @@
     "no-attachment-required": "ไม่ต้องการไฟล์แนบ",
     "milestone-step-form": {
       "header": {
-        "create": "สร้างขั้นตอนการศึกษาย่อย",
+        "create": "เพิ่มขั้นตอนการศึกษาย่อย",
         "edit": "แก้ไขขั้นตอนการศึกษาย่อย"
       },
       "header_description": {
