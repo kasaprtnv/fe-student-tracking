@@ -87,7 +87,7 @@ export const createStudentColumns = (
       cell: ({ row }) => row.original.year || '-',
     },
     {
-      header: t('course-name'),
+      header: t('enrolled-course-name'),
       accessorKey: 'courseName',
       sortingFn: mixedThEnTextSort<User>(),
       cell: ({ row }) => row.original.courseName || '-',

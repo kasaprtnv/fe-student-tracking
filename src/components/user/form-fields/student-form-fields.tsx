@@ -37,7 +37,7 @@ export const StudentFormFields = ({
             <FormControl>
               <Input
                 placeholder={t('placeholder.student-code')}
-                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className="border-gray-300 bg-white"
                 {...field}
               />
             </FormControl>

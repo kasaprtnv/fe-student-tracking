@@ -25,6 +25,7 @@ const MilestoneStepPage = () => {
   const { milestoneId } = useParams();
   const milestoneIdString = milestoneId as string;
   const t = useTranslations('milestone-step');
+  const tMilestone = useTranslations('milestone');
 
   const {
     fetchMilestoneStepsByMilestone,
@@ -136,7 +137,7 @@ const MilestoneStepPage = () => {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: 'Milestones', href: '/milestone' },
+          { label: tMilestone('title'), href: '/milestone' },
           { label: milestone?.name || '', isPage: true },
         ]}
       />

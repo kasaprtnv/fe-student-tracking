@@ -18,6 +18,23 @@ const initialState: CourseState = {
   error: null,
 };
 
+const degreeTHMap = {
+  master: 'ปริญญาโท',
+  doctorate: 'ปริญญาเอก',
+} as Record<string, string>;
+
+const degreeENMap = {
+  master: "Master's Degree",
+  doctorate: 'Doctoral Degree',
+} as Record<string, string>;
+
+const getdegreeMap = (degree: string) => {
+  return {
+    degreeTH: degreeTHMap[degree] || '',
+    degreeEN: degreeENMap[degree] || '',
+  };
+};
+
 const courseSlice = createSlice({
   name: 'course',
   initialState,
@@ -40,7 +57,8 @@ const courseSlice = createSlice({
         state.loader = false;
         state.courseMap = {};
         action.payload.data.forEach((course: ICourse) => {
-          state.courseMap[course.id] = course;
+          const { degreeTH, degreeEN } = getdegreeMap(course.degree);
+          state.courseMap[course.id] = { ...course, degreeTH, degreeEN };
         });
       })
       .addCase(fetchCourses.rejected, (state, action) => {
@@ -56,7 +74,12 @@ const courseSlice = createSlice({
       })
       .addCase(fetchCourseById.fulfilled, (state, action) => {
         state.loader = false;
-        state.courseMap[action.payload.id] = action.payload;
+        const { degreeTH, degreeEN } = getdegreeMap(action.payload.degree);
+        state.courseMap[action.payload.id] = {
+          ...action.payload,
+          degreeTH,
+          degreeEN,
+        };
       })
       .addCase(fetchCourseById.rejected, (state, action) => {
         state.loader = false;
@@ -71,15 +94,21 @@ const courseSlice = createSlice({
       })
       .addCase(createCourse.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        state.courseMap[action.payload.receivedData.id] =
-          action.payload.receivedData;
+        const { degreeTH, degreeEN } = getdegreeMap(
+          action.payload.receivedData.degree,
+        );
+        state.courseMap[action.payload.receivedData.id] = {
+          ...action.payload.receivedData,
+          degreeTH,
+          degreeEN,
+        };
       })
       .addCase(createCourse.rejected, (state, action) => {
         state.storeAction = 'none';
         state.error = action.payload as string;
       });
 
-    // Craete course with staff
+    // Create course with staff
     builder
       .addCase(createCourseWithStaff.pending, (state) => {
         state.storeAction = 'creating';
@@ -87,8 +116,14 @@ const courseSlice = createSlice({
       })
       .addCase(createCourseWithStaff.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        state.courseMap[action.payload.receivedData.id] =
-          action.payload.receivedData;
+        const { degreeTH, degreeEN } = getdegreeMap(
+          action.payload.receivedData.degree,
+        );
+        state.courseMap[action.payload.receivedData.id] = {
+          ...action.payload.receivedData,
+          degreeTH,
+          degreeEN,
+        };
       })
       .addCase(createCourseWithStaff.rejected, (state, action) => {
         state.storeAction = 'none';
@@ -105,9 +140,12 @@ const courseSlice = createSlice({
         state.storeAction = 'none';
         const updated = action.payload.updatedFields;
         if (updated.id && state.courseMap[updated.id]) {
+          const { degreeTH, degreeEN } = getdegreeMap(updated.degree as string);
           state.courseMap[updated.id] = {
             ...state.courseMap[updated.id],
             ...updated,
+            degreeTH,
+            degreeEN,
           };
         }
       })
