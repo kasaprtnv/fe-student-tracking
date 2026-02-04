@@ -40,7 +40,7 @@ export const RoleSelector = ({ form, handleRoleChange }: RoleSelectorProps) => {
             value={field.value}
           >
             <FormControl>
-              <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+              <SelectTrigger className="w-full border-gray-300 bg-white">
                 <SelectValue placeholder={t('placeholder.role')} />
               </SelectTrigger>
             </FormControl>

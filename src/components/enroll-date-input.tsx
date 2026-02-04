@@ -76,7 +76,7 @@ export function EnrollDateInput({
       <FormControl>
         <Input
           placeholder="DD/MM/YYYY"
-          className="border-gray-300 pr-10 focus:border-blue-500 focus:ring-blue-500"
+          className="border-gray-300 bg-white pr-10"
           value={inputValue}
           onChange={handleInputChange}
           maxLength={10}

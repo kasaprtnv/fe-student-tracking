@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 import { IStudentStepProgress } from '@/types/student-step-progress';
 import { ColumnDef } from '@tanstack/react-table';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
 
 type TranslationFunction = (key: string) => string;
 
@@ -51,12 +52,14 @@ export function createVerifyColumns(
     {
       accessorKey: 'studentCode',
       header: t('table.student_code'),
+      sortingFn: 'basic',
       cell: ({ row }) =>
         row.original.studentCode || row.original.student?.code || '-',
     },
     {
       accessorKey: 'studentName',
       header: t('table.name'),
+      sortingFn: mixedThEnTextSort<IStudentStepProgress>(),
       cell: ({ row }) =>
         row.original.studentName ||
         `${row.original.student?.firstName || ''} ${row.original.student?.lastName || ''}`.trim() ||
@@ -65,18 +68,21 @@ export function createVerifyColumns(
     {
       accessorKey: 'courseName',
       header: t('table.course'),
+      sortingFn: mixedThEnTextSort<IStudentStepProgress>(),
       cell: ({ row }) =>
         row.original.courseName || row.original.student?.courseName || '-',
     },
     {
       accessorKey: 'stepName',
       header: t('table.step'),
+      sortingFn: mixedThEnTextSort<IStudentStepProgress>(),
       cell: ({ row }) =>
         row.original.stepName || row.original.step?.name || '-',
     },
     {
       accessorKey: 'submittedAt',
       header: t('table.submit_date'),
+      sortingFn: 'datetime',
       cell: ({ row }) => formatDate(row.original.submittedAt),
     },
     {

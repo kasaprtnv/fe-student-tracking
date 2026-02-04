@@ -16,7 +16,15 @@ import React from 'react';
 import { DataTableFilter } from './data-table-filter';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { Button } from '../ui/button';
-import { ArrowDown, ArrowDownUp, ArrowUp, Plus, Trash2, X } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowDownUp,
+  ArrowUp,
+  Plus,
+  Trash2,
+  Upload,
+  X,
+} from 'lucide-react';
 import { DataTableViewOptions } from './data-table-view-options';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import {
@@ -40,6 +48,7 @@ interface DataTableProps<TData, TValue> {
   enabledMultiSelect?: boolean;
   buttonAddLabel?: string;
   buttonFilterLabel?: string;
+  buttonImportLabel?: string;
   enabledSelectColumns?: boolean;
   enabledPagination?: boolean;
   manualPagination?: boolean;
@@ -50,6 +59,7 @@ interface DataTableProps<TData, TValue> {
   filterColumns?: DataTableFilterField<TData>[];
   onFilter?: () => void;
   onAdd?: () => void;
+  onImport?: () => void;
   onEdit?: (data: TData) => void;
   onView?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -79,6 +89,7 @@ export function DataTable<TData, TValue>({
   enabledMultiSelect = true,
   buttonAddLabel = 'add',
   buttonFilterLabel = 'filter',
+  buttonImportLabel = 'import',
   enabledSelectColumns = true,
   enabledPagination = true,
   manualPagination = false,
@@ -89,6 +100,7 @@ export function DataTable<TData, TValue>({
   filterColumns = [],
   onFilter,
   onAdd,
+  onImport,
   onEdit,
   onView,
   onDelete,
@@ -132,6 +144,9 @@ export function DataTable<TData, TValue>({
     autoResetPageIndex: false,
     manualPagination,
     rowCount,
+    defaultColumn: {
+      sortDescFirst: false,
+    },
     state: {
       sorting,
       columnFilters,
@@ -243,6 +258,11 @@ export function DataTable<TData, TValue>({
           {onFilter && (
             <Button onClick={onFilter} variant="outline">
               {t(buttonFilterLabel)}
+            </Button>
+          )}
+          {onImport && (
+            <Button onClick={onImport} variant="outline">
+              <Upload /> {t(buttonImportLabel)}
             </Button>
           )}
           {onAdd && (
