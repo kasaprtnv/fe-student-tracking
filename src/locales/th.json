@@ -71,7 +71,7 @@
     "degree": "วุฒิการศึกษา",
     "study-plan": "แผนการเรียน",
     "managed-courses": "ดูแลหลักสูตร",
-    "course-staff": "อาจารย์ประจำหลักสูตร",
+    "course-staff": "ผู้ดูแลหลักสูตร",
     "teacher-degree": "วุฒิการศึกษา",
     "academic-position": "ตำแหน่งทางวิชาการ",
     "graduated": "สำเร็จการศึกษา",
@@ -147,16 +147,16 @@
         "name": "ชื่อหลักสูตร",
         "description": "คำอธิบายหลักสูตร",
         "degree": "วุฒิการศึกษา",
-        "staffIds": "อาจารย์"
+        "staffIds": "ผู้ดูแลหลักสูตร"
       },
       "placeholder": {
         "code": "กรอกรหัสหลักสูตร",
         "name": "กรอกชื่อหลักสูตร",
         "description": "กรอกคำอธิบายหลักสูตร",
         "degree": "กรอกวุฒิการศึกษา",
-        "staffIds": "เลือกอาจารย์",
-        "search-staff": "ค้นหาอาจารย์...",
-        "no-staff-found": "ไม่พบอาจารย์"
+        "staffIds": "เลือกผู้ดูแลหลักสูตร",
+        "search-staff": "ค้นหาผู้ดูแลหลักสูตร...",
+        "no-staff-found": "ไม่พบผู้ดูแลหลักสูตร"
       },
       "toast": {
         "created-successfully": "เพิ่มหลักสูตรสำเร็จ!",
