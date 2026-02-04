@@ -64,7 +64,7 @@
     "role": "บทบาท",
     "education-level": "ระดับการศึกษา",
     "year": "ปีการศึกษา",
-    "course-name": "ชื่อหลักสูตรที่ลงทะเบียน",
+    "enrolled-course-name": "ชื่อหลักสูตรที่ลงทะเบียน",
     "enroll-date": "วันที่ลงทะเบียน",
     "course": "หลักสูตร",
     "academic-year": "ปีการศึกษา",
@@ -79,7 +79,13 @@
     "due-date": "กำหนดส่ง",
     "status": "สถานะ",
     "milestone-name": "ชื่อขั้นตอนการศึกษา",
-    "step-name": "ชื่อขั้นตอนการศึกษาย่อย"
+    "milestone-description": "คำอธิบายขั้นตอนการศึกษา",
+    "step-name": "ชื่อขั้นตอนการศึกษาย่อย",
+    "course-code": "รหัสหลักสูตร",
+    "course-name": "ชื่อหลักสูตร",
+    "course-description": "คำอธิบายหลักสูตร",
+    "title-name": "ชื่อคำนำหน้า",
+    "title-description": "คำอธิบายคำนำหน้า"
   },
   "common": {
     "submit": "ส่ง",

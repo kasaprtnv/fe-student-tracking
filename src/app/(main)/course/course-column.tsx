@@ -38,17 +38,17 @@ export const createCourseColumns = (
   const columns: ColumnDef<ICourse>[] = [
     {
       accessorKey: 'code',
-      header: 'code',
+      header: 'course-code',
       sortingFn: mixedThEnTextSort<ICourse>(),
     },
     {
       accessorKey: 'name',
-      header: 'name',
+      header: 'course-name',
       sortingFn: mixedThEnTextSort<ICourse>(),
     },
     {
       accessorKey: 'description',
-      header: 'description',
+      header: 'course-description',
       sortingFn: mixedThEnTextSort<ICourse>(),
 
       cell: (info) => {

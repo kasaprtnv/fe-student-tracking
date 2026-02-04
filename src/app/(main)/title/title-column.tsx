@@ -24,12 +24,12 @@ export const createTitleColumns = (): ColumnDef<ITitle>[] => {
   const columns: ColumnDef<ITitle>[] = [
     {
       accessorKey: 'name',
-      header: 'name',
+      header: 'title-name',
       sortingFn: mixedThEnTextSort<ITitle>(),
     },
     {
       accessorKey: 'description',
-      header: 'description',
+      header: 'title-description',
       sortingFn: mixedThEnTextSort<ITitle>(),
     },
     {

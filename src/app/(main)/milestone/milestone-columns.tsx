@@ -34,12 +34,12 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
   const columns: ColumnDef<IMilestone>[] = [
     {
       accessorKey: 'name',
-      header: 'name',
+      header: 'milestone-name',
       sortingFn: mixedThEnTextSort<IMilestone>(),
     },
     {
       accessorKey: 'description',
-      header: 'description',
+      header: 'milestone-description',
       sortingFn: mixedThEnTextSort<IMilestone>(),
     },
     // {
