@@ -17,6 +17,7 @@ import {
 import { getAvatarFallbackName } from '@/lib/avatar-fallback-name';
 // import { Switch } from '@/components/ui/switch';
 import { formatThaiDate } from '@/lib/format-date';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
 import { cn } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import { User } from '@/types/user';
@@ -38,14 +39,18 @@ export const createCourseColumns = (
     {
       accessorKey: 'code',
       header: 'code',
+      sortingFn: mixedThEnTextSort<ICourse>(),
     },
     {
       accessorKey: 'name',
       header: 'name',
+      sortingFn: mixedThEnTextSort<ICourse>(),
     },
     {
       accessorKey: 'description',
       header: 'description',
+      sortingFn: mixedThEnTextSort<ICourse>(),
+
       cell: (info) => {
         const description = info.getValue<string>();
         const isShowTooltip = description && description.length > 100;
@@ -70,11 +75,14 @@ export const createCourseColumns = (
       header: 'staff',
       cell: (info) => {
         const users = info.getValue<User[] | undefined>();
+        const sortedUser = users?.sort((a, b) =>
+          a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase()),
+        );
         return (
           <div className="flex items-center gap-2">
-            {users && users.length > 0 ? (
+            {sortedUser && sortedUser.length > 0 ? (
               <AvatarGroup max={3} className="align-start">
-                {users.map((user) => (
+                {sortedUser.map((user) => (
                   <Avatar
                     key={user.id}
                     className="-ml-2 cursor-pointer first:ml-0"
@@ -116,6 +124,7 @@ export const createCourseColumns = (
     {
       accessorKey: 'createdAt',
       header: 'created_at',
+      sortingFn: 'datetime',
       cell: (info) => {
         const rawDate = info.getValue<string>();
         const localString = formatThaiDate(rawDate);
@@ -125,6 +134,7 @@ export const createCourseColumns = (
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
+      sortingFn: 'datetime',
       cell: (info) => {
         const rawDate = info.getValue<string>();
         const localString = formatThaiDate(rawDate);

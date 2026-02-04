@@ -6,7 +6,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
+  DialogClose,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -30,11 +32,12 @@ import { useTranslations } from 'next-intl';
 import { IMilestoneStep } from '@/types/milestone-step';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
+import { Loader } from 'lucide-react';
 
 interface UpdateMilestoneStepFormProps {
   isOpen: boolean;
   onClose: () => void;
-  milestoneStep?: IMilestoneStep | null;
+  milestoneStep: IMilestoneStep | undefined;
 }
 
 const UpdateMilestoneStepForm = ({
@@ -42,7 +45,11 @@ const UpdateMilestoneStepForm = ({
   onClose,
   milestoneStep,
 }: UpdateMilestoneStepFormProps) => {
-  const { updateExistingMilestoneStep } = useMilestoneStep();
+  const {
+    updateExistingMilestoneStep,
+    getMilestoneStepsByMilestoneId,
+    storeAction,
+  } = useMilestoneStep();
   const tForm = useTranslations('milestone-step.milestone-step-form');
   const tCommon = useTranslations('common');
 
@@ -52,8 +59,8 @@ const UpdateMilestoneStepForm = ({
       name: milestoneStep?.name || '',
       description: milestoneStep?.description || '',
       requiresAttachment: milestoneStep?.requiresAttachment || false,
-      dayPeriod: milestoneStep?.dayPeriod || undefined,
-      notifyBeforeDays: milestoneStep?.notifyBeforeDays || undefined,
+      dayPeriod: milestoneStep?.dayPeriod || 0,
+      notifyBeforeDays: milestoneStep?.notifyBeforeDays || 0,
     },
   });
 
@@ -63,15 +70,38 @@ const UpdateMilestoneStepForm = ({
         name: milestoneStep.name || '',
         description: milestoneStep.description || '',
         requiresAttachment: milestoneStep.requiresAttachment || false,
-        dayPeriod: milestoneStep.dayPeriod || undefined,
-        notifyBeforeDays: milestoneStep.notifyBeforeDays || undefined,
+        dayPeriod: milestoneStep.dayPeriod || 0,
+        notifyBeforeDays: milestoneStep.notifyBeforeDays || 0,
       });
     }
   }, [milestoneStep, form]);
 
+  const isDuplicateStepName = (name: string) => {
+    if (!milestoneStep) return false;
+    const steps = getMilestoneStepsByMilestoneId(milestoneStep.milestoneId);
+    return steps.some(
+      (step) =>
+        step.id !== milestoneStep.id &&
+        step.name.trim().toLowerCase() === name.trim().toLowerCase(),
+    );
+  };
+
   const onSubmit = async (data: UpdateMilestoneStepFormData) => {
     if (!milestoneStep?.id) return;
-
+    if (isDuplicateStepName(data.name)) {
+      form.setError('name', {
+        type: 'manual',
+        message: tForm('errors.name-duplicate'),
+      });
+      return;
+    }
+    if (data.notifyBeforeDays > data.dayPeriod) {
+      form.setError('notifyBeforeDays', {
+        type: 'manual',
+        message: tForm('errors.notifyBeforeDays-greater-than-dayPeriod'),
+      });
+      return;
+    }
     try {
       await updateExistingMilestoneStep(milestoneStep.id, data);
       toast.success(tForm('toast.updated-successfully'));
@@ -84,34 +114,33 @@ const UpdateMilestoneStepForm = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{tForm('header.edit')}</DialogTitle>
+      <DialogContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-xl font-semibold text-gray-800">
+            {tForm('header.edit')}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
+            {tForm('header_description.edit')}
+          </DialogDescription>
         </DialogHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-1 flex-col gap-4 overflow-y-auto px-4"
+          >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tForm('label.name')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.name')}
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder={tForm('placeholder.name')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{tForm('label.description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={tForm('placeholder.description')}
+                    <Input
+                      placeholder={tForm('placeholder.name')}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       {...field}
                     />
                   </FormControl>
@@ -119,15 +148,39 @@ const UpdateMilestoneStepForm = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.description')}
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={tForm('placeholder.description')}
+                      className="resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="dayPeriod"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tForm('label.dayPeriod')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.dayPeriod')}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
+                      min={0}
                       placeholder={tForm('placeholder.dayPeriod')}
                       {...field}
                       value={Number(field.value ?? 0).toString()}
@@ -141,15 +194,19 @@ const UpdateMilestoneStepForm = ({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="notifyBeforeDays"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tForm('label.notifyBeforeDays')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.notifyBeforeDays')}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
+                      min={0}
                       placeholder={tForm('placeholder.notifyBeforeDays')}
                       {...field}
                       value={Number(field.value ?? 0).toString()}
@@ -163,24 +220,46 @@ const UpdateMilestoneStepForm = ({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="requiresAttachment"
               render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
+                <FormItem className="flex items-center gap-3 rounded-md border border-gray-300 bg-transparent p-3 shadow-xs">
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
+                    id="requiresAttachment"
                   />
-                  <FormLabel>{tForm('label.requiresAttachment')}</FormLabel>
+                  <FormLabel
+                    htmlFor="requiresAttachment"
+                    className="mb-0 cursor-pointer text-sm font-medium text-gray-700"
+                  >
+                    {tForm('label.requiresAttachment')}
+                  </FormLabel>
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type="button" variant="secondary" onClick={onClose}>
-                {tCommon('cancel')}
-              </Button>
-              <Button type="submit">{tCommon('save')}</Button>
+
+            <DialogFooter className="px-0">
+              <div className="flex w-full justify-end gap-2">
+                <DialogClose asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                  >
+                    {tCommon('cancel')}
+                  </Button>
+                </DialogClose>
+
+                <Button type="submit" disabled={storeAction === 'updating'}>
+                  {storeAction === 'updating' && (
+                    <Loader className="mr-2 size-4 animate-spin" />
+                  )}
+                  {tCommon('save')}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         </Form>

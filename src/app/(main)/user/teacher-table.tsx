@@ -14,7 +14,12 @@ import { SelectOption } from '@/types';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-export const TeacherTable = () => {
+interface TeacherTableProps {
+  onImport?: () => void;
+  importLabel?: string;
+}
+
+export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
   const {
     searchQuery,
     setSearch: setSearchQuery,
@@ -201,6 +206,8 @@ export const TeacherTable = () => {
         onMultiDelete={(users) => {
           setIsDelete({ isDeleting: true, userIds: users.map((u) => u.id) });
         }}
+        onImport={onImport}
+        buttonImportLabel={importLabel}
       />
       <CreateUserFormDialog
         open={isAdd}

@@ -31,7 +31,9 @@
     "add": "Add",
     "delete_selected": "{count} item(s) selected",
     "to-milestone-step": "To Milestone Steps",
-    "select-milestone": "Select Milestone"
+    "select-milestone": "Select Milestone",
+    "import": "Import",
+    "import-users": "Upload Users File"
   },
   "column": {
     "name": "Name",
@@ -213,7 +215,6 @@
       "student_id": "Student ID",
       "major": "Department",
       "faculty": "Faculty",
-      "course": "Course",
       "degree": "Degree",
       "teacher_position": "Academic Position",
       "academic_position": "Academic Position",
@@ -329,6 +330,8 @@
     "add-step": "Add Milestone Step",
     "requires-attachment": "Requires Attachment",
     "no-attachment-required": "No Attachment Required",
+    "notify-before-days": "Notify Before Days",
+    "day-period": "Day Period",
     "milestone-step-form": {
       "header": {
         "create": "Create Milestone Step",
@@ -361,7 +364,8 @@
         "updated-successfully": "Milestone step updated successfully!",
         "update-failed": "Failed to update milestone step. Please try again.",
         "deleted-successfully": "Milestone step deleted successfully!",
-        "deletion-failed": "Failed to delete milestone step. Please try again."
+        "deletion-failed": "Failed to delete milestone step. Please try again.",
+        "position-updated": "Milestone step positions updated successfully!"
       },
       "errors": {
         "name-required": "Step name is required",
@@ -370,9 +374,8 @@
 
         "position-integer": "Position must be a number",
         "position-min": "Position must be at least 1",
-
         "dayPeriod-integer": "Day period must be a number",
-
+        "notifyBeforeDays-greater-than-dayPeriod": "Notify before days cannot be greater than day period",
         "notifyBeforeDays-integer": "Notify-before-days must be a number",
 
         "dayPeriod-exceeds": "Day period cannot exceed milestone's day period of {value} days"

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
 
 type ColumnActions = {
   onEdit?: (record: ITitle) => void;
@@ -24,14 +25,17 @@ export const createTitleColumns = (): ColumnDef<ITitle>[] => {
     {
       accessorKey: 'name',
       header: 'name',
+      sortingFn: mixedThEnTextSort<ITitle>(),
     },
     {
       accessorKey: 'description',
       header: 'description',
+      sortingFn: mixedThEnTextSort<ITitle>(),
     },
     {
       accessorKey: 'createdAt',
       header: 'created_at',
+      sortingFn: 'datetime',
       cell: (info) => {
         const rawDate = info.getValue<string>();
         const localString = formatThaiDate(rawDate);
@@ -41,6 +45,7 @@ export const createTitleColumns = (): ColumnDef<ITitle>[] => {
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
+      sortingFn: 'datetime',
       cell: (info) => {
         const rawDate = info.getValue<string>();
         const localString = formatThaiDate(rawDate);

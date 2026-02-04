@@ -11,6 +11,7 @@ import {
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
 
 interface ColumnActions {
   onEdit?: (data: IMilestone) => void;
@@ -34,10 +35,12 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
     {
       accessorKey: 'name',
       header: 'name',
+      sortingFn: mixedThEnTextSort<IMilestone>(),
     },
     {
       accessorKey: 'description',
       header: 'description',
+      sortingFn: mixedThEnTextSort<IMilestone>(),
     },
     // {
     //   accessorKey: 'dayPeriod',
@@ -46,11 +49,13 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
     {
       accessorKey: 'createdAt',
       header: 'created_at',
+      sortingFn: 'datetime',
       cell: ({ row }) => formatDate(row.original.createdAt),
     },
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
+      sortingFn: 'datetime',
       cell: ({ row }) => formatDate(row.original.updatedAt),
     },
     // {
