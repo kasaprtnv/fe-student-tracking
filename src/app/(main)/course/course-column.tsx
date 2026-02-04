@@ -72,7 +72,7 @@ export const createCourseColumns = (
     },
     {
       accessorKey: 'users',
-      header: 'staff',
+      header: 'course-staff',
       cell: (info) => {
         const users = info.getValue<User[] | undefined>();
         const sortedUser = users?.sort((a, b) =>
