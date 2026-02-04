@@ -24,6 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-dialog';
 
 interface StudentTableProps {
   onImport?: () => void;
@@ -36,6 +37,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     setSearch: setSearchQuery,
     deleteExistingUser,
     deleteExistingUsers,
+    getUserById,
     storeAction,
     userMap,
     getStudentProgressCount,
@@ -142,6 +144,41 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     .filter((option): option is SelectOption => option !== undefined);
 
   const studentColumns = createStudentColumns(tColumn, tDegree, titleMap);
+
+  const getDeleteDescription = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return '';
+    }
+
+    if (isDelete.userIds.length === 1) {
+      return t('delete-user-description');
+    } else {
+      return t('delete-users-description', { count: isDelete.userIds.length });
+    }
+  };
+
+  const getConfirmText = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return '';
+    }
+
+    if (isDelete.userIds.length === 1) {
+      const user = getUserById(isDelete.userIds[0]);
+      return user ? user.code || user.firstName : 'DELETE USER';
+    } else {
+      return 'DELETE SELECTED USERS';
+    }
+  };
+
+  const getWarningText = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return undefined;
+    }
+
+    if (isDelete.userIds.length > 1) {
+      return t('warning-delete-user', { count: isDelete.userIds.length });
+    }
+  };
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -296,7 +333,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         user={isEdit.user}
         courseOptions={courseOptions}
       />
-      <DeleteConfirmationDialog
+      {/* <DeleteConfirmationDialog
         open={isDelete.isDeleting}
         onClose={() => setIsDelete({ isDeleting: false, userIds: undefined })}
         onConfirm={onConfirmDelete}
@@ -313,6 +350,22 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         }
         translationKey="user"
         count={isDelete.userIds?.length || 0}
+      /> */}
+      <DeleteTextConfirmationDialog
+        open={isDelete.isDeleting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsDelete({ isDeleting: false, userIds: undefined });
+          }
+        }}
+        onConfirm={onConfirmDelete}
+        title={t('delete-user-title')}
+        description={getDeleteDescription()}
+        confirmText={getConfirmText()}
+        isLoading={storeAction === 'deleting'}
+        destructiveButtonText={tCommon('delete')}
+        cancelButtonText={tCommon('cancel')}
+        warningText={getWarningText()}
       />
 
       <AlertDialog

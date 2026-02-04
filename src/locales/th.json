@@ -480,9 +480,10 @@
     "course-placeholder": "กรอกรหัสหลักสูตร",
     "course-required-for-student": "กรุณาเลือกหลักสูตร",
     "delete-user-title": "ยืนยันการลบผู้ใช้",
-    "delete-user-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "delete-user-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้ การกระทำนี้ไม่สามารถย้อนกลับได้",
     "delete-users-title": "ยืนยันการลบผู้ใช้หลายคน",
-    "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "warning-delete-user": "คำเตือน: คุณกำลังจะลบผู้ใช้ {count} คน การกระทำนี้ไม่สามารถย้อนกลับได้",
     "toast": {
       "deleted-successfully": "ลบผู้ใช้สำเร็จ",
       "deleted-multiple-successfully": "ลบผู้ใช้หลายคนสำเร็จ",
@@ -809,10 +810,13 @@
       "selected_items": "เลือกแล้ว {count} รายการ",
       "search_placeholder": "ค้นหา...",
       "no_results": "ไม่พบผลลัพธ์"
+    },
+    "delete-text-confirmation-dialog": {
+      "confirmation-text": "พิมพ์ \"{text}\" เพื่อยืนยันการลบ"
+    },
+    "loading-dot": {
+      "loading": "กำลังโหลด"
     }
-  },
-  "loading-dot": {
-    "loading": "กำลังโหลด"
   },
   "advanced-filter": {
     "title": "ตัวกรองขั้นสูง",
