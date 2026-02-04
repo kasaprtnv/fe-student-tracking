@@ -67,7 +67,7 @@ export const sidebarItems: SidebarItem[] = [
         route: '/milestone',
       },
       {
-        title: 'homepage.userManagement',
+        title: 'user-page.title',
         route: '/user',
       },
       {

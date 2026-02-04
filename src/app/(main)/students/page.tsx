@@ -345,7 +345,7 @@ export default function StudentPage() {
       [tColumn('phone')]: student.phone || '-',
       [tColumn('education-level')]: getDegreeLabel(student.degree),
       [tColumn('year')]: student.year || '-',
-      [tColumn('course-name')]: student.courseName || '-',
+      [tColumn('enrolled-course-name')]: student.courseName || '-',
       [tColumn('study-plan')]: student.studyPlan || '-',
       [tColumn('enroll-date')]: student.enrollDate
         ? formatThaiDate(student.enrollDate)

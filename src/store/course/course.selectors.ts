@@ -27,8 +27,11 @@ export const selectFilteredCoursesId = createSelector(
     const filtered = courses
       .filter(
         (course) =>
+          course.code?.toLowerCase().includes(lowerSearchQuery) ||
           course.name?.toLowerCase().includes(lowerSearchQuery) ||
-          course.description?.toLowerCase().includes(lowerSearchQuery),
+          course.description?.toLowerCase().includes(lowerSearchQuery) ||
+          course.degreeTH?.toLowerCase().includes(lowerSearchQuery) ||
+          course.degreeEN?.toLowerCase().includes(lowerSearchQuery),
       )
       .map((course) => course.id);
     return filtered;

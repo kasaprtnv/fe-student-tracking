@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
 
 interface ColumnActions {
   onEdit?: (data: User) => void;
@@ -29,6 +30,7 @@ export const createAllStudentColumns = (
   const columns: ColumnDef<User>[] = [
     {
       header: t('full-name'),
+      sortingFn: mixedThEnTextSort<User>(),
       accessorFn: (row) => {
         const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
         const firstName = row.firstName || '';
@@ -40,11 +42,17 @@ export const createAllStudentColumns = (
     {
       header: t('email'),
       accessorKey: 'email',
+      sortingFn: 'alphanumeric',
       cell: ({ row }) => row.original.email || '-',
     },
     {
       header: t('phone'),
       accessorKey: 'phone',
+      sortingFn: (rowA, rowB, columnId) => {
+        const a = String(rowA.getValue(columnId) ?? '').replace(/\D/g, '');
+        const b = String(rowB.getValue(columnId) ?? '').replace(/\D/g, '');
+        return a.localeCompare(b);
+      },
       cell: ({ row }) => formatPhoneNumber(row.original.phone),
     },
     {

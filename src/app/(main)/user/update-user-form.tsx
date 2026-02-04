@@ -407,7 +407,7 @@ export function UpdateUserFormDialog({
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="w-full border-gray-300 bg-white">
                             <SelectValue placeholder={t('placeholder.title')} />
                           </SelectTrigger>
                         </FormControl>
@@ -437,7 +437,7 @@ export function UpdateUserFormDialog({
                       <FormControl>
                         <Input
                           placeholder={t('placeholder.first-name')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="border-gray-300 bg-white"
                           {...field}
                         />
                       </FormControl>
@@ -459,7 +459,7 @@ export function UpdateUserFormDialog({
                     <FormControl>
                       <Input
                         placeholder={t('placeholder.last-name')}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        className="border-gray-300 bg-white"
                         {...field}
                       />
                     </FormControl>
@@ -482,7 +482,7 @@ export function UpdateUserFormDialog({
                         type="email"
                         disabled
                         placeholder={t('placeholder.email')}
-                        className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                        className="border-gray-300 bg-white"
                         {...field}
                       />
                     </FormControl>
@@ -503,7 +503,7 @@ export function UpdateUserFormDialog({
                     <FormControl>
                       <Input
                         placeholder={t('placeholder.phone')}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        className="border-gray-300 bg-white"
                         maxLength={10}
                         {...field}
                         onInput={(e) => {
@@ -561,7 +561,7 @@ export function UpdateUserFormDialog({
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full truncate border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="w-full truncate border-gray-300 bg-white">
                             <SelectValue
                               placeholder={t('placeholder.course')}
                             />
@@ -630,7 +630,7 @@ export function UpdateUserFormDialog({
                           value={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <SelectTrigger className="w-full border-gray-300 bg-white">
                               <SelectValue
                                 placeholder={t('placeholder.year')}
                               />
@@ -666,7 +666,7 @@ export function UpdateUserFormDialog({
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="w-full border-gray-300 bg-white">
                             <SelectValue
                               placeholder={t('placeholder.study-plan')}
                             />
@@ -724,7 +724,7 @@ export function UpdateUserFormDialog({
                         <Input
                           {...field}
                           placeholder={t('placeholder.teacher-degree')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="border-gray-300 bg-white"
                         />
                       </FormControl>
                       <FormMessage />

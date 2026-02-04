@@ -31,7 +31,9 @@
     "add": "Add",
     "delete_selected": "{count} item(s) selected",
     "to-milestone-step": "To Milestone Steps",
-    "select-milestone": "Select Milestone"
+    "select-milestone": "Select Milestone",
+    "import": "Import",
+    "import-users": "Upload Users File"
   },
   "column": {
     "name": "Name",
@@ -42,7 +44,7 @@
     "Actions": "Actions",
     "code": "Code",
     "is_active": "Is Active",
-    "is_used": "Is Used",
+    "is_used": "Active Status",
     "active": "Active",
     "inactive": "Inactive",
     "edit": "Edit",
@@ -61,23 +63,30 @@
     "role": "Role",
     "education-level": "Education Level",
     "year": "Year",
-    "course-name": "Enroll Course Name",
+    "enrolled-course-name": "Enroll Course Name",
     "enroll-date": "Enroll Date",
     "course": "Course",
     "academic-year": "Academic Year",
     "degree": "Degree",
     "study-plan": "Study Plan",
     "managed-courses": "Managed Courses",
+    "course-staff": "Course Staff",
     "teacher-degree": "Degree",
     "student-code": "Student Code",
     "milestone-name": "Milestone Name",
+    "milestone-description": "Milestone Description",
     "step-name": "Step Name",
     "status": "Status",
     "due-date": "Due Date",
     "academic-position": "Academic Position",
     "graduated": "Graduated",
     "graduated-yes": "Graduated",
-    "graduated-no": "Not Graduated"
+    "graduated-no": "Not Graduated",
+    "course-code": "Course Code",
+    "course-name": "Course Name",
+    "course-description": "Course Description",
+    "title-name": "Title Name",
+    "title-description": "Title Description"
   },
   "common": {
     "submit": "Submit",
@@ -115,7 +124,7 @@
     }
   },
   "course": {
-    "title": "Courses",
+    "title": "Course Management",
     "sub_title": "Manage your courses here.",
     "course-form": {
       "errors": {
@@ -154,7 +163,7 @@
         "edit": "Edit Course"
       },
       "header_description": {
-        "create": "Fill out the form below to create a new course.",
+        "create": "Fill out the form to create a new course.",
         "edit": "Update the course details below."
       }
     },
@@ -164,7 +173,7 @@
     }
   },
   "title": {
-    "page-title": "Title Prefix",
+    "page-title": "Title Prefix Management",
     "sub_title": "Manage your title prefixes here.",
     "title-form": {
       "errors": {
@@ -192,7 +201,7 @@
         "edit": "Edit Title"
       },
       "header_description": {
-        "create": "Fill out the form below to create a new title.",
+        "create": "Fill out the form to create a new title.",
         "edit": "Update the title details below."
       }
     },
@@ -213,7 +222,6 @@
       "student_id": "Student ID",
       "major": "Department",
       "faculty": "Faculty",
-      "course": "Course",
       "degree": "Degree",
       "teacher_position": "Academic Position",
       "academic_position": "Academic Position",
@@ -252,7 +260,7 @@
     "download": "Download"
   },
   "milestone": {
-    "title": "Milestones",
+    "title": "Milestone Management",
     "sub_title": "Manage your milestones here.",
     "milestone-form": {
       "header": {
@@ -260,8 +268,8 @@
         "edit": "Edit Milestone"
       },
       "header_description": {
-        "create": "Add a new milestone to the system",
-        "edit": "Edit milestone details"
+        "create": "Fill out the form to create a new milestone.",
+        "edit": "Update the milestone details below."
       },
       "label": {
         "name": "Milestone Name",
@@ -329,14 +337,16 @@
     "add-step": "Add Milestone Step",
     "requires-attachment": "Requires Attachment",
     "no-attachment-required": "No Attachment Required",
+    "notify-before-days": "Notify Before Days",
+    "day-period": "Day Period",
     "milestone-step-form": {
       "header": {
         "create": "Create Milestone Step",
         "edit": "Edit Milestone Step"
       },
       "header_description": {
-        "create": "Add a new milestone step to the system",
-        "edit": "Edit milestone step details"
+        "create": "Fill out the form to create a new milestone step.",
+        "edit": "Update the milestone step details below."
       },
       "label": {
         "name": "Step Name",
@@ -361,7 +371,8 @@
         "updated-successfully": "Milestone step updated successfully!",
         "update-failed": "Failed to update milestone step. Please try again.",
         "deleted-successfully": "Milestone step deleted successfully!",
-        "deletion-failed": "Failed to delete milestone step. Please try again."
+        "deletion-failed": "Failed to delete milestone step. Please try again.",
+        "position-updated": "Milestone step positions updated successfully!"
       },
       "errors": {
         "name-required": "Step name is required",
@@ -370,9 +381,8 @@
 
         "position-integer": "Position must be a number",
         "position-min": "Position must be at least 1",
-
         "dayPeriod-integer": "Day period must be a number",
-
+        "notifyBeforeDays-greater-than-dayPeriod": "Notify before days cannot be greater than day period",
         "notifyBeforeDays-integer": "Notify-before-days must be a number",
 
         "dayPeriod-exceeds": "Day period cannot exceed milestone's day period of {value} days"
@@ -493,16 +503,16 @@
     },
     "user-form": {
       "header": {
-        "create": "Add User",
-        "create-student": "Add Student",
-        "create-teacher": "Add Staff Member",
+        "create": "Create New User",
+        "create-student": "Create New Student",
+        "create-teacher": "Create New Staff Member",
         "edit": "Edit User"
       },
       "header_description": {
-        "create": "Fill in the form to add a new user to the system.",
-        "create-student": "Fill in the form to add a new student.",
-        "create-teacher": "Fill in the form to add a new staff member.",
-        "edit": "Edit user information using the form below."
+        "create": "Fill out the form to create a new user.",
+        "create-student": "Fill out the form to create a new student.",
+        "create-teacher": "Fill out the form to create a new staff member.",
+        "edit": "Update the user details below."
       },
 
       "label": {
