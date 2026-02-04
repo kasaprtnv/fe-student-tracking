@@ -25,7 +25,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-export const StudentTable = () => {
+interface StudentTableProps {
+  onImport?: () => void;
+  importLabel?: string;
+}
+
+export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
   const {
     searchQuery,
     setSearch: setSearchQuery,
@@ -274,6 +279,8 @@ export const StudentTable = () => {
         onMultiDelete={(users) => {
           handleMultiDeleteClick(users);
         }}
+        onImport={onImport}
+        buttonImportLabel={importLabel}
       />
       <CreateUserFormDialog
         open={isAdd}

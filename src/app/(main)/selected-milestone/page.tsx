@@ -65,7 +65,7 @@ interface UnlockCondition {
 
 export default function PageLayout({ courseId }: { courseId?: string }) {
   const tSelectedMilestone = useTranslations('selected-milestone');
-
+  const t = useTranslations();
   const {
     allMilestoneIds,
     getMilestoneById,
@@ -419,8 +419,8 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     <div className="h-full w-full pb-45">
       <PageHeader
         breadcrumbs={[
-          { label: 'Course', href: '/course' },
-          { label: 'Select Milestone', isPage: true },
+          { label: t('course.title'), href: '/course' },
+          { label: tSelectedMilestone('header.title'), isPage: true },
         ]}
       />
       <div className="h-full w-full p-6">

@@ -1,3 +1,4 @@
+'use client';
 import { formatThaiDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
@@ -12,6 +13,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import {
+  mixedThEnTextSort,
+  numericStringSort,
+} from '../../../lib/table-sorted';
 
 interface ColumnActions {
   onEdit?: (data: User) => void;
@@ -31,10 +36,12 @@ export const createStudentColumns = (
     {
       accessorKey: 'code',
       header: t('student-code'),
+      sortingFn: 'basic',
       cell: ({ row }) => row.original.code || '-',
     },
     {
       header: t('full-name'),
+      sortingFn: mixedThEnTextSort<User>(),
       accessorFn: (row) => {
         const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
         const firstName = row.firstName || '';
@@ -46,11 +53,17 @@ export const createStudentColumns = (
     {
       header: t('email'),
       accessorKey: 'email',
+      sortingFn: 'alphanumeric',
       cell: ({ row }) => row.original.email || '-',
     },
     {
       header: t('phone'),
       accessorKey: 'phone',
+      sortingFn: (rowA, rowB, columnId) => {
+        const a = String(rowA.getValue(columnId) ?? '').replace(/\D/g, '');
+        const b = String(rowB.getValue(columnId) ?? '').replace(/\D/g, '');
+        return a.localeCompare(b);
+      },
       cell: ({ row }) => formatPhoneNumber(row.original.phone),
     },
     {
@@ -70,11 +83,13 @@ export const createStudentColumns = (
     {
       header: t('year'),
       accessorKey: 'year',
+      sortingFn: numericStringSort<User>(),
       cell: ({ row }) => row.original.year || '-',
     },
     {
-      header: t('course-name'),
+      header: t('enrolled-course-name'),
       accessorKey: 'courseName',
+      sortingFn: mixedThEnTextSort<User>(),
       cell: ({ row }) => row.original.courseName || '-',
     },
     {
@@ -86,22 +101,22 @@ export const createStudentColumns = (
       id: 'enrollDate',
       header: t('enroll-date'),
       accessorKey: 'enrollDate',
+      sortingFn: 'datetime',
       cell: (row) => {
         const rawDate = row.getValue<string>();
         if (!rawDate) return <span>-</span>;
         const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+        return localString;
       },
     },
     {
       id: 'graduated',
       header: t('graduated'),
       accessorKey: 'graduated',
+      sortingFn: 'basic',
       cell: ({ row }) => {
         const graduated = row.original.graduated;
-        return (
-          <span>{graduated ? t('graduated-yes') : t('graduated-no')}</span>
-        );
+        return graduated ? t('graduated-yes') : t('graduated-no');
       },
     },
   ];

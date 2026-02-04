@@ -1,5 +1,6 @@
 import { formatThaiDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
+import { mixedThEnTextSort, numericStringSort } from '@/lib/table-sorted';
 import { User } from '@/types/user';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -12,6 +13,7 @@ export const createStudentColumns = (
     {
       accessorKey: 'code',
       header: t('student-code'),
+      sortingFn: 'basic',
       cell: ({ row }) => {
         const code = row.original.code;
         const id = row.original.id;
@@ -33,6 +35,7 @@ export const createStudentColumns = (
     },
     {
       header: t('full-name'),
+      sortingFn: mixedThEnTextSort<User>(),
       accessorFn: (row) => {
         const firstName = row.firstName || '';
         const lastName = row.lastName || '';
@@ -48,11 +51,17 @@ export const createStudentColumns = (
     {
       header: t('email'),
       accessorKey: 'email',
+      sortingFn: 'alphanumeric',
       cell: ({ row }) => row.original.email || '-',
     },
     {
       header: t('phone'),
       accessorKey: 'phone',
+      sortingFn: (rowA, rowB, columnId) => {
+        const a = String(rowA.getValue(columnId) ?? '').replace(/\D/g, '');
+        const b = String(rowB.getValue(columnId) ?? '').replace(/\D/g, '');
+        return a.localeCompare(b);
+      },
       cell: ({ row }) => formatPhoneNumber(row.original.phone),
     },
     {
@@ -72,6 +81,7 @@ export const createStudentColumns = (
     {
       header: t('year'),
       accessorKey: 'year',
+      sortingFn: numericStringSort<User>(),
       cell: ({ row }) => row.original.year || '-',
       filterFn: (row, id, value) => {
         const rowValue = row.getValue(id);
@@ -79,8 +89,9 @@ export const createStudentColumns = (
       },
     },
     {
-      header: t('course-name'),
+      header: t('enrolled-course-name'),
       accessorKey: 'courseName',
+      sortingFn: mixedThEnTextSort<User>(),
       cell: ({ row }) => row.original.courseName || '-',
       filterFn: (row, id, value) => {
         const rowValue = row.getValue(id);
@@ -98,6 +109,7 @@ export const createStudentColumns = (
       id: 'enrollDate',
       header: t('enroll-date'),
       accessorKey: 'enrollDate',
+      sortingFn: 'datetime',
       cell: (row) => {
         const rawDate = row.getValue<string>();
         if (!rawDate) return <span>-</span>;
@@ -109,6 +121,7 @@ export const createStudentColumns = (
       id: 'graduated',
       header: t('graduated'),
       accessorKey: 'graduated',
+      sortingFn: 'basic',
       cell: ({ row }) => {
         const graduated = row.original.graduated;
         return (
