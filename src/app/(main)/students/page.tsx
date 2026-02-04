@@ -338,7 +338,7 @@ export default function StudentPage() {
     };
 
     const exportData = data.map((student) => ({
-      [tColumn('code')]: student.code || '-',
+      [tColumn('student-code')]: student.code || '-',
       [tColumn('full-name')]:
         `${student.firstName || ''} ${student.lastName || ''}`.trim() || '-',
       [tColumn('email')]: student.email || '-',

@@ -511,6 +511,10 @@ export function UpdateUserFormDialog({
                           target.value = target.value.replace(/\D/g, '');
                           field.onChange(target.value);
                         }}
+                        onBlur={() => {
+                          field.onBlur();
+                          form.trigger('phone');
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -530,8 +534,9 @@ export function UpdateUserFormDialog({
                       </FormLabel>
                       <FormControl>
                         <Input
+                          disabled
                           placeholder={t('placeholder.student-code')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
                           {...field}
                         />
                       </FormControl>
@@ -694,6 +699,7 @@ export function UpdateUserFormDialog({
                       </FormLabel>
                       <div className="relative">
                         <EnrollDateInput
+                          disabled
                           value={field.value}
                           onChange={field.onChange}
                         />

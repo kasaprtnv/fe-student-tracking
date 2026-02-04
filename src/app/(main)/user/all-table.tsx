@@ -69,7 +69,7 @@ export const AllTable = () => {
         // Map role to Thai display text for search
         const roleDisplay =
           user.role === 'student'
-            ? 'นักศึกษา'
+            ? 'นิสิต'
             : user.role === 'teacher'
               ? 'อาจารย์'
               : user.role === 'admin'

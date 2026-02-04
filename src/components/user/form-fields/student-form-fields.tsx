@@ -38,7 +38,17 @@ export const StudentFormFields = ({
               <Input
                 placeholder={t('placeholder.student-code')}
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                maxLength={8}
                 {...field}
+                onInput={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  target.value = target.value.replace(/\D/g, '');
+                  field.onChange(target.value);
+                }}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger('code');
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -149,7 +159,14 @@ export const StudentFormFields = ({
               {t('label.enroll-date')}
             </FormLabel>
             <div className="relative">
-              <EnrollDateInput value={field.value} onChange={field.onChange} />
+              <EnrollDateInput
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger('enrollDate');
+                }}
+              />
             </div>
             <FormMessage />
           </FormItem>

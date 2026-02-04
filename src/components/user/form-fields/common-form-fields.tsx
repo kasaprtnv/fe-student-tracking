@@ -146,6 +146,10 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
                   target.value = target.value.replace(/\D/g, '');
                   field.onChange(target.value);
                 }}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger('phone');
+                }}
               />
             </FormControl>
             <FormMessage />

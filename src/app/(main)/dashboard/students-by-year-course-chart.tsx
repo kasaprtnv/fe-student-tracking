@@ -278,7 +278,7 @@ export function StudentsByYearCourseChart({
             </>
           ) : (
             <p className="text-muted-foreground flex flex-1 items-center justify-center">
-              ไม่มีข้อมูลนักศึกษา
+              ไม่มีข้อมูลนิสิต
             </p>
           )}
         </div>

@@ -99,7 +99,7 @@ export function MultiCombobox({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full min-w-[var(--radix-popover-trigger-width)] p-0">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[var(--radix-popover-trigger-width)] p-0">
         <Command
           filter={(value, search) => {
             if (
@@ -121,7 +121,10 @@ export function MultiCombobox({
                   onSelect={() => toggleValue(option.value)}
                 >
                   <div className="flex w-full flex-col text-left leading-tight">
-                    <span className="truncate overflow-hidden font-medium whitespace-nowrap">
+                    <span
+                      className="truncate overflow-hidden font-medium whitespace-nowrap"
+                      title={option.label}
+                    >
                       {option.label}
                     </span>
                     {option.description && (
