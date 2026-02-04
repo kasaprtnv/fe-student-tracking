@@ -144,6 +144,9 @@ export function DataTable<TData, TValue>({
     autoResetPageIndex: false,
     manualPagination,
     rowCount,
+    defaultColumn: {
+      sortDescFirst: false,
+    },
     state: {
       sorting,
       columnFilters,

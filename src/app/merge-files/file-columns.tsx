@@ -1,4 +1,6 @@
 import { Button } from '@/components/ui/button';
+import { mixedThEnTextSort, numericStringSort } from '@/lib/table-sorted';
+import { ColumnDef } from '@tanstack/react-table';
 import { Download } from 'lucide-react';
 
 export type FileItem = {
@@ -19,7 +21,7 @@ type TranslationFunction = (key: string) => string;
 export function createFileColumns(
   _handleDownload: (file: FileItem) => void,
   t?: TranslationFunction,
-) {
+): ColumnDef<FileItem>[] {
   // ฟังก์ชันดาวน์โหลดไฟล์โดยตรง ไม่เปิดแท็บใหม่
   async function directDownload(file: FileItem) {
     if (!file.file_url) return;
@@ -51,15 +53,18 @@ export function createFileColumns(
     {
       accessorKey: 'filename',
       header: t ? t('merge-files.filename') : 'ชื่อไฟล์',
+      sortingFn: mixedThEnTextSort<FileItem>(),
       cell: ({ row }: { row: { original: FileItem } }) => row.original.filename,
     },
     {
       accessorKey: 'fullname',
       header: t ? t('merge-files.fullname') : 'ชื่อ-นามสกุล',
+      sortingFn: mixedThEnTextSort<FileItem>(),
       cell: ({ row }: { row: { original: FileItem } }) => row.original.fullname,
     },
     {
       accessorKey: 'email',
+      sortingFn: 'alphanumeric',
       header: t ? t('merge-files.email') : 'อีเมล',
       cell: ({ row }: { row: { original: FileItem } }) => row.original.email,
     },
@@ -71,30 +76,28 @@ export function createFileColumns(
     },
     {
       accessorKey: 'grad_year',
-      header: t ? t('merge-files.grad_year') : 'ระดับชั้นปี',
+      header: t ? t('merge-files.grad_year') : 'ปีการศึกษา',
+      sortingFn: numericStringSort<FileItem>(),
       cell: ({ row }: { row: { original: FileItem } }) =>
         row.original.grad_year,
     },
     {
       accessorKey: 'course',
       header: t ? t('merge-files.course') : 'หลักสูตร',
+      sortingFn: mixedThEnTextSort<FileItem>(),
       cell: ({ row }: { row: { original: FileItem } }) => row.original.course,
-    },
-    {
-      accessorKey: 'course_name',
-      header: t ? t('merge-files.course_name') : 'ชื่อหลักสูตร',
-      cell: ({ row }: { row: { original: FileItem } }) =>
-        row.original.course_name,
     },
     {
       accessorKey: 'milestone_step',
       header: t ? t('merge-files.milestone_step') : 'ขั้นตอน',
+      sortingFn: mixedThEnTextSort<FileItem>(),
       cell: ({ row }: { row: { original: FileItem } }) =>
         row.original.milestone_step,
     },
     {
       accessorKey: 'enroll_date',
       header: t ? t('merge-files.enroll_date') : 'วันที่ส่ง',
+      sortingFn: 'datetime',
       cell: ({ row }: { row: { original: FileItem } }) =>
         row.original.enroll_date,
     },

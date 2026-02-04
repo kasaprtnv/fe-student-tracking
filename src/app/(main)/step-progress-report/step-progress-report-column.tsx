@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { IStepProgressReport } from '@/types/step-progress-report';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
 
 export const createStepProgressReportColumns = (
   tStatus: (key: string) => string,
@@ -11,9 +12,12 @@ export const createStepProgressReportColumns = (
     {
       accessorKey: 'studentCode',
       header: 'student-code',
+      sortingFn: 'basic',
     },
     {
       header: 'full-name',
+      sortingFn: mixedThEnTextSort<IStepProgressReport>(),
+
       accessorFn: (row) => {
         const fullName =
           `${row.studentFirstName} ${row.studentLastName}`.trim();
@@ -23,14 +27,17 @@ export const createStepProgressReportColumns = (
     {
       accessorKey: 'courseName',
       header: 'course-name',
+      sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {
       accessorKey: 'milestoneName',
       header: 'milestone-name',
+      sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {
       accessorKey: 'stepName',
       header: 'step-name',
+      sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {
       accessorKey: 'status',
@@ -48,6 +55,7 @@ export const createStepProgressReportColumns = (
     {
       accessorKey: 'dueDate',
       header: 'due-date',
+      sortingFn: 'datetime',
       cell: (info) => {
         const rawDate = info.getValue<string>();
         if (!rawDate) return '-';
