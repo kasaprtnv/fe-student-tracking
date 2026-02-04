@@ -164,7 +164,7 @@
     }
   },
   "title": {
-    "page-title": "Title Prefix",
+    "page-title": "Prefix Management",
     "sub_title": "Manage your title prefixes here.",
     "title-form": {
       "errors": {
