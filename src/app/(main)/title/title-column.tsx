@@ -12,6 +12,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 import { mixedThEnTextSort } from '@/lib/table-sorted';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type ColumnActions = {
   onEdit?: (record: ITitle) => void;
@@ -31,6 +36,22 @@ export const createTitleColumns = (): ColumnDef<ITitle>[] => {
       accessorKey: 'description',
       header: 'title-description',
       sortingFn: mixedThEnTextSort<ITitle>(),
+      cell: (info) => {
+        const description = info.getValue<string>();
+        const isShowTooltip = description && description.length > 100;
+        return (
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="max-w-[300px] truncate">{description || '-'}</div>
+            </TooltipTrigger>
+            {isShowTooltip && (
+              <TooltipContent className="max-w-[250px] break-all">
+                <span>{description}</span>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
     },
     {
       accessorKey: 'createdAt',

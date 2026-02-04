@@ -57,12 +57,10 @@ export const createCourseColumns = (
         return (
           <Tooltip>
             <TooltipTrigger>
-              <span className="max-w-[200px] truncate">
-                {description || '-'}
-              </span>
+              <div className="max-w-[300px] truncate">{description || '-'}</div>
             </TooltipTrigger>
             {isShowTooltip && (
-              <TooltipContent>
+              <TooltipContent className="max-w-[250px] break-all">
                 <span>{description}</span>
               </TooltipContent>
             )}
