@@ -44,7 +44,7 @@
     "Actions": "Actions",
     "code": "Code",
     "is_active": "Is Active",
-    "is_used": "Is Used",
+    "is_used": "Active Status",
     "active": "Active",
     "inactive": "Inactive",
     "edit": "Edit",
