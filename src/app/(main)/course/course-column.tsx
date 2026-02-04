@@ -145,8 +145,9 @@ export const createCourseColumns = (
       accessorKey: 'isUsed',
       header: 'is_used',
       size: 110,
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
         const record = row.original;
+        const { t } = table.options.meta as ColumnActions;
 
         return (
           <div className="flex w-[110px] items-center justify-center">
@@ -158,7 +159,7 @@ export const createCourseColumns = (
                   : 'bg-red-100 text-red-800',
               )}
             >
-              {record.isUsed ? 'Yes' : 'No'}
+              {record.isUsed ? t?.('yes') : t?.('no')}
             </Badge>
           </div>
         );
