@@ -12,6 +12,11 @@ import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { mixedThEnTextSort } from '@/lib/table-sorted';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ColumnActions {
   onEdit?: (data: IMilestone) => void;
@@ -34,13 +39,29 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
   const columns: ColumnDef<IMilestone>[] = [
     {
       accessorKey: 'name',
-      header: 'name',
+      header: 'milestone-name',
       sortingFn: mixedThEnTextSort<IMilestone>(),
     },
     {
       accessorKey: 'description',
-      header: 'description',
+      header: 'milestone-description',
       sortingFn: mixedThEnTextSort<IMilestone>(),
+      cell: (info) => {
+        const description = info.getValue<string>();
+        const isShowTooltip = description && description.length > 100;
+        return (
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="max-w-[300px] truncate">{description || '-'}</div>
+            </TooltipTrigger>
+            {isShowTooltip && (
+              <TooltipContent className="max-w-[250px] break-all">
+                <span>{description}</span>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
     },
     // {
     //   accessorKey: 'dayPeriod',

@@ -11,6 +11,8 @@ export interface ICourse {
 
   staffIds?: string[];
   users?: User[];
+  degreeTH?: string;
+  degreeEN?: string;
 }
 
 export interface ICourseCreateDTO {

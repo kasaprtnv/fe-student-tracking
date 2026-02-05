@@ -109,8 +109,6 @@ export function UpdateMilestoneFormSheet({
       toast.error(t('toast.update-failed'));
     }
   };
-  const dayPeriod = form.watch('dayPeriod');
-  const notifyBeforeDays = form.watch('notifyBeforeDays');
 
   return (
     <Dialog {...props} onOpenChange={(open) => onOpenChange?.(open)}>
