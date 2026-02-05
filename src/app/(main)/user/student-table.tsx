@@ -8,22 +8,11 @@ import { useTitle } from '@/hooks/use-title';
 import { createStudentColumns } from './create-student-column';
 import { CreateUserFormDialog } from './create-user-form';
 import { UpdateUserFormDialog } from './update-user-form';
-import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { formatThaiDate } from '@/lib/format-date';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-dialog';
 
 interface StudentTableProps {
@@ -145,15 +134,36 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
 
   const studentColumns = createStudentColumns(tColumn, tDegree, titleMap);
 
+  const [isEdit, setIsEdit] = React.useState<{
+    isEditing: boolean;
+    user?: User;
+  }>({
+    isEditing: false,
+  });
+  const [isAdd, setIsAdd] = React.useState(false);
+  const [isDelete, setIsDelete] = React.useState<{
+    isDeleting: boolean;
+    userIds?: string[];
+    progressCount: number;
+  }>({
+    isDeleting: false,
+    progressCount: 0,
+  });
+
   const getDeleteDescription = () => {
     if (!isDelete.userIds || isDelete.userIds.length === 0) {
       return '';
     }
 
     if (isDelete.userIds.length === 1) {
-      return t('delete-user-description');
+      return t('dialog.confirm_delete_user_with_progress', {
+        count: isDelete.userIds.length,
+      });
     } else {
-      return t('delete-users-description', { count: isDelete.userIds.length });
+      return t('dialog.delete-users-with-progress-description', {
+        count: isDelete.userIds.length,
+        progressCount: isDelete.progressCount,
+      });
     }
   };
 
@@ -176,34 +186,12 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     }
 
     if (isDelete.userIds.length > 1) {
-      return t('warning-delete-user', { count: isDelete.userIds.length });
+      return t('dialog.warning-delete-users-with-progress', {
+        count: isDelete.userIds.length,
+        progressCount: isDelete.progressCount,
+      });
     }
   };
-
-  const [isEdit, setIsEdit] = React.useState<{
-    isEditing: boolean;
-    user?: User;
-  }>({
-    isEditing: false,
-  });
-  const [isAdd, setIsAdd] = React.useState(false);
-  const [isDelete, setIsDelete] = React.useState<{
-    isDeleting: boolean;
-    userIds?: string[];
-  }>({
-    isDeleting: false,
-  });
-
-  // Progress deletion warning state
-  const [progressDeleteState, setProgressDeleteState] = React.useState<{
-    isOpen: boolean;
-    userIds: string[] | null;
-    count: number;
-  }>({
-    isOpen: false,
-    userIds: null,
-    count: 0,
-  });
 
   const handleMultiDeleteClick = async (users: User[]) => {
     // In student table, everyone is a student, so we check all
@@ -217,52 +205,27 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         );
         totalProgressCount = counts.reduce((acc, curr) => acc + curr, 0);
 
-        if (totalProgressCount > 0) {
-          setProgressDeleteState({
-            isOpen: true,
-            userIds: users.map((u) => u.id),
-            count: totalProgressCount,
-          });
-          return;
-        }
+        setIsDelete({
+          isDeleting: true,
+          userIds: users.map((u) => u.id),
+          progressCount: totalProgressCount,
+        });
       } catch (error) {
         console.error('Error checking progress count:', error);
       }
     }
-
-    // Normal multi-delete flow
-    setIsDelete({ isDeleting: true, userIds: users.map((u) => u.id) });
   };
 
   const handleDeleteClick = async (userId: string) => {
     try {
       const count = await getStudentProgressCount(userId);
-      if (count > 0) {
-        setProgressDeleteState({
-          isOpen: true,
-          userIds: [userId],
-          count: count,
-        });
-        return;
-      }
+      setIsDelete({
+        isDeleting: true,
+        userIds: [userId],
+        progressCount: count,
+      });
     } catch (error) {
       console.error('Error checking progress count:', error);
-    }
-
-    // Normal delete flow
-    setIsDelete({ isDeleting: true, userIds: [userId] });
-  };
-
-  const handleConfirmProgressDelete = async () => {
-    if (progressDeleteState.userIds && progressDeleteState.userIds.length > 0) {
-      if (progressDeleteState.userIds.length === 1) {
-        await deleteExistingUser(progressDeleteState.userIds[0]);
-        toast.success(t('toast.deleted-successfully'));
-      } else {
-        await deleteExistingUsers(progressDeleteState.userIds);
-        toast.success(t('toast.deleted-multiple-successfully'));
-      }
-      setProgressDeleteState({ isOpen: false, userIds: null, count: 0 });
     }
   };
 
@@ -277,7 +240,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         await deleteExistingUsers(isDelete.userIds);
         toast.success(t('toast.deleted-multiple-successfully'));
       }
-      setIsDelete({ isDeleting: false, userIds: undefined });
+      setIsDelete({ isDeleting: false, userIds: undefined, progressCount: 0 });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
       // Parse error message and translate if it's a known error code
@@ -333,29 +296,15 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         user={isEdit.user}
         courseOptions={courseOptions}
       />
-      {/* <DeleteConfirmationDialog
-        open={isDelete.isDeleting}
-        onClose={() => setIsDelete({ isDeleting: false, userIds: undefined })}
-        onConfirm={onConfirmDelete}
-        isLoading={storeAction === 'deleting'}
-        title={
-          isDelete.userIds?.length === 1
-            ? 'delete-user-title'
-            : 'delete-users-title'
-        }
-        description={
-          (isDelete.userIds?.length || 0) === 1
-            ? 'delete-user-description'
-            : 'delete-users-description'
-        }
-        translationKey="user"
-        count={isDelete.userIds?.length || 0}
-      /> */}
       <DeleteTextConfirmationDialog
         open={isDelete.isDeleting}
         onOpenChange={(open) => {
           if (!open) {
-            setIsDelete({ isDeleting: false, userIds: undefined });
+            setIsDelete({
+              isDeleting: false,
+              userIds: undefined,
+              progressCount: 0,
+            });
           }
         }}
         onConfirm={onConfirmDelete}
@@ -366,41 +315,8 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         destructiveButtonText={tCommon('delete')}
         cancelButtonText={tCommon('cancel')}
         warningText={getWarningText()}
+        minWidth="min-w-[680px]"
       />
-
-      <AlertDialog
-        open={progressDeleteState.isOpen}
-        onOpenChange={(open) => {
-          if (!open)
-            setProgressDeleteState((prev) => ({ ...prev, isOpen: false }));
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCommon('confirm')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('dialog.confirm_delete_user_with_progress', {
-                count: progressDeleteState.count,
-              })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() =>
-                setProgressDeleteState((prev) => ({ ...prev, isOpen: false }))
-              }
-            >
-              {tCommon('cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmProgressDelete}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-            >
-              {tCommon('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
