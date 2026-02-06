@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 
 import { Input } from '@/components/ui/input';
+import { DynamicInputList } from '@/components/ui/dynamic-input-list';
 
 interface TeacherFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
@@ -49,9 +50,11 @@ export const TeacherFormFields = ({
               {t('label.academic-position')}
             </FormLabel>
             <FormControl>
-              <Input
-                {...field}
+              <DynamicInputList
+                value={field.value}
+                onChange={field.onChange}
                 placeholder={t('placeholder.academic-position')}
+                buttonLabel={t('label.add-academic-position')}
               />
             </FormControl>
             <FormMessage />

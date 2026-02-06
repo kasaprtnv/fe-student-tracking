@@ -90,7 +90,14 @@ export const createStudentColumns = (
       header: t('enrolled-course-name'),
       accessorKey: 'courseName',
       sortingFn: mixedThEnTextSort<User>(),
-      cell: ({ row }) => row.original.courseName || '-',
+      cell: ({ row }) => {
+        const value = row.original.courseName || '-';
+        return (
+          <span className="block max-w-[280px] truncate" title={value}>
+            {value}
+          </span>
+        );
+      },
     },
     {
       header: t('study-plan'),

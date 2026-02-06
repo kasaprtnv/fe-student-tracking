@@ -64,7 +64,14 @@ export const createTeacherColumns = (
       header: t('academic-position'),
       accessorKey: 'academicPosition',
       sortingFn: mixedThEnTextSort<User>(),
-      cell: ({ row }) => row.original.academicPosition || '-',
+      cell: ({ row }) => {
+        const value = row.original.academicPosition || '-';
+        return (
+          <span className="block max-w-[200px] truncate" title={value}>
+            {value}
+          </span>
+        );
+      },
     },
     {
       header: t('managed-courses'),
@@ -76,7 +83,11 @@ export const createTeacherColumns = (
         return (
           <div className="flex flex-col gap-1">
             {courses.map((course, index) => (
-              <span key={index} className="text-sm">
+              <span
+                key={index}
+                className="block max-w-[350px] truncate text-sm"
+                title={course}
+              >
                 {course}
               </span>
             ))}
