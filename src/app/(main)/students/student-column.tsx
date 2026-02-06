@@ -89,10 +89,17 @@ export const createStudentColumns = (
       },
     },
     {
-      header: t('course-name'),
+      header: t('enrolled-course-name'),
       accessorKey: 'courseName',
       sortingFn: mixedThEnTextSort<User>(),
-      cell: ({ row }) => row.original.courseName || '-',
+      cell: ({ row }) => {
+        const value = row.original.courseName || '-';
+        return (
+          <span className="block max-w-[350px] truncate" title={value}>
+            {value}
+          </span>
+        );
+      },
       filterFn: (row, id, value) => {
         const rowValue = row.getValue(id);
         return Array.isArray(value) && value.includes(rowValue);

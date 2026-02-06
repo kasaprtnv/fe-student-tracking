@@ -31,7 +31,9 @@ const userSlice = createSlice({
       state.error = null;
     },
     addToCache: (state, action: PayloadAction<User>) => {
-      state.userMap[action.payload.id] = action.payload;
+      if (action.payload.isActive !== false) {
+        state.userMap[action.payload.id] = action.payload;
+      }
     },
     removeFromCache: (state, action: PayloadAction<string>) => {
       delete state.userMap[action.payload];
@@ -42,7 +44,11 @@ const userSlice = createSlice({
     ) => {
       const { id, data } = action.payload;
       if (state.userMap[id]) {
-        state.userMap[id] = { ...state.userMap[id], ...data };
+        if (data.isActive === false) {
+          delete state.userMap[id];
+        } else {
+          state.userMap[id] = { ...state.userMap[id], ...data };
+        }
       }
     },
   },
@@ -56,9 +62,9 @@ const userSlice = createSlice({
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loader = false;
         state.userMap = {};
-        const sortedUsers = action.payload.data.sort((a, b) =>
-          a.firstName.localeCompare(b.firstName),
-        );
+        const sortedUsers = action.payload.data
+          .filter((user: User) => user.isActive !== false)
+          .sort((a, b) => a.firstName.localeCompare(b.firstName));
         sortedUsers.forEach((user: User) => {
           state.userMap[user.id] = user;
         });
@@ -77,9 +83,9 @@ const userSlice = createSlice({
       .addCase(fetchStudentUsers.fulfilled, (state, action) => {
         state.loader = false;
         state.userMap = {};
-        const sortedUsers = action.payload.data.sort((a, b) =>
-          a.firstName.localeCompare(b.firstName),
-        );
+        const sortedUsers = action.payload.data
+          .filter((user: User) => user.isActive !== false)
+          .sort((a, b) => a.firstName.localeCompare(b.firstName));
         sortedUsers.forEach((user: User) => {
           state.userMap[user.id] = user;
         });
@@ -98,9 +104,9 @@ const userSlice = createSlice({
       .addCase(fetchTeacherUsers.fulfilled, (state, action) => {
         state.loader = false;
         state.userMap = {};
-        const sortedUsers = action.payload.data.sort((a, b) =>
-          a.firstName.localeCompare(b.firstName),
-        );
+        const sortedUsers = action.payload.data
+          .filter((user: User) => user.isActive !== false)
+          .sort((a, b) => a.firstName.localeCompare(b.firstName));
         sortedUsers.forEach((user: User) => {
           state.userMap[user.id] = user;
         });
@@ -118,7 +124,11 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserById.fulfilled, (state, action) => {
         state.loader = false;
-        if (action.payload && action.payload.id) {
+        if (
+          action.payload &&
+          action.payload.id &&
+          action.payload.isActive !== false
+        ) {
           state.userMap[action.payload.id] = action.payload;
         }
       })
@@ -149,8 +159,10 @@ const userSlice = createSlice({
       })
       .addCase(createUser.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        state.userMap[action.payload.receivedData.id] =
-          action.payload.receivedData;
+        if (action.payload.receivedData.isActive !== false) {
+          state.userMap[action.payload.receivedData.id] =
+            action.payload.receivedData;
+        }
       })
       .addCase(createUser.rejected, (state, action) => {
         state.storeAction = 'none';
@@ -167,7 +179,11 @@ const userSlice = createSlice({
         state.storeAction = 'none';
         const { id, user } = action.payload;
         if (id && user) {
-          state.userMap[id] = user;
+          if (user.isActive === false) {
+            delete state.userMap[id];
+          } else {
+            state.userMap[id] = user;
+          }
         }
       })
       .addCase(updateUser.rejected, (state, action) => {

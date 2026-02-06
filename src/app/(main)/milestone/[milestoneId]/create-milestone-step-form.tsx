@@ -135,7 +135,7 @@ const CreateMilestoneStepForm = ({
                   <FormControl>
                     <Input
                       placeholder={tForm('placeholder.name')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="border-gray-300 bg-white"
                       {...field}
                     />
                   </FormControl>
@@ -155,7 +155,7 @@ const CreateMilestoneStepForm = ({
                   <FormControl>
                     <Textarea
                       placeholder={tForm('placeholder.description')}
-                      className="resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="resize-none border-gray-300 bg-white"
                       {...field}
                     />
                   </FormControl>
@@ -177,7 +177,7 @@ const CreateMilestoneStepForm = ({
                       type="number"
                       min={0}
                       placeholder={tForm('placeholder.dayPeriod')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="border-gray-300 bg-white"
                       {...field}
                       value={Number(field.value ?? 0).toString()}
                       onChange={(e) => {
@@ -204,7 +204,7 @@ const CreateMilestoneStepForm = ({
                       type="number"
                       min={0}
                       placeholder={tForm('placeholder.notifyBeforeDays')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="border-gray-300 bg-white"
                       {...field}
                       value={Number(field.value ?? 0).toString()}
                       onChange={(e) => {

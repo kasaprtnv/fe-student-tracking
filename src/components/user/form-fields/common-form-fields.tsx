@@ -47,7 +47,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                  <SelectTrigger className="w-full border-gray-300 bg-white">
                     <SelectValue placeholder={t('placeholder.title')} />
                   </SelectTrigger>
                 </FormControl>
@@ -77,7 +77,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
               <FormControl>
                 <Input
                   placeholder={t('placeholder.first-name')}
-                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="border-gray-300 bg-white"
                   {...field}
                 />
               </FormControl>
@@ -97,7 +97,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
             <FormControl>
               <Input
                 placeholder={t('placeholder.last-name')}
-                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className="border-gray-300 bg-white"
                 {...field}
               />
             </FormControl>
@@ -117,7 +117,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
               <Input
                 type="email"
                 placeholder={t('placeholder.email')}
-                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className="border-gray-300 bg-white"
                 {...field}
               />
             </FormControl>
@@ -138,13 +138,17 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
             <FormControl>
               <Input
                 placeholder={t('placeholder.phone')}
-                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                className="border-gray-300 bg-white"
                 maxLength={10}
                 {...field}
                 onInput={(e) => {
                   const target = e.target as HTMLInputElement;
                   target.value = target.value.replace(/\D/g, '');
                   field.onChange(target.value);
+                }}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger('phone');
                 }}
               />
             </FormControl>

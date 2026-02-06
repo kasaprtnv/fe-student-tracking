@@ -9,10 +9,10 @@ import React from 'react';
 import { DataTable } from '../../../components/data-table/data-table';
 import { CreateUserFormDialog } from './create-user-form';
 import { UpdateUserFormDialog } from './update-user-form';
-import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { SelectOption } from '@/types';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-dialog';
 
 interface TeacherTableProps {
   onImport?: () => void;
@@ -25,6 +25,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     setSearch: setSearchQuery,
     deleteExistingUser,
     deleteExistingUsers,
+    getUserById,
     storeAction,
     userMap,
   } = useUser();
@@ -36,6 +37,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
   );
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
+  const tCommon = useTranslations('common');
 
   // Fetch courses, titles and course_staff on mount
   React.useEffect(() => {
@@ -99,14 +101,14 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
           .join(' ');
 
         return (
-          titleName.toLowerCase().includes(query) ||
-          user.firstName?.toLowerCase().includes(query) ||
-          user.lastName?.toLowerCase().includes(query) ||
-          user.code?.toLowerCase().includes(query) ||
-          user.email?.toLowerCase().includes(query) ||
-          (queryDigits && phoneDigits.includes(queryDigits)) ||
-          fullName.includes(query) ||
-          managedCoursesText.includes(query)
+          titleName.toLowerCase().startsWith(query) ||
+          user.firstName?.toLowerCase().startsWith(query) ||
+          user.lastName?.toLowerCase().startsWith(query) ||
+          user.code?.toLowerCase().startsWith(query) ||
+          user.email?.toLowerCase().startsWith(query) ||
+          (queryDigits && phoneDigits.startsWith(queryDigits)) ||
+          fullName.startsWith(query) ||
+          managedCoursesText.startsWith(query)
         );
       })
       .map((user) => {
@@ -140,6 +142,39 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
 
   const teacherColumns = createTeacherColumns(tColumn, titleMap);
 
+  const getDeleteDescription = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return '';
+    }
+
+    if (isDelete.userIds.length === 1) {
+      return t('delete-user-description');
+    } else {
+      return t('delete-users-description', { count: isDelete.userIds.length });
+    }
+  };
+  const getConfirmText = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return '';
+    }
+
+    if (isDelete.userIds.length === 1) {
+      const user = getUserById(isDelete.userIds[0]);
+      return user ? user.code || user.email || user.firstName : 'DELETE USER';
+    } else {
+      return 'DELETE SELECTED USERS';
+    }
+  };
+
+  const getWarningText = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return undefined;
+    }
+
+    if (isDelete.userIds.length > 1) {
+      return t('warning-delete-user', { count: isDelete.userIds.length });
+    }
+  };
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
     user?: User;
@@ -226,23 +261,21 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
         allCourseStaff={allCourseStaff}
         onCourseStaffChange={refetchCourseStaff}
       />
-      <DeleteConfirmationDialog
+      <DeleteTextConfirmationDialog
         open={isDelete.isDeleting}
-        onClose={() => setIsDelete({ isDeleting: false, userIds: undefined })}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsDelete({ isDeleting: false, userIds: undefined });
+          }
+        }}
         onConfirm={onConfirmDelete}
+        title={t('delete-user-title')}
+        description={getDeleteDescription()}
+        confirmText={getConfirmText()}
         isLoading={storeAction === 'deleting'}
-        title={
-          isDelete.userIds?.length === 1
-            ? 'delete-user-title'
-            : 'delete-users-title'
-        }
-        description={
-          (isDelete.userIds?.length || 0) === 1
-            ? 'delete-user-description'
-            : 'delete-users-description'
-        }
-        translationKey="user"
-        count={isDelete.userIds?.length || 0}
+        destructiveButtonText={tCommon('delete')}
+        cancelButtonText={tCommon('cancel')}
+        warningText={getWarningText()}
       />
     </>
   );

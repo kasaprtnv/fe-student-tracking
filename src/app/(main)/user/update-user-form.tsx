@@ -37,9 +37,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
+import { SingleCombobox } from '@/components/ui/combobox-single';
 import { Loader } from 'lucide-react';
 import { EnrollDateInput } from '@/components/enroll-date-input';
 import { DegreesCombobox } from '@/components/degree-combobox';
+import { DynamicInputList } from '@/components/ui/dynamic-input-list';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useForm, Resolver } from 'react-hook-form';
@@ -133,7 +135,11 @@ export function UpdateUserFormDialog({
         phone: user?.phone || '',
         degree: user?.degree || '',
         year: user?.year || '',
-        studyPlan: user?.studyPlan || '',
+        studyPlan: user?.studyPlan
+          ? user.studyPlan.startsWith('แผน')
+            ? user.studyPlan
+            : `แผน ${user.studyPlan}`
+          : '',
         courseId: user?.courseId || '',
         enrollDate: user?.enrollDate || '',
       };
@@ -407,7 +413,7 @@ export function UpdateUserFormDialog({
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="w-full border-gray-300 bg-white">
                             <SelectValue placeholder={t('placeholder.title')} />
                           </SelectTrigger>
                         </FormControl>
@@ -437,7 +443,7 @@ export function UpdateUserFormDialog({
                       <FormControl>
                         <Input
                           placeholder={t('placeholder.first-name')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="border-gray-300 bg-white"
                           {...field}
                         />
                       </FormControl>
@@ -459,7 +465,7 @@ export function UpdateUserFormDialog({
                     <FormControl>
                       <Input
                         placeholder={t('placeholder.last-name')}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        className="border-gray-300 bg-white"
                         {...field}
                       />
                     </FormControl>
@@ -482,7 +488,7 @@ export function UpdateUserFormDialog({
                         type="email"
                         disabled
                         placeholder={t('placeholder.email')}
-                        className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                        className="border-gray-300 bg-white"
                         {...field}
                       />
                     </FormControl>
@@ -503,13 +509,17 @@ export function UpdateUserFormDialog({
                     <FormControl>
                       <Input
                         placeholder={t('placeholder.phone')}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        className="border-gray-300 bg-white"
                         maxLength={10}
                         {...field}
                         onInput={(e) => {
                           const target = e.target as HTMLInputElement;
                           target.value = target.value.replace(/\D/g, '');
                           field.onChange(target.value);
+                        }}
+                        onBlur={() => {
+                          field.onBlur();
+                          form.trigger('phone');
                         }}
                       />
                     </FormControl>
@@ -530,8 +540,9 @@ export function UpdateUserFormDialog({
                       </FormLabel>
                       <FormControl>
                         <Input
+                          disabled
                           placeholder={t('placeholder.student-code')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
                           {...field}
                         />
                       </FormControl>
@@ -547,29 +558,21 @@ export function UpdateUserFormDialog({
                   control={form.control}
                   name="courseId"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="min-w-0">
                       <FormLabel className="text-sm font-medium text-gray-700">
                         {t('label.student-course')}
                       </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full truncate border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                            <SelectValue
-                              placeholder={t('placeholder.course')}
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {courseOptions.map((course) => (
-                            <SelectItem key={course.value} value={course.value}>
-                              {course.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <SingleCombobox
+                          disabled
+                          placeholder={t('placeholder.course')}
+                          placeholderSearch={t('placeholder.search-course')}
+                          placeholderEmpty={t('placeholder.no-course-found')}
+                          options={courseOptions}
+                          defaultValue={field.value || ''}
+                          onChange={(value) => field.onChange(value)}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -587,6 +590,7 @@ export function UpdateUserFormDialog({
                         {t('label.degree')}
                       </FormLabel>
                       <DegreesCombobox
+                        disabled
                         defaultValue={field.value || ''}
                         onChange={(value) => field.onChange(value)}
                       />
@@ -623,9 +627,13 @@ export function UpdateUserFormDialog({
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
+                          disabled
                         >
                           <FormControl>
-                            <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <SelectTrigger
+                              className="w-full border-gray-300 bg-white"
+                              disabled
+                            >
                               <SelectValue
                                 placeholder={t('placeholder.year')}
                               />
@@ -661,17 +669,17 @@ export function UpdateUserFormDialog({
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger className="w-full border-gray-300 bg-white">
                             <SelectValue
                               placeholder={t('placeholder.study-plan')}
                             />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="ก">
+                          <SelectItem value="แผน ก">
                             {t('study-plan-options.plan-a')}
                           </SelectItem>
-                          <SelectItem value="ข">
+                          <SelectItem value="แผน ข">
                             {t('study-plan-options.plan-b')}
                           </SelectItem>
                         </SelectContent>
@@ -694,6 +702,7 @@ export function UpdateUserFormDialog({
                       </FormLabel>
                       <div className="relative">
                         <EnrollDateInput
+                          disabled
                           value={field.value}
                           onChange={field.onChange}
                         />
@@ -718,7 +727,31 @@ export function UpdateUserFormDialog({
                         <Input
                           {...field}
                           placeholder={t('placeholder.teacher-degree')}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="border-gray-300 bg-white"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Teacher-specific field: academicPosition */}
+              {selectedRole === 'teacher' && (
+                <FormField
+                  control={form.control}
+                  name="academicPosition"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        {t('label.academic-position')}
+                      </FormLabel>
+                      <FormControl>
+                        <DynamicInputList
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={t('placeholder.academic-position')}
+                          buttonLabel={t('label.add-academic-position')}
                         />
                       </FormControl>
                       <FormMessage />

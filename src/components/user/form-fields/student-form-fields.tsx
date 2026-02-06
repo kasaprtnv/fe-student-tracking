@@ -38,7 +38,17 @@ export const StudentFormFields = ({
               <Input
                 placeholder={t('placeholder.student-code')}
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                maxLength={8}
                 {...field}
+                onInput={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  target.value = target.value.replace(/\D/g, '');
+                  field.onChange(target.value);
+                }}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger('code');
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -116,8 +126,8 @@ export const StudentFormFields = ({
         name="studyPlan"
         render={({ field }) => {
           const studyPlanOptions = [
-            { label: t('study-plan-options.plan-a'), value: 'ก' },
-            { label: t('study-plan-options.plan-b'), value: 'ข' },
+            { label: t('study-plan-options.plan-a'), value: 'แผน ก' },
+            { label: t('study-plan-options.plan-b'), value: 'แผน ข' },
           ];
 
           return (
@@ -149,7 +159,18 @@ export const StudentFormFields = ({
               {t('label.enroll-date')}
             </FormLabel>
             <div className="relative">
-              <EnrollDateInput value={field.value} onChange={field.onChange} />
+              <EnrollDateInput
+                value={field.value}
+                onChange={(val) => {
+                  field.onChange(val);
+                  // Force validation trigger to clear error immediately after selection
+                  if (val) form.trigger('enrollDate');
+                }}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger('enrollDate');
+                }}
+              />
             </div>
             <FormMessage />
           </FormItem>

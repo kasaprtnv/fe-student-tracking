@@ -317,14 +317,27 @@ export function AdvancedFilterPopover({
                 <Button
                   variant="outline"
                   role="combobox"
-                  className="w-full justify-between text-sm font-normal"
+                  className={cn(
+                    'w-full justify-between text-sm font-normal',
+                    filters.courseId.length === 2 && 'h-auto min-h-[36px]',
+                  )}
                 >
-                  <div className="flex flex-wrap gap-1">
-                    {filters.courseId.length > 0 ? (
+                  <div className="flex min-w-0 flex-1 flex-wrap gap-1 overflow-hidden">
+                    {filters.courseId.length > 2 ? (
+                      <span className="bg-muted rounded px-2 py-0.5 text-xs">
+                        {t('selected-count', {
+                          count: filters.courseId.length,
+                        })}
+                      </span>
+                    ) : filters.courseId.length > 0 ? (
                       filters.courseId.map((val) => (
                         <span
                           key={val}
-                          className="bg-muted rounded px-2 py-0.5 text-xs"
+                          className="bg-muted max-w-[180px] truncate rounded px-2 py-0.5 text-xs"
+                          title={
+                            courseOptions.find((o) => o.value === val)?.label ??
+                            val
+                          }
                         >
                           {courseOptions.find((o) => o.value === val)?.label ??
                             val}
@@ -358,7 +371,9 @@ export function AdvancedFilterPopover({
                           })
                         }
                       >
-                        <span>{option.label}</span>
+                        <span className="truncate" title={option.label}>
+                          {option.label}
+                        </span>
                         <Check
                           className={cn(
                             'ml-auto h-4 w-4',

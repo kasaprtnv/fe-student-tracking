@@ -38,17 +38,17 @@ export const createCourseColumns = (
   const columns: ColumnDef<ICourse>[] = [
     {
       accessorKey: 'code',
-      header: 'code',
+      header: 'course-code',
       sortingFn: mixedThEnTextSort<ICourse>(),
     },
     {
       accessorKey: 'name',
-      header: 'name',
+      header: 'course-name',
       sortingFn: mixedThEnTextSort<ICourse>(),
     },
     {
       accessorKey: 'description',
-      header: 'description',
+      header: 'course-description',
       sortingFn: mixedThEnTextSort<ICourse>(),
 
       cell: (info) => {
@@ -57,12 +57,10 @@ export const createCourseColumns = (
         return (
           <Tooltip>
             <TooltipTrigger>
-              <span className="max-w-[200px] truncate">
-                {description || '-'}
-              </span>
+              <div className="max-w-[300px] truncate">{description || '-'}</div>
             </TooltipTrigger>
             {isShowTooltip && (
-              <TooltipContent>
+              <TooltipContent className="max-w-[250px] break-all">
                 <span>{description}</span>
               </TooltipContent>
             )}
@@ -72,7 +70,7 @@ export const createCourseColumns = (
     },
     {
       accessorKey: 'users',
-      header: 'staff',
+      header: 'course-staff',
       cell: (info) => {
         const users = info.getValue<User[] | undefined>();
         const sortedUser = users?.sort((a, b) =>
@@ -145,8 +143,9 @@ export const createCourseColumns = (
       accessorKey: 'isUsed',
       header: 'is_used',
       size: 110,
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
         const record = row.original;
+        const { t } = table.options.meta as ColumnActions;
 
         return (
           <div className="flex w-[110px] items-center justify-center">
@@ -158,7 +157,7 @@ export const createCourseColumns = (
                   : 'bg-red-100 text-red-800',
               )}
             >
-              {record.isUsed ? 'Yes' : 'No'}
+              {record.isUsed ? t?.('yes') : t?.('no')}
             </Badge>
           </div>
         );

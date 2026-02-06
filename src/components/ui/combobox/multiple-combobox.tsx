@@ -72,7 +72,7 @@ export function MultiCombobox({
           aria-expanded={open}
           tabIndex={0}
           className={cn(
-            'border-input bg-background h-[max-content] w-full rounded-md border px-3 py-2 text-sm transition-all',
+            'border-input h-[max-content] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm transition-all',
             'focus:ring-ring focus:ring-1 focus:outline-none',
             'flex items-center justify-between',
             errorMessage && 'border-red-500',
@@ -99,7 +99,7 @@ export function MultiCombobox({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full min-w-[var(--radix-popover-trigger-width)] p-0">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[var(--radix-popover-trigger-width)] p-0">
         <Command
           filter={(value, search) => {
             if (
@@ -121,7 +121,10 @@ export function MultiCombobox({
                   onSelect={() => toggleValue(option.value)}
                 >
                   <div className="flex w-full flex-col text-left leading-tight">
-                    <span className="truncate overflow-hidden font-medium whitespace-nowrap">
+                    <span
+                      className="truncate overflow-hidden font-medium whitespace-nowrap"
+                      title={option.label}
+                    >
                       {option.label}
                     </span>
                     {option.description && (
