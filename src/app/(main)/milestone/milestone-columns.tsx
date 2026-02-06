@@ -34,13 +34,19 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
   const columns: ColumnDef<IMilestone>[] = [
     {
       accessorKey: 'name',
-      header: 'name',
-      sortingFn: mixedThEnTextSort<IMilestone>(),
+      header: 'name-Milestone',
+      cell: ({ row }) => {
+        const value = row.original.name;
+        return value && value !== '' ? value : '-';
+      },
     },
     {
       accessorKey: 'description',
-      header: 'description',
-      sortingFn: mixedThEnTextSort<IMilestone>(),
+      header: 'description-Milestone',
+      cell: ({ row }) => {
+        const value = row.original.description;
+        return value && value !== '' ? value : '-';
+      },
     },
     // {
     //   accessorKey: 'dayPeriod',
@@ -62,7 +68,6 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
     //   accessorKey: 'notifyBeforeDays',
     //   header: 'notify-before-days',
     // },
-
     {
       accessorKey: 'isUsed',
       header: 'is_used',
@@ -73,6 +78,12 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
         const { t } = table.options.meta as {
           t: (key: string) => string;
         };
+
+        if (typeof record.isUsed !== 'boolean') {
+          return (
+            <div className="flex w-[110px] items-center justify-center">-</div>
+          );
+        }
 
         return (
           <div className="flex w-[110px] items-center justify-center">
