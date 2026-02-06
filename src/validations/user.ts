@@ -24,14 +24,17 @@ const baseSchema = (t: (key: string) => string) =>
     phone: z
       .string()
       .min(1, t('errors.phone-required'))
-      .max(20, t('errors.phone-max')),
+      .length(10, t('errors.phone-length')),
   });
 
 // Student-specific schema
 const studentSchema = (t: (key: string) => string) =>
   baseSchema(t).extend({
     role: z.literal('student'),
-    code: z.string().min(1, t('errors.code-required')),
+    code: z
+      .string()
+      .min(1, t('errors.code-required'))
+      .length(8, t('errors.code-length')),
     degree: z
       .string()
       .min(1, t('errors.degree-required'))
@@ -42,7 +45,16 @@ const studentSchema = (t: (key: string) => string) =>
       .max(10, t('errors.year-max')),
     studyPlan: z.string().min(1, t('errors.study-plan-required')),
     courseId: z.string().min(1, t('errors.course-required')),
-    enrollDate: z.string().min(1, t('errors.enroll-date-required')),
+    enrollDate: z
+      .string()
+      .min(1, t('errors.enroll-date-required'))
+      .refine((date) => {
+        if (!date) return true;
+        const inputDate = new Date(date);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        return inputDate <= today;
+      }, t('errors.enroll-date-future')),
   });
 
 // Teacher-specific schema

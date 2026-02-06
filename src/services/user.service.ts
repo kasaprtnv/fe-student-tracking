@@ -158,11 +158,19 @@ class UserService extends APIService {
           'enrollDate',
         ];
 
+    // Fields that can be cleared (empty string should be sent to backend)
+    const clearableFields = ['academicPosition', 'teacherDegree'];
+
     const filteredData: Record<string, unknown> = {};
     for (const key of allowedFields) {
       const value = data[key as keyof User];
-      // Only include fields that have actual values (not undefined, not null, not empty string)
-      if (value !== undefined && value !== null && value !== '') {
+      // For clearable fields, include even if empty string (to allow clearing)
+      // For other fields, only include if they have actual values
+      if (clearableFields.includes(key)) {
+        if (value !== undefined && value !== null) {
+          filteredData[key] = value;
+        }
+      } else if (value !== undefined && value !== null && value !== '') {
         filteredData[key] = value;
       }
     }

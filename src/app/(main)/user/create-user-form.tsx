@@ -205,14 +205,23 @@ export function CreateUserFormDialog({
         error instanceof Error ? error.message : String(error);
       if (
         errorMessage.includes('email address has already been registered') ||
-        errorMessage.includes('User already registered') ||
-        errorMessage.includes('already exists')
+        (errorMessage.includes('already exists') &&
+          !errorMessage.includes('Code'))
       ) {
         form.setError('email', {
           type: 'manual',
           message: t('errors.email-exists'),
         });
         toast.error(t('errors.email-exists'));
+      } else if (
+        errorMessage.includes('Code') &&
+        errorMessage.includes('already exists')
+      ) {
+        form.setError('code', {
+          type: 'manual',
+          message: t('errors.code-exists'),
+        });
+        toast.error(t('errors.code-exists'));
       } else {
         toast.error(t('toast.creation-failed'));
       }
