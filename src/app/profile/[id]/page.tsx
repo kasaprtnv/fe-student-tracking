@@ -14,6 +14,7 @@ import { useUser } from '@/hooks/use-user';
 import { PageHeader } from '@/components/page-header';
 import { ProfileTeacherComponent } from '@/components/profile/profile-teacher';
 import { useAttempt } from '@/hooks/use-attempt';
+import { Button } from '@/components/ui/button';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
@@ -94,7 +95,19 @@ export default function ProfilePage() {
   const renderMilestones = () => (
     <>
       <Separator className="my-6" />
-      <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="text-2xl font-bold">{t('progress_title')}</div>
+
+        {/* Export PDF: student only */}
+        {profileUser?.role === 'student' && (
+          <Button
+            variant="outline"
+            onClick={() => window.open(`/profile/${id}/pdf`, '_blank')}
+          >
+            Export PDF
+          </Button>
+        )}
+      </div>
       <MilestoneComponent
         milestones={Object.values(milestoneMap)}
         stepAttempts={Object.values(stepAttemptsMap)}

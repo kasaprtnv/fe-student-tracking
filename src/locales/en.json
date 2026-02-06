@@ -38,6 +38,8 @@
   "column": {
     "name": "Name",
     "description": "Description",
+    "name-Milestone": "Milestone Name",
+    "description-Milestone": "Milestone Description",
     "courseId": "CourseId",
     "position": "Position",
     "deadlineDate": "DeadlineDate",
@@ -398,7 +400,10 @@
       "title": "Select Milestone",
       "breadcrumb": "Milestone Prerequisites",
       "course-name": "Course name",
-      "course-description": "Description"
+      "course-description": "Description",
+      "course-code": "Course code",
+      "course":"Course",
+      "select-milestone": "Select Milestone"
     },
 
     "course": {
@@ -411,7 +416,8 @@
       "milestone": "Milestones",
       "select-placeholder": "Select milestone",
       "add": "Add",
-      "next": "Next"
+      "next": "Next",
+      "preview": "Preview Milestone Steps"
     },
 
     "unlock-condition": {
@@ -420,10 +426,10 @@
       "step-section": "Steps",
       "lock": "Lock",
       "unlock": "Unlock",
-      "no-conditions": "No unlock conditions yet",
+      "no-conditions": "The lock condition cannot be selected because there is only one milestone step available.",
       "cancel": "Cancel",
       "save": "Save",
-      "from": "form"
+      "from": "form milestone"
     },
 
     "confirm-save": {
