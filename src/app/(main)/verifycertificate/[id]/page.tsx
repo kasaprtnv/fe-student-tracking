@@ -70,9 +70,7 @@ export default function VerifyDetailPage() {
   const [zoom, setZoom] = useState(100);
 
   // Staff attachment states
-  const [staffAttachmentFile, setStaffAttachmentFile] = useState<File | null>(
-    null,
-  );
+  const [staffAttachmentFiles, setStaffAttachmentFiles] = useState<File[]>([]);
   const [uploadingStaffFile, setUploadingStaffFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -161,16 +159,17 @@ export default function VerifyDetailPage() {
     if (!user?.id || !declineReason.trim()) return;
     setSubmitting(true);
     try {
-      // Upload staff attachment if exists - ใช้ stepId จาก data
-      if (staffAttachmentFile && data) {
+      // Upload staff attachments if exists - ใช้ stepId จาก data
+      if (staffAttachmentFiles.length > 0 && data) {
         setUploadingStaffFile(true);
         try {
           // ใช้ stepId จาก data เพื่อ upload attachment
           const stepId = data.stepId || data.step?.id;
           if (stepId) {
+            // Upload all files in one request
             const uploadResult = await uploadService.uploadStaffAttachment(
               stepId,
-              staffAttachmentFile,
+              staffAttachmentFiles,
               user.id,
             );
             if (!uploadResult.success) {
@@ -192,7 +191,7 @@ export default function VerifyDetailPage() {
         id,
         user.id,
         declineReason,
-        staffAttachmentFile || undefined,
+        staffAttachmentFiles.length > 0 ? staffAttachmentFiles[0] : undefined,
       );
       refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.declined'));
@@ -207,18 +206,19 @@ export default function VerifyDetailPage() {
 
   // Handle staff file selection
   const handleStaffFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setStaffAttachmentFile(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setStaffAttachmentFiles((prev) => [...prev, ...Array.from(files)]);
     }
-  };
-
-  // Remove selected staff file
-  const removeStaffFile = () => {
-    setStaffAttachmentFile(null);
+    // Reset input value to allow selecting the same file again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  // Remove selected staff file by index
+  const removeStaffFile = (index: number) => {
+    setStaffAttachmentFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSuccessClose = () => {
@@ -484,51 +484,61 @@ export default function VerifyDetailPage() {
                     onClick={() => fileInputRef.current?.click()}
                     onDrop={(e) => {
                       e.preventDefault();
-                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                        setStaffAttachmentFile(e.dataTransfer.files[0]);
+                      if (
+                        e.dataTransfer.files &&
+                        e.dataTransfer.files.length > 0
+                      ) {
+                        setStaffAttachmentFiles((prev) => [
+                          ...prev,
+                          ...Array.from(e.dataTransfer.files),
+                        ]);
                       }
                     }}
                     onDragOver={(e) => e.preventDefault()}
                   >
-                    {staffAttachmentFile ? (
-                      <div className="flex w-full items-center justify-between rounded-md bg-gray-50 p-3">
-                        <span className="truncate text-sm">
-                          {staffAttachmentFile.name}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeStaffFile();
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="mb-2 h-8 w-8 text-gray-400" />
-                        <p className="text-center text-sm text-gray-500">
-                          {t('review.click_to_upload')}
-                        </p>
-                        <p className="mt-1 text-xs text-gray-400">
-                          PDF, docx, PNG
-                          <br />
-                          <span className="block text-xs text-gray-400">
-                            ลากไฟล์มาวางที่นี่ได้
-                          </span>
-                        </p>
-                      </>
-                    )}
+                    <Upload className="mb-2 h-8 w-8 text-gray-400" />
+                    <p className="text-center text-sm text-gray-500">
+                      {t('review.click_to_upload')}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">
+                      PDF, docx, PNG
+                      <br />
+                      <span className="block text-xs text-gray-400">
+                        ลากไฟล์มาวางที่นี่ได้
+                      </span>
+                    </p>
                   </div>
+                  {/* Selected files list */}
+                  {staffAttachmentFiles.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {staffAttachmentFiles.map((file, index) => (
+                        <div
+                          key={`${file.name}-${index}`}
+                          className="flex items-center justify-between rounded-md bg-gray-50 p-3"
+                        >
+                          <span className="truncate text-sm">{file.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeStaffFile(index);
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept=".pdf,.docx,.png,.jpg,.jpeg"
                     className="hidden"
                     onChange={handleStaffFileChange}
+                    multiple
                   />
                 </div>
 
