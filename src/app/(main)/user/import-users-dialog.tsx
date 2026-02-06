@@ -32,6 +32,7 @@ interface ImportResult {
     skipped?: number;
     updated?: number;
     errors?: string[];
+    hasValidationErrors?: boolean;
   };
 }
 
@@ -96,6 +97,10 @@ export function ImportUsersDialog({
 
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile && isExcelFile(droppedFile)) {
+      if (droppedFile.size > 5 * 1024 * 1024) {
+        toast.error(t('errors.file-too-large', { size: '5MB' }));
+        return;
+      }
       setFile(droppedFile);
     } else {
       toast.error(t('errors.invalid-file-type'));
@@ -105,9 +110,17 @@ export function ImportUsersDialog({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile && isExcelFile(selectedFile)) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        toast.error(t('errors.file-too-large', { size: '5MB' }));
+        // Reset input so user can select same file again if they really want to rely on backend (though we block it here) or select another
+        e.target.value = '';
+        return;
+      }
       setFile(selectedFile);
     } else {
-      toast.error(t('errors.invalid-file-type'));
+      // toast.error(t('errors.invalid-file-type')); // Optional: existing behavior just ignores or toasts?
+      // Existing code toasts:
+      if (selectedFile) toast.error(t('errors.invalid-file-type'));
     }
   };
 
@@ -313,7 +326,9 @@ export function ImportUsersDialog({
       if (result.success) {
         const failedCount = result.data?.failed || 0;
 
-        toast.success(t('toast.import-success'));
+        if (failedCount === 0) {
+          toast.success(t('toast.import-success'));
+        }
 
         if (failedCount > 0) {
           toast.warning(t('toast.import-partial', { failed: failedCount }));
@@ -330,6 +345,17 @@ export function ImportUsersDialog({
         setFile(null);
         onOpenChange(false);
         onImportSuccess?.();
+      } else if (result.data?.hasValidationErrors) {
+        // File has invalid rows — entire file is rejected
+        toast.error(t('toast.import-failed'));
+
+        const errors = result.data?.errors || [];
+        errors.forEach((error) => {
+          const cleanError = error.trim();
+          toast.error(cleanError, { duration: 8000 });
+        });
+
+        // Keep the dialog open so user can fix the file
       } else {
         toast.error(result.message || t('toast.import-failed'));
       }
@@ -414,17 +440,18 @@ export function ImportUsersDialog({
 
           {/* Selected File */}
           {file && (
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <div className="flex items-center gap-3">
-                <FileSpreadsheet className="h-8 w-8 text-green-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {file.name}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {(file.size / 1024).toFixed(2)} KB
-                  </p>
-                </div>
+            <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
+              <FileSpreadsheet className="h-8 w-8 text-green-600" />
+              <div className="min-w-0">
+                <p
+                  className="truncate text-sm font-medium text-gray-900"
+                  title={file.name}
+                >
+                  {file.name}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {(file.size / 1024).toFixed(2)} KB
+                </p>
               </div>
               <Button
                 type="button"

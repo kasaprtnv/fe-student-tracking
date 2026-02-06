@@ -76,7 +76,11 @@ export default function StudentPage() {
     if (!studentUsers) return [];
     return studentUsers.map((user) => ({
       ...user,
-      courseName: user.courseId ? courseMap[user.courseId]?.name || '-' : '-',
+      courseName: user.courseId
+        ? courseMap[user.courseId]
+          ? `${courseMap[user.courseId].code} - ${courseMap[user.courseId].name}`
+          : '-'
+        : '-',
     }));
   }, [studentUsers, courseMap]);
 
@@ -260,7 +264,7 @@ export default function StudentPage() {
       const fullNameNoSpaces = fullName.replace(/\s/g, '');
 
       // Degree mapping to Thai
-      const degreeDisplay =
+      const degreeDisplayTh =
         student.degree === 'bachelor'
           ? 'ปริญญาตรี'
           : student.degree === 'master'
@@ -269,36 +273,58 @@ export default function StudentPage() {
               ? 'ปริญญาเอก'
               : '';
 
-      // Graduated mapping
-      const graduatedDisplay = student.graduated ? 'สำเร็จ' : 'ยังไม่สำเร็จ';
+      // Degree mapping to English
+      const degreeDisplayEn =
+        student.degree === 'bachelor'
+          ? "bachelor's degree"
+          : student.degree === 'master'
+            ? "master's degree"
+            : student.degree === 'doctorate'
+              ? 'doctoral degree'
+              : '';
+
+      // Graduated mapping (Thai and English)
+      const graduatedDisplayTh = student.graduated
+        ? 'สำเร็จการศึกษา'
+        : 'ยังไม่สำเร็จ';
+      const graduatedDisplayEn = student.graduated
+        ? 'graduated'
+        : 'not graduated';
 
       return (
         // Code
-        student.code?.toLowerCase().includes(lowerQuery) ||
+        student.code?.toLowerCase().startsWith(lowerQuery) ||
         // First name
-        student.firstName?.toLowerCase().includes(lowerQuery) ||
+        student.firstName?.toLowerCase().startsWith(lowerQuery) ||
         // Last name
-        student.lastName?.toLowerCase().includes(lowerQuery) ||
+        student.lastName?.toLowerCase().startsWith(lowerQuery) ||
         // Full name (with spaces)
-        fullName.includes(lowerQuery) ||
+        fullName.startsWith(lowerQuery) ||
         // Full name (without spaces for flexible matching)
-        fullNameNoSpaces.includes(queryNoSpaces) ||
+        fullNameNoSpaces.startsWith(queryNoSpaces) ||
         // Email
-        student.email?.toLowerCase().includes(lowerQuery) ||
+        student.email?.toLowerCase().startsWith(lowerQuery) ||
         // Phone
-        student.phone?.includes(lowerQuery) ||
+        student.phone?.startsWith(lowerQuery) ||
         // Degree (English key)
-        student.degree?.toLowerCase().includes(lowerQuery) ||
+        student.degree?.toLowerCase().startsWith(lowerQuery) ||
         // Degree (Thai display)
-        degreeDisplay.includes(lowerQuery) ||
+        degreeDisplayTh.startsWith(lowerQuery) ||
+        // Degree (English display)
+        degreeDisplayEn.toLowerCase().startsWith(lowerQuery) ||
         // Year
-        student.year?.toLowerCase().includes(lowerQuery) ||
+        student.year?.toLowerCase().startsWith(lowerQuery) ||
         // Course name
         student.courseName?.toLowerCase().includes(lowerQuery) ||
         // Study plan
-        student.studyPlan?.toLowerCase().includes(lowerQuery) ||
-        // Graduated status
-        graduatedDisplay.includes(lowerQuery)
+        student.studyPlan?.toLowerCase().startsWith(lowerQuery) ||
+        // Enroll date (formatted Thai date)
+        (student.enrollDate &&
+          formatThaiDate(student.enrollDate).startsWith(lowerQuery)) ||
+        // Graduated status (Thai)
+        graduatedDisplayTh.startsWith(lowerQuery) ||
+        // Graduated status (English)
+        graduatedDisplayEn.toLowerCase().startsWith(lowerQuery)
       );
     });
   }, [

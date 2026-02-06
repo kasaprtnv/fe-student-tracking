@@ -266,12 +266,17 @@ export function StudentsByYearCourseChart({
               <div className="flex-1" />
               <div className="flex flex-wrap justify-center gap-4 pb-4">
                 {Object.entries(displayCourseNames).map(([id, name]) => (
-                  <div key={id} className="flex items-center gap-2">
+                  <div
+                    key={id}
+                    className="flex max-w-[200px] items-center gap-2"
+                  >
                     <div
-                      className="h-3 w-3 rounded-full"
+                      className="h-3 w-3 flex-shrink-0 rounded-full"
                       style={{ backgroundColor: displayCourseColors[id] }}
                     />
-                    <span className="text-sm">{name}</span>
+                    <span className="truncate text-sm" title={name}>
+                      {name}
+                    </span>
                   </div>
                 ))}
               </div>

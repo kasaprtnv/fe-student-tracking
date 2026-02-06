@@ -33,16 +33,29 @@ export function DynamicInputList({
 
   const lastEmittedRef = React.useRef(value);
 
+  // Helper function to normalize value for comparison
+  const normalizeValue = (val: string | undefined): string => {
+    if (!val) return '';
+    return val
+      .split(',')
+      .map((i) => i.trim())
+      .filter((i) => i !== '')
+      .join(',');
+  };
+
   // Sync internal state if external value changes (and it's not our own update)
   useEffect(() => {
+    // Normalize both values for proper comparison
+    const normalizedValue = normalizeValue(value);
+    const normalizedLastEmitted = normalizeValue(lastEmittedRef.current);
+
     // If the incoming value is different from what we last emitted,
-    // it means the parent changed it (e.g. form reset, or loaded from DB),
-    // or we are initializing.
-    if (value !== lastEmittedRef.current) {
+    // it means the parent changed it (e.g. form reset, or loaded from DB)
+    if (normalizedValue !== normalizedLastEmitted) {
       if (!value) {
         setItems(['']);
       } else {
-        setItems(value.split(','));
+        setItems(value.split(',').map((item) => item.trim()));
       }
       lastEmittedRef.current = value;
     }

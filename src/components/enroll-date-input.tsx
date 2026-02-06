@@ -12,7 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { th } from 'date-fns/locale';
-import { formatThaiDate, parseThaiDate } from '@/lib/format-date';
+import {
+  formatThaiDate,
+  parseThaiDate,
+  toLocalDateString,
+} from '@/lib/format-date';
 
 interface EnrollDateInputProps {
   value?: string;
@@ -58,10 +62,10 @@ export function EnrollDateInput({
       today.setHours(23, 59, 59, 999); // Set to end of today to allow selecting today
 
       if (date <= today) {
-        onChange(date.toISOString());
+        onChange(toLocalDateString(date));
       } else {
         // If future date, still pass it to allow validation to catch it
-        onChange(date.toISOString());
+        onChange(toLocalDateString(date));
       }
     } else {
       // If invalid, clear the field value so it doesn't submit junk
@@ -75,7 +79,7 @@ export function EnrollDateInput({
       // Use Date object for ISO string to ensure consistent timezone handling (UTC)
       // react-day-picker usually returns 00:00:00 local time ?? No, it returns Date object.
       // We want to store the DATE part primarily. ISO String is fine if backend handles it as Date.
-      onChange(date.toISOString());
+      onChange(toLocalDateString(date));
       setInputValue(formatThaiDate(date));
       setIsPopoverOpen(false);
     } else {

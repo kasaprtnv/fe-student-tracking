@@ -33,7 +33,7 @@
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
     "select-milestone": "ไปยังขั้นตอนการศึกษา",
     "import": "นำเข้าข้อมูล",
-    "import-users": "อัปโหลดไฟล์ผู้ใช้"
+    "import-users": "นำเข้าข้อมูล"
   },
   "column": {
     "name": "ชื่อ",
@@ -64,7 +64,7 @@
     "role": "บทบาท",
     "education-level": "ระดับการศึกษา",
     "year": "ปีการศึกษา",
-    "enrolled-course-name": "ชื่อหลักสูตรที่ลงทะเบียน",
+    "enrolled-course-name": "หลักสูตรที่ลงทะเบียน",
     "enroll-date": "วันที่ลงทะเบียน",
     "course": "หลักสูตร",
     "academic-year": "ปีการศึกษา",
@@ -74,7 +74,7 @@
     "course-staff": "ผู้ดูแลหลักสูตร",
     "teacher-degree": "วุฒิการศึกษา",
     "academic-position": "ตำแหน่งทางวิชาการ",
-    "graduated": "สำเร็จการศึกษา",
+    "graduated": "สถานะการศึกษา",
     "graduated-yes": "สำเร็จ",
     "graduated-no": "ยังไม่สำเร็จ",
     "due-date": "กำหนดส่ง",
@@ -517,7 +517,7 @@
         "role": "บทบาท",
         "code": "รหัส",
         "student-code": "รหัสนิสิต",
-        "student-course": "ลงทะเบียนหลักสูตร",
+        "student-course": "หลักสูตรที่ลงทะเบียน",
         "teacher-course": "หลักสูตรที่รับผิดชอบ",
         "title": "คำนำหน้า",
         "first-name": "ชื่อ",
@@ -589,7 +589,7 @@
         "email-invalid": "รูปแบบอีเมลไม่ถูกต้อง",
         "email-exists": "อีเมลนี้มีอยู่ในระบบแล้ว",
         "phone-required": "กรุณากรอกเบอร์โทรศัพท์",
-        "phone-length": "กรุณากรอกเบอร์โทรให้ครบ 10 หลัก",
+        "phone-length": "กรุณากรอกเบอร์โทรศัพท์ให้ครบถ้วน",
         "code-required": "กรุณากรอกรหัส",
         "code-length": "กรุณากรอกรหัสนิสิตให้ครบ 8 หลัก",
         "code-exists": "รหัสนิสิตนี้มีอยู่ในระบบแล้ว",
@@ -610,24 +610,25 @@
       }
     },
     "import-dialog": {
-      "title": "นำเข้าผู้ใช้จากไฟล์ Excel",
+      "title": "นำเข้าข้อมูลผู้ใช้งานจากไฟล์ Excel",
       "description": "อัปโหลดไฟล์ Excel เพื่อนำเข้าผู้ใช้หลายคนพร้อมกัน",
       "drag-drop-text": "ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
       "file-format": "รองรับไฟล์ .xlsx และ .xls (สูงสุด 5MB)",
-      "upload-button": "อัปโหลด",
+      "upload-button": "นำเข้า",
       "download-template": "ดาวน์โหลดไฟล์ตัวอย่าง",
       "download-student-template": "ไฟล์ตัวอย่างนิสิต",
       "download-teacher-template": "ไฟล์ตัวอย่างอาจารย์",
       "errors": {
         "invalid-file-type": "กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls)",
-        "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด"
+        "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด",
+        "file-too-large": "ไฟล์มีขนาดใหญ่เกินไป (สูงสุด {size})"
       },
       "toast": {
-        "import-success": "นำเข้าข้อมูลสำเร็จ",
-        "import-partial": "นำเข้าไม่สำเร็จ {failed} คน",
+        "import-success": "นำเข้าข้อมูลผู้ใช้งานสำเร็จ",
+        "import-partial": "ข้อมูลผู้ใช้งานไม่สำเร็จ {failed} คน",
         "import-updated": "อัพเดทข้อมูล {count} คน",
         "import-skipped": "ข้อมูลไม่มีการเปลี่ยนแปลง {count} คน",
-        "import-failed": "นำเข้าผู้ใช้ไม่สำเร็จ",
+        "import-failed": "นำเข้าข้อมูลผู้ใช้งานไม่สำเร็จ",
         "template-downloaded": "ดาวน์โหลดไฟล์ตัวอย่างสำเร็จ"
       }
     }
@@ -730,9 +731,9 @@
     "bachelor": "ปริญญาตรี",
     "master": "ปริญญาโท",
     "doctorate": "ปริญญาเอก",
-    "select-degree": "เลือกวุฒิการศึกษา",
-    "not-found": "ไม่พบวุฒิการศึกษา",
-    "search-degree": "ค้นหาวุฒิการศึกษา..."
+    "select-degree": "เลือกระดับการศึกษา",
+    "not-found": "ไม่พบระดับการศึกษา",
+    "search-degree": "ค้นหาระดับการศึกษา"
   },
   "dashboard": {
     "title": "แดชบอร์ด",
@@ -829,13 +830,13 @@
     "title": "ตัวกรองขั้นสูง",
     "description": "กรองข้อมูลนิสิตตามเงื่อนไขที่ต้องการ",
     "code": "รหัสนิสิต",
-    "code-placeholder": "ค้นหารหัส...",
+    "code-placeholder": "กรอกรหัสนิสิต",
     "full-name": "ชื่อ-นามสกุล",
-    "full-name-placeholder": "ค้นหาชื่อ-นามสกุล...",
+    "full-name-placeholder": "กรอกชื่อ-นามสกุล",
     "email": "อีเมล",
-    "email-placeholder": "ค้นหาอีเมล...",
+    "email-placeholder": "กรอกอีเมล",
     "phone": "เบอร์โทรศัพท์",
-    "phone-placeholder": "ค้นหาเบอร์โทร...",
+    "phone-placeholder": "กรอกเบอร์โทรศัพท์",
     "degree": "ระดับการศึกษา",
     "degree-placeholder": "เลือกระดับการศึกษา",
     "year": "ปีการศึกษา",
@@ -846,8 +847,8 @@
     "study-plan-placeholder": "เลือกแผนการเรียน",
     "enroll-date-from": "วันที่ลงทะเบียน (เริ่มต้น)",
     "enroll-date-to": "วันที่ลงทะเบียน (สิ้นสุด)",
-    "graduated": "สำเร็จการศึกษา",
-    "graduated-placeholder": "เลือกสถานะ",
+    "graduated": "สถานะการศึกษา",
+    "graduated-placeholder": "เลือกสถานะการศึกษา",
     "search": "ค้นหา...",
     "no-results": "ไม่พบผลลัพธ์",
     "apply": "ค้นหา",
@@ -857,6 +858,7 @@
     "date-format": "วว/ดด/ปปปป",
     "select-date-range": "เลือกช่วงวันที่",
     "enroll-date-range": "วันที่ลงทะเบียน",
-    "clear-date": "ล้างวันที่"
+    "clear-date": "ล้างวันที่",
+    "selected-count": "เลือกแล้ว {count} รายการ"
   }
 }

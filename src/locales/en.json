@@ -33,7 +33,7 @@
     "to-milestone-step": "To Milestone Steps",
     "select-milestone": "Select Milestone",
     "import": "Import",
-    "import-users": "Upload Users File"
+    "import-users": "Import Data"
   },
   "column": {
     "name": "Name",
@@ -59,11 +59,11 @@
     "updated_at": "Updated At",
     "full-name": "Full Name",
     "email": "Email",
-    "phone": "Phone",
+    "phone": "Phone Number",
     "role": "Role",
     "education-level": "Education Level",
     "year": "Year",
-    "enrolled-course-name": "Enroll Course Name",
+    "enrolled-course-name": "Course Name",
     "enroll-date": "Enroll Date",
     "course": "Course",
     "academic-year": "Academic Year",
@@ -79,7 +79,7 @@
     "status": "Status",
     "due-date": "Due Date",
     "academic-position": "Academic Position",
-    "graduated": "Graduated",
+    "graduated": "Academic Status",
     "graduated-yes": "Graduated",
     "graduated-no": "Not Graduated",
     "course-code": "Course Code",
@@ -464,7 +464,7 @@
     "last-name-placeholder": "Enter last name",
     "email": "Email",
     "email-placeholder": "Enter email",
-    "phone": "Phone",
+    "phone": "Phone Number",
     "phone-placeholder": "Enter phone number",
     "degree": "Degree",
     "degree-placeholder": "Enter degree",
@@ -525,7 +525,7 @@
         "first-name": "First Name",
         "last-name": "Last Name",
         "email": "Email",
-        "phone": "Phone",
+        "phone": "Phone Number",
         "degree": "Education Level",
         "year": "Academic Year",
         "enroll-date": "Enroll Date",
@@ -611,24 +611,25 @@
       }
     },
     "import-dialog": {
-      "title": "Import Users from Excel",
+      "title": "Import Users data from Excel",
       "description": "Upload an Excel file to import multiple users at once",
       "drag-drop-text": "Drag and drop file here, or click to select",
       "file-format": "Supports .xlsx and .xls files (max 5MB)",
-      "upload-button": "Upload",
+      "upload-button": "import",
       "download-template": "Download Template",
       "download-student-template": "Student Template",
       "download-teacher-template": "Teacher Template",
       "errors": {
         "invalid-file-type": "Please select an Excel file (.xlsx or .xls)",
-        "no-file-selected": "Please select a file before uploading"
+        "no-file-selected": "Please select a file before uploading",
+        "file-too-large": "File is too large (Maximum {size})"
       },
       "toast": {
         "import-success": "Import successful",
         "import-partial": "Failed to import {failed} user(s)",
         "import-updated": "Updated {count} user(s)",
         "import-skipped": "Skipped {count} user(s) (no changes)",
-        "import-failed": "Failed to import users",
+        "import-failed": "Failed to import users data",
         "template-downloaded": "Template downloaded successfully"
       }
     }
@@ -833,13 +834,13 @@
     "title": "Advanced Filter",
     "description": "Filter student data by specific criteria",
     "code": "Code",
-    "code-placeholder": "Search code...",
+    "code-placeholder": "Input code",
     "full-name": "Full Name",
-    "full-name-placeholder": "Search name...",
+    "full-name-placeholder": "Input name",
     "email": "Email",
-    "email-placeholder": "Search email...",
-    "phone": "Phone",
-    "phone-placeholder": "Search phone...",
+    "email-placeholder": "Input email",
+    "phone": "Phone Number",
+    "phone-placeholder": "Input phone number",
     "degree": "Education Level",
     "degree-placeholder": "Select education level",
     "year": "Academic Year",
@@ -850,8 +851,8 @@
     "study-plan-placeholder": "Select study plan",
     "enroll-date-from": "Enroll Date (From)",
     "enroll-date-to": "Enroll Date (To)",
-    "graduated": "Graduated",
-    "graduated-placeholder": "Select status",
+    "graduated": "Academic Status",
+    "graduated-placeholder": "Select academic status",
     "search": "Search...",
     "no-results": "No results found",
     "apply": "Apply",
@@ -861,6 +862,7 @@
     "date-format": "mm/dd/yyyy",
     "select-date-range": "Select date range",
     "enroll-date-range": "Enroll Date",
-    "clear-date": "Clear date"
+    "clear-date": "Clear date",
+    "selected-count": "Selected {count} items"
   }
 }

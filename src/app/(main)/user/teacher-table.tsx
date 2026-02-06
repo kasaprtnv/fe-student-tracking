@@ -99,14 +99,14 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
           .join(' ');
 
         return (
-          titleName.toLowerCase().includes(query) ||
-          user.firstName?.toLowerCase().includes(query) ||
-          user.lastName?.toLowerCase().includes(query) ||
-          user.code?.toLowerCase().includes(query) ||
-          user.email?.toLowerCase().includes(query) ||
-          (queryDigits && phoneDigits.includes(queryDigits)) ||
-          fullName.includes(query) ||
-          managedCoursesText.includes(query)
+          titleName.toLowerCase().startsWith(query) ||
+          user.firstName?.toLowerCase().startsWith(query) ||
+          user.lastName?.toLowerCase().startsWith(query) ||
+          user.code?.toLowerCase().startsWith(query) ||
+          user.email?.toLowerCase().startsWith(query) ||
+          (queryDigits && phoneDigits.startsWith(queryDigits)) ||
+          fullName.startsWith(query) ||
+          managedCoursesText.startsWith(query)
         );
       })
       .map((user) => {

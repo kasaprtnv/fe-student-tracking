@@ -92,34 +92,45 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
           user.role === 'student'
             ? 'นักศึกษา student'
             : 'ผู้ดูแลหลักสูตร staff';
+        // Map graduated to Thai/English display text for search
+        const graduatedDisplayTh = user.graduated
+          ? 'สำเร็จการศึกษา'
+          : 'ยังไม่สำเร็จ';
+        const graduatedDisplayEn = user.graduated
+          ? 'graduated'
+          : 'not graduated';
         return (
-          titleName.toLowerCase().includes(query) ||
-          user.firstName?.toLowerCase().includes(query) ||
-          user.lastName?.toLowerCase().includes(query) ||
-          user.code?.toLowerCase().includes(query) ||
-          user.email?.toLowerCase().includes(query) ||
-          user.year?.toLowerCase().includes(query) ||
-          user.degree?.toLowerCase().includes(query) ||
-          degreeDisplay.toLowerCase().includes(query) ||
-          degreeDisplayEn.toLowerCase().includes(query) ||
+          titleName.toLowerCase().startsWith(query) ||
+          user.firstName?.toLowerCase().startsWith(query) ||
+          user.lastName?.toLowerCase().startsWith(query) ||
+          user.code?.toLowerCase().startsWith(query) ||
+          user.email?.toLowerCase().startsWith(query) ||
+          user.year?.toLowerCase().startsWith(query) ||
+          user.degree?.toLowerCase().startsWith(query) ||
+          degreeDisplay.toLowerCase().startsWith(query) ||
+          degreeDisplayEn.toLowerCase().startsWith(query) ||
           user.courseName?.toLowerCase().includes(query) ||
           (queryNoSpaces &&
             user.courseName
               ?.toLowerCase()
               .replace(/\s/g, '')
               .includes(queryNoSpaces)) ||
-          user.role?.toLowerCase().includes(query) ||
-          roleDisplay.toLowerCase().includes(query) ||
+          user.role?.toLowerCase().startsWith(query) ||
+          roleDisplay.toLowerCase().startsWith(query) ||
+          user.studyPlan?.toLowerCase().startsWith(query) ||
+          graduatedDisplayTh.startsWith(query) ||
+          graduatedDisplayEn.toLowerCase().startsWith(query) ||
           (user.enrollDate &&
-            formatThaiDate(user.enrollDate).toLowerCase().includes(query)) ||
-          (queryDigits && phoneDigits.includes(queryDigits)) ||
-          fullName.includes(query) ||
-          (queryNoSpaces && fullName.replace(/\s/g, '').includes(queryNoSpaces))
+            formatThaiDate(user.enrollDate).toLowerCase().startsWith(query)) ||
+          (queryDigits && phoneDigits.startsWith(queryDigits)) ||
+          fullName.startsWith(query) ||
+          (queryNoSpaces &&
+            fullName.replace(/\s/g, '').startsWith(queryNoSpaces))
         );
       })
       .map((user) => {
-        // Enrich user with courseName if courseId exists but courseName doesn't
-        if (user.courseId && !user.courseName) {
+        // Enrich user with courseName (always format as Code - Name)
+        if (user.courseId) {
           const course = getCourseById(user.courseId);
           if (course) {
             return {

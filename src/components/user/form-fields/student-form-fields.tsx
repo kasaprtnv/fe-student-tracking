@@ -161,7 +161,11 @@ export const StudentFormFields = ({
             <div className="relative">
               <EnrollDateInput
                 value={field.value}
-                onChange={field.onChange}
+                onChange={(val) => {
+                  field.onChange(val);
+                  // Force validation trigger to clear error immediately after selection
+                  if (val) form.trigger('enrollDate');
+                }}
                 onBlur={() => {
                   field.onBlur();
                   form.trigger('enrollDate');
