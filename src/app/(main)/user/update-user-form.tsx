@@ -135,7 +135,11 @@ export function UpdateUserFormDialog({
         phone: user?.phone || '',
         degree: user?.degree || '',
         year: user?.year || '',
-        studyPlan: user?.studyPlan?.replace(/^(แผน\s?|Plan\s?)/i, '') || '',
+        studyPlan: user?.studyPlan
+          ? user.studyPlan.startsWith('แผน')
+            ? user.studyPlan
+            : `แผน ${user.studyPlan}`
+          : '',
         courseId: user?.courseId || '',
         enrollDate: user?.enrollDate || '',
       };
@@ -672,10 +676,10 @@ export function UpdateUserFormDialog({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="ก">
+                          <SelectItem value="แผน ก">
                             {t('study-plan-options.plan-a')}
                           </SelectItem>
-                          <SelectItem value="ข">
+                          <SelectItem value="แผน ข">
                             {t('study-plan-options.plan-b')}
                           </SelectItem>
                         </SelectContent>

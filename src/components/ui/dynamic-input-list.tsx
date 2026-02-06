@@ -3,9 +3,8 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
 
 interface DynamicInputListProps {
   value?: string;
@@ -16,6 +15,22 @@ interface DynamicInputListProps {
   buttonLabel?: string;
 }
 
+// Helper function to normalize value for comparison
+const normalizeValue = (val: string | undefined): string => {
+  if (!val) return '';
+  return val
+    .split(',')
+    .map((i) => i.trim())
+    .filter((i) => i !== '')
+    .join(',');
+};
+
+// Helper function to parse value to items array
+const parseValueToItems = (val: string | undefined): string[] => {
+  if (!val) return [''];
+  return val.split(',').map((item) => item.trim());
+};
+
 export function DynamicInputList({
   value = '',
   onChange,
@@ -24,52 +39,50 @@ export function DynamicInputList({
   disabled = false,
   buttonLabel = 'Add Item',
 }: DynamicInputListProps) {
+  // Track previous value to detect external changes
+  const prevValueRef = useRef(value);
+  const lastEmittedRef = useRef(value);
+
   // Parse the initial comma-separated string into an array
-  // If value is empty, start with one empty string to show one input
-  const [items, setItems] = useState<string[]>(() => {
-    if (!value) return [''];
-    return value.split(',').map((item) => item.trim()); // trim for cleaner display
-  });
+  const [items, setItems] = useState<string[]>(() => parseValueToItems(value));
 
-  const lastEmittedRef = React.useRef(value);
+  // Sync internal state if external value changes (not from our own update)
+  // This pattern is necessary for controlled inputs that need internal state
+  // eslint-disable-next-line react-hooks/refs
+  const lastEmitted = lastEmittedRef.current;
+  // eslint-disable-next-line react-hooks/refs
+  const prevValue = prevValueRef.current;
 
-  // Helper function to normalize value for comparison
-  const normalizeValue = (val: string | undefined): string => {
-    if (!val) return '';
-    return val
-      .split(',')
-      .map((i) => i.trim())
-      .filter((i) => i !== '')
-      .join(',');
-  };
+  const normalizedValue = normalizeValue(value);
+  const normalizedLastEmitted = normalizeValue(lastEmitted);
+  const normalizedPrev = normalizeValue(prevValue);
 
-  // Sync internal state if external value changes (and it's not our own update)
-  useEffect(() => {
-    // Normalize both values for proper comparison
-    const normalizedValue = normalizeValue(value);
-    const normalizedLastEmitted = normalizeValue(lastEmittedRef.current);
-
-    // If the incoming value is different from what we last emitted,
-    // it means the parent changed it (e.g. form reset, or loaded from DB)
-    if (normalizedValue !== normalizedLastEmitted) {
-      if (!value) {
-        setItems(['']);
-      } else {
-        setItems(value.split(',').map((item) => item.trim()));
-      }
-      lastEmittedRef.current = value;
+  if (
+    normalizedValue !== normalizedPrev &&
+    normalizedValue !== normalizedLastEmitted
+  ) {
+    // External value changed - schedule state update
+    // eslint-disable-next-line react-hooks/refs
+    prevValueRef.current = value;
+    // eslint-disable-next-line react-hooks/refs
+    lastEmittedRef.current = value;
+    const newItems = parseValueToItems(value);
+    if (JSON.stringify(newItems) !== JSON.stringify(items)) {
+      setItems(newItems);
     }
-  }, [value]);
+  } else if (normalizedValue !== normalizedPrev) {
+    // eslint-disable-next-line react-hooks/refs
+    prevValueRef.current = value;
+  }
 
   const updateParent = (newItems: string[]) => {
     // Filter out empty strings before joining
-    // This prevents keeping ",," or "A,,B" in the form state
     const joined = newItems
       .map((i) => i.trim())
       .filter((i) => i !== '')
       .join(',');
 
-    // Update ref BEFORE calling onChange to prevent race condition in useEffect
+    // Update ref BEFORE calling onChange to prevent race condition
     lastEmittedRef.current = joined;
     onChange(joined);
   };
@@ -84,16 +97,13 @@ export function DynamicInputList({
   const handleAdd = () => {
     const newItems = [...items, ''];
     setItems(newItems);
-    // We don't necessarily need to trigger onChange here as it's just an empty field,
-    // but consistency might be good. Let's wait until they type to trigger change?
-    // Actually, trigger change so parent knows there's a "change" (e.g. getting dirty).
     updateParent(newItems);
   };
 
   const handleRemove = (index: number) => {
     const newItems = items.filter((_, i) => i !== index);
     if (newItems.length === 0) {
-      newItems.push(''); // Always keep at least one input?
+      newItems.push('');
     }
     setItems(newItems);
     updateParent(newItems);

@@ -67,7 +67,7 @@ export default function StudentPage() {
   const courseOptionsForFilter = useMemo(() => {
     if (!allCourses) return [];
     return allCourses.map((c) => ({
-      label: c.name,
+      label: `${c.code} - ${c.name}`,
       value: c.id,
     }));
   }, [allCourses]);
@@ -108,8 +108,8 @@ export default function StudentPage() {
   // Study plan options
   const studyPlanOptions = useMemo(
     () => [
-      { label: 'ก', value: 'ก' },
-      { label: 'ข', value: 'ข' },
+      { label: 'แผน ก', value: 'แผน ก' },
+      { label: 'แผน ข', value: 'แผน ข' },
     ],
     [],
   );

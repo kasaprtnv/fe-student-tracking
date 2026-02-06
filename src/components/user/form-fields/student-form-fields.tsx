@@ -126,8 +126,8 @@ export const StudentFormFields = ({
         name="studyPlan"
         render={({ field }) => {
           const studyPlanOptions = [
-            { label: t('study-plan-options.plan-a'), value: 'ก' },
-            { label: t('study-plan-options.plan-b'), value: 'ข' },
+            { label: t('study-plan-options.plan-a'), value: 'แผน ก' },
+            { label: t('study-plan-options.plan-b'), value: 'แผน ข' },
           ];
 
           return (
