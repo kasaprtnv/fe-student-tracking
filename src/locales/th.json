@@ -487,9 +487,10 @@
     "course-placeholder": "กรอกรหัสหลักสูตร",
     "course-required-for-student": "กรุณาเลือกหลักสูตร",
     "delete-user-title": "ยืนยันการลบผู้ใช้",
-    "delete-user-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "delete-user-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้ การกระทำนี้ไม่สามารถย้อนกลับได้",
     "delete-users-title": "ยืนยันการลบผู้ใช้หลายคน",
-    "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "warning-delete-user": "คำเตือน: คุณกำลังจะลบผู้ใช้ {count} คน การกระทำนี้ไม่สามารถย้อนกลับได้",
     "toast": {
       "deleted-successfully": "ลบผู้ใช้งานสำเร็จ!",
       "deleted-multiple-successfully": "ลบผู้ใช้หลายคนสำเร็จ",
@@ -498,7 +499,9 @@
     },
     "dialog": {
       "confirm_course_change_with_progress": "นักเรียนคนนี้มีความคืบหน้า {count} รายการ หากเปลี่ยนหลักสูตร ข้อมูลความคืบหน้าทั้งหมดจะถูกลบ คุณต้องการดำเนินการต่อหรือไม่?",
-      "confirm_delete_user_with_progress": "ผู้ใช้นี้มีความคืบหน้า {count} รายการ การลบจะทำให้ข้อมูลทั้งหมดหายไป ยืนยันหรือไม่?"
+      "confirm_delete_user_with_progress": "ผู้ใช้นี้มีความคืบหน้า {count} รายการ การลบจะทำให้ข้อมูลทั้งหมดหายไป ยืนยันหรือไม่?",
+      "delete-users-with-progress-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน และมีความคืบหน้ารวม {progressCount} รายการ การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "warning-delete-users-with-progress": "คำเตือน: คุณกำลังจะลบผู้ใช้ {count} คน และมีความคืบหน้ารวม {progressCount} รายการ การกระทำนี้ไม่สามารถย้อนกลับได้"
     },
     "user-form": {
       "header": {
@@ -821,10 +824,13 @@
       "selected_items": "เลือกแล้ว {count} รายการ",
       "search_placeholder": "ค้นหา...",
       "no_results": "ไม่พบผลลัพธ์"
+    },
+    "delete-text-confirmation-dialog": {
+      "confirmation-text": "พิมพ์ \"{text}\" เพื่อยืนยันการลบ"
+    },
+    "loading-dot": {
+      "loading": "กำลังโหลด"
     }
-  },
-  "loading-dot": {
-    "loading": "กำลังโหลด"
   },
   "advanced-filter": {
     "title": "ตัวกรองขั้นสูง",

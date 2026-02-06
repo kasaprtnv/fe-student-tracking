@@ -491,6 +491,7 @@
     "delete-user-description": "Are you sure you want to delete this user? This action cannot be undone.",
     "delete-users-title": "Confirm Delete Multiple Users",
     "delete-users-description": "Are you sure you want to delete {count} users? This action cannot be undone.",
+    "warning-delete-user": "Warning: You are about to delete {count} users. This action cannot be undone.",
     "toast": {
       "deleted-successfully": "User deleted successfully",
       "deleted-multiple-successfully": "Multiple users deleted successfully",
@@ -499,7 +500,9 @@
     },
     "dialog": {
       "confirm_course_change_with_progress": "This student has {count} progress records. If you change the course, all progress data will be deleted. Do you want to proceed?",
-      "confirm_delete_user_with_progress": "This user has {count} progress records. Deleting will remove all data. Confirm?"
+      "confirm_delete_user_with_progress": "This user has {count} progress records. Deleting will remove all data. Confirm?",
+      "delete-users-with-progress-description": "Are you sure you want to delete {count} users with a total of {progressCount} progress records? This action cannot be undone.",
+      "warning-delete-users-with-progress": "Warning: You are about to delete {count} users with a total of {progressCount} progress records. This action cannot be undone."
     },
     "user-form": {
       "header": {
@@ -828,6 +831,9 @@
     },
     "loading-dot": {
       "loading": "Loading"
+    },
+    "delete-text-confirmation-dialog": {
+      "confirmation-text": "Type \"{text}\" to confirm deletion"
     }
   },
   "advanced-filter": {
