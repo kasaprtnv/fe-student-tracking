@@ -8,7 +8,10 @@ export interface SelectOption {
 
 export interface IApiGetResponse<T> {
   data: T[];
+  pagination?: IPagination;
+  total?: number;
   pageCount: number;
+  message?: string;
 }
 
 export interface IApiGetByIdResponse<T> {
@@ -37,4 +40,11 @@ export interface IApiPatchResponse<T> {
   updatedFields: Partial<T>;
   success: boolean;
   message: string;
+}
+
+export interface IPagination {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
 }
