@@ -156,7 +156,8 @@
         "updated-successfully": "Course updated successfully!",
         "update-failed": "Failed to update course. Please try again.",
         "deleted-successfully": "Course deleted successfully!",
-        "deletion-failed": "Failed to delete course. Please try again."
+        "deletion-failed": "Failed to delete course. Please try again.",
+        "fetch_error": "Failed to fetch courses. Please try again."
       },
       "header": {
         "create": "Create New Course",
