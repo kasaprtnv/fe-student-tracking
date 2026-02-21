@@ -39,6 +39,7 @@ interface UpdateCourseFormDialogProps {
   onOpenChange: (open: boolean) => void;
   course: ICourse | undefined;
   teacherOptions: SelectOption[];
+  onSuccess?: () => void;
 }
 
 export function UpdateCourseFormDialog({
@@ -46,6 +47,7 @@ export function UpdateCourseFormDialog({
   onOpenChange,
   course,
   teacherOptions,
+  onSuccess,
 }: UpdateCourseFormDialogProps) {
   const t = useTranslations('course.course-form');
   const tCommon = useTranslations('common');
@@ -90,6 +92,7 @@ export function UpdateCourseFormDialog({
         await updateExistingCourse(course.id, data);
         form.reset();
         onOpenChange(false);
+        onSuccess?.();
         toast.success(t('toast.updated-successfully'));
       }
     } catch (error) {

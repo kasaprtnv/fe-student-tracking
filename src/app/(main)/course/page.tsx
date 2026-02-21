@@ -12,7 +12,7 @@ import { CreateCourseFormDialog } from './create-course-form';
 import { UpdateCourseFormDialog } from './update-course-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { useCourseStaff } from '@/hooks/use-course_staff';
-// import { DataTableFilterField } from '@/components/data-table/types';
+import { useDebounce } from '@/lib/use-debounce';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '../../../components/page-header';
 import { useUser } from '@/hooks/use-user';
@@ -25,26 +25,36 @@ const CoursePage = () => {
   const tDegree = useTranslations('degree');
   const router = useRouter();
   const {
-    filteredCoursesId,
+    allCoursesFromMap,
+    pagination,
     searchQuery,
     fetchAllCourses,
-    getCourseById,
+    searchForCourses,
     setSearch: setSearchQuery,
+    setPage,
+    setPageSize,
     removeCourse,
     removeMultipleCourses,
+    loader,
+    storeAction,
   } = useCourse();
   const { fetchAllCourseStaff } = useCourseStaff();
   const { fetchTeachers, allUserIds, getUserById } = useUser();
 
-  const courseColumns = createCourseColumns(tDegree).map((column) => {
-    if (typeof column.header === 'string') {
-      return {
-        ...column,
-        header: tCol(column.header),
-      };
-    }
-    return column;
-  });
+  // Memoize columns to prevent unnecessary re-renders
+  const courseColumns = React.useMemo(
+    () =>
+      createCourseColumns(tDegree).map((column) => {
+        if (typeof column.header === 'string') {
+          return {
+            ...column,
+            header: tCol(column.header),
+          };
+        }
+        return column;
+      }),
+    [tDegree, tCol],
+  );
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -60,10 +70,12 @@ const CoursePage = () => {
     isDeleting: false,
   });
 
+  // Debounce search to avoid fetching on every keystroke
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
   useSWR(
-    'fetch-courses and-course-staff',
+    'fetch-course-staff-and-teachers',
     async () => {
-      await fetchAllCourses();
       await fetchAllCourseStaff();
       await fetchTeachers();
     },
@@ -72,29 +84,69 @@ const CoursePage = () => {
     },
   );
 
-  const filterCourseData = filteredCoursesId
-    .map((id) => {
-      const course = getCourseById(id);
-      if (!course) return;
-
-      if (course.staffIds && course.staffIds.length > 0) {
-        const users = course.staffIds
-          .map((userId) => getUserById(userId))
-          .filter((user) => user !== undefined);
-        return { ...course, users };
+  // Stable reference to fetcher function to prevent unnecessary re-renders
+  const coursesFetcher = React.useCallback(
+    async ([_, searchQuery, page, pageSize]: [
+      string,
+      string,
+      number,
+      number,
+    ]) => {
+      try {
+        if (searchQuery && searchQuery.trim() !== '') {
+          return await searchForCourses(searchQuery, page, pageSize);
+        } else {
+          return await fetchAllCourses(page, pageSize);
+        }
+      } catch (err) {
+        toast.error(tForm('toast.fetch_error'));
+        throw err;
       }
+    },
+    [fetchAllCourses, searchForCourses, tForm],
+  );
 
-      return course;
-    })
-    .filter((course) => course !== undefined);
+  const { mutate } = useSWR(
+    ['courses', debouncedSearchQuery, pagination.page, pagination.pageSize],
+    coursesFetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      dedupingInterval: 5000,
+      keepPreviousData: true, // Keep previous data while fetching new
+    },
+  );
 
-  const teacherOptions: SelectOption[] = allUserIds
-    .map((id) => {
-      const user = getUserById(id);
-      if (!user || user.role !== 'teacher') return undefined;
-      return { label: `${user.firstName} ${user.lastName}`, value: user.id };
-    })
-    .filter((option) => option !== undefined);
+  // Memoize filtered course data to prevent unnecessary re-renders
+  const filterCourseData = React.useMemo(
+    () =>
+      allCoursesFromMap.map((course) => {
+        if (course.staffIds && course.staffIds.length > 0) {
+          const users = course.staffIds
+            .map((userId) => getUserById(userId))
+            .filter((user) => user !== undefined);
+          return { ...course, users };
+        }
+        return course;
+      }),
+    [allCoursesFromMap, getUserById],
+  );
+
+  // Memoize teacher options to prevent unnecessary re-renders
+  const teacherOptions: SelectOption[] = React.useMemo(
+    () =>
+      allUserIds
+        .map((id) => {
+          const user = getUserById(id);
+          if (!user || user.role !== 'teacher') return undefined;
+          return {
+            label: `${user.firstName} ${user.lastName}`,
+            value: user.id,
+          };
+        })
+        .filter((option) => option !== undefined),
+    [allUserIds, getUserById],
+  );
 
   const onDeleteCourse = (id: string) => {
     setIsDelete({ isDeleting: true, courseId: [id] });
@@ -109,13 +161,15 @@ const CoursePage = () => {
 
   const onConfirmDelete = async () => {
     if (!isDelete.courseId || isDelete?.courseId.length == 0) return;
-    console.log('Deleting courses with IDs:', isDelete.courseId);
+
     try {
       if (isDelete.courseId.length === 1) {
         await removeCourse(isDelete.courseId[0]);
       } else {
         await removeMultipleCourses(isDelete.courseId);
       }
+
+      refreshData();
       toast.success(tForm('toast.deleted-successfully'));
     } catch (error) {
       console.error('Error deleting courses:', error);
@@ -125,30 +179,39 @@ const CoursePage = () => {
     }
   };
 
-  const onSearchChange = (value: string) => {
+  // Memoize search handler
+  const onSearchChange = React.useCallback((value: string) => {
     setSearchQuery(value);
-  };
+    setPage(1); // reset หน้าเมื่อ search
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // const filterColumns: DataTableFilterField<ICourse>[] = [
-  //   {
-  //     id: 'isActive',
-  //     label: 'Status',
-  //     options: filteredCoursesId
-  //       .map((id) => {
-  //         const course = getCourseById(id);
-  //         if (!course) return undefined;
-  //         return {
-  //           label: course.isActive ? tCol('active') : tCol('inactive'),
-  //           value: course.isActive,
-  //         };
-  //       })
-  //       .filter((option) => option !== undefined),
-  //   },
-  // ];
+  const handlePageChange = React.useCallback(
+    (page: number) => {
+      setPage(page);
+    },
+    [setPage],
+  );
 
-  const toSelectMilestonePage = (milestoneId: string) => {
-    router.push(`/selected-milestone/${milestoneId}`);
-  };
+  const handlePageSizeChange = React.useCallback(
+    (pageSize: number) => {
+      setPageSize(pageSize);
+    },
+    [setPageSize],
+  );
+
+  // Memoize refresh function
+  const refreshData = React.useCallback(() => {
+    mutate();
+  }, [mutate]);
+
+  // Memoize navigation function
+  const toSelectMilestonePage = React.useCallback(
+    (milestoneId: string) => {
+      router.push(`/selected-milestone/${milestoneId}`);
+    },
+    [router],
+  );
 
   return (
     <>
@@ -169,6 +232,13 @@ const CoursePage = () => {
           // filterColumns={filterColumns}
           onSearch={onSearchChange}
           searchQuery={searchQuery}
+          isLoading={loader || storeAction !== 'none'}
+          manualPagination={true}
+          page={pagination.page}
+          pageSize={pagination.pageSize}
+          rowCount={pagination.total}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
         />
         <CreateCourseFormDialog
           open={isAdd}
@@ -176,6 +246,7 @@ const CoursePage = () => {
             setIsAdd(false);
           }}
           teacherOptions={teacherOptions}
+          onSuccess={refreshData}
         />
         <UpdateCourseFormDialog
           open={isEdit.isEditing && isEdit.course !== undefined}
@@ -184,6 +255,7 @@ const CoursePage = () => {
             setIsEdit({ isEditing: false });
           }}
           teacherOptions={teacherOptions}
+          onSuccess={refreshData}
         />
         <DeleteConfirmationDialog
           open={isDelete.isDeleting}
@@ -191,7 +263,7 @@ const CoursePage = () => {
             setIsDelete({ isDeleting: false, courseId: undefined })
           }
           onConfirm={onConfirmDelete}
-          isLoading={false} // หรือใช้ state เช่น storeAction === 'deleting'
+          isLoading={storeAction === 'deleting'}
           title="header"
           description="confirm"
           translationKey="course.delete"
