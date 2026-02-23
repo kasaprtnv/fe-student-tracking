@@ -83,13 +83,10 @@ const milestoneSlice = createSlice({
       })
       .addCase(fetchMilestonesByCourseId.fulfilled, (state, action) => {
         state.loader = false;
-        const sortedMilestones = action.payload.data.sort((a, b) =>
-          a.name.localeCompare(b.name),
-        );
-        sortedMilestones.forEach((milestone) => {
+        action.payload.data.forEach((milestone) => {
           state.milestoneMap[milestone.id] = milestone;
         });
-        state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
+        state.allMilestoneIds = action.payload.data.map((ms) => ms.id);
       })
       .addCase(fetchMilestonesByCourseId.rejected, (state, action) => {
         state.loader = false;
@@ -108,13 +105,10 @@ const milestoneSlice = createSlice({
         (state, action) => {
           state.loader = false;
           state.milestoneMap = {};
-          const sortedMilestones = action.payload.data.sort((a, b) =>
-            a.name.localeCompare(b.name),
-          );
-          sortedMilestones.forEach((milestone) => {
+          action.payload.data.forEach((milestone) => {
             state.milestoneMap[milestone.id] = milestone;
           });
-          state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
+          state.allMilestoneIds = action.payload.data.map((ms) => ms.id);
         },
       )
       .addCase(

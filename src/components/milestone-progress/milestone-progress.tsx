@@ -482,7 +482,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                   <div className="text-muted-foreground flex items-center gap-4 text-xs">
                                     <div className="flex items-center gap-1">
                                       <Calendar className="h-3 w-3" />
-                                      กำหนดส่ง : 
+                                      กำหนดส่ง :
                                       <span>{formatDate(deadline)}</span>
                                     </div>
                                     {completed && (
