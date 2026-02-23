@@ -46,6 +46,7 @@ import { useCourse } from '@/hooks/use-course';
 import { useMilestonePrerequisite } from '@/hooks/use-milestone-prerequisite';
 import { useTranslations } from 'next-intl';
 import { PageHeader } from '../../../components/page-header';
+import { UnlockCondition } from '@/types/milestone-prerequisite';
 
 import {
   AlertDialog,
@@ -58,11 +59,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import useSWR from 'swr';
-
-interface UnlockCondition {
-  type: 'milestone' | 'step';
-  id: string;
-}
+import { toast } from 'sonner';
 
 export default function PageLayout({ courseId }: { courseId?: string }) {
   const tSelectedMilestone = useTranslations('selected-milestone');
@@ -316,6 +313,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       await update(courseId!, dto);
 
       setConfirmOpen(false);
+      toast.success(tSelectedMilestone('confirm-save.success'));
     } catch (err) {
       console.error('Error saving prerequisites', err);
     }
@@ -544,6 +542,9 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
                 milestones={selectedMilestonesWithSteps}
                 lockedItems={lockedItems}
                 mode="edit"
+                displayMode="select-milestone"
+                lockInfoMap={prerequisites}
+                courseIsUsed={isCourseUsed}
                 stepAttempts={[]}
                 onToggleLock={(id, type) => {
                   setTargetLock({
@@ -561,10 +562,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
         </ResizablePanelGroup>
 
         <div className="mt-4 flex justify-end">
-          <Button
-            onClick={() => setConfirmOpen(true)}
-            disabled={selectedItems.length === 0 || isCourseUsed}
-          >
+          <Button onClick={() => setConfirmOpen(true)} disabled={isCourseUsed}>
             {tSelectedMilestone('milestone.next')}
           </Button>
         </div>
