@@ -737,6 +737,7 @@
   "student-page": {
     "title": "Student List",
     "description": "View all student information. Click on a row to view profile.",
+    "personal-information-student": "Personal Information",
     "export-button": "Export Data"
   },
   "degree": {

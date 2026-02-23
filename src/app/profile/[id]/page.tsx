@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
+  const tStudent = useTranslations('student-page');
   const { user, initialized } = useAuth();
   const { fetchUserDetails, userMap } = useUser();
   const { fetchMilestonesWithStatus, milestoneMap } = useMilestone();
@@ -28,6 +29,24 @@ export default function ProfilePage() {
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
   const isOwnProfile = id === user?.id;
   const mode: ViewMode = isOwnProfile ? 'upload' : 'readonly';
+
+  const breadcrumb = isOwnProfile
+    ? [
+        {
+          label: t('personal_information.title'),
+          isPage: true,
+        },
+      ]
+    : [
+        {
+          label: tStudent('title'),
+          isPage: true,
+        },
+        {
+          label: tStudent('personal-information-student'),
+          isPage: true,
+        },
+      ];
 
   useEffect(() => {
     if (!isOwnProfile && id && !userMap[id]) {
@@ -123,14 +142,13 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <PageHeader
-        breadcrumbs={[{ label: t('personal_information.title'), isPage: true }]}
-      />
+      <PageHeader breadcrumbs={breadcrumb} />
       {/* Student */}
       {profileUser?.role === 'student' && (
         <ProfileStudentComponent
           user={profileUser ?? null}
           isLoading={!initialized}
+          isOwnProfile={isOwnProfile}
         />
       )}
 

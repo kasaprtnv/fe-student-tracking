@@ -734,6 +734,7 @@
   "student-page": {
     "title": "รายชื่อนิสิต",
     "description": "แสดงข้อมูลนิสิตทั้งหมดในระบบ คลิกที่ชื่อหรือแถวเพื่อดูโปรไฟล์",
+    "personal-information-student": "ข้อมูลส่วนตัวของนิสิต",
     "export-button": "ส่งออกข้อมูล"
   },
   "degree": {
