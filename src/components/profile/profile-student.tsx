@@ -17,13 +17,16 @@ import { Separator } from '../ui/separator';
 interface ProfileStudentPageProps {
   user: User | null;
   isLoading?: boolean;
+  isOwnProfile?: boolean;
 }
 
 export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
   user,
   isLoading,
+  isOwnProfile,
 }) => {
   const t = useTranslations('profile');
+  const tStudent = useTranslations('student-page');
   const role = user?.role === 'student' ? 'student' : user?.role;
   const API_STATIC_URL =
     process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
@@ -52,7 +55,9 @@ export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
   return (
     <div>
       <div className="mb-4 text-2xl font-bold">
-        {t('personal_information.title')}
+        {isOwnProfile
+          ? t('personal_information.title')
+          : tStudent('personal-information-student')}
       </div>
       <div className="flex flex-row items-center gap-8">
         {/* Profile Image */}

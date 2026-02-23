@@ -83,7 +83,6 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
     //   accessorKey: 'notifyBeforeDays',
     //   header: 'notify-before-days',
     // },
-
     {
       accessorKey: 'isUsed',
       header: 'is_used',
@@ -94,6 +93,12 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
         const { t } = table.options.meta as {
           t: (key: string) => string;
         };
+
+        if (typeof record.isUsed !== 'boolean') {
+          return (
+            <div className="flex w-[110px] items-center justify-center">-</div>
+          );
+        }
 
         return (
           <div className="flex w-[110px] items-center justify-center">

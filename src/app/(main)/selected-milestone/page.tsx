@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X, GripVertical } from 'lucide-react';
+import { startTransition } from 'react';
 
 import {
   Select,
@@ -65,6 +66,14 @@ interface UnlockCondition {
 
 export default function PageLayout({ courseId }: { courseId?: string }) {
   const tSelectedMilestone = useTranslations('selected-milestone');
+  const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
+  const [stepsByMilestone, setStepsByMilestone] = useState<
+    Record<string, IMilestoneStep[]>
+  >({});
+  const [prerequisites, setPrerequisites] = useState<
+    Record<string, UnlockCondition[]>
+  >({});
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const t = useTranslations();
   const {
     allMilestoneIds,
@@ -75,7 +84,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     removeCourseMilestoneFromCourse,
   } = useMilestone();
 
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [pendingMilestone, setPendingMilestone] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { fetchAll: fetchAllPrereqs, update } = useMilestonePrerequisite();
@@ -153,10 +161,12 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
      * 4. set state
      * ----------------------------- */
 
-    setSelectedItems(selectedIds);
-    setStepsByMilestone(stepsMap);
-    setPrerequisites(loadedPrereqs);
-    setLockedItems(loadedLockedItems);
+    startTransition(() => {
+      setSelectedItems(selectedIds);
+      setStepsByMilestone(stepsMap);
+      setPrerequisites(loadedPrereqs);
+      setLockedItems(loadedLockedItems);
+    });
   }, [swrData, courseId]);
 
   const milestones = allMilestoneIds
@@ -164,8 +174,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     .filter((ms) => ms !== undefined);
 
   const sensors = useSensors(useSensor(PointerSensor));
-
-  const [lockedItems, setLockedItems] = useState<Record<string, boolean>>({});
 
   const handleRemove = async (milestoneId: string) => {
     if (!courseId) return;
@@ -228,10 +236,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     }
   };
 
-  const [stepsByMilestone, setStepsByMilestone] = useState<
-    Record<string, IMilestoneStep[]>
-  >({});
-
   // เวลาเลือก milestone
   const handleSelect = async (id: string) => {
     if (!selectedItems.includes(id)) {
@@ -247,10 +251,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
       [id]: s.data,
     }));
   };
-
-  const [prerequisites, setPrerequisites] = useState<
-    Record<string, UnlockCondition[]>
-  >({});
 
   const selectedMilestonesWithSteps: IMilestone[] = selectedItems
     .map((id) => {
@@ -332,56 +332,24 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   function willCauseLoop(targetId: string, requiredId: string): boolean {
     if (!targetId || !requiredId) return false;
 
-    // Helper: หา ID ทั้งหมดที่อยู่ในกลุ่มเดียวกัน (Milestone + Steps ของมัน)
-    const getRelatedHierarchyIds = (id: string) => {
-      const ids = new Set<string>([id]);
-      // ถ้าเป็น Milestone ให้รวม Step ลูกทั้งหมด
-      const ms = milestones.find((m) => m.id === id);
-      if (ms) {
-        ms.steps?.forEach((s) => ids.add(s.id));
-      } else {
-        // ถ้าเป็น Step ให้รวม Milestone แม่ของมัน
-        const parentId = findMilestoneIdByStepId(id);
-        if (parentId) ids.add(parentId);
-      }
-      return ids;
-    };
+    const visited = new Set<string>();
 
-    const targetRelated = getRelatedHierarchyIds(targetId);
-
-    const visit = (currentId: string, visited = new Set<string>()): boolean => {
+    const dfs = (currentId: string): boolean => {
+      if (currentId === targetId) return true;
       if (visited.has(currentId)) return false;
+
       visited.add(currentId);
 
-      // 1. ดึงเงื่อนไขตรงๆ ของ ID นี้
-      const directConditions = prerequisites[currentId] ?? [];
+      const nextConditions = prerequisites[currentId] ?? [];
 
-      // 2. ถ้าเป็น Step ต้องดึงเงื่อนไขของ "Milestone แม่" มาเช็คด้วย (เพราะ Step ต้องรอตามแม่)
-      const parentId = findMilestoneIdByStepId(currentId);
-      const parentConditions =
-        parentId && parentId !== currentId
-          ? (prerequisites[parentId] ?? [])
-          : [];
-
-      const allPrereqs = [...directConditions, ...parentConditions];
-
-      for (const cond of allPrereqs) {
-        const condRelated = getRelatedHierarchyIds(cond.id);
-
-        // ถ้าเงื่อนไขที่เรากำลังเช็ค มีความเกี่ยวข้องกับ Target -> เกิด LOOP
-        const hasIntersection = Array.from(condRelated).some((id) =>
-          targetRelated.has(id),
-        );
-        if (hasIntersection) return true;
-
-        // ค้นหาลึกลงไปใน Graph
-        if (visit(cond.id, visited)) return true;
+      for (const cond of nextConditions) {
+        if (dfs(cond.id)) return true;
       }
 
       return false;
     };
 
-    return visit(requiredId);
+    return dfs(requiredId);
   }
 
   const buildPrerequisiteDTO = (): PrerequisiteDTO[] => {
@@ -416,11 +384,14 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   };
 
   return (
-    <div className="h-full w-full pb-45">
+    <div className="h-full w-full pb-52">
       <PageHeader
         breadcrumbs={[
-          { label: t('course.title'), href: '/course' },
-          { label: tSelectedMilestone('header.title'), isPage: true },
+          { label: tSelectedMilestone('header.course'), href: '/course' },
+          {
+            label: tSelectedMilestone('header.select-milestone'),
+            isPage: true,
+          },
         ]}
       />
       <div className="h-full w-full p-6">
@@ -431,6 +402,9 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           <div>
             <div className="mb-2 text-xl text-gray-600">
               {tSelectedMilestone('header.course-name')} : {course.name}
+            </div>
+            <div className="mb-2 text-gray-600">
+              {tSelectedMilestone('header.course-code')} : {course.code}
             </div>
             <div className="mb-2 text-gray-600">
               {tSelectedMilestone('header.course-description')} :{' '}
@@ -445,7 +419,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           {/* LEFT PANEL */}
           <ResizablePanel defaultSize={40} minSize={20} maxSize={50}>
             <div className="h-full space-y-4 overflow-auto p-4">
-              <div className="mb-3">
+              <div className="mb-3 font-bold">
                 {tSelectedMilestone('milestone.milestone')}
               </div>
               {/* Dropdown */}
@@ -528,6 +502,11 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
 
           {/* RIGHT */}
           <ResizablePanel defaultSize={60} minSize={40} className="h-full p-4">
+            <div>
+              <div className="mb-3 font-bold">
+                {tSelectedMilestone('milestone.preview')}
+              </div>
+            </div>
             <UnlockConditionModal
               key={
                 lockModalOpen
@@ -538,9 +517,8 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
               onClose={() => setLockModalOpen(false)}
               target={targetLock}
               milestones={selectedMilestonesWithSteps}
-              isLoop={(requiredId) => {
-                if (!targetLock) return false;
-                return willCauseLoop(targetLock.id, requiredId);
+              isLoop={(requiredId, targetId) => {
+                return willCauseLoop(targetId, requiredId);
               }}
               initialSelected={
                 targetLock ? (prerequisites[targetLock.id] ?? []) : []
