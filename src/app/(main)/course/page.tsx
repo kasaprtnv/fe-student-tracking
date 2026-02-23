@@ -11,7 +11,7 @@ import { ICourse } from '@/types/course';
 import { CreateCourseFormDialog } from './create-course-form';
 import { UpdateCourseFormDialog } from './update-course-form';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
-import { useCourseStaff } from '@/hooks/use-course_staff';
+// import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useDebounce } from '@/lib/use-debounce';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '../../../components/page-header';
@@ -38,7 +38,7 @@ const CoursePage = () => {
     loader,
     storeAction,
   } = useCourse();
-  const { fetchAllCourseStaff } = useCourseStaff();
+  // const { fetchAllCourseStaff } = useCourseStaff();
   const { fetchTeachers, allUserIds, getUserById } = useUser();
 
   // Memoize columns to prevent unnecessary re-renders
@@ -70,13 +70,19 @@ const CoursePage = () => {
     isDeleting: false,
   });
 
+  // Local pagination state for immediate useSWR key updates
+  const [currentPage, setCurrentPage] = React.useState(pagination.page);
+  const [currentPageSize, setCurrentPageSize] = React.useState(
+    pagination.pageSize,
+  );
+
   // Debounce search to avoid fetching on every keystroke
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useSWR(
     'fetch-course-staff-and-teachers',
     async () => {
-      await fetchAllCourseStaff();
+      // await fetchAllCourseStaff();
       await fetchTeachers();
     },
     {
@@ -86,7 +92,8 @@ const CoursePage = () => {
 
   // Stable reference to fetcher function to prevent unnecessary re-renders
   const coursesFetcher = React.useCallback(
-    async ([_, searchQuery, page, pageSize]: [
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async ([_key, searchQuery, page, pageSize]: [
       string,
       string,
       number,
@@ -107,12 +114,11 @@ const CoursePage = () => {
   );
 
   const { mutate } = useSWR(
-    ['courses', debouncedSearchQuery, pagination.page, pagination.pageSize],
+    ['courses', debouncedSearchQuery, currentPage, currentPageSize],
     coursesFetcher,
     {
       revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      dedupingInterval: 5000,
+      dedupingInterval: 1000,
       keepPreviousData: true, // Keep previous data while fetching new
     },
   );
@@ -182,20 +188,23 @@ const CoursePage = () => {
   // Memoize search handler
   const onSearchChange = React.useCallback((value: string) => {
     setSearchQuery(value);
-    setPage(1); // reset หน้าเมื่อ search
+    setCurrentPage(1); // Update local state immediately
+    setPage(1); // Sync to Redux
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePageChange = React.useCallback(
     (page: number) => {
-      setPage(page);
+      setCurrentPage(page); // Update local state immediately
+      setPage(page); // Sync to Redux
     },
     [setPage],
   );
 
   const handlePageSizeChange = React.useCallback(
     (pageSize: number) => {
-      setPageSize(pageSize);
+      setCurrentPageSize(pageSize); // Update local state immediately
+      setPageSize(pageSize); // Sync to Redux
     },
     [setPageSize],
   );
@@ -234,8 +243,8 @@ const CoursePage = () => {
           searchQuery={searchQuery}
           isLoading={loader || storeAction !== 'none'}
           manualPagination={true}
-          page={pagination.page}
-          pageSize={pagination.pageSize}
+          page={currentPage}
+          pageSize={currentPageSize}
           rowCount={pagination.total}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}

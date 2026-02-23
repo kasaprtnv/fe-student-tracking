@@ -98,11 +98,12 @@ const courseSlice = createSlice({
           const { degreeTH, degreeEN } = getdegreeMap(course.degree);
           state.courseMap[course.id] = { ...course, degreeTH, degreeEN };
         });
-        console.log('Search results:', state.courseMap);
         if (action.payload.pagination) {
           state.pagination.total = action.payload.pagination?.total || 0;
           state.pagination.totalPages =
             action.payload.pagination?.totalPages || 0;
+          state.pagination.page = action.payload.pagination.page;
+          state.pagination.pageSize = action.payload.pagination.pageSize;
         }
       })
       .addCase(searchCourses.rejected, (state, action) => {
