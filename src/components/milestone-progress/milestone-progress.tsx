@@ -601,7 +601,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                     ) : (
                                       <div className="flex items-center gap-1">
                                         <Calendar className="h-3 w-3" />
-                                        {t('deadline')} :
+                                        <span className="mr-1">
+                                          {t('deadline_date')} :
+                                        </span>
                                         <span>{formatDate(deadline)}</span>
                                       </div>
                                     )}
