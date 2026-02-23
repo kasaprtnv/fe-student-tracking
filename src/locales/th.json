@@ -246,6 +246,7 @@
     "accept_file_type": "รองรับไฟล์ประเภท",
     "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน",
     "reason_for_decline": "เหตุผลที่ปฏิเสธ",
+    "description": "คำอธิบาย",
     "file_attachment": "เอกสารที่แนบส่งมา",
     "confirm_submit_title": "ยืนยันการส่ง",
     "confirm_submit_description": "คุณต้องการยืนยันการส่งไฟล์นี้หรือไม่?",

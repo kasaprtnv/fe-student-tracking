@@ -45,6 +45,7 @@ import { uploadService } from '@/services/upload.service';
 import { UploadFileDialog } from './upload-file-dialog';
 import { StudentStepAttempts } from '@/types/student-step-attempts';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
+import { Textarea } from '../ui/textarea';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
@@ -106,6 +107,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   );
   const [internalFileNames, setInternalFileNames] = useState<
     Record<string, string[]>
+  >({});
+  const [internalComments, setInternalComments] = useState<
+    Record<string, string>
   >({});
   const [internalSubmitting, setInternalSubmitting] = useState<
     Record<string, boolean>
@@ -193,14 +197,21 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     if (!pendingStepId) return;
     const stepId = pendingStepId;
     const files = internalFiles[stepId];
+    const studentComment = internalComments[stepId];
     setConfirmModalOpen(false);
     if (!files || files.length === 0) {
       const res = await studentStepProgressService.submitForReview(
         stepId,
         userId || '',
+        studentComment,
       );
       if (res.success) {
         onSubmitSuccess?.(stepId);
+        setInternalComments((prev) => {
+          const newComments = { ...prev };
+          delete newComments[stepId];
+          return newComments;
+        });
       }
       onSubmit?.(stepId);
       return res;
@@ -438,9 +449,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                   </div>
 
                                   <div className="mb-2 flex flex-row items-center gap-6">
-                                    <p className="text-muted-foreground text-sm">
-                                      {step.description}
-                                    </p>
+                                    {step.description && (
+                                      <p className="text-muted-foreground text-sm">
+                                        {step.description}
+                                      </p>
+                                    )}
                                     {/* Upload Button */}
                                     {mode === 'upload' &&
                                       step.requiresAttachment &&
@@ -565,6 +578,26 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         </div>
                                       </>
                                     )}
+                                    {!step.requiresAttachment &&
+                                      (available || declined) && (
+                                        <div>
+                                          <div className="mt-3 font-bold">
+                                            {t('description')}
+                                          </div>
+                                          <Textarea
+                                            className="mt-3 h-24 w-1/2 resize-none rounded-2xl border"
+                                            value={
+                                              internalComments[step.id] || ''
+                                            }
+                                            onChange={(e) =>
+                                              setInternalComments((prev) => ({
+                                                ...prev,
+                                                [step.id]: e.target.value,
+                                              }))
+                                            }
+                                          />
+                                        </div>
+                                      )}
                                   </div>
                                   {mode === 'upload' &&
                                     (available || declined) &&
