@@ -13,6 +13,7 @@ import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { createMilestoneColumns } from './milestone-columns';
 import { useRouter } from 'next/navigation';
 import { PageHeader } from '../../../components/page-header';
+import { useDebounce } from '@/lib/use-debounce';
 
 const MilestonePage = () => {
   const router = useRouter();
@@ -22,24 +23,35 @@ const MilestonePage = () => {
   const tMilestone = useTranslations('milestone');
 
   const {
-    filteredMilestoneIds,
+    allMilestoneFormMap,
+    pagination,
     searchQuery,
+    // filteredMilestoneIds,
     fetchAllMilestones,
-    getMilestoneById,
+    searchForMilestones,
+    // getMilestoneById,
     setSearch: setSearchQuery,
+    setPage,
+    setPageSize,
+    loader,
+    storeAction,
     removeMilestone,
     removeMultipleMilestones,
   } = useMilestone();
 
-  const milestoneColumns = createMilestoneColumns().map((column) => {
-    if (typeof column.header === 'string') {
-      return {
-        ...column,
-        header: tCol(column.header),
-      };
-    }
-    return column;
-  });
+  const milestoneColumns = React.useMemo(
+    () =>
+      createMilestoneColumns().map((column) => {
+        if (typeof column.header === 'string') {
+          return {
+            ...column,
+            header: tCol(column.header),
+          };
+        }
+        return column;
+      }),
+    [tCol],
+  );
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -53,19 +65,45 @@ const MilestonePage = () => {
     milestoneId?: string[];
   }>({ isDeleting: false });
 
-  useSWR(
-    'fetch-milestones',
-    async () => {
-      await fetchAllMilestones();
-    },
-    { revalidateOnFocus: false },
+  // Use local state for pagination to ensure useSWR key changes immediately
+  const [currentPage, setCurrentPage] = React.useState(pagination.page);
+  const [currentPageSize, setCurrentPageSize] = React.useState(
+    pagination.pageSize,
   );
 
-  const filteredMilestoneData = filteredMilestoneIds
-    .map((id) => getMilestoneById(id))
-    .filter((m) => m !== undefined) as IMilestone[];
+  const debounceSearchQuery = useDebounce(searchQuery, 500);
 
-  console.log('Filtered Milestones: ', filteredMilestoneData);
+  const milestoneFetcher = React.useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async ([_key, searchQuery, page, pageSize]: [
+      string,
+      string,
+      number,
+      number,
+    ]) => {
+      try {
+        if (searchQuery && searchQuery.trim() !== '') {
+          return await searchForMilestones(searchQuery, page, pageSize);
+        } else {
+          return await fetchAllMilestones(page, pageSize);
+        }
+      } catch (err) {
+        toast.error(tForm('toast.fetch_error'));
+        throw err;
+      }
+    },
+    [searchForMilestones, fetchAllMilestones, tForm],
+  );
+
+  const { mutate } = useSWR(
+    ['fetch-milestones', debounceSearchQuery, currentPage, currentPageSize],
+    milestoneFetcher,
+    {
+      revalidateOnFocus: false,
+      keepPreviousData: true,
+      dedupingInterval: 1000,
+    },
+  );
 
   const onDeleteMilestone = (id: string) => {
     setIsDelete({ isDeleting: true, milestoneId: [id] });
@@ -87,6 +125,7 @@ const MilestonePage = () => {
       } else {
         await removeMultipleMilestones(isDelete.milestoneId);
       }
+      refreshData();
       toast.success(tForm('toast.deleted-successfully'));
     } catch (error) {
       console.error('Error deleting milestones:', error);
@@ -96,9 +135,36 @@ const MilestonePage = () => {
     }
   };
 
-  const onSearchChange = (value: string) => {
-    setSearchQuery(value);
-  };
+  const onSearchChange = React.useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      setCurrentPage(1); // reset local page state
+      setPage(1); // sync to Redux
+    },
+    [setSearchQuery, setPage],
+  );
+
+  const handlePageChange = React.useCallback(
+    (page: number) => {
+      setCurrentPage(page); // update local state immediately
+      setPage(page); // sync to Redux
+    },
+    [setPage],
+  );
+
+  const handlePageSizeChange = React.useCallback(
+    (pageSize: number) => {
+      setCurrentPageSize(pageSize); // update local state immediately
+      setCurrentPage(1); // reset to first page
+      setPageSize(pageSize); // sync to Redux
+    },
+    [setPageSize],
+  );
+
+  // Memoize refresh function
+  const refreshData = React.useCallback(() => {
+    mutate();
+  }, [mutate]);
 
   const toMilestoneStepPage = (milestoneId: string) => {
     router.push(`/milestone/${milestoneId}`);
@@ -117,7 +183,7 @@ const MilestonePage = () => {
 
         <DataTable
           columns={milestoneColumns}
-          data={filteredMilestoneData}
+          data={allMilestoneFormMap}
           onAdd={() => setIsAdd(true)}
           onEdit={(m) => setIsEdit({ isEditing: true, milestone: m })}
           onDelete={onDeleteMilestone}
@@ -125,11 +191,19 @@ const MilestonePage = () => {
           onMultiDelete={onDeleteMultipleMilestones}
           onSearch={onSearchChange}
           searchQuery={searchQuery}
+          isLoading={loader || storeAction !== 'none'}
+          manualPagination={true}
+          page={currentPage}
+          pageSize={currentPageSize}
+          rowCount={pagination.total}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
         />
 
         <CreateMilestoneFormSheet
           open={isAdd}
           onOpenChange={() => setIsAdd(false)}
+          onSuccess={refreshData}
         />
 
         <UpdateMilestoneFormSheet
@@ -141,6 +215,7 @@ const MilestonePage = () => {
               isEditing: open,
             }))
           }
+          onSuccess={refreshData}
         />
 
         <DeleteConfirmationDialog
@@ -149,7 +224,7 @@ const MilestonePage = () => {
             setIsDelete({ isDeleting: false, milestoneId: undefined })
           }
           onConfirm={onConfirmDelete}
-          isLoading={false}
+          isLoading={storeAction === 'deleting'}
           title="header"
           description="confirm"
           translationKey="milestone.delete"
