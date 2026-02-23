@@ -107,7 +107,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const attemptMap = useMemo(() => {
     const map: Record<string, StudentStepAttempts> = {};
     stepAttempts?.forEach((attempt) => {
-      const stepId = attempt.stepProgress.mileStoneStepId;
+      const stepId = attempt.stepProgress.milestoneStepId;
       if (!map[stepId] || attempt.attemptNo > map[stepId].attemptNo) {
         map[stepId] = attempt;
       }
