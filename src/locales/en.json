@@ -238,6 +238,7 @@
     "completed": "Completed",
     "pending": "Pending",
     "declined": "Declined",
+    "deadline_date": "Deadline Date",
     "locked": "Locked",
     "upload_button": "Upload File",
     "uploading": "Uploading...",
@@ -405,7 +406,7 @@
       "course-name": "Course name",
       "course-description": "Description",
       "course-code": "Course code",
-      "course":"Course",
+      "course": "Course",
       "select-milestone": "Select Milestone"
     },
 
@@ -740,7 +741,7 @@
   "student-page": {
     "title": "Student List",
     "description": "View all student information. Click on a row to view profile.",
-    "personal-information-student": "Personal Information",
+    "personal-information-student": "Student Information",
     "export-button": "Export Data"
   },
   "degree": {

@@ -236,6 +236,7 @@
     "completed": "อนุมัติ",
     "pending": "รอตรวจสอบ",
     "declined": "ไม่อนุมัติ",
+    "deadline_date": "วันที่กำหนดส่ง",
     "locked": "ไม่สามารถทำได้",
     "upload_button": "อัปโหลดไฟล์",
     "uploading": "กำลังอัปโหลด...",
