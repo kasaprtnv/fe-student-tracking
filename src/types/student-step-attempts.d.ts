@@ -32,7 +32,7 @@ export interface Attachment {
 export interface StudentStepProgress {
   id: string;
   userId: string;
-  mileStoneStepId: string;
+  milestoneStepId: string;
   dueDate?: string;
   status: StepProgressStatus;
 }

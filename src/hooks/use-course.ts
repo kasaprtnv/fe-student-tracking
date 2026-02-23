@@ -4,6 +4,7 @@ import { AppDispatch } from '@/store';
 
 import {
   fetchCourses,
+  searchCourses,
   fetchCourseById,
   createCourse,
   createCourseWithStaff,
@@ -17,9 +18,16 @@ import {
   selectFilteredCoursesId,
   selectAllCourseId,
   selectCourseState,
+  selectPagination,
+  selectAllCoursesFromMap,
 } from '@/store/course/course.selectors';
 
-import { setSearchQuery, clearError } from '@/store/course/course.slice';
+import {
+  setSearchQuery,
+  clearError,
+  setPaginationPage,
+  setPaginationPageSize,
+} from '@/store/course/course.slice';
 import { ICourse, ICourseCreateDTO } from '@/types/course';
 
 export const useCourse = () => {
@@ -29,6 +37,8 @@ export const useCourse = () => {
   const courseMap = useSelector(selectCourseMap);
   const filteredCoursesId = useSelector(selectFilteredCoursesId);
   const allCourseId = useSelector(selectAllCourseId);
+  const allCoursesFromMap = useSelector(selectAllCoursesFromMap);
+  const pagination = useSelector(selectPagination);
   const { searchQuery, loader, storeAction, error } =
     useSelector(selectCourseState);
 
@@ -40,9 +50,20 @@ export const useCourse = () => {
   );
 
   // Fetch all courses
-  const fetchAllCourses = useCallback(() => {
-    return dispatch(fetchCourses()).unwrap();
-  }, [dispatch]);
+  const fetchAllCourses = useCallback(
+    (page?: number, pageSize?: number) => {
+      return dispatch(fetchCourses({ page, pageSize })).unwrap();
+    },
+    [dispatch],
+  );
+
+  // Search courses
+  const searchForCourses = useCallback(
+    (searchQuery: string, page: number, pageSize: number) => {
+      return dispatch(searchCourses({ searchQuery, page, pageSize })).unwrap();
+    },
+    [dispatch],
+  );
 
   // Fetch course by ID
   const fetchCourseDetails = useCallback(
@@ -92,6 +113,20 @@ export const useCourse = () => {
     [dispatch],
   );
 
+  const setPage = useCallback(
+    (page: number) => {
+      dispatch(setPaginationPage(page));
+    },
+    [dispatch],
+  );
+
+  const setPageSize = useCallback(
+    (pageSize: number) => {
+      dispatch(setPaginationPageSize(pageSize));
+    },
+    [dispatch],
+  );
+
   const clearErr = useCallback(() => {
     dispatch(clearError());
   }, [dispatch]);
@@ -101,6 +136,8 @@ export const useCourse = () => {
     courseMap,
     filteredCoursesId,
     allCourseId,
+    allCoursesFromMap,
+    pagination,
     searchQuery,
     loader,
     storeAction,
@@ -109,6 +146,7 @@ export const useCourse = () => {
 
     // Async Actions
     fetchAllCourses,
+    searchForCourses,
     fetchCourseDetails,
     createNewCourse,
     createNewCourseWithStaff,
@@ -118,6 +156,8 @@ export const useCourse = () => {
 
     // UI Actions
     setSearch,
+    setPage,
+    setPageSize,
     clearErr,
   };
 };

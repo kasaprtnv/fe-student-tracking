@@ -37,12 +37,14 @@ interface CreateCourseFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   teacherOptions: SelectOption[];
+  onSuccess?: () => void;
 }
 
 export function CreateCourseFormDialog({
   open,
   onOpenChange,
   teacherOptions,
+  onSuccess,
 }: CreateCourseFormDialogProps) {
   const t = useTranslations('course.course-form');
   const tCommon = useTranslations('common');
@@ -93,6 +95,7 @@ export function CreateCourseFormDialog({
         await createNewCourseWithStaff(data);
       }
       form.reset();
+      onSuccess?.();
       onOpenChange(false);
       toast.success(t('toast.created-successfully'));
     } catch (error) {

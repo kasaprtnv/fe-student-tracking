@@ -16,8 +16,30 @@ class MilestoneService extends APIService {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAllMilestone(): Promise<IApiGetResponse<IMilestone>> {
-    return this.get('/milestones')
+  async getAllMilestone(
+    page?: number,
+    pageSize?: number,
+  ): Promise<IApiGetResponse<IMilestone>> {
+    let url = '/milestones';
+    if (page !== undefined && pageSize !== undefined) {
+      url += `?page=${page}&pageSize=${pageSize}`;
+    }
+
+    return this.get(url)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async searchMilestones(
+    searchQuery: string,
+    page: number,
+    pageSize: number,
+  ): Promise<IApiGetResponse<IMilestone>> {
+    return this.get(
+      `/milestones/search?query=${encodeURIComponent(searchQuery)}&page=${page}&pageSize=${pageSize}`,
+    )
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

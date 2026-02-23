@@ -4,15 +4,54 @@ import { ICourse, ICourseCreateDTO } from '@/types/course';
 
 export const fetchCourses = createAsyncThunk(
   'course/getList',
-  async (_, { rejectWithValue }) => {
+  async (
+    {
+      page,
+      pageSize,
+    }: {
+      page?: number;
+      pageSize?: number;
+    },
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await courseService.getAllCourses();
+      const res = await courseService.getAllCourses(page, pageSize);
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to fetch courses');
+    }
+  },
+);
+
+export const searchCourses = createAsyncThunk(
+  'course/search',
+  async (
+    {
+      searchQuery,
+      page,
+      pageSize,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await courseService.searchCourses(
+        searchQuery,
+        page,
+        pageSize,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to search courses');
     }
   },
 );

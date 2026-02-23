@@ -127,7 +127,11 @@ const StepProgressReportPage = () => {
               </div>
             ) : (
               <div>
-                <DataTable columns={reportColumn} data={reportData} />
+                <DataTable
+                  columns={reportColumn}
+                  data={reportData}
+                  enabledMultiSelect={false}
+                />
               </div>
             )}
           </>

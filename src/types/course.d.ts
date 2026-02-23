@@ -1,3 +1,4 @@
+import { IPagination } from '.';
 import { User } from './user';
 export interface ICourse {
   id: string;
@@ -32,6 +33,7 @@ export interface CourseState {
   storeAction: StoreAction;
   loader: boolean;
   error: string | null;
+  pagination: IPagination;
 }
 
 // types/course-milestone.ts

@@ -70,6 +70,7 @@ export interface MilestoneState {
     >;
   };
   // UI States
+  pagination: IPagination;
   searchQuery: string;
   storeAction: StoreAction;
   loader: boolean;

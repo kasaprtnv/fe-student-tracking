@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { MilestoneState } from '@/types/milestone';
+import { IMilestone, MilestoneState } from '@/types/milestone';
 import {
   fetchMilestones,
   fetchMilestoneById,
@@ -12,6 +12,7 @@ import {
   removeCourseMilestone,
   reorderMilestones,
   fetchMilestonesByCourseId,
+  searchMilestones,
 } from './milestone.thunks';
 
 const initialState: MilestoneState = {
@@ -24,6 +25,12 @@ const initialState: MilestoneState = {
   storeAction: 'none',
   loader: false,
   error: null,
+  pagination: {
+    page: 1,
+    pageSize: 10,
+    total: 0,
+    totalPages: 0,
+  },
 };
 
 const milestoneSlice = createSlice({
@@ -32,6 +39,13 @@ const milestoneSlice = createSlice({
   reducers: {
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
+    },
+    setPaginationPage: (state, action: PayloadAction<number>) => {
+      state.pagination.page = action.payload;
+    },
+    setPaginationPageSize: (state, action: PayloadAction<number>) => {
+      state.pagination.pageSize = action.payload;
+      state.pagination.page = 1;
     },
     clearError: (state) => {
       state.error = null;
@@ -54,10 +68,37 @@ const milestoneSlice = createSlice({
           state.milestoneMap[milestone.id] = milestone;
         });
         state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
+        if (action.payload.pagination) {
+          state.pagination.total = action.payload.pagination.total || 0;
+          state.pagination.totalPages =
+            action.payload.pagination.totalPages || 0;
+        }
       })
       .addCase(fetchMilestones.rejected, (state, action) => {
         state.loader = false;
         state.error = action.error.message || 'Failed to fetch milestones';
+      });
+
+    // Search milestones
+    builder
+      .addCase(searchMilestones.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(searchMilestones.fulfilled, (state, action) => {
+        state.loader = false;
+        state.milestoneMap = {};
+        action.payload.data.forEach((milestone: IMilestone) => {
+          state.milestoneMap[milestone.id] = milestone;
+        });
+        if (action.payload.pagination) {
+          state.pagination.total = action.payload.pagination.total || 0;
+          state.pagination.totalPages =
+            action.payload.pagination.totalPages || 0;
+          state.pagination.page = action.payload.pagination.page;
+          state.pagination.pageSize = action.payload.pagination.pageSize;
+        }
+        state.allMilestoneIds = action.payload.data.map((ms) => ms.id);
       });
 
     // Fetch milestone by ID
@@ -83,13 +124,10 @@ const milestoneSlice = createSlice({
       })
       .addCase(fetchMilestonesByCourseId.fulfilled, (state, action) => {
         state.loader = false;
-        const sortedMilestones = action.payload.data.sort((a, b) =>
-          a.name.localeCompare(b.name),
-        );
-        sortedMilestones.forEach((milestone) => {
+        action.payload.data.forEach((milestone) => {
           state.milestoneMap[milestone.id] = milestone;
         });
-        state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
+        state.allMilestoneIds = action.payload.data.map((ms) => ms.id);
       })
       .addCase(fetchMilestonesByCourseId.rejected, (state, action) => {
         state.loader = false;
@@ -108,13 +146,10 @@ const milestoneSlice = createSlice({
         (state, action) => {
           state.loader = false;
           state.milestoneMap = {};
-          const sortedMilestones = action.payload.data.sort((a, b) =>
-            a.name.localeCompare(b.name),
-          );
-          sortedMilestones.forEach((milestone) => {
+          action.payload.data.forEach((milestone) => {
             state.milestoneMap[milestone.id] = milestone;
           });
-          state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
+          state.allMilestoneIds = action.payload.data.map((ms) => ms.id);
         },
       )
       .addCase(
@@ -271,6 +306,11 @@ const milestoneSlice = createSlice({
   },
 });
 
-export const { setSearchQuery, clearError } = milestoneSlice.actions;
+export const {
+  setSearchQuery,
+  clearError,
+  setPaginationPage,
+  setPaginationPageSize,
+} = milestoneSlice.actions;
 
 export default milestoneSlice.reducer;

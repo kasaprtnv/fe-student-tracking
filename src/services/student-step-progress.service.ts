@@ -107,11 +107,13 @@ class StudentStepProgressService extends APIService {
   async submitForReview(
     stepId: string,
     studentId: string,
+    studentComment?: string,
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
     return this.patch(`/student-step-progress/submit`, {
       stepId,
       studentId,
       status: 'pending',
+      studentComment,
     })
       .then((response) => response?.data)
       .catch((error) => {
