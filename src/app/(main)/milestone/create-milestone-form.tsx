@@ -31,9 +31,15 @@ import { Loader } from 'lucide-react';
 
 import React from 'react';
 
+interface CreateMilestoneFormSheetProps
+  extends React.ComponentPropsWithRef<typeof Dialog> {
+  onSuccess?: () => void;
+}
+
 export function CreateMilestoneFormSheet({
+  onSuccess,
   ...props
-}: React.ComponentPropsWithRef<typeof Dialog>) {
+}: CreateMilestoneFormSheetProps) {
   const t = useTranslations('milestone.milestone-form');
   const tCommon = useTranslations('common');
 
@@ -70,6 +76,7 @@ export function CreateMilestoneFormSheet({
           notifyBeforeDays: Number(data.notifyBeforeDays),
         });
         form.reset();
+        onSuccess?.();
         props.onOpenChange?.(false);
         toast.success(t('toast.created-successfully'));
       }

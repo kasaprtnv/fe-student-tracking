@@ -12,6 +12,18 @@ export const selectMilestoneMap = (state: RootState) =>
 export const selectSearchQuery = (state: RootState) =>
   state.milestones.searchQuery;
 
+export const selectPagination = (state: RootState) =>
+  state.milestones.pagination;
+
+export const selectPaginationPage = (state: RootState) =>
+  state.milestones.pagination.page;
+
+export const selectPaginationPageSize = (state: RootState) =>
+  state.milestones.pagination.pageSize;
+
+export const selectPaginationTotal = (state: RootState) =>
+  state.milestones.pagination.total;
+
 // ============================
 // Memoized Selectors
 // ============================
@@ -37,5 +49,15 @@ export const selectAllMilestoneIds = createSelector(
   [selectMilestoneMap],
   (milestoneMap) => {
     return Object.keys(milestoneMap);
+  },
+);
+
+export const selectAllMilestonesFromMap = createSelector(
+  [selectMilestoneMap],
+  (milestoneMap) => {
+    const sortedMilestones = Object.values(milestoneMap).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+    return sortedMilestones;
   },
 );

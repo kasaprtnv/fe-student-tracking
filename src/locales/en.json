@@ -298,7 +298,8 @@
         "updated-successfully": "Milestone updated successfully!",
         "update-failed": "Failed to update milestone. Please try again.",
         "deleted-successfully": "Milestone deleted successfully!",
-        "deletion-failed": "Failed to delete milestone. Please try again."
+        "deletion-failed": "Failed to delete milestone. Please try again.",
+        "fetch_error": "Failed to fetch milestones. Please try again."
       },
       "errors": {
         "code-duplicate": "Course code already exists",
