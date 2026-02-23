@@ -4,15 +4,50 @@ import { IMilestone, IMilestoneCreateDTO } from '@/types/milestone';
 
 export const fetchMilestones = createAsyncThunk(
   'milestones/fetchAll',
-  async (_, { rejectWithValue }) => {
+  async (
+    {
+      page,
+      pageSize,
+    }: {
+      page?: number;
+      pageSize?: number;
+    },
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await milestoneService.getAllMilestone();
+      const res = await milestoneService.getAllMilestone(page, pageSize);
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to fetch milestones');
+    }
+  },
+);
+
+export const searchMilestones = createAsyncThunk(
+  'milestones/search',
+  async (
+    {
+      searchQuery,
+      page,
+      pageSize,
+    }: { searchQuery: string; page: number; pageSize: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await milestoneService.searchMilestones(
+        searchQuery,
+        page,
+        pageSize,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to search milestones');
     }
   },
 );

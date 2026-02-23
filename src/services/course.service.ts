@@ -15,8 +15,30 @@ class CourseService extends APIService {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAllCourses(): Promise<IApiGetResponse<ICourse>> {
-    return this.get('/courses')
+  async getAllCourses(
+    page?: number,
+    pageSize?: number,
+  ): Promise<IApiGetResponse<ICourse>> {
+    let url = '/courses';
+    if (page !== undefined && pageSize !== undefined) {
+      url += `?page=${page}&pageSize=${pageSize}`;
+    }
+
+    return this.get(url)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async searchCourses(
+    searchQuery: string,
+    page: number,
+    pageSize: number,
+  ): Promise<IApiGetResponse<ICourse>> {
+    return this.get(
+      `/courses/search?query=${encodeURIComponent(searchQuery)}&page=${page}&pageSize=${pageSize}`,
+    )
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

@@ -38,10 +38,12 @@ import React from 'react';
 interface UpdateMilestoneFormSheetProps
   extends React.ComponentPropsWithRef<typeof Dialog> {
   milestone?: IMilestone | null;
+  onSuccess?: () => void;
 }
 
 export function UpdateMilestoneFormSheet({
   milestone,
+  onSuccess,
   onOpenChange,
   ...props
 }: UpdateMilestoneFormSheetProps) {
@@ -104,6 +106,7 @@ export function UpdateMilestoneFormSheet({
 
       toast.success(t('toast.updated-successfully'));
       onOpenChange?.(false);
+      onSuccess?.();
     } catch (error) {
       console.error('Failed to update milestone:', error);
       toast.error(t('toast.update-failed'));

@@ -11,6 +11,17 @@ export const selectCourseMap = (state: RootState) => state.courses.courseMap;
 export const selectSearchQuery = (state: RootState) =>
   state.courses.searchQuery;
 
+export const selectPagination = (state: RootState) => state.courses.pagination;
+
+export const selectPaginationPage = (state: RootState) =>
+  state.courses.pagination.page;
+
+export const selectPaginationPageSize = (state: RootState) =>
+  state.courses.pagination.pageSize;
+
+export const selectPaginationTotal = (state: RootState) =>
+  state.courses.pagination.total;
+
 // ============================
 // Memoized Selectors
 // ============================
@@ -45,5 +56,15 @@ export const selectAllCourseId = createSelector(
       a.name.localeCompare(b.name),
     );
     return sortedCourses.map((course) => course.id);
+  },
+);
+
+export const selectAllCoursesFromMap = createSelector(
+  [selectCourseMap],
+  (courseMap) => {
+    const sortedCourses = Object.values(courseMap).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+    return sortedCourses;
   },
 );
