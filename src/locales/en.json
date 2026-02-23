@@ -234,6 +234,11 @@
     "contact_admin": "Please contact staff to enroll in a course"
   },
   "milestone-progress": {
+    "dayperiod": "Day Period",
+    "deadline": "Deadline",
+    "NotifyBefore": "Notify Before",
+    "day": "Day",
+    "unlock_conditions": "Unlock Conditions",
     "completed": "Completed",
     "pending": "Pending",
     "declined": "Declined",
@@ -436,7 +441,8 @@
       "title": "Confirm Save?",
       "description": "Are you sure you want to save all unlock conditions?",
       "cancel": "Cancel",
-      "confirm": "Save"
+      "confirm": "Save",
+      "success": "Prerequisites saved successfully!"
     },
 
     "toast": {

@@ -131,6 +131,7 @@ export default function ProfilePage() {
         milestones={Object.values(milestoneMap)}
         stepAttempts={Object.values(stepAttemptsMap)}
         mode={mode}
+        displayMode="normal"
         enrollDate={profileEnrollDate}
         onFileUpload={handleFileUpload}
         onSubmitSuccess={handleSubmitSuccess}

@@ -45,7 +45,13 @@ import { uploadService } from '@/services/upload.service';
 import { UploadFileDialog } from './upload-file-dialog';
 import { StudentStepAttempts } from '@/types/student-step-attempts';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
-
+import { UnlockCondition } from '@/types/milestone-prerequisite';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 interface MilestoneProgressProps {
   milestones: IMilestone[];
   stepAttempts?: StudentStepAttempts[];
@@ -61,6 +67,9 @@ interface MilestoneProgressProps {
   isSubmitting?: Record<string, boolean>;
   stepProgressMap?: Record<string, string>;
   userId?: string;
+  courseIsUsed?: boolean;
+  displayMode?: 'normal' | 'select-milestone';
+  lockInfoMap?: Record<string, UnlockCondition[]>;
 }
 
 const isStepCompleted = (status: string) => status === 'approved';
@@ -84,6 +93,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   isSubmitting,
   stepProgressMap = {},
   userId,
+  courseIsUsed = false,
+  lockInfoMap = {},
+  displayMode = 'normal',
 }) => {
   const t = useTranslations('milestone-progress');
   const language = useLocale();
@@ -149,6 +161,23 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     const completed =
       milestone.steps?.filter((s) => isStepCompleted(s.status)).length ?? 0;
     return total > 0 ? Math.round((completed / total) * 100) : 0;
+  };
+
+  const getConditionName = (condition: UnlockCondition) => {
+    if (condition.type === 'milestone') {
+      const ms = milestones.find((m) => m.id === condition.id);
+      return ms?.name ?? 'Unknown milestone';
+    }
+
+    if (condition.type === 'step') {
+      for (const ms of milestones) {
+        const step = ms.steps?.find((s) => s.id === condition.id);
+        if (step) return step.name;
+      }
+      return 'Unknown step';
+    }
+
+    return '';
   };
 
   const toggleMilestone = (milestoneId: string) => {
@@ -311,20 +340,52 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             {milestone.name}
                           </CardTitle>
                           {mode === 'edit' && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className={`h-8 w-8 ${milestoneLocked ? 'bg-red-300 text-red-500' : ''}`}
-                              onClick={() =>
-                                onToggleLock?.(milestone.id, 'milestone')
-                              }
-                            >
-                              {milestoneLocked ? (
-                                <Lock className="h-4 w-4 text-red-500" />
-                              ) : (
-                                <Unlock className="h-4 w-4" />
-                              )}
-                            </Button>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      disabled={courseIsUsed}
+                                      className={`h-8 w-8 ${
+                                        milestoneLocked
+                                          ? 'bg-red-300 text-red-500'
+                                          : ''
+                                      }`}
+                                      onClick={() =>
+                                        onToggleLock?.(
+                                          milestone.id,
+                                          'milestone',
+                                        )
+                                      }
+                                    >
+                                      {milestoneLocked ? (
+                                        <Lock className="h-4 w-4 text-red-500" />
+                                      ) : (
+                                        <Unlock className="h-4 w-4" />
+                                      )}
+                                    </Button>
+                                  </span>
+                                </TooltipTrigger>
+
+                                {lockInfoMap?.[milestone.id]?.length > 0 && (
+                                  <TooltipContent className="max-w-xs">
+                                    <div className="space-y-1">
+                                      <div className="font-semibold">
+                                        {t('unlock_conditions')}
+                                      </div>
+
+                                      {lockInfoMap[milestone.id].map((c) => (
+                                        <div key={c.id} className="text-xs">
+                                          • {getConditionName(c)}{' '}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
+                            </TooltipProvider>
                           )}
                         </div>
                         <CardDescription>
@@ -420,20 +481,59 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       <Paperclip className="text-muted-foreground h-4 w-4" />
                                     )}
                                     {mode === 'edit' && (
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className={`ml-auto h-6 w-6 ${stepLocked ? 'bg-red-300 text-red-500' : ''}`}
-                                        onClick={() =>
-                                          onToggleLock?.(step.id, 'step')
-                                        }
-                                      >
-                                        {stepLocked ? (
-                                          <Lock className="h-3 w-3 text-red-500" />
-                                        ) : (
-                                          <Unlock className="h-3 w-3" />
-                                        )}
-                                      </Button>
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <span>
+                                              <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                disabled={courseIsUsed}
+                                                className={`ml-auto h-6 w-6 ${
+                                                  stepLocked
+                                                    ? 'bg-red-300 text-red-500'
+                                                    : ''
+                                                }`}
+                                                onClick={() =>
+                                                  onToggleLock?.(
+                                                    step.id,
+                                                    'step',
+                                                  )
+                                                }
+                                              >
+                                                {stepLocked ? (
+                                                  <Lock className="h-3 w-3 text-red-500" />
+                                                ) : (
+                                                  <Unlock className="h-3 w-3" />
+                                                )}
+                                              </Button>
+                                            </span>
+                                          </TooltipTrigger>
+
+                                          {lockInfoMap?.[step.id]?.length >
+                                            0 && (
+                                            <TooltipContent className="max-w-xs">
+                                              <div className="space-y-1">
+                                                <div className="font-semibold">
+                                                  {t('unlock_conditions')}
+                                                </div>
+
+                                                {lockInfoMap[step.id].map(
+                                                  (c) => (
+                                                    <div
+                                                      key={c.id}
+                                                      className="text-xs"
+                                                    >
+                                                      •{' '}
+                                                      {getConditionName(c)}{' '}
+                                                    </div>
+                                                  ),
+                                                )}
+                                              </div>
+                                            </TooltipContent>
+                                          )}
+                                        </Tooltip>
+                                      </TooltipProvider>
                                     )}
                                   </div>
 
@@ -480,11 +580,31 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       )}
                                   </div>
                                   <div className="text-muted-foreground flex items-center gap-4 text-xs">
-                                    <div className="flex items-center gap-1">
-                                      <Calendar className="h-3 w-3" />
-                                      กำหนดส่ง : 
-                                      <span>{formatDate(deadline)}</span>
-                                    </div>
+                                    {displayMode === 'select-milestone' ? (
+                                      <>
+                                        <div className="flex items-center gap-2">
+                                          <Calendar className="h-3 w-3" />
+                                          {t('dayperiod')} :
+                                          <span>
+                                            {milestone.dayPeriod} {t('day')}
+                                          </span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                          {t('NotifyBefore')} :
+                                          <span>
+                                            {milestone.notifyBeforeDays}{' '}
+                                            {t('day')}
+                                          </span>
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <div className="flex items-center gap-1">
+                                        <Calendar className="h-3 w-3" />
+                                        {t('deadline')} :
+                                        <span>{formatDate(deadline)}</span>
+                                      </div>
+                                    )}
                                     {completed && (
                                       <>
                                         <div className="flex items-center gap-1.5">

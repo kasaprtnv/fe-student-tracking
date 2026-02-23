@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { IMilestone } from '@/types/milestone';
 import { useTranslations } from 'next-intl';
+import { Lock } from 'lucide-react';
 
 interface UnlockCondition {
   type: 'milestone' | 'step';
@@ -403,11 +404,16 @@ export default function UnlockConditionModal({
                       isDisabled('milestone', ms.id)
                         ? 'cursor-not-allowed opacity-40'
                         : isSelected(ms.id)
-                          ? 'border-purple-500 bg-purple-50'
+                          ? 'border-red-500 bg-red-50'
                           : 'border-gray-200'
                     }`}
                   >
-                    <p className="font-medium">{ms.name}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{ms.name}</p>
+                      {isSelected(ms.id) && (
+                        <Lock className="h-4 w-4 text-red-600" />
+                      )}
+                    </div>
                   </div>
                 ))}
             </div>
@@ -438,15 +444,23 @@ export default function UnlockConditionModal({
                         isDisabled('step', step.id)
                           ? 'cursor-not-allowed opacity-40'
                           : isSelected(step.id)
-                            ? 'border-purple-500 bg-purple-50'
+                            ? 'border-red-500 bg-red-50'
                             : 'border-gray-200'
                       }`}
                     >
-                      <p className="font-medium">{step.name}</p>
-                      <p className="text-xs text-gray-500">
-                        {' '}
-                        {tSelectedMilestone('unlock-condition.from')}: {ms.name}
-                      </p>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-medium">{step.name}</p>
+                          <p className="text-xs text-gray-500">
+                            {tSelectedMilestone('unlock-condition.from')}:{' '}
+                            {ms.name}
+                          </p>
+                        </div>
+
+                        {isSelected(step.id) && (
+                          <Lock className="mt-1 h-4 w-4 text-red-600" />
+                        )}
+                      </div>
                     </div>
                   )),
               )}
