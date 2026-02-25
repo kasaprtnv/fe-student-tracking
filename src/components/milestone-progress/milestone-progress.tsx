@@ -701,7 +701,8 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         </div>
                                       </>
                                     )}
-                                    {!step.requiresAttachment &&
+                                    {displayMode !== 'select-milestone' &&
+                                      !step.requiresAttachment &&
                                       (available || declined) && (
                                         <div>
                                           <div className="mt-3 font-bold">

@@ -117,13 +117,12 @@ export default function ProfilePage() {
       <div className="mb-4 flex items-center justify-between">
         <div className="text-2xl font-bold">{t('progress_title')}</div>
 
-        {/* Export PDF: student only */}
         {profileUser?.role === 'student' && (
           <Button
             variant="outline"
             onClick={() => window.open(`/profile/${id}/pdf`, '_blank')}
           >
-            Export PDF
+            {tStudent('export')}
           </Button>
         )}
       </div>
