@@ -222,7 +222,7 @@ const CreateMilestoneStepForm = ({
               control={form.control}
               name="requiresAttachment"
               render={({ field }) => (
-                <FormItem className="flex items-center gap-3 rounded-md border border-gray-300 bg-transparent p-3 shadow-xs">
+                <FormItem className="flex items-center gap-3 rounded-md border border-gray-300 bg-white p-3 shadow-xs">
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
