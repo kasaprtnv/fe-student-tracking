@@ -34,6 +34,7 @@ interface MultiComboboxProps {
   placeholderEmpty: string;
   errorMessage?: string;
   loader?: boolean;
+  disabled?: boolean;
 }
 
 export function MultiCombobox({
@@ -45,6 +46,7 @@ export function MultiCombobox({
   placeholderEmpty,
   errorMessage,
   loader = false,
+  disabled = false,
 }: MultiComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState<Set<string>>(
@@ -67,10 +69,11 @@ export function MultiCombobox({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          onClick={() => setOpen(!open)}
+          onClick={() => !disabled && setOpen(!open)}
           role="combobox"
           aria-expanded={open}
           tabIndex={0}
+          disabled={disabled}
           className={cn(
             'border-input h-[max-content] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm transition-all',
             'focus:ring-ring focus:ring-1 focus:outline-none',

@@ -1,14 +1,14 @@
 export interface ICourseStaff {
   id: string;
   courseId: string;
-  staffId: string;
+  userId: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface ICourseStaffCreateDTO {
   courseId: string;
-  staffId: string;
+  userId: string;
 }
 
 export interface CourseStaffState {

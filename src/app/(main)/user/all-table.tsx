@@ -6,6 +6,8 @@ import { DataTable } from '@/components/data-table/data-table';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
 import { useTitle } from '@/hooks/use-title';
+import { useCourseStaff } from '@/hooks/use-course_staff';
+import { ICourseStaff } from '@/types/course-staff';
 import { createAllStudentColumns } from './create-all-column';
 import { CreateUserFormDialog } from './create-user-form';
 import { UpdateUserFormDialog } from './update-user-form';
@@ -41,6 +43,10 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
   } = useUser();
   const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
   const { titleMap, fetchAllTitles } = useTitle();
+  const { fetchAllCourseStaff } = useCourseStaff();
+  const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
+    [],
+  );
   const tUser = useTranslations('user');
   const tColumn = useTranslations('column');
   const tRole = useTranslations('role');
@@ -51,7 +57,20 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
   React.useEffect(() => {
     fetchAllCourses();
     fetchAllTitles();
-  }, [fetchAllCourses, fetchAllTitles]);
+    fetchAllCourseStaff().then((response) => {
+      if (response.data) {
+        setAllCourseStaff(response.data);
+      }
+    });
+  }, [fetchAllCourses, fetchAllTitles, fetchAllCourseStaff]);
+
+  const refetchCourseStaff = React.useCallback(() => {
+    fetchAllCourseStaff().then((response) => {
+      if (response.data) {
+        setAllCourseStaff(response.data);
+      }
+    });
+  }, [fetchAllCourseStaff]);
 
   // Local pagination state for immediate useSWR key updates
   const [currentPage, setCurrentPage] = React.useState(pagination.page);
@@ -380,6 +399,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         }
         user={isEdit.user}
         courseOptions={courseOptions}
+        allCourseStaff={allCourseStaff}
+        onCourseStaffChange={refetchCourseStaff}
       />
       <DeleteTextConfirmationDialog
         open={isDelete.isDeleting}

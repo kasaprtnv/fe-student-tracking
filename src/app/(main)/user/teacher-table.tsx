@@ -126,7 +126,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
       paginatedTeachersFromMap.map((user) => {
         // Find all course_staff for this teacher
         const teacherCourseStaff = allCourseStaff.filter(
-          (cs) => (cs as unknown as { userId: string }).userId === user.id,
+          (cs) => cs.userId === user.id,
         );
         // Get course names for each managed course
         const managedCourses = teacherCourseStaff

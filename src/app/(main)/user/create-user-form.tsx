@@ -179,7 +179,7 @@ export function CreateUserFormDialog({
           await createNewCourseStaff({
             courseId,
             userId: newUserId,
-          } as unknown as { courseId: string; staffId: string });
+          });
 
           // Update course.staffIds
           const course = getCourseById(courseId);

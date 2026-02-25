@@ -170,6 +170,7 @@ class UserService extends APIService {
           'courseId',
           'teacherDegree',
           'academicPosition',
+          'isActive',
         ]
       : [
           'code',
@@ -184,10 +185,12 @@ class UserService extends APIService {
           'role',
           'courseId',
           'enrollDate',
+          'isActive',
         ];
 
     // Fields that can be cleared (empty string should be sent to backend)
-    const clearableFields = ['academicPosition', 'teacherDegree'];
+    // isActive is included because `false` is a valid value that must not be filtered out
+    const clearableFields = ['academicPosition', 'teacherDegree', 'isActive'];
 
     const filteredData: Record<string, unknown> = {};
     for (const key of allowedFields) {

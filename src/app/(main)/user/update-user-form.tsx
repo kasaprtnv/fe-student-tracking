@@ -19,38 +19,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
-import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
-import { SingleCombobox } from '@/components/ui/combobox-single';
 import { Loader } from 'lucide-react';
-import { EnrollDateInput } from '@/components/enroll-date-input';
-import { DegreesCombobox } from '@/components/degree-combobox';
-import { DynamicInputList } from '@/components/ui/dynamic-input-list';
+import { CommonFormFields } from '@/components/user/form-fields/common-form-fields';
+import { StudentFormFields } from '@/components/user/form-fields/student-form-fields';
+import { TeacherFormFields } from '@/components/user/form-fields/teacher-form-fields';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
-import { useTitle } from '@/hooks/use-title';
 import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useSWRConfig } from 'swr';
 import { toast } from 'sonner';
@@ -87,15 +68,7 @@ export function UpdateUserFormDialog({
   const { updateExistingUser, storeAction, userMap, getStudentProgressCount } =
     useUser();
   const { fetchAllCourses, updateExistingCourse, getCourseById } = useCourse();
-  const { titleMap, allTitleId, fetchAllTitles } = useTitle();
   const { mutate } = useSWRConfig();
-
-  // Fetch titles when dialog opens
-  React.useEffect(() => {
-    if (open && allTitleId.length === 0) {
-      fetchAllTitles();
-    }
-  }, [open, allTitleId.length, fetchAllTitles]);
 
   // Check if email already exists (excluding current user)
   const isEmailExists = (email: string): boolean => {
@@ -187,8 +160,7 @@ export function UpdateUserFormDialog({
     if (user?.id && user?.role === 'teacher' && allCourseStaff.length > 0) {
       // Filter course_staff for this user from the prop
       const userCourseStaff = allCourseStaff.filter((cs) => {
-        const csUserId = (cs as unknown as { userId: string }).userId;
-        return csUserId === user.id;
+        return cs.userId === user.id;
       });
 
       // Only update if we have course staff data
@@ -256,7 +228,7 @@ export function UpdateUserFormDialog({
         for (const courseId of coursesToAdd) {
           await createNewCourseStaff({
             courseId,
-            staffId: user.id,
+            userId: user.id,
           });
           // Update course to add this user to staffIds
           const course = getCourseById(courseId);
@@ -393,396 +365,22 @@ export function UpdateUserFormDialog({
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
             >
-              {/* Common fields: title, firstName in 2 columns */}
-              <div className="grid grid-cols-2 items-start gap-4">
-                <FormField
-                  control={form.control}
-                  name="titleId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.title')}
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full border-gray-300 bg-white">
-                            <SelectValue
-                              placeholder={tForm('placeholder.title')}
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {allTitleId.map((id) => {
-                            const title = titleMap[id];
-                            return (
-                              <SelectItem key={id} value={id}>
-                                {title?.name || id}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.first-name')}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={tForm('placeholder.first-name')}
-                          className="border-gray-300 bg-white"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* lastName field */}
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {tForm('label.last-name')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={tForm('placeholder.last-name')}
-                        className="border-gray-300 bg-white"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Email field */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {tForm('label.email')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        disabled
-                        placeholder={tForm('placeholder.email')}
-                        className="border-gray-300 bg-white"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Phone field */}
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      {tForm('label.phone')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={tForm('placeholder.phone')}
-                        className="border-gray-300 bg-white"
-                        maxLength={10}
-                        {...field}
-                        onInput={(e) => {
-                          const target = e.target as HTMLInputElement;
-                          target.value = target.value.replace(/\D/g, '');
-                          field.onChange(target.value);
-                        }}
-                        onBlur={() => {
-                          field.onBlur();
-                          form.trigger('phone');
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Student-specific field: code */}
+              <CommonFormFields form={form} disabledFields={['email']} />
               {selectedRole === 'student' && (
-                <FormField
-                  control={form.control}
-                  name="code"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.student-code')}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled
-                          placeholder={tForm('placeholder.student-code')}
-                          className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                <StudentFormFields
+                  form={form}
+                  courseOptions={courseOptions}
+                  disabledFields={[
+                    'code',
+                    'courseId',
+                    'degree',
+                    'year',
+                    'enrollDate',
+                  ]}
                 />
               )}
-
-              {/* Student-specific field: courseId */}
-              {selectedRole === 'student' && (
-                <FormField
-                  control={form.control}
-                  name="courseId"
-                  render={({ field }) => (
-                    <FormItem className="min-w-0">
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.student-course')}
-                      </FormLabel>
-                      <FormControl>
-                        <SingleCombobox
-                          disabled
-                          placeholder={tForm('placeholder.course')}
-                          placeholderSearch={tForm('placeholder.search-course')}
-                          placeholderEmpty={tForm(
-                            'placeholder.no-course-found',
-                          )}
-                          options={courseOptions}
-                          defaultValue={field.value || ''}
-                          onChange={(value) => field.onChange(value)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Student-specific field: degree */}
-              {selectedRole === 'student' && (
-                <FormField
-                  control={form.control}
-                  name="degree"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.degree')}
-                      </FormLabel>
-                      <DegreesCombobox
-                        disabled
-                        defaultValue={field.value || ''}
-                        onChange={(value) => field.onChange(value)}
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Student-specific field: year */}
-              {selectedRole === 'student' && (
-                <FormField
-                  control={form.control}
-                  name="year"
-                  render={({ field }) => {
-                    // Generate years from current year back 5 years (in Buddhist Era)
-                    const currentYear = new Date().getFullYear() + 543;
-                    const generatedYears = Array.from({ length: 5 }, (_, i) =>
-                      (currentYear - i).toString(),
-                    );
-                    // Include user's existing year if not in the list
-                    const years =
-                      field.value && !generatedYears.includes(field.value)
-                        ? [...generatedYears, field.value].sort(
-                            (a, b) => Number(b) - Number(a),
-                          )
-                        : generatedYears;
-
-                    return (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">
-                          {tForm('label.year')}
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          disabled
-                        >
-                          <FormControl>
-                            <SelectTrigger
-                              className="w-full border-gray-300 bg-white"
-                              disabled
-                            >
-                              <SelectValue
-                                placeholder={tForm('placeholder.year')}
-                              />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {years.map((year) => (
-                              <SelectItem key={year} value={year}>
-                                {year}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              )}
-
-              {/* Student-specific field: studyPlan */}
-              {selectedRole === 'student' && (
-                <FormField
-                  control={form.control}
-                  name="studyPlan"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.study-plan')}
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full border-gray-300 bg-white">
-                            <SelectValue
-                              placeholder={tForm('placeholder.study-plan')}
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="แผน ก">
-                            {tForm('study-plan-options.plan-a')}
-                          </SelectItem>
-                          <SelectItem value="แผน ข">
-                            {tForm('study-plan-options.plan-b')}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Student-specific field: enrollDate */}
-              {selectedRole === 'student' && (
-                <FormField
-                  control={form.control}
-                  name="enrollDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.enroll-date')}
-                      </FormLabel>
-                      <div className="relative">
-                        <EnrollDateInput
-                          disabled
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Teacher-specific field: teacherDegree */}
               {selectedRole === 'teacher' && (
-                <FormField
-                  control={form.control}
-                  name="teacherDegree"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.teacher-degree')}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder={tForm('placeholder.teacher-degree')}
-                          className="border-gray-300 bg-white"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Teacher-specific field: academicPosition */}
-              {selectedRole === 'teacher' && (
-                <FormField
-                  control={form.control}
-                  name="academicPosition"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.academic-position')}
-                      </FormLabel>
-                      <FormControl>
-                        <DynamicInputList
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder={tForm('placeholder.academic-position')}
-                          buttonLabel={tForm('label.add-academic-position')}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {/* Teacher-specific field: courseIds (multiple courses) */}
-              {selectedRole === 'teacher' && (
-                <FormField
-                  control={form.control}
-                  name="courseIds"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        {tForm('label.teacher-course')}
-                      </FormLabel>
-                      <FormControl>
-                        <MultiCombobox
-                          defaultValue={field.value || []}
-                          placeholder={tForm('placeholder.course')}
-                          placeholderSearch={tForm('placeholder.course')}
-                          placeholderEmpty={tForm('placeholder.course')}
-                          options={courseOptions}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <TeacherFormFields form={form} courseOptions={courseOptions} />
               )}
 
               <FormField
