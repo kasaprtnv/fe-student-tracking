@@ -70,6 +70,17 @@ export const useTitle = () => {
     [dispatch],
   );
 
+  // Check if title is in use
+  const checkTitleInUse = useCallback(async (id: string): Promise<boolean> => {
+    try {
+      const { titleService } = await import('@/services/title.service');
+      return await titleService.checkTitleInUse(id);
+    } catch (error) {
+      console.error('Error checking title usage:', error);
+      throw error;
+    }
+  }, []);
+
   // UI actions
   const setSearch = useCallback(
     (query: string) => {
@@ -101,6 +112,7 @@ export const useTitle = () => {
     createNewTitle,
     updateExistingTitle,
     removeTitle,
+    checkTitleInUse,
     setSearch,
     clearErr,
   };

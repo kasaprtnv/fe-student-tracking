@@ -197,7 +197,9 @@
         "updated-successfully": "Title updated successfully!",
         "update-failed": "Failed to update title. Please try again.",
         "deleted-successfully": "Title deleted successfully!",
-        "deletion-failed": "Failed to delete title. Please try again."
+        "deletion-failed": "Failed to delete title. Please try again.",
+        "cannot-delete-in-use": "Cannot delete this title because it is currently in use.",
+        "delete-error": "Error checking title usage."
       },
       "header": {
         "create": "Create New Title",
