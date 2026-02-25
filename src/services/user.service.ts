@@ -16,8 +16,36 @@ class UserService extends APIService {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAll(): Promise<IApiGetResponse<User>> {
-    return this.get('/users')
+  async getAll(
+    page?: number,
+    pageSize?: number,
+    role?: UserRole,
+  ): Promise<IApiGetResponse<User>> {
+    const params = new URLSearchParams();
+    if (page !== undefined) params.append('page', String(page));
+    if (pageSize !== undefined) params.append('limit', String(pageSize));
+
+    if (role) params.append('role', role);
+
+    const query = params.toString();
+    const url = query ? `/users?${query}` : '/users';
+
+    return this.get(url)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async searchUsers(
+    searchQuery: string,
+    page: number,
+    pageSize: number,
+    role?: UserRole,
+  ): Promise<IApiGetResponse<User>> {
+    let url = `/users/search?query=${encodeURIComponent(searchQuery)}&page=${page}&pageSize=${pageSize}`;
+    if (role) url += `&role=${role}`;
+    return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

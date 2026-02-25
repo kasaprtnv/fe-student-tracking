@@ -36,10 +36,10 @@ const UserPage = () => {
   }, [user, initialized, router]);
 
   useSWR(
-    'fetch-users',
+    'fetch-users-base-data',
     async () => {
       await fetchAllCourses();
-      await fetchAllUsers();
+      await fetchAllTitles();
     },
     {
       revalidateOnFocus: false,

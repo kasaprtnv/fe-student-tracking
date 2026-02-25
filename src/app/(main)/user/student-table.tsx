@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import useSWR from 'swr';
 import { DataTable } from '@/components/data-table/data-table';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
@@ -12,8 +13,8 @@ import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
-import { formatThaiDate } from '@/lib/format-date';
 import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-dialog';
+import { useDebounce } from '@/lib/use-debounce';
 
 interface StudentTableProps {
   onImport?: () => void;
@@ -22,105 +23,75 @@ interface StudentTableProps {
 
 export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
   const {
+    paginatedStudentsFromMap,
+    studentPagination,
     searchQuery,
     setSearch: setSearchQuery,
+    setStudentPage,
+    setStudentPageSize,
+    fetchStudents,
+    searchForStudents,
     deleteExistingUser,
     deleteExistingUsers,
     getUserById,
     storeAction,
-    userMap,
+    loader,
     getStudentProgressCount,
   } = useUser();
   const { allCourseId, getCourseById } = useCourse();
-  const { titleMap, fetchAllTitles } = useTitle();
+  const { titleMap } = useTitle();
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
   const tCommon = useTranslations('common');
+  const tForm = useTranslations('user');
 
-  // Fetch titles on mount
-  React.useEffect(() => {
-    fetchAllTitles();
-  }, [fetchAllTitles]);
+  // Local pagination state for immediate useSWR key updates
+  const [currentPage, setCurrentPage] = React.useState(studentPagination.page);
+  const [currentPageSize, setCurrentPageSize] = React.useState(
+    studentPagination.pageSize,
+  );
 
-  // Get student data directly from Redux store userMap and enrich with courseName
-  const filterStudent = React.useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    return Object.values(userMap)
-      .filter((user) => {
-        if (user.role !== 'student') return false;
-        if (!query) return true;
-        const titleName = user.titleId
-          ? titleMap[user.titleId]?.name || ''
-          : '';
-        const fullName =
-          `${titleName}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-        // Strip non-digit characters for phone search
-        const queryDigits = query.replace(/\D/g, '');
-        const phoneDigits = user.phone?.replace(/\D/g, '') || '';
-        // Strip spaces for flexible search
-        const queryNoSpaces = query.replace(/\s/g, '');
-        // Map degree to Thai display text for search
-        const degreeDisplay =
-          user.degree === 'bachelor'
-            ? 'ปริญญาตรี'
-            : user.degree === 'master'
-              ? 'ปริญญาโท'
-              : user.degree === 'doctorate'
-                ? 'ปริญญาเอก'
-                : '';
-        // Map degree to English display text for search
-        const degreeDisplayEn =
-          user.degree === 'bachelor'
-            ? "bachelor's degree"
-            : user.degree === 'master'
-              ? "master's degree"
-              : user.degree === 'doctorate'
-                ? 'doctoral degree'
-                : '';
-        // Map role to Thai/English display text for search
-        const roleDisplay =
-          user.role === 'student'
-            ? 'นักศึกษา student'
-            : 'ผู้ดูแลหลักสูตร staff';
-        // Map graduated to Thai/English display text for search
-        const graduatedDisplayTh = user.graduated
-          ? 'สำเร็จการศึกษา'
-          : 'ยังไม่สำเร็จ';
-        const graduatedDisplayEn = user.graduated
-          ? 'graduated'
-          : 'not graduated';
-        return (
-          titleName.toLowerCase().startsWith(query) ||
-          user.firstName?.toLowerCase().startsWith(query) ||
-          user.lastName?.toLowerCase().startsWith(query) ||
-          user.code?.toLowerCase().startsWith(query) ||
-          user.email?.toLowerCase().startsWith(query) ||
-          user.year?.toLowerCase().startsWith(query) ||
-          user.degree?.toLowerCase().startsWith(query) ||
-          degreeDisplay.toLowerCase().startsWith(query) ||
-          degreeDisplayEn.toLowerCase().startsWith(query) ||
-          user.courseName?.toLowerCase().includes(query) ||
-          (queryNoSpaces &&
-            user.courseName
-              ?.toLowerCase()
-              .replace(/\s/g, '')
-              .includes(queryNoSpaces)) ||
-          user.role?.toLowerCase().startsWith(query) ||
-          roleDisplay.toLowerCase().startsWith(query) ||
-          user.studyPlan?.toLowerCase().startsWith(query) ||
-          graduatedDisplayTh.startsWith(query) ||
-          graduatedDisplayEn.toLowerCase().startsWith(query) ||
-          (user.enrollDate &&
-            formatThaiDate(user.enrollDate).toLowerCase().startsWith(query)) ||
-          (queryDigits && phoneDigits.startsWith(queryDigits)) ||
-          fullName.startsWith(query) ||
-          (queryNoSpaces &&
-            fullName.replace(/\s/g, '').startsWith(queryNoSpaces))
-        );
-      })
-      .map((user) => {
-        // Enrich user with courseName (always format as Code - Name)
+  // Debounce search to avoid fetching on every keystroke
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  // Stable reference to fetcher function
+  const studentsFetcher = React.useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async ([_key, searchQuery, page, pageSize]: [
+      string,
+      string,
+      number,
+      number,
+    ]) => {
+      try {
+        if (searchQuery && searchQuery.trim() !== '') {
+          return await searchForStudents(searchQuery, page, pageSize);
+        } else {
+          return await fetchStudents(page, pageSize);
+        }
+      } catch (err) {
+        toast.error(tForm('toast.fetch_error'));
+        throw err;
+      }
+    },
+    [fetchStudents, searchForStudents, tForm],
+  );
+
+  const { mutate } = useSWR(
+    ['fetch-students', debouncedSearchQuery, currentPage, currentPageSize],
+    studentsFetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 1000,
+      keepPreviousData: true, // Keep previous data while fetching new
+    },
+  );
+
+  // Enrich users with courseName
+  const filterStudent = React.useMemo(
+    () =>
+      paginatedStudentsFromMap.map((user) => {
         if (user.courseId) {
           const course = getCourseById(user.courseId);
           if (course) {
@@ -131,8 +102,9 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
           }
         }
         return user;
-      });
-  }, [userMap, searchQuery, getCourseById, titleMap]);
+      }),
+    [paginatedStudentsFromMap, getCourseById],
+  );
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId
@@ -251,6 +223,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         await deleteExistingUsers(isDelete.userIds);
         toast.success(t('toast.deleted-multiple-successfully'));
       }
+      refreshData();
       setIsDelete({ isDeleting: false, userIds: undefined, progressCount: 0 });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
@@ -273,13 +246,45 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     }
   };
 
+  // Memoize search handler
+  const onSearchChange = React.useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+      setStudentPage(1);
+    },
+    [setSearchQuery, setStudentPage],
+  );
+
+  const handlePageChange = React.useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      setStudentPage(page);
+    },
+    [setStudentPage],
+  );
+
+  const handlePageSizeChange = React.useCallback(
+    (pageSize: number) => {
+      setCurrentPageSize(pageSize);
+      setCurrentPage(1);
+      setStudentPageSize(pageSize);
+    },
+    [setStudentPageSize],
+  );
+
+  // Memoize refresh function
+  const refreshData = React.useCallback(() => {
+    mutate();
+  }, [mutate]);
+
   return (
     <>
       <DataTable
         columns={studentColumns}
         data={filterStudent}
         searchQuery={searchQuery}
-        onSearch={setSearchQuery}
+        onSearch={onSearchChange}
         onAdd={() => setIsAdd(true)}
         onEdit={(user) => {
           setIsEdit({ isEditing: true, user: user });
@@ -292,12 +297,20 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         }}
         onImport={onImport}
         buttonImportLabel={importLabel}
+        isLoading={loader || storeAction !== 'none'}
+        manualPagination={true}
+        page={currentPage}
+        pageSize={currentPageSize}
+        rowCount={studentPagination.total}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
       />
       <CreateUserFormDialog
         open={isAdd}
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
         defaultRole="student"
+        onUserCreated={refreshData}
       />
       <UpdateUserFormDialog
         open={isEdit.isEditing}
