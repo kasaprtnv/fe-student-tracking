@@ -27,6 +27,7 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 
@@ -110,21 +111,34 @@ export function UpdateTitleFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{t('header.edit')}</DialogTitle>
-          <DialogDescription>{t('header_description.edit')}</DialogDescription>
+      <DialogContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-xl font-semibold text-gray-800">
+            {t('header.edit')}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
+            {t('header_description.edit')}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-1 flex-col gap-4 overflow-y-auto px-4"
+          >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('label.name')}</FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {t('label.name')}
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder={t('placeholder.name')} {...field} />
+                    <Input
+                      placeholder={t('placeholder.name')}
+                      className="border-gray-300 bg-white"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -135,14 +149,16 @@ export function UpdateTitleFormDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel className="text-sm font-medium text-gray-700">
                     {t('label.description') || 'Description'}
                   </FormLabel>
                   <FormControl>
-                    <Input
+                    <Textarea
                       placeholder={
                         t('placeholder.description') || 'Description'
                       }
+                      className="resize-none border-gray-300 bg-white"
+                      rows={3}
                       {...field}
                     />
                   </FormControl>

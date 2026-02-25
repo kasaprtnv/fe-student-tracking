@@ -24,7 +24,11 @@ export const selectFilteredTitlesId = createSelector(
     }
 
     const filtered = titles
-      .filter((title) => title.name?.toLowerCase().includes(lowerSearchQuery))
+      .filter(
+        (title) =>
+          title.name?.toLowerCase().includes(lowerSearchQuery) ||
+          title.description?.toLowerCase().includes(lowerSearchQuery),
+      )
       .map((title) => title.id);
     return filtered;
   },
