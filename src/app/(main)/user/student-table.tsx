@@ -40,7 +40,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
   } = useUser();
   const { allCourseId, getCourseById } = useCourse();
   const { titleMap } = useTitle();
-  const t = useTranslations('user');
+  const tUser = useTranslations('user');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
   const tCommon = useTranslations('common');
@@ -115,7 +115,12 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const studentColumns = createStudentColumns(tColumn, tDegree, titleMap);
+  const studentColumns = createStudentColumns(
+    tColumn,
+    tDegree,
+    tUser,
+    titleMap,
+  );
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -139,11 +144,11 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     }
 
     if (isDelete.userIds.length === 1) {
-      return t('dialog.confirm_delete_user_with_progress', {
+      return tUser('dialog.confirm_delete_user_with_progress', {
         count: isDelete.userIds.length,
       });
     } else {
-      return t('dialog.delete-users-with-progress-description', {
+      return tUser('dialog.delete-users-with-progress-description', {
         count: isDelete.userIds.length,
         progressCount: isDelete.progressCount,
       });
@@ -169,7 +174,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     }
 
     if (isDelete.userIds.length > 1) {
-      return t('dialog.warning-delete-users-with-progress', {
+      return tUser('dialog.warning-delete-users-with-progress', {
         count: isDelete.userIds.length,
         progressCount: isDelete.progressCount,
       });
@@ -218,28 +223,28 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     try {
       if (isDelete.userIds.length === 1) {
         await deleteExistingUser(isDelete.userIds[0]);
-        toast.success(t('toast.deleted-successfully'));
+        toast.success(tUser('toast.deleted-successfully'));
       } else {
         await deleteExistingUsers(isDelete.userIds);
-        toast.success(t('toast.deleted-multiple-successfully'));
+        toast.success(tUser('toast.deleted-multiple-successfully'));
       }
       refreshData();
       setIsDelete({ isDeleting: false, userIds: undefined, progressCount: 0 });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
       // Parse error message and translate if it's a known error code
-      let errorMessage = t('toast.delete-failed');
+      let errorMessage = tUser('toast.delete-failed');
       if (typeof error === 'string') {
         try {
           const parsed = JSON.parse(error);
           if (parsed.code === 'MILESTONE_PROGRESS_EXISTS') {
-            errorMessage = t('toast.milestone-progress-exists', {
+            errorMessage = tUser('toast.milestone-progress-exists', {
               count: parsed.count,
             });
           }
         } catch {
           // Not JSON, use as-is or fallback
-          errorMessage = error || t('toast.delete-failed');
+          errorMessage = error || tUser('toast.delete-failed');
         }
       }
       toast.error(errorMessage);
@@ -332,7 +337,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
           }
         }}
         onConfirm={onConfirmDelete}
-        title={t('delete-user-title')}
+        title={tUser('delete-user-title')}
         description={getDeleteDescription()}
         confirmText={getConfirmText()}
         isLoading={storeAction === 'deleting'}

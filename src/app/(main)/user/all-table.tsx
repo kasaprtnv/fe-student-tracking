@@ -41,9 +41,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
   } = useUser();
   const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
   const { titleMap, fetchAllTitles } = useTitle();
-  const t = useTranslations('user');
+  const tUser = useTranslations('user');
   const tColumn = useTranslations('column');
-  const tDegree = useTranslations('degree');
   const tRole = useTranslations('role');
   const tCommon = useTranslations('common');
   const tForm = useTranslations('user');
@@ -123,7 +122,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const allColumns = createAllStudentColumns(tColumn, tDegree, tRole, titleMap);
+  const allColumns = createAllStudentColumns(tColumn, tUser, tRole, titleMap);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -151,11 +150,11 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     // For students with progress records
     if (isDelete.isStudentDelete) {
       if (isDelete.userIds.length === 1) {
-        return t('dialog.confirm_delete_user_with_progress', {
+        return tUser('dialog.confirm_delete_user_with_progress', {
           count: isDelete.progressCount,
         });
       } else {
-        return t('dialog.delete-users-with-progress-description', {
+        return tUser('dialog.delete-users-with-progress-description', {
           count: isDelete.userIds.length,
           progressCount: isDelete.progressCount,
         });
@@ -164,9 +163,11 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
 
     // For teachers or students without progress
     if (isDelete.userIds.length === 1) {
-      return t('delete-user-description');
+      return tUser('delete-user-description');
     } else {
-      return t('delete-users-description', { count: isDelete.userIds.length });
+      return tUser('delete-users-description', {
+        count: isDelete.userIds.length,
+      });
     }
   };
 
@@ -190,12 +191,12 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
 
     if (isDelete.userIds.length > 1) {
       if (isDelete.isStudentDelete && isDelete.progressCount > 0) {
-        return t('dialog.warning-delete-users-with-progress', {
+        return tUser('dialog.warning-delete-users-with-progress', {
           count: isDelete.userIds.length,
           progressCount: isDelete.progressCount,
         });
       }
-      return t('warning-delete-user', { count: isDelete.userIds.length });
+      return tUser('warning-delete-user', { count: isDelete.userIds.length });
     }
   };
 
@@ -273,10 +274,10 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     try {
       if (isDelete.userIds.length === 1) {
         await deleteExistingUser(isDelete.userIds[0]);
-        toast.success(t('toast.deleted-successfully'));
+        toast.success(tUser('toast.deleted-successfully'));
       } else {
         await deleteExistingUsers(isDelete.userIds);
-        toast.success(t('toast.deleted-multiple-successfully'));
+        toast.success(tUser('toast.deleted-multiple-successfully'));
       }
       refreshData();
       setIsDelete({
@@ -288,18 +289,18 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     } catch (error) {
       console.error('Failed to delete user(s):', error);
       // Parse error message and translate if it's a known error code
-      let errorMessage = t('toast.delete-failed');
+      let errorMessage = tUser('toast.delete-failed');
       if (typeof error === 'string') {
         try {
           const parsed = JSON.parse(error);
           if (parsed.code === 'MILESTONE_PROGRESS_EXISTS') {
-            errorMessage = t('toast.milestone-progress-exists', {
+            errorMessage = tUser('toast.milestone-progress-exists', {
               count: parsed.count,
             });
           }
         } catch {
           // Not JSON, use as-is or fallback
-          errorMessage = error || t('toast.delete-failed');
+          errorMessage = error || tUser('toast.delete-failed');
         }
       }
       toast.error(errorMessage);
@@ -395,8 +396,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         onConfirm={onConfirmDelete}
         title={
           isDelete.userIds?.length === 1
-            ? t('delete-user-title')
-            : t('delete-users-title')
+            ? tUser('delete-user-title')
+            : tUser('delete-users-title')
         }
         description={getDeleteDescription()}
         confirmText={getConfirmText()}

@@ -453,6 +453,8 @@
     }
   },
   "user": {
+    "active": "Active",
+    "inactive": "Inactive",
     "add-user": "Add User",
     "edit-user": "Edit User",
     "add-student": "Add Student",
@@ -540,7 +542,7 @@
         "degree": "Education Level",
         "year": "Academic Year",
         "enroll-date": "Enroll Date",
-        "is-active": "Is Active",
+        "is-active": "Active Status",
         "study-plan": "Study Plan",
         "teacher-degree": "Degree",
         "academic-position": "Academic Position",

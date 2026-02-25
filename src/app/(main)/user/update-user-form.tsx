@@ -36,6 +36,8 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 import { SingleCombobox } from '@/components/ui/combobox-single';
 import { Loader } from 'lucide-react';
@@ -57,17 +59,17 @@ import { User } from '@/types/user';
 import { ICourseStaff } from '@/types/course-staff';
 import {
   updateUserSchema,
-  UpdateUserFormData,
+  // UpdateUserFormData,
   UserFormValues,
   UserRole,
 } from '@/validations/user';
 
 interface UpdateUserFormDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
   user: User | undefined;
   courseOptions: SelectOption[];
   allCourseStaff?: ICourseStaff[];
+  onOpenChange: (open: boolean) => void;
   onCourseStaffChange?: () => void;
 }
 
@@ -79,7 +81,7 @@ export function UpdateUserFormDialog({
   allCourseStaff = [],
   onCourseStaffChange,
 }: UpdateUserFormDialogProps) {
-  const t = useTranslations('user.user-form');
+  const tForm = useTranslations('user.user-form');
   const tUser = useTranslations('user');
   const tCommon = useTranslations('common');
   const { updateExistingUser, storeAction, userMap, getStudentProgressCount } =
@@ -142,6 +144,7 @@ export function UpdateUserFormDialog({
           : '',
         courseId: user?.courseId || '',
         enrollDate: user?.enrollDate || '',
+        isActive: user?.isActive ?? true,
       };
     } else {
       return {
@@ -154,12 +157,13 @@ export function UpdateUserFormDialog({
         teacherDegree: user?.teacherDegree || '',
         academicPosition: user?.academicPosition || '',
         courseIds: [],
+        isActive: user?.isActive ?? true,
       };
     }
   }, [user, userRole]);
 
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(updateUserSchema(t)) as Resolver<UserFormValues>,
+    resolver: zodResolver(updateUserSchema(tForm)) as Resolver<UserFormValues>,
     defaultValues: getDefaultValues(),
   });
 
@@ -206,7 +210,7 @@ export function UpdateUserFormDialog({
     if (isEmailExists(data.email)) {
       form.setError('email', {
         type: 'manual',
-        message: t('errors.email-exists'),
+        message: tForm('errors.email-exists'),
       });
       return;
     }
@@ -252,8 +256,8 @@ export function UpdateUserFormDialog({
         for (const courseId of coursesToAdd) {
           await createNewCourseStaff({
             courseId,
-            userId: user.id,
-          } as unknown as { courseId: string; staffId: string });
+            staffId: user.id,
+          });
           // Update course to add this user to staffIds
           const course = getCourseById(courseId);
           if (course) {
@@ -268,10 +272,7 @@ export function UpdateUserFormDialog({
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { courseId: _courseId, ...teacherDataWithoutCourse } =
           formattedData;
-        await updateExistingUser(
-          user.id,
-          teacherDataWithoutCourse as unknown as UpdateUserFormData,
-        );
+        await updateExistingUser(user.id, teacherDataWithoutCourse);
       } else {
         // For students, check if courseId changed and if they have progress
         if (
@@ -284,7 +285,7 @@ export function UpdateUserFormDialog({
             if (count > 0) {
               // Open confirmation dialog instead of window.confirm
               setProgressCount(count);
-              setPendingFormData(formattedData as unknown as UserFormValues);
+              setPendingFormData(formattedData);
               setConfirmDialogOpen(true);
               return; // Stop here, wait for confirmation
             }
@@ -293,14 +294,11 @@ export function UpdateUserFormDialog({
           }
         }
 
-        await updateExistingUser(
-          user.id,
-          formattedData as unknown as UpdateUserFormData,
-        );
+        await updateExistingUser(user.id, formattedData);
       }
       form.reset();
       onOpenChange(false);
-      toast.success(t('toast.updated-successfully'));
+      toast.success(tForm('toast.updated-successfully'));
 
       // Trigger refetch of course_staff data and courses (to update course page)
       onCourseStaffChange?.();
@@ -321,11 +319,11 @@ export function UpdateUserFormDialog({
       ) {
         form.setError('email', {
           type: 'manual',
-          message: t('errors.email-exists'),
+          message: tForm('errors.email-exists'),
         });
-        toast.error(t('errors.email-exists'));
+        toast.error(tForm('errors.email-exists'));
       } else {
-        toast.error(t('toast.update-failed'));
+        toast.error(tForm('toast.update-failed'));
       }
     }
   };
@@ -334,15 +332,12 @@ export function UpdateUserFormDialog({
     if (!pendingFormData) return;
 
     try {
-      await updateExistingUser(
-        user!.id,
-        pendingFormData as unknown as UpdateUserFormData,
-      );
+      await updateExistingUser(user!.id, pendingFormData);
       form.reset();
       onOpenChange(false);
       setConfirmDialogOpen(false);
       setPendingFormData(null);
-      toast.success(t('toast.updated-successfully'));
+      toast.success(tForm('toast.updated-successfully'));
 
       // Trigger refetch
       onCourseStaffChange?.();
@@ -351,7 +346,7 @@ export function UpdateUserFormDialog({
       mutate('fetch-courses and-course-staff');
     } catch (error: unknown) {
       console.error('Error updating user:', error);
-      toast.error(t('toast.update-failed'));
+      toast.error(tForm('toast.update-failed'));
     }
   };
 
@@ -387,10 +382,10 @@ export function UpdateUserFormDialog({
         <DialogContent className="flex h-[600px] flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold text-gray-800">
-              {t('header.edit')}
+              {tForm('header.edit')}
             </DialogTitle>
             <DialogDescription className="text-sm text-gray-600">
-              {t('header_description.edit')}
+              {tForm('header_description.edit')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -406,7 +401,7 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.title')}
+                        {tForm('label.title')}
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -414,7 +409,9 @@ export function UpdateUserFormDialog({
                       >
                         <FormControl>
                           <SelectTrigger className="w-full border-gray-300 bg-white">
-                            <SelectValue placeholder={t('placeholder.title')} />
+                            <SelectValue
+                              placeholder={tForm('placeholder.title')}
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -438,11 +435,11 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.first-name')}
+                        {tForm('label.first-name')}
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t('placeholder.first-name')}
+                          placeholder={tForm('placeholder.first-name')}
                           className="border-gray-300 bg-white"
                           {...field}
                         />
@@ -460,11 +457,11 @@ export function UpdateUserFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.last-name')}
+                      {tForm('label.last-name')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('placeholder.last-name')}
+                        placeholder={tForm('placeholder.last-name')}
                         className="border-gray-300 bg-white"
                         {...field}
                       />
@@ -481,13 +478,13 @@ export function UpdateUserFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.email')}
+                      {tForm('label.email')}
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         disabled
-                        placeholder={t('placeholder.email')}
+                        placeholder={tForm('placeholder.email')}
                         className="border-gray-300 bg-white"
                         {...field}
                       />
@@ -504,11 +501,11 @@ export function UpdateUserFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700">
-                      {t('label.phone')}
+                      {tForm('label.phone')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('placeholder.phone')}
+                        placeholder={tForm('placeholder.phone')}
                         className="border-gray-300 bg-white"
                         maxLength={10}
                         {...field}
@@ -536,12 +533,12 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.student-code')}
+                        {tForm('label.student-code')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           disabled
-                          placeholder={t('placeholder.student-code')}
+                          placeholder={tForm('placeholder.student-code')}
                           className="border-gray-300 bg-gray-100 focus:border-blue-500 focus:ring-blue-500"
                           {...field}
                         />
@@ -560,14 +557,16 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem className="min-w-0">
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.student-course')}
+                        {tForm('label.student-course')}
                       </FormLabel>
                       <FormControl>
                         <SingleCombobox
                           disabled
-                          placeholder={t('placeholder.course')}
-                          placeholderSearch={t('placeholder.search-course')}
-                          placeholderEmpty={t('placeholder.no-course-found')}
+                          placeholder={tForm('placeholder.course')}
+                          placeholderSearch={tForm('placeholder.search-course')}
+                          placeholderEmpty={tForm(
+                            'placeholder.no-course-found',
+                          )}
                           options={courseOptions}
                           defaultValue={field.value || ''}
                           onChange={(value) => field.onChange(value)}
@@ -587,7 +586,7 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.degree')}
+                        {tForm('label.degree')}
                       </FormLabel>
                       <DegreesCombobox
                         disabled
@@ -622,7 +621,7 @@ export function UpdateUserFormDialog({
                     return (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-700">
-                          {t('label.year')}
+                          {tForm('label.year')}
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -635,7 +634,7 @@ export function UpdateUserFormDialog({
                               disabled
                             >
                               <SelectValue
-                                placeholder={t('placeholder.year')}
+                                placeholder={tForm('placeholder.year')}
                               />
                             </SelectTrigger>
                           </FormControl>
@@ -662,7 +661,7 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.study-plan')}
+                        {tForm('label.study-plan')}
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -671,16 +670,16 @@ export function UpdateUserFormDialog({
                         <FormControl>
                           <SelectTrigger className="w-full border-gray-300 bg-white">
                             <SelectValue
-                              placeholder={t('placeholder.study-plan')}
+                              placeholder={tForm('placeholder.study-plan')}
                             />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="แผน ก">
-                            {t('study-plan-options.plan-a')}
+                            {tForm('study-plan-options.plan-a')}
                           </SelectItem>
                           <SelectItem value="แผน ข">
-                            {t('study-plan-options.plan-b')}
+                            {tForm('study-plan-options.plan-b')}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -698,7 +697,7 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.enroll-date')}
+                        {tForm('label.enroll-date')}
                       </FormLabel>
                       <div className="relative">
                         <EnrollDateInput
@@ -721,12 +720,12 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.teacher-degree')}
+                        {tForm('label.teacher-degree')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={t('placeholder.teacher-degree')}
+                          placeholder={tForm('placeholder.teacher-degree')}
                           className="border-gray-300 bg-white"
                         />
                       </FormControl>
@@ -744,14 +743,14 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.academic-position')}
+                        {tForm('label.academic-position')}
                       </FormLabel>
                       <FormControl>
                         <DynamicInputList
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder={t('placeholder.academic-position')}
-                          buttonLabel={t('label.add-academic-position')}
+                          placeholder={tForm('placeholder.academic-position')}
+                          buttonLabel={tForm('label.add-academic-position')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -768,14 +767,14 @@ export function UpdateUserFormDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        {t('label.teacher-course')}
+                        {tForm('label.teacher-course')}
                       </FormLabel>
                       <FormControl>
                         <MultiCombobox
                           defaultValue={field.value || []}
-                          placeholder={t('placeholder.course')}
-                          placeholderSearch={t('placeholder.course')}
-                          placeholderEmpty={t('placeholder.course')}
+                          placeholder={tForm('placeholder.course')}
+                          placeholderSearch={tForm('placeholder.course')}
+                          placeholderEmpty={tForm('placeholder.course')}
                           options={courseOptions}
                           onChange={field.onChange}
                         />
@@ -786,6 +785,25 @@ export function UpdateUserFormDialog({
                 />
               )}
 
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between rounded-md border border-gray-300 bg-white p-3 shadow-xs">
+                    <FormLabel
+                      htmlFor="isActive"
+                      className="mb-0 cursor-pointer text-sm font-medium text-gray-700"
+                    >
+                      {tForm('label.is-active')}
+                    </FormLabel>
+                    <Switch
+                      id="isActive"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormItem>
+                )}
+              />
               {/* Spacer to push footer to bottom */}
               <div className="flex-1" />
 

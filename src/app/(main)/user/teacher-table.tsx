@@ -43,7 +43,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
   const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
     [],
   );
-  const t = useTranslations('user');
+  const tUser = useTranslations('user');
   const tColumn = useTranslations('column');
   const tCommon = useTranslations('common');
   const tForm = useTranslations('user');
@@ -153,7 +153,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const teacherColumns = createTeacherColumns(tColumn, titleMap);
+  const teacherColumns = createTeacherColumns(tColumn, tUser, titleMap);
 
   const getDeleteDescription = () => {
     if (!isDelete.userIds || isDelete.userIds.length === 0) {
@@ -161,9 +161,11 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     }
 
     if (isDelete.userIds.length === 1) {
-      return t('delete-user-description');
+      return tUser('delete-user-description');
     } else {
-      return t('delete-users-description', { count: isDelete.userIds.length });
+      return tUser('delete-users-description', {
+        count: isDelete.userIds.length,
+      });
     }
   };
   const getConfirmText = () => {
@@ -185,7 +187,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     }
 
     if (isDelete.userIds.length > 1) {
-      return t('warning-delete-user', { count: isDelete.userIds.length });
+      return tUser('warning-delete-user', { count: isDelete.userIds.length });
     }
   };
   const [isEdit, setIsEdit] = React.useState<{
@@ -209,29 +211,29 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
       if (isDelete.userIds.length === 1) {
         // Single delete
         await deleteExistingUser(isDelete.userIds[0]);
-        toast.success(t('toast.deleted-successfully'));
+        toast.success(tUser('toast.deleted-successfully'));
       } else {
         // Multiple delete
         await deleteExistingUsers(isDelete.userIds);
-        toast.success(t('toast.deleted-multiple-successfully'));
+        toast.success(tUser('toast.deleted-multiple-successfully'));
       }
       refreshData();
       setIsDelete({ isDeleting: false, userIds: undefined });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
       // Parse error message and translate if it's a known error code
-      let errorMessage = t('toast.delete-failed');
+      let errorMessage = tUser('toast.delete-failed');
       if (typeof error === 'string') {
         try {
           const parsed = JSON.parse(error);
           if (parsed.code === 'MILESTONE_PROGRESS_EXISTS') {
-            errorMessage = t('toast.milestone-progress-exists', {
+            errorMessage = tUser('toast.milestone-progress-exists', {
               count: parsed.count,
             });
           }
         } catch {
           // Not JSON, use as-is or fallback
-          errorMessage = error || t('toast.delete-failed');
+          errorMessage = error || tUser('toast.delete-failed');
         }
       }
       toast.error(errorMessage);
@@ -325,7 +327,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
           }
         }}
         onConfirm={onConfirmDelete}
-        title={t('delete-user-title')}
+        title={tUser('delete-user-title')}
         description={getDeleteDescription()}
         confirmText={getConfirmText()}
         isLoading={storeAction === 'deleting'}
