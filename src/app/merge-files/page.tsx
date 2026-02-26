@@ -9,6 +9,8 @@ import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 import { formatDate } from '@/lib/format-date';
 import { uploadService } from '@/services/upload.service';
+import DeleteConfirmationDialog from '@/components/delete-dialog';
+import { toast } from 'sonner';
 
 function mapDegree(degree?: string) {
   switch (degree) {
@@ -35,6 +37,11 @@ export default function FileListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [filesToDelete, setFilesToDelete] = useState<FileItem[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Flatten progress records to file items (1 row = 1 file)
   const transformToFileItems = (item: IStudentStepProgress): FileItem[] => {
@@ -67,8 +74,15 @@ export default function FileListPage() {
 
     // If attachments array exists, flatten to multiple rows
     if (item.attachments && item.attachments.length > 0) {
-      return item.attachments.map((attachment) => ({
+      type AttachmentWithDeleted = (typeof item.attachments)[number] & {
+        isDeleted?: boolean;
+      };
+      const activeAttachments = (
+        item.attachments as AttachmentWithDeleted[]
+      ).filter((a) => !a.isDeleted);
+      return activeAttachments.map((attachment) => ({
         ...baseItem,
+        attachmentId: attachment.attachmentId || '',
         filename: attachment.fileName || '-',
         file_url: attachment.fileUrl || attachment.fileKey || '',
       }));
@@ -82,10 +96,12 @@ export default function FileListPage() {
       item.attachment?.fileUrl ||
       item.attachment?.fileKey ||
       '';
+    const attachmentId = item.attachment?.id || '';
 
     return [
       {
         ...baseItem,
+        attachmentId,
         filename: fileName,
         file_url: fileUrl,
       },
@@ -143,6 +159,59 @@ export default function FileListPage() {
     );
   }, [files, searchQuery]);
 
+  // จัดการลบไฟล์หลายรายการ
+  const handleMultiDelete = (selectedFiles: FileItem[]) => {
+    setFilesToDelete(selectedFiles);
+    setDeleteDialogOpen(true);
+  };
+
+  // ยืนยันการลบ
+  const confirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      // ลบทีละไฟล์
+      const deletePromises = filesToDelete
+        .filter((file) => file.attachmentId) // กรองเฉพาะไฟล์ที่มี attachmentId
+        .map((file) => uploadService.deleteAttachment(file.attachmentId));
+
+      const results = await Promise.allSettled(deletePromises);
+
+      // ตรวจสอบว่ามีไฟล์ใดลบไม่สำเร็จ
+      const failedCount = results.filter(
+        (r) =>
+          r.status === 'rejected' ||
+          (r.status === 'fulfilled' && !r.value.success),
+      ).length;
+
+      const successCount = results.length - failedCount;
+
+      if (failedCount > 0) {
+        toast.error(
+          t('merge-files.toast.deleteFailed', { count: failedCount }),
+        );
+      }
+
+      if (successCount > 0) {
+        toast.success(
+          t('merge-files.toast.deleteSuccess', { count: successCount }),
+        );
+      }
+
+      // รีเฟรชข้อมูล
+      await fetchApprovedFiles();
+    } catch (err) {
+      console.error('Error deleting files:', err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setFilesToDelete([]);
+    }
+  };
+
+  // สร้าง unique id สำหรับแต่ละ row
+  const getRowId = (file: FileItem) =>
+    file.attachmentId || `${file.filename}-${file.email}`;
+
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center p-6">
@@ -183,8 +252,25 @@ export default function FileListPage() {
           onSearch={setSearchQuery}
           searchQuery={searchQuery}
           enabledPagination={true}
+          onMultiDelete={handleMultiDelete}
+          getRowId={getRowId}
         />
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setFilesToDelete([]);
+        }}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+        title="delete-title"
+        description="delete-description"
+        translationKey="merge-files"
+        count={filesToDelete.length}
+      />
     </>
   );
 }
