@@ -103,8 +103,8 @@
   },
   "student-form": {
     "label": {
-      "student-id": "รหัสนักศึกษา",
-      "student-id-placeholder": "กรอกรหัสนักศึกษา",
+      "student-id": "รหัสนิสิต",
+      "student-id-placeholder": "กรอกรหัสนิสิต",
       "first-name": "ชื่อ",
       "first-name-placeholder": "กรอกชื่อ",
       "last-name": "นามสกุล",
@@ -113,7 +113,7 @@
       "degree-placeholder": "กรอกวุฒิการศึกษา"
     },
     "errors": {
-      "student-id-required": "กรุณากรอกรหัสนักศึกษา",
+      "student-id-required": "กรุณากรอกรหัสนิสิต",
       "first-name-required": "กรุณากรอกชื่อ",
       "first-name-min": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
       "first-name-max": "ชื่อต้องไม่เกิน 50 ตัวอักษร",
@@ -222,7 +222,7 @@
       "email": "อีเมล",
       "phone": "เบอร์โทรศัพท์",
       "year": "ปีที่เข้าศึกษา",
-      "student_id": "รหัสนักศึกษา",
+      "student_id": "รหัสนิสิต",
       "major": "สาขาวิชา",
       "faculty": "คณะ",
       "course": "หลักสูตร",
@@ -513,7 +513,7 @@
       "deleted-successfully": "ลบผู้ใช้งานสำเร็จ!",
       "deleted-multiple-successfully": "ลบผู้ใช้หลายคนสำเร็จ",
       "delete-failed": "ลบผู้ใช้ไม่สำเร็จ",
-      "milestone-progress-exists": "ไม่สามารถลบได้ มีนักศึกษา {count} คนอยู่ในขั้นตอนการศึกษา"
+      "milestone-progress-exists": "ไม่สามารถลบได้ มีนิสิต {count} คนอยู่ในขั้นตอนการศึกษา"
     },
     "dialog": {
       "confirm_course_change_with_progress": "นักเรียนคนนี้มีความคืบหน้า {count} รายการ หากเปลี่ยนหลักสูตร ข้อมูลความคืบหน้าทั้งหมดจะถูกลบ คุณต้องการดำเนินการต่อหรือไม่?",
@@ -660,10 +660,10 @@
     "teacher": "อาจารย์"
   },
   "verify-certificate": {
-    "title": "ตรวจสอบหลักฐานนักศึกษา",
+    "title": "ตรวจสอบหลักฐานนิสิต",
     "breadcrumb": {
       "home": "แดชบอร์ด",
-      "verify": "ตรวจสอบหลักฐานนักศึกษา",
+      "verify": "ตรวจสอบหลักฐานนิสิต",
       "detail": "รายละเอียด"
     },
     "search_placeholder": "ค้นหา",
@@ -766,7 +766,7 @@
       "total-teachers": "อาจารย์",
       "total-courses": "หลักสูตรทั้งหมด",
       "students-in-courses": "นิสิตทั้งหมดในหลักสูตร",
-      "managed-courses": "ดูแลหลักสูตรทั้งหมด",
+      "managed-courses": "หลักสูตรที่ดูแลทั้งหมด",
       "unit-people": "คน",
       "unit-courses": "หลักสูตร"
     },
@@ -774,12 +774,12 @@
       "students-by-course": "จำนวนนิสิตแยกตามหลักสูตรและปีการศึกษา",
       "students-by-degree": "จำนวนนิสิตตามระดับปริญญา",
       "graduation-by-year": "สถานะการสำเร็จการศึกษา",
-      "no-data": "ไม่มีข้อมูลนักศึกษา"
+      "no-data": "ไม่มีข้อมูลนิสิต"
     },
     "filters": {
       "all-courses": "ทุกหลักสูตร",
       "all-degrees": "ทุกระดับการศึกษา",
-      "all-years": "ทุกปี",
+      "all-years": "ทุกปีการศึกษา",
       "all": "ทั้งหมด",
       "years-3": "3 ปีล่าสุด",
       "years-5": "5 ปีล่าสุด",
