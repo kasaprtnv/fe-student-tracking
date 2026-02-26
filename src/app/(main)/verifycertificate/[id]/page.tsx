@@ -99,25 +99,56 @@ export default function VerifyDetailPage() {
           );
           setStudentAttachments(studentFiles);
           setSelectedAttachmentIdx(0);
-          // --- Group attachments by batch (createdAt within 1 minute) ---
+
+          // --- Group attachments by attemptId (or fallback to latest submission time) ---
           const batches: AttachmentDTO[][] = [];
-          let currentBatch: AttachmentDTO[] = [];
-          let lastTime: number | null = null;
-          const BATCH_WINDOW_MS = 60 * 1000; // 1 minute
-          studentFiles.forEach((att) => {
-            const attTime = new Date(att.createdAt || 0).getTime();
-            if (
-              lastTime === null ||
-              Math.abs(lastTime - attTime) > BATCH_WINDOW_MS
-            ) {
-              if (currentBatch.length > 0) batches.push(currentBatch);
-              currentBatch = [att];
-            } else {
-              currentBatch.push(att);
-            }
-            lastTime = attTime;
-          });
-          if (currentBatch.length > 0) batches.push(currentBatch);
+
+          // ตรวจสอบว่ามี attemptId หรือไม่
+          const hasAttemptId = studentFiles.some((att) => att.attemptId);
+
+          if (hasAttemptId) {
+            // Group by attemptId - วิธีที่ถูกต้อง
+            const attemptGroups = new Map<string, AttachmentDTO[]>();
+            studentFiles.forEach((att) => {
+              const attemptKey = att.attemptId || 'unknown';
+              if (!attemptGroups.has(attemptKey)) {
+                attemptGroups.set(attemptKey, []);
+              }
+              attemptGroups.get(attemptKey)!.push(att);
+            });
+            // แปลงเป็น array และ sort โดย attempt ล่าสุดไว้ก่อน
+            const groupArray = Array.from(attemptGroups.entries());
+            groupArray.sort((a, b) => {
+              const aTime = Math.max(
+                ...a[1].map((att) => new Date(att.createdAt || 0).getTime()),
+              );
+              const bTime = Math.max(
+                ...b[1].map((att) => new Date(att.createdAt || 0).getTime()),
+              );
+              return bTime - aTime; // newest first
+            });
+            groupArray.forEach(([, files]) => batches.push(files));
+          } else {
+            // Fallback: Group by batch start time (แก้ไขให้เปรียบเทียบกับเวลาเริ่มต้นของ batch)
+            let currentBatch: AttachmentDTO[] = [];
+            let batchStartTime: number | null = null;
+            const BATCH_WINDOW_MS = 5 * 60 * 1000; // 5 minutes (เพิ่มเป็น 5 นาทีเพื่อรองรับการอัปโหลดหลายไฟล์)
+            studentFiles.forEach((att) => {
+              const attTime = new Date(att.createdAt || 0).getTime();
+              if (
+                batchStartTime === null ||
+                Math.abs(batchStartTime - attTime) > BATCH_WINDOW_MS
+              ) {
+                if (currentBatch.length > 0) batches.push(currentBatch);
+                currentBatch = [att];
+                batchStartTime = attTime; // ใช้เวลาของไฟล์แรกเป็น batch start
+              } else {
+                currentBatch.push(att);
+              }
+            });
+            if (currentBatch.length > 0) batches.push(currentBatch);
+          }
+
           setAttachmentBatches(batches);
           setSelectedBatchIdx(0);
 

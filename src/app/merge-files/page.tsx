@@ -36,7 +36,8 @@ export default function FileListPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const transformToFileItem = (item: IStudentStepProgress): FileItem => {
+  // Flatten progress records to file items (1 row = 1 file)
+  const transformToFileItems = (item: IStudentStepProgress): FileItem[] => {
     const studentName =
       item.studentName ||
       (item.student
@@ -45,9 +46,6 @@ export default function FileListPage() {
     const studentCode = item.studentCode || item.student?.code || '-';
     const courseName = item.courseName || item.student?.courseName || '-';
     const stepName = item.stepName || item.step?.name || '-';
-    // รองรับข้อมูลไฟล์จาก API
-    const fileName = item.fileName || '-';
-    const fileUrl = item.fileUrl || item.fileKey || ''; // รองรับทั้ง fileUrl และ fileKey
 
     const degreeRaw =
       item.studentDegree ?? item.degree ?? item.student?.degree ?? '-';
@@ -55,8 +53,8 @@ export default function FileListPage() {
     const educationLevel = mapDegree(degreeRaw);
     const gradYear = mapYear(yearRaw);
 
-    return {
-      filename: fileName,
+    // Base file item data (shared across attachments)
+    const baseItem = {
       fullname: studentName,
       email: `${studentCode}@go.buu.ac.th`,
       education_level: educationLevel,
@@ -65,8 +63,33 @@ export default function FileListPage() {
       course_name: courseName,
       milestone_step: stepName,
       enroll_date: item.submittedAt ? formatDate(item.submittedAt) : '-',
-      file_url: fileUrl,
     };
+
+    // If attachments array exists, flatten to multiple rows
+    if (item.attachments && item.attachments.length > 0) {
+      return item.attachments.map((attachment) => ({
+        ...baseItem,
+        filename: attachment.fileName || '-',
+        file_url: attachment.fileUrl || attachment.fileKey || '',
+      }));
+    }
+
+    // Fallback to single attachment or fileName field
+    const fileName = item.fileName || item.attachment?.fileName || '-';
+    const fileUrl =
+      item.fileUrl ||
+      item.fileKey ||
+      item.attachment?.fileUrl ||
+      item.attachment?.fileKey ||
+      '';
+
+    return [
+      {
+        ...baseItem,
+        filename: fileName,
+        file_url: fileUrl,
+      },
+    ];
   };
 
   // ดึงข้อมูลไฟล์ที่อนุมัติแล้ว
@@ -80,7 +103,8 @@ export default function FileListPage() {
       });
 
       if (response?.data) {
-        const transformedFiles = response.data.map(transformToFileItem);
+        // Flatten: 1 progress with N attachments = N rows
+        const transformedFiles = response.data.flatMap(transformToFileItems);
         setFiles(transformedFiles);
       }
     } catch (err) {

@@ -249,6 +249,25 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     setInternalSubmitting((prev) => ({ ...prev, [stepId]: true }));
     try {
       const progressId = stepProgressMap[stepId] || stepId;
+
+      // ลบไฟล์เก่าก่อน upload ใหม่ (กรณีส่งกลับหลังถูกปฏิเสธ)
+      try {
+        const existingAttachments =
+          await uploadService.getAttachmentsByProgress(progressId);
+        // ลบเฉพาะไฟล์ที่ student เป็นคนอัพโหลด
+        const studentAttachments = existingAttachments.filter(
+          (att) => att.uploadedByUserId === userId,
+        );
+        for (const att of studentAttachments) {
+          if (att.id) {
+            await uploadService.deleteAttachment(att.id);
+          }
+        }
+      } catch (deleteError) {
+        console.warn('Error deleting old attachments:', deleteError);
+        // ไม่ block การ upload ถ้าลบไม่ได้
+      }
+
       const response = await uploadService.createAttachment(
         progressId,
         files,
