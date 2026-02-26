@@ -24,7 +24,7 @@ export const createStudentColumns = (
                 e.stopPropagation();
                 onViewProfile(id);
               }}
-              className="text-primary cursor-pointer font-medium hover:underline"
+              className="text-primary cursor-pointer p-0 leading-none font-medium hover:underline"
             >
               {code || '-'}
             </button>
@@ -45,7 +45,7 @@ export const createStudentColumns = (
         const firstName = row.original.firstName || '';
         const lastName = row.original.lastName || '';
         const fullName = `${firstName} ${lastName}`.trim();
-        return <span>{fullName || '-'}</span>;
+        return fullName || '-';
       },
     },
     {
@@ -95,7 +95,7 @@ export const createStudentColumns = (
       cell: ({ row }) => {
         const value = row.original.courseName || '-';
         return (
-          <span className="block max-w-[350px] truncate" title={value}>
+          <span className="inline-block max-w-[350px] truncate" title={value}>
             {value}
           </span>
         );
@@ -110,7 +110,7 @@ export const createStudentColumns = (
       id: 'studyPlan',
       header: t('study-plan'),
       accessorKey: 'studyPlan',
-      cell: ({ row }) => <span>{row.original.studyPlan || '-'}</span>,
+      cell: ({ row }) => row.original.studyPlan || '-',
     },
     {
       id: 'enrollDate',
@@ -119,9 +119,8 @@ export const createStudentColumns = (
       sortingFn: 'datetime',
       cell: (row) => {
         const rawDate = row.getValue<string>();
-        if (!rawDate) return <span>-</span>;
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+        if (!rawDate) return '-';
+        return formatThaiDate(rawDate);
       },
     },
     {
@@ -131,9 +130,7 @@ export const createStudentColumns = (
       sortingFn: 'basic',
       cell: ({ row }) => {
         const graduated = row.original.graduated;
-        return (
-          <span>{graduated ? t('graduated-yes') : t('graduated-no')}</span>
-        );
+        return graduated ? t('graduated-yes') : t('graduated-no');
       },
     },
   ];

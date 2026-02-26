@@ -217,7 +217,6 @@
   },
   "profile": {
     "personal_information": {
-      
       "title": "รายละเอียดข้อมูลส่วนตัว",
       "name": "ชื่อ-นามสกุล",
       "email": "อีเมล",
@@ -414,7 +413,7 @@
       "course-name": "ชื่อหลักสูตร",
       "course-description": "คำอธิบายหลักสูตร",
       "course-code": "รหัสหลักสูตร",
-      "course":"หลักสูตร",
+      "course": "หลักสูตร",
       "select-milestone": "เลือกขั้นตอนการศึกษา"
     },
 
@@ -880,7 +879,7 @@
     "no-results": "ไม่พบผลลัพธ์",
     "apply": "ค้นหา",
     "cancel": "ยกเลิก",
-    "reset": "รีเซ็ต",
+    "reset": "คืนค่า",
     "filter-button": "ตัวกรองขั้นสูง",
     "date-format": "วว/ดด/ปปปป",
     "select-date-range": "เลือกช่วงวันที่",
