@@ -771,9 +771,9 @@
       "unit-courses": "หลักสูตร"
     },
     "charts": {
-      "students-by-course": "จำนวนนิสิตในแต่ละหลักสูตร",
-      "students-by-degree": "นิสิตตามระดับปริญญา",
-      "graduation-by-year": "สถานะจบการศึกษาตามปี",
+      "students-by-course": "จำนวนนิสิตแยกตามหลักสูตรและปีการศึกษา",
+      "students-by-degree": "จำนวนนิสิตตามระดับปริญญา",
+      "graduation-by-year": "สถานะการสำเร็จการศึกษา",
       "no-data": "ไม่มีข้อมูลนักศึกษา"
     },
     "filters": {

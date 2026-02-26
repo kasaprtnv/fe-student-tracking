@@ -79,7 +79,10 @@ export function CompactMultiCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn('w-auto min-w-[120px] justify-between', className)}
+          className={cn(
+            'h-9 w-auto min-w-[120px] justify-between text-sm font-normal',
+            className,
+          )}
         >
           <span className="truncate">{displayText}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

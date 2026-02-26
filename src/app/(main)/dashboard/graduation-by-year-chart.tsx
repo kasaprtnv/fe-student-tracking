@@ -102,11 +102,11 @@ export function GraduationByYearChart({
   return (
     <Card className="min-h-[420px] overflow-hidden">
       <CardHeader className="pb-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <CardTitle className="text-lg font-bold">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="min-w-0 truncate text-lg font-bold">
             {t('charts.graduation-by-year')}
           </CardTitle>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <CompactMultiCombobox
               value={selectedCourses}
               onChange={setSelectedCourses}

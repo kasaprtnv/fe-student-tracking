@@ -774,7 +774,7 @@
       "unit-courses": "courses"
     },
     "charts": {
-      "students-by-course": "Students by Course",
+      "students-by-course": "Students by Course and Academic Year",
       "students-by-degree": "Students by Degree",
       "graduation-by-year": "Graduation Status by Year",
       "no-data": "No student data"
