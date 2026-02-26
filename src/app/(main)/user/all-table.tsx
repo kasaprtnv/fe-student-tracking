@@ -31,7 +31,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     userMap,
     getStudentProgressCount,
   } = useUser();
-  const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
+  const { allCourseId, getCourseById, fetchAllCourses, courseMap } =
+    useCourse();
   const { titleMap, fetchAllTitles } = useTitle();
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
@@ -158,6 +159,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
       return { label: `${course.code} - ${course.name}`, value: course.id };
     })
     .filter((option): option is SelectOption => option !== undefined);
+
+  const allCourses = allCourseId.map((id) => courseMap[id]).filter(Boolean);
 
   const allColumns = createAllStudentColumns(tColumn, tDegree, tRole, titleMap);
 
@@ -365,6 +368,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         open={isAdd}
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
+        allCourses={allCourses}
         defaultRole="student"
       />
       <UpdateUserFormDialog

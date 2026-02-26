@@ -570,6 +570,7 @@
         "enroll-date": "เลือกวันที่ลงทะเบียน",
         "search-course": "ค้นหาหลักสูตร...",
         "no-course-found": "ไม่พบหลักสูตร",
+        "select-degree-first": "กรุณาเลือกระดับการศึกษา",
         "search-year": "ค้นหาปีการศึกษา...",
         "no-year-found": "ไม่พบปีการศึกษา",
         "study-plan": "เลือกแผนการเรียน",
