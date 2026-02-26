@@ -143,12 +143,15 @@ export default function StudentPage() {
   const displayStudents = useMemo(() => {
     // Filter by teacher's managed courses first
     let filteredStudents = enrichedStudents;
-    if (user?.role === 'teacher' && teacherManagedCourseIds.length > 0) {
-      filteredStudents = enrichedStudents.filter((student) =>
-        student.courseId
-          ? teacherManagedCourseIds.includes(student.courseId)
-          : false,
-      );
+    if (user?.role === 'teacher') {
+      filteredStudents =
+        teacherManagedCourseIds.length > 0
+          ? enrichedStudents.filter((student) =>
+              student.courseId
+                ? teacherManagedCourseIds.includes(student.courseId)
+                : false,
+            )
+          : [];
     }
 
     // Apply advanced filters
