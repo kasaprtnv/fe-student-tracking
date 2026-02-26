@@ -12,8 +12,8 @@ import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-d
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
-import { formatThaiDate } from '@/lib/format-date';
+import { useTranslations, useLocale } from 'next-intl';
+import { formatShortDate } from '@/lib/format-date';
 
 interface AllTableProps {
   onImport?: () => void;
@@ -31,13 +31,15 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     userMap,
     getStudentProgressCount,
   } = useUser();
-  const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
+  const { allCourseId, getCourseById, fetchAllCourses, courseMap } =
+    useCourse();
   const { titleMap, fetchAllTitles } = useTitle();
   const t = useTranslations('user');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
   const tRole = useTranslations('role');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
 
   // Fetch courses and titles on mount
   React.useEffect(() => {
@@ -128,7 +130,9 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
           graduatedDisplayTh.startsWith(query) ||
           graduatedDisplayEn.toLowerCase().startsWith(query) ||
           (user.enrollDate &&
-            formatThaiDate(user.enrollDate).toLowerCase().startsWith(query)) ||
+            formatShortDate(user.enrollDate, locale)
+              .toLowerCase()
+              .includes(query)) ||
           (queryDigits && phoneDigits.startsWith(queryDigits)) ||
           fullName.startsWith(query) ||
           (queryNoSpaces &&
@@ -148,7 +152,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         }
         return user;
       });
-  }, [userMap, searchQuery, getCourseById, titleMap]);
+  }, [userMap, searchQuery, getCourseById, titleMap, locale]);
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId
@@ -158,6 +162,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
       return { label: `${course.code} - ${course.name}`, value: course.id };
     })
     .filter((option): option is SelectOption => option !== undefined);
+
+  const allCourses = allCourseId.map((id) => courseMap[id]).filter(Boolean);
 
   const allColumns = createAllStudentColumns(tColumn, tDegree, tRole, titleMap);
 
@@ -365,6 +371,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         open={isAdd}
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
+        allCourses={allCourses}
         defaultRole="student"
       />
       <UpdateUserFormDialog

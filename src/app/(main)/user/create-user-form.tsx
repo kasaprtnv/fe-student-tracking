@@ -21,6 +21,7 @@ import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useCourse } from '@/hooks/use-course';
 import { toast } from 'sonner';
 import { SelectOption } from '@/types';
+import { ICourse } from '@/types/course';
 import { RoleSelector } from '../../../components/user/form-fields/role-selector';
 import { StudentFormFields } from '../../../components/user/form-fields/student-form-fields';
 import { CommonFormFields } from '../../../components/user/form-fields/common-form-fields';
@@ -36,6 +37,7 @@ interface CreateUserFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   courseOptions: SelectOption[];
+  allCourses: ICourse[];
   defaultRole?: UserRole;
   onUserCreated?: () => void;
 }
@@ -44,6 +46,7 @@ export function CreateUserFormDialog({
   open,
   onOpenChange,
   courseOptions,
+  allCourses,
   defaultRole = 'student',
   onUserCreated,
 }: CreateUserFormDialogProps) {
@@ -255,7 +258,7 @@ export function CreateUserFormDialog({
             <RoleSelector form={form} handleRoleChange={handleRoleChange} />
             <CommonFormFields form={form} />
             {selectedRole === 'student' && (
-              <StudentFormFields form={form} courseOptions={courseOptions} />
+              <StudentFormFields form={form} allCourses={allCourses} />
             )}
             {selectedRole === 'teacher' && (
               <TeacherFormFields form={form} courseOptions={courseOptions} />
