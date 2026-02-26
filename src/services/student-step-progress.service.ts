@@ -65,6 +65,17 @@ class StudentStepProgressService extends APIService {
       });
   }
 
+  // ดึง attempts ตาม progressId
+  async getAttemptsByProgressId(
+    progressId: string,
+  ): Promise<IApiGetResponse<StudentStepAttempts>> {
+    return this.get(`/student-step-progress/${progressId}/progress-attempts`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   // อนุมัติ
   async approve(
     id: string,
