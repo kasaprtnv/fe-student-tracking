@@ -339,6 +339,7 @@ export default function StudentPage() {
     user?.role,
     teacherManagedCourseIds,
     advancedFilters,
+    locale,
   ]);
 
   const handleViewProfile = useCallback(

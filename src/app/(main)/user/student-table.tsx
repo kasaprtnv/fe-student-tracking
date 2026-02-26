@@ -135,7 +135,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         }
         return user;
       });
-  }, [userMap, searchQuery, getCourseById, titleMap]);
+  }, [userMap, searchQuery, getCourseById, titleMap, locale]);
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId

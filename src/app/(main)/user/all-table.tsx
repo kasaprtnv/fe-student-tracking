@@ -152,7 +152,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         }
         return user;
       });
-  }, [userMap, searchQuery, getCourseById, titleMap]);
+  }, [userMap, searchQuery, getCourseById, titleMap, locale]);
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId
