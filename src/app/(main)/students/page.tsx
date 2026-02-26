@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { Download, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { DataTableClickable } from '@/components/data-table/data-table-clickable';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { DataTableFilterField } from '@/components/data-table/types';
 import { User } from '@/types/user';
 import { createStudentColumns } from './student-column';
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 import { PageHeader } from '@/components/page-header';
 import {
   AdvancedFilterPopover,
@@ -27,6 +27,7 @@ export default function StudentPage() {
   const t = useTranslations('student-page');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
+  const locale = useLocale();
 
   const { user } = useAuth();
   const { fetchAllCourses, allCourseId, courseMap } = useCourse();
@@ -321,9 +322,11 @@ export default function StudentPage() {
         student.courseName?.toLowerCase().includes(lowerQuery) ||
         // Study plan
         student.studyPlan?.toLowerCase().startsWith(lowerQuery) ||
-        // Enroll date (formatted Thai date)
+        // Enroll date (formatted Thai / English date)
         (student.enrollDate &&
-          formatThaiDate(student.enrollDate).startsWith(lowerQuery)) ||
+          formatShortDate(student.enrollDate, locale)
+            .toLowerCase()
+            .includes(lowerQuery)) ||
         // Graduated status (Thai)
         graduatedDisplayTh.startsWith(lowerQuery) ||
         // Graduated status (English)
@@ -346,8 +349,8 @@ export default function StudentPage() {
   );
 
   const studentColumns = useMemo(
-    () => createStudentColumns(tColumn, tDegree, handleViewProfile),
-    [tColumn, tDegree, handleViewProfile],
+    () => createStudentColumns(tColumn, tDegree, handleViewProfile, locale),
+    [tColumn, tDegree, handleViewProfile, locale],
   );
 
   const filterColumns = useMemo<DataTableFilterField<User>[]>(() => {
@@ -377,7 +380,7 @@ export default function StudentPage() {
       [tColumn('enrolled-course-name')]: student.courseName || '-',
       [tColumn('study-plan')]: student.studyPlan || '-',
       [tColumn('enroll-date')]: student.enrollDate
-        ? formatThaiDate(student.enrollDate)
+        ? formatShortDate(student.enrollDate, locale)
         : '-',
       [tColumn('graduated')]: student.graduated
         ? tColumn('graduated-yes')

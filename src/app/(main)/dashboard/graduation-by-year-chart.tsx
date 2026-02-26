@@ -22,8 +22,6 @@ import {
   CartesianGrid,
   LabelList,
 } from 'recharts';
-import { Loader2 } from 'lucide-react';
-import { dashboardService } from '@/services/dashboard.service';
 import { User } from '@/types/user';
 import { ICourse } from '@/types/course';
 import { useTranslations } from 'next-intl';
@@ -45,7 +43,6 @@ export function GraduationByYearChart({
   students,
   courseMap,
   allCourseIds,
-  allYears,
 }: GraduationByYearChartProps) {
   const t = useTranslations('dashboard');
   const tFilters = useTranslations('dashboard.filters');

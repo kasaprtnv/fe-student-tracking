@@ -11,8 +11,8 @@ import { UpdateUserFormDialog } from './update-user-form';
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
-import { formatThaiDate } from '@/lib/format-date';
+import { useTranslations, useLocale } from 'next-intl';
+import { formatShortDate } from '@/lib/format-date';
 import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-dialog';
 
 interface StudentTableProps {
@@ -37,6 +37,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
 
   // Fetch titles on mount
   React.useEffect(() => {
@@ -112,7 +113,9 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
           graduatedDisplayTh.startsWith(query) ||
           graduatedDisplayEn.toLowerCase().startsWith(query) ||
           (user.enrollDate &&
-            formatThaiDate(user.enrollDate).toLowerCase().startsWith(query)) ||
+            formatShortDate(user.enrollDate, locale)
+              .toLowerCase()
+              .includes(query)) ||
           (queryDigits && phoneDigits.startsWith(queryDigits)) ||
           fullName.startsWith(query) ||
           (queryNoSpaces &&
@@ -145,7 +148,12 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
 
   const allCourses = allCourseId.map((id) => courseMap[id]).filter(Boolean);
 
-  const studentColumns = createStudentColumns(tColumn, tDegree, titleMap);
+  const studentColumns = createStudentColumns(
+    tColumn,
+    tDegree,
+    titleMap,
+    locale,
+  );
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;

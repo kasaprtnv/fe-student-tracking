@@ -12,8 +12,8 @@ import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-d
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
-import { formatThaiDate } from '@/lib/format-date';
+import { useTranslations, useLocale } from 'next-intl';
+import { formatShortDate } from '@/lib/format-date';
 
 interface AllTableProps {
   onImport?: () => void;
@@ -39,6 +39,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
   const tDegree = useTranslations('degree');
   const tRole = useTranslations('role');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
 
   // Fetch courses and titles on mount
   React.useEffect(() => {
@@ -129,7 +130,9 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
           graduatedDisplayTh.startsWith(query) ||
           graduatedDisplayEn.toLowerCase().startsWith(query) ||
           (user.enrollDate &&
-            formatThaiDate(user.enrollDate).toLowerCase().startsWith(query)) ||
+            formatShortDate(user.enrollDate, locale)
+              .toLowerCase()
+              .includes(query)) ||
           (queryDigits && phoneDigits.startsWith(queryDigits)) ||
           fullName.startsWith(query) ||
           (queryNoSpaces &&

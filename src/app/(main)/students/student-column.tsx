@@ -1,4 +1,4 @@
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { mixedThEnTextSort, numericStringSort } from '@/lib/table-sorted';
 import { User } from '@/types/user';
@@ -8,6 +8,7 @@ export const createStudentColumns = (
   t: (key: string) => string,
   tDegree: (key: string) => string,
   onViewProfile?: (id: string) => void,
+  locale: string = 'th',
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
@@ -120,7 +121,7 @@ export const createStudentColumns = (
       cell: (row) => {
         const rawDate = row.getValue<string>();
         if (!rawDate) return '-';
-        return formatThaiDate(rawDate);
+        return formatShortDate(rawDate, locale);
       },
     },
     {
