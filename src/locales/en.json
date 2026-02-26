@@ -814,7 +814,13 @@
     "milestone_step": "Milestone Step",
     "enroll_date": "Submit Date",
     "actions": "Download",
-    "no-files": "No approved files"
+    "no-files": "No approved files",
+    "delete-title": "Confirm Deletion",
+    "delete-description": "Are you sure you want to delete {count} selected file(s)? This action cannot be undone.",
+    "toast": {
+      "deleteSuccess": "Successfully deleted {count} file(s)",
+      "deleteFailed": "Failed to delete {count} file(s)"
+    }
   },
   "status": {
     "locked": "Locked",
