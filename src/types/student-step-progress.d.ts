@@ -60,6 +60,15 @@ export interface IStudentStepProgress {
     fileUrl?: string;
     mimeType?: string;
   };
+  // Multiple attachments array
+  attachments?: {
+    attachmentId: string;
+    fileName: string;
+    fileKey?: string;
+    fileSize?: number;
+    mimeType?: string;
+    fileUrl?: string;
+  }[];
 }
 
 export interface IStudentStepProgressState {
