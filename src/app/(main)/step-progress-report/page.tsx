@@ -64,7 +64,7 @@ const StepProgressReportPage = () => {
 
   const statusOptions = [
     { label: tStatus('locked'), value: 'locked' },
-    { label: tStatus('pending'), value: 'pending_approval' },
+    { label: tStatus('pending approval'), value: 'pending_approval' },
     { label: tStatus('declined'), value: 'declined' },
     { label: tStatus('approved'), value: 'approved' },
     { label: tStatus('available'), value: 'available' },

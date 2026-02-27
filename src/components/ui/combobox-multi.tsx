@@ -108,7 +108,7 @@ export function MultiSelect({
             selectedOptions.map((option) => (
               <span
                 key={option.value}
-                className="bg-secondary inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium"
+                className="bg-secondary inline-flex items-center gap-1 rounded px-2 py-1 text-xs"
               >
                 {option.label}
                 {!disabled && enableEachCancel && (
@@ -193,9 +193,7 @@ export function MultiSelect({
                     onClick={() => handleOptionSelect(option.value)}
                   >
                     <div className="flex-1 space-y-1">
-                      <div className="leading-tight font-medium">
-                        {option.label}
-                      </div>
+                      <div className="leading-tight">{option.label}</div>
                       <div className="text-muted-foreground text-xs leading-relaxed">
                         {option.description}
                       </div>

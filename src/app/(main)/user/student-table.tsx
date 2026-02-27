@@ -15,7 +15,6 @@ import { toast } from 'sonner';
 import { useLocale, useTranslations } from 'next-intl';
 import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-dialog';
 import { useDebounce } from '@/lib/use-debounce';
-
 interface StudentTableProps {
   onImport?: () => void;
   importLabel?: string;

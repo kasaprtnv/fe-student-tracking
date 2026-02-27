@@ -516,7 +516,8 @@
       "deleted-successfully": "User deleted successfully",
       "deleted-multiple-successfully": "Multiple users deleted successfully",
       "delete-failed": "Failed to delete user",
-      "milestone-progress-exists": "Cannot delete: {count} student(s) have study progress records"
+      "milestone-progress-exists": "Cannot delete: {count} student(s) have study progress records",
+      "fetch_error": "Failed to fetch users. Please try again."
     },
     "dialog": {
       "confirm_course_change_with_progress": "This student has {count} progress records. If you change the course, all progress data will be deleted. Do you want to proceed?",
