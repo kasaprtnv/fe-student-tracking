@@ -16,8 +16,7 @@ import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
 import { useDebounce } from '@/lib/use-debounce';
-import { useTranslations, useLocale } from 'next-intl';
-import { formatShortDate } from '@/lib/format-date';
+import { useTranslations } from 'next-intl';
 
 interface AllTableProps {
   onImport?: () => void;
@@ -54,7 +53,6 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
   const tRole = useTranslations('role');
   const tCommon = useTranslations('common');
   const tForm = useTranslations('user');
-  const locale = useLocale();
 
   // Fetch courses and titles on mount
   React.useEffect(() => {
