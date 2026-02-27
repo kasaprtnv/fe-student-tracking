@@ -51,16 +51,31 @@ export const useCourse = () => {
 
   // Fetch all courses
   const fetchAllCourses = useCallback(
-    (page?: number, pageSize?: number) => {
-      return dispatch(fetchCourses({ page, pageSize })).unwrap();
+    (
+      page?: number,
+      pageSize?: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) => {
+      return dispatch(
+        fetchCourses({ page, pageSize, sortBy, sortOrder }),
+      ).unwrap();
     },
     [dispatch],
   );
 
   // Search courses
   const searchForCourses = useCallback(
-    (searchQuery: string, page: number, pageSize: number) => {
-      return dispatch(searchCourses({ searchQuery, page, pageSize })).unwrap();
+    (
+      searchQuery: string,
+      page: number,
+      pageSize: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) => {
+      return dispatch(
+        searchCourses({ searchQuery, page, pageSize, sortBy, sortOrder }),
+      ).unwrap();
     },
     [dispatch],
   );

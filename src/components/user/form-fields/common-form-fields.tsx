@@ -21,9 +21,13 @@ import React from 'react';
 
 interface CommonFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
+  disabledFields?: string[];
 }
 
-export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
+export const CommonFormFields = ({
+  form,
+  disabledFields = [],
+}: CommonFormFieldsProps) => {
   const t = useTranslations('user.user-form');
   const { titleMap, allTitleId, fetchAllTitles } = useTitle();
 
@@ -45,7 +49,11 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
               <FormLabel className="text-sm font-medium text-gray-700">
                 {t('label.title')}
               </FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                disabled={disabledFields.includes('titleId')}
+              >
                 <FormControl>
                   <SelectTrigger className="w-full border-gray-300 bg-white">
                     <SelectValue placeholder={t('placeholder.title')} />
@@ -78,6 +86,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
                 <Input
                   placeholder={t('placeholder.first-name')}
                   className="border-gray-300 bg-white"
+                  disabled={disabledFields.includes('firstName')}
                   {...field}
                 />
               </FormControl>
@@ -98,6 +107,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
               <Input
                 placeholder={t('placeholder.last-name')}
                 className="border-gray-300 bg-white"
+                disabled={disabledFields.includes('lastName')}
                 {...field}
               />
             </FormControl>
@@ -118,6 +128,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
                 type="email"
                 placeholder={t('placeholder.email')}
                 className="border-gray-300 bg-white"
+                disabled={disabledFields.includes('email')}
                 {...field}
               />
             </FormControl>
@@ -140,6 +151,7 @@ export const CommonFormFields = ({ form }: CommonFormFieldsProps) => {
                 placeholder={t('placeholder.phone')}
                 className="border-gray-300 bg-white"
                 maxLength={10}
+                disabled={disabledFields.includes('phone')}
                 {...field}
                 onInput={(e) => {
                   const target = e.target as HTMLInputElement;

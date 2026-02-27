@@ -18,12 +18,18 @@ class CourseService extends APIService {
   async getAllCourses(
     page?: number,
     pageSize?: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
   ): Promise<IApiGetResponse<ICourse>> {
-    let url = '/courses';
-    if (page !== undefined && pageSize !== undefined) {
-      url += `?page=${page}&pageSize=${pageSize}`;
+    const params = new URLSearchParams();
+    if (page !== undefined) params.append('page', String(page));
+    if (pageSize !== undefined) params.append('pageSize', String(pageSize));
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
     }
-
+    const query = params.toString();
+    const url = query ? `/courses?${query}` : '/courses';
     return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {
@@ -35,10 +41,21 @@ class CourseService extends APIService {
     searchQuery: string,
     page: number,
     pageSize: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
   ): Promise<IApiGetResponse<ICourse>> {
-    return this.get(
-      `/courses/search?query=${encodeURIComponent(searchQuery)}&page=${page}&pageSize=${pageSize}`,
-    )
+    const params = new URLSearchParams();
+    if (searchQuery !== undefined) params.append('query', searchQuery);
+    if (page !== undefined) params.append('page', String(page));
+    if (pageSize !== undefined) params.append('pageSize', String(pageSize));
+
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+    const query = params.toString();
+    const url = query ? `/courses/search?${query}` : '/courses/search';
+    return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

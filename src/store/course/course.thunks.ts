@@ -8,14 +8,23 @@ export const fetchCourses = createAsyncThunk(
     {
       page,
       pageSize,
+      sortBy,
+      sortOrder,
     }: {
       page?: number;
       pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
     },
     { rejectWithValue },
   ) => {
     try {
-      const res = await courseService.getAllCourses(page, pageSize);
+      const res = await courseService.getAllCourses(
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -33,10 +42,14 @@ export const searchCourses = createAsyncThunk(
       searchQuery,
       page,
       pageSize,
+      sortBy,
+      sortOrder,
     }: {
       searchQuery: string;
       page: number;
       pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
     },
     { rejectWithValue },
   ) => {
@@ -45,6 +58,8 @@ export const searchCourses = createAsyncThunk(
         searchQuery,
         page,
         pageSize,
+        sortBy,
+        sortOrder,
       );
       return res;
     } catch (err: unknown) {

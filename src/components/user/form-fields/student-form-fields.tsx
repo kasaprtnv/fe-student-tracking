@@ -18,11 +18,13 @@ import { useMemo } from 'react';
 interface StudentFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
   allCourses: ICourse[];
+  disabledFields?: string[];
 }
 
 export const StudentFormFields = ({
   form,
   allCourses,
+  disabledFields = [],
 }: StudentFormFieldsProps) => {
   const t = useTranslations('user.user-form');
 
@@ -55,6 +57,7 @@ export const StudentFormFields = ({
                 placeholder={t('placeholder.student-code')}
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 maxLength={8}
+                disabled={disabledFields.includes('code')}
                 {...field}
                 onInput={(e) => {
                   const target = e.target as HTMLInputElement;
@@ -82,6 +85,7 @@ export const StudentFormFields = ({
             </FormLabel>
             <DegreesCombobox
               defaultValue={field.value || ''}
+              disabled={disabledFields.includes('degree')}
               onChange={(value) => {
                 field.onChange(value);
                 // Reset courseId when degree changes
@@ -111,8 +115,10 @@ export const StudentFormFields = ({
                 placeholderEmpty={t('placeholder.no-course-found')}
                 options={filteredCourseOptions}
                 defaultValue={field.value || ''}
+                disabled={
+                  disabledFields.includes('courseId') || !selectedDegree
+                }
                 onChange={(value) => field.onChange(value)}
-                disabled={!selectedDegree}
               />
             </FormControl>
             <FormMessage />
@@ -135,6 +141,7 @@ export const StudentFormFields = ({
                 {t('label.year')}
               </FormLabel>
               <SingleCombobox
+                disabled={disabledFields.includes('year')}
                 placeholder={t('placeholder.year')}
                 placeholderSearch={t('placeholder.search-year')}
                 placeholderEmpty={t('placeholder.no-year-found')}
@@ -163,6 +170,7 @@ export const StudentFormFields = ({
               </FormLabel>
               <FormControl>
                 <SingleCombobox
+                  disabled={disabledFields.includes('studyPlan')}
                   placeholder={t('placeholder.study-plan')}
                   placeholderSearch={t('placeholder.search-study-plan')}
                   placeholderEmpty={t('placeholder.no-study-plan-found')}
@@ -186,6 +194,7 @@ export const StudentFormFields = ({
             </FormLabel>
             <div className="relative">
               <EnrollDateInput
+                disabled={disabledFields.includes('enrollDate')}
                 value={field.value}
                 onChange={(val) => {
                   field.onChange(val);

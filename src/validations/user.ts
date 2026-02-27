@@ -25,6 +25,7 @@ const baseSchema = (t: (key: string) => string) =>
       .string()
       .min(1, t('errors.phone-required'))
       .length(10, t('errors.phone-length')),
+    isActive: z.boolean().default(true),
   });
 
 // Student-specific schema
@@ -92,4 +93,5 @@ export interface UserFormValues {
   teacherDegree?: string;
   academicPosition?: string;
   enrollDate?: string;
+  isActive?: boolean;
 }
