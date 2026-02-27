@@ -80,7 +80,7 @@ export const UploadProfileDialog = ({
       </DialogTrigger>
       <DialogContent className="md:max-w-[750px]">
         <DialogHeader>
-          <DialogTitle>อัปโหลดรูปโปรไฟล์</DialogTitle>
+          <DialogTitle>แก้ไขรูปโปรไฟล์</DialogTitle>
         </DialogHeader>
         <div
           {...getRootProps()}
@@ -135,7 +135,7 @@ export const UploadProfileDialog = ({
             </Button>
           </DialogClose>
           <Button type="submit" onClick={handleUpload} disabled={!file}>
-            ยืนยัน
+            บันทึก
           </Button>
         </DialogFooter>
       </DialogContent>
