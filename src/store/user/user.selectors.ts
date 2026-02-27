@@ -52,27 +52,21 @@ export const selectAllUsersFromMap = createSelector(
 export const selectPaginatedUsersFromMap = createSelector(
   [selectPaginatedUserMap],
   (paginatedUserMap) => {
-    return Object.values(paginatedUserMap).sort((a, b) =>
-      a.firstName.localeCompare(b.firstName),
-    );
+    return Object.values(paginatedUserMap);
   },
 );
 
 export const selectPaginatedStudentsFromMap = createSelector(
   [selectPaginatedStudentMap],
   (paginatedStudentMap) => {
-    return Object.values(paginatedStudentMap).sort((a, b) =>
-      a.firstName.localeCompare(b.firstName),
-    );
+    return Object.values(paginatedStudentMap);
   },
 );
 
 export const selectPaginatedTeachersFromMap = createSelector(
   [selectPaginatedTeacherMap],
   (paginatedTeacherMap) => {
-    return Object.values(paginatedTeacherMap).sort((a, b) =>
-      a.firstName.localeCompare(b.firstName),
-    );
+    return Object.values(paginatedTeacherMap);
   },
 );
 

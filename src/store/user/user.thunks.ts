@@ -8,14 +8,24 @@ export const fetchUsers = createAsyncThunk(
     {
       page,
       pageSize,
+      sortBy,
+      sortOrder,
     }: {
       page?: number;
       pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
     },
     { rejectWithValue },
   ) => {
     try {
-      const res = await userService.getAll(page, pageSize);
+      const res = await userService.getAll(
+        page,
+        pageSize,
+        undefined,
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -33,11 +43,26 @@ export const searchUsers = createAsyncThunk(
       searchQuery,
       page,
       pageSize,
-    }: { searchQuery: string; page: number; pageSize: number },
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
     { rejectWithValue },
   ) => {
     try {
-      const res = await userService.searchUsers(searchQuery, page, pageSize);
+      const res = await userService.searchUsers(
+        searchQuery,
+        page,
+        pageSize,
+        undefined,
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -54,14 +79,24 @@ export const fetchStudentUsers = createAsyncThunk(
     {
       page,
       pageSize,
+      sortBy,
+      sortOrder,
     }: {
       page?: number;
       pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
     },
     { rejectWithValue },
   ) => {
     try {
-      const res = await userService.getAll(page, pageSize, 'student');
+      const res = await userService.getAll(
+        page,
+        pageSize,
+        'student',
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -78,14 +113,24 @@ export const fetchTeacherUsers = createAsyncThunk(
     {
       page,
       pageSize,
+      sortBy,
+      sortOrder,
     }: {
       page?: number;
       pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
     },
     { rejectWithValue },
   ) => {
     try {
-      const res = await userService.getAll(page, pageSize, 'teacher');
+      const res = await userService.getAll(
+        page,
+        pageSize,
+        'teacher',
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -103,7 +148,15 @@ export const searchStudents = createAsyncThunk(
       searchQuery,
       page,
       pageSize,
-    }: { searchQuery: string; page: number; pageSize: number },
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
     { rejectWithValue },
   ) => {
     try {
@@ -112,6 +165,8 @@ export const searchStudents = createAsyncThunk(
         page,
         pageSize,
         'student',
+        sortBy,
+        sortOrder,
       );
       return res;
     } catch (err: unknown) {
@@ -130,7 +185,15 @@ export const searchTeachers = createAsyncThunk(
       searchQuery,
       page,
       pageSize,
-    }: { searchQuery: string; page: number; pageSize: number },
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
     { rejectWithValue },
   ) => {
     try {
@@ -139,6 +202,8 @@ export const searchTeachers = createAsyncThunk(
         page,
         pageSize,
         'teacher',
+        sortBy,
+        sortOrder,
       );
       return res;
     } catch (err: unknown) {

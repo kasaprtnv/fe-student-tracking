@@ -78,6 +78,7 @@ export const createTeacherColumns = (
     },
     {
       header: t('managed-courses'),
+      enableSorting: false,
       accessorKey: 'managedCourses',
       cell: ({ row }) => {
         const rowData = row.original as User & { managedCourses?: string[] };

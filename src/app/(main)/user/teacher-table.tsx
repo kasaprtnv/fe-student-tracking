@@ -84,23 +84,39 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     teacherPagination.pageSize,
   );
 
+  // Local sorting state for server-side sorting
+  const [currentSortBy, setCurrentSortBy] = React.useState<string | undefined>(
+    undefined,
+  );
+  const [currentSortOrder, setCurrentSortOrder] = React.useState<
+    'asc' | 'desc' | undefined
+  >(undefined);
+
   // Debounce search to avoid fetching on every keystroke
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   // Stable reference to fetcher function
   const teachersFetcher = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async ([_key, searchQuery, page, pageSize]: [
+    async ([_key, searchQuery, page, pageSize, sortBy, sortOrder]: [
       string,
       string,
       number,
       number,
+      string | undefined,
+      'asc' | 'desc' | undefined,
     ]) => {
       try {
         if (searchQuery && searchQuery.trim() !== '') {
-          return await searchForTeachers(searchQuery, page, pageSize);
+          return await searchForTeachers(
+            searchQuery,
+            page,
+            pageSize,
+            sortBy,
+            sortOrder,
+          );
         } else {
-          return await fetchTeachers(page, pageSize);
+          return await fetchTeachers(page, pageSize, sortBy, sortOrder);
         }
       } catch (err) {
         toast.error(tForm('toast.fetch_error'));
@@ -111,7 +127,14 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
   );
 
   const { mutate } = useSWR(
-    ['fetch-teachers', debouncedSearchQuery, currentPage, currentPageSize],
+    [
+      'fetch-teachers',
+      debouncedSearchQuery,
+      currentPage,
+      currentPageSize,
+      currentSortBy,
+      currentSortOrder,
+    ],
     teachersFetcher,
     {
       revalidateOnFocus: false,
@@ -269,6 +292,16 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     [setTeacherPageSize],
   );
 
+  const handleSortChange = React.useCallback(
+    (sortBy: string | undefined, sortOrder: 'asc' | 'desc' | undefined) => {
+      setCurrentSortBy(sortBy);
+      setCurrentSortOrder(sortOrder);
+      setCurrentPage(1);
+      setTeacherPage(1);
+    },
+    [setTeacherPage],
+  );
+
   // Memoize refresh function
   const refreshData = React.useCallback(() => {
     mutate();
@@ -295,6 +328,8 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
         buttonImportLabel={importLabel}
         isLoading={loader || storeAction !== 'none'}
         manualPagination={true}
+        manualSorting={true}
+        onSortChange={handleSortChange}
         page={currentPage}
         pageSize={currentPageSize}
         rowCount={teacherPagination.total}

@@ -20,12 +20,18 @@ class UserService extends APIService {
     page?: number,
     pageSize?: number,
     role?: UserRole,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
   ): Promise<IApiGetResponse<User>> {
     const params = new URLSearchParams();
     if (page !== undefined) params.append('page', String(page));
     if (pageSize !== undefined) params.append('limit', String(pageSize));
 
     if (role) params.append('role', role);
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
 
     const query = params.toString();
     const url = query ? `/users?${query}` : '/users';
@@ -42,9 +48,21 @@ class UserService extends APIService {
     page: number,
     pageSize: number,
     role?: UserRole,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
   ): Promise<IApiGetResponse<User>> {
-    let url = `/users/search?query=${encodeURIComponent(searchQuery)}&page=${page}&pageSize=${pageSize}`;
-    if (role) url += `&role=${role}`;
+    const params = new URLSearchParams();
+    params.append('query', searchQuery);
+    params.append('page', String(page));
+    params.append('limit', String(pageSize));
+    if (role) params.append('role', role);
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+    const query = params.toString();
+    const url = `/users/search?${query}`;
+
     return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {

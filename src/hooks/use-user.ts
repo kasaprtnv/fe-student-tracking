@@ -76,42 +76,84 @@ export const useUser = () => {
 
   // Fetch all users
   const fetchAllUsers = useCallback(
-    (page?: number, pageSize?: number) =>
-      dispatch(fetchUsers({ page, pageSize })).unwrap(),
+    (
+      page?: number,
+      pageSize?: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) => dispatch(fetchUsers({ page, pageSize, sortBy, sortOrder })).unwrap(),
     [dispatch],
   );
 
   // Search users
   const searchForUsers = useCallback(
-    (searchQuery: string, page: number, pageSize: number) =>
-      dispatch(searchUsers({ searchQuery, page, pageSize })).unwrap(),
+    (
+      searchQuery: string,
+      page: number,
+      pageSize: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) =>
+      dispatch(
+        searchUsers({ searchQuery, page, pageSize, sortBy, sortOrder }),
+      ).unwrap(),
     [dispatch],
   );
 
   // Fetch student users
   const fetchStudents = useCallback(
-    (page?: number, pageSize?: number) =>
-      dispatch(fetchStudentUsers({ page, pageSize })).unwrap(),
+    (
+      page?: number,
+      pageSize?: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) =>
+      dispatch(
+        fetchStudentUsers({ page, pageSize, sortBy, sortOrder }),
+      ).unwrap(),
     [dispatch],
   );
 
   const fetchTeachers = useCallback(
-    (page?: number, pageSize?: number) =>
-      dispatch(fetchTeacherUsers({ page, pageSize })).unwrap(),
+    (
+      page?: number,
+      pageSize?: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) =>
+      dispatch(
+        fetchTeacherUsers({ page, pageSize, sortBy, sortOrder }),
+      ).unwrap(),
     [dispatch],
   );
 
   // Search students
   const searchForStudents = useCallback(
-    (searchQuery: string, page: number, pageSize: number) =>
-      dispatch(searchStudents({ searchQuery, page, pageSize })).unwrap(),
+    (
+      searchQuery: string,
+      page: number,
+      pageSize: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) =>
+      dispatch(
+        searchStudents({ searchQuery, page, pageSize, sortBy, sortOrder }),
+      ).unwrap(),
     [dispatch],
   );
 
   // Search teachers
   const searchForTeachers = useCallback(
-    (searchQuery: string, page: number, pageSize: number) =>
-      dispatch(searchTeachers({ searchQuery, page, pageSize })).unwrap(),
+    (
+      searchQuery: string,
+      page: number,
+      pageSize: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) =>
+      dispatch(
+        searchTeachers({ searchQuery, page, pageSize, sortBy, sortOrder }),
+      ).unwrap(),
     [dispatch],
   );
 
