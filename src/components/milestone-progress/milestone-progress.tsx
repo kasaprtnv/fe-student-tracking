@@ -31,6 +31,7 @@ import {
   Download,
   CircleX,
   CircleCheck,
+  Hourglass,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -663,7 +664,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                     {pending && (
                                       <>
                                         <div className="flex items-center gap-1.5">
-                                          <Spinner className="size-5 text-yellow-400" />
+                                          <Hourglass className="size-5 text-yellow-400" />
                                           <span className="text-lg text-yellow-400">
                                             {t('pending')}
                                           </span>
