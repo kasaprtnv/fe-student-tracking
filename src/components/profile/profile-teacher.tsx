@@ -107,7 +107,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
             <Separator />
             <div className="flex flex-col gap-2 px-12">
               <span className="mr-2 text-base font-medium text-gray-600">
-                {t('personal_information.degree')}
+                {t('personal_information.course')}
               </span>
               <div className="flex items-center gap-4">
                 <span className="text-center">
