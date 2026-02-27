@@ -9,6 +9,8 @@ import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 import { formatDate } from '@/lib/format-date';
 import { uploadService } from '@/services/upload.service';
+import DeleteConfirmationDialog from '@/components/delete-dialog';
+import { toast } from 'sonner';
 
 function mapDegree(degree?: string) {
   switch (degree) {
@@ -36,7 +38,13 @@ export default function FileListPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const transformToFileItem = (item: IStudentStepProgress): FileItem => {
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [filesToDelete, setFilesToDelete] = useState<FileItem[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Flatten progress records to file items (1 row = 1 file)
+  const transformToFileItems = (item: IStudentStepProgress): FileItem[] => {
     const studentName =
       item.studentName ||
       (item.student
@@ -45,9 +53,6 @@ export default function FileListPage() {
     const studentCode = item.studentCode || item.student?.code || '-';
     const courseName = item.courseName || item.student?.courseName || '-';
     const stepName = item.stepName || item.step?.name || '-';
-    // รองรับข้อมูลไฟล์จาก API
-    const fileName = item.fileName || '-';
-    const fileUrl = item.fileUrl || item.fileKey || ''; // รองรับทั้ง fileUrl และ fileKey
 
     const degreeRaw =
       item.studentDegree ?? item.degree ?? item.student?.degree ?? '-';
@@ -55,8 +60,8 @@ export default function FileListPage() {
     const educationLevel = mapDegree(degreeRaw);
     const gradYear = mapYear(yearRaw);
 
-    return {
-      filename: fileName,
+    // Base file item data (shared across attachments)
+    const baseItem = {
       fullname: studentName,
       email: `${studentCode}@go.buu.ac.th`,
       education_level: educationLevel,
@@ -65,8 +70,42 @@ export default function FileListPage() {
       course_name: courseName,
       milestone_step: stepName,
       enroll_date: item.submittedAt ? formatDate(item.submittedAt) : '-',
-      file_url: fileUrl,
     };
+
+    // If attachments array exists, flatten to multiple rows
+    if (item.attachments && item.attachments.length > 0) {
+      type AttachmentWithDeleted = (typeof item.attachments)[number] & {
+        isDeleted?: boolean;
+      };
+      const activeAttachments = (
+        item.attachments as AttachmentWithDeleted[]
+      ).filter((a) => !a.isDeleted);
+      return activeAttachments.map((attachment) => ({
+        ...baseItem,
+        attachmentId: attachment.attachmentId || '',
+        filename: attachment.fileName || '-',
+        file_url: attachment.fileUrl || attachment.fileKey || '',
+      }));
+    }
+
+    // Fallback to single attachment or fileName field
+    const fileName = item.fileName || item.attachment?.fileName || '-';
+    const fileUrl =
+      item.fileUrl ||
+      item.fileKey ||
+      item.attachment?.fileUrl ||
+      item.attachment?.fileKey ||
+      '';
+    const attachmentId = item.attachment?.id || '';
+
+    return [
+      {
+        ...baseItem,
+        attachmentId,
+        filename: fileName,
+        file_url: fileUrl,
+      },
+    ];
   };
 
   // ดึงข้อมูลไฟล์ที่อนุมัติแล้ว
@@ -80,7 +119,8 @@ export default function FileListPage() {
       });
 
       if (response?.data) {
-        const transformedFiles = response.data.map(transformToFileItem);
+        // Flatten: 1 progress with N attachments = N rows
+        const transformedFiles = response.data.flatMap(transformToFileItems);
         setFiles(transformedFiles);
       }
     } catch (err) {
@@ -118,6 +158,59 @@ export default function FileListPage() {
         file.milestone_step?.toLowerCase().includes(lowerQuery),
     );
   }, [files, searchQuery]);
+
+  // จัดการลบไฟล์หลายรายการ
+  const handleMultiDelete = (selectedFiles: FileItem[]) => {
+    setFilesToDelete(selectedFiles);
+    setDeleteDialogOpen(true);
+  };
+
+  // ยืนยันการลบ
+  const confirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      // ลบทีละไฟล์
+      const deletePromises = filesToDelete
+        .filter((file) => file.attachmentId) // กรองเฉพาะไฟล์ที่มี attachmentId
+        .map((file) => uploadService.deleteAttachment(file.attachmentId));
+
+      const results = await Promise.allSettled(deletePromises);
+
+      // ตรวจสอบว่ามีไฟล์ใดลบไม่สำเร็จ
+      const failedCount = results.filter(
+        (r) =>
+          r.status === 'rejected' ||
+          (r.status === 'fulfilled' && !r.value.success),
+      ).length;
+
+      const successCount = results.length - failedCount;
+
+      if (failedCount > 0) {
+        toast.error(
+          t('merge-files.toast.deleteFailed', { count: failedCount }),
+        );
+      }
+
+      if (successCount > 0) {
+        toast.success(
+          t('merge-files.toast.deleteSuccess', { count: successCount }),
+        );
+      }
+
+      // รีเฟรชข้อมูล
+      await fetchApprovedFiles();
+    } catch (err) {
+      console.error('Error deleting files:', err);
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setFilesToDelete([]);
+    }
+  };
+
+  // สร้าง unique id สำหรับแต่ละ row
+  const getRowId = (file: FileItem) =>
+    file.attachmentId || `${file.filename}-${file.email}`;
 
   if (loading) {
     return (
@@ -159,8 +252,25 @@ export default function FileListPage() {
           onSearch={setSearchQuery}
           searchQuery={searchQuery}
           enabledPagination={true}
+          onMultiDelete={handleMultiDelete}
+          getRowId={getRowId}
         />
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setFilesToDelete([]);
+        }}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+        title="delete-title"
+        description="delete-description"
+        translationKey="merge-files"
+        count={filesToDelete.length}
+      />
     </>
   );
 }

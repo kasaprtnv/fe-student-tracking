@@ -12,7 +12,7 @@ import { UpdateUserFormDialog } from './update-user-form';
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-dialog';
 import { useDebounce } from '@/lib/use-debounce';
 
@@ -38,13 +38,14 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     loader,
     getStudentProgressCount,
   } = useUser();
-  const { allCourseId, getCourseById } = useCourse();
+  const { allCourseId, getCourseById, courseMap } = useCourse();
   const { titleMap } = useTitle();
   const tUser = useTranslations('user');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
   const tCommon = useTranslations('common');
   const tForm = useTranslations('user');
+  const locale = useLocale();
 
   // Local pagination state for immediate useSWR key updates
   const [currentPage, setCurrentPage] = React.useState(studentPagination.page);
@@ -115,11 +116,14 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
+  const allCourses = allCourseId.map((id) => courseMap[id]).filter(Boolean);
+
   const studentColumns = createStudentColumns(
     tColumn,
     tDegree,
     tUser,
     titleMap,
+    locale,
   );
 
   const [isEdit, setIsEdit] = React.useState<{
@@ -314,6 +318,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         open={isAdd}
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
+        allCourses={allCourses}
         defaultRole="student"
         onUserCreated={refreshData}
       />

@@ -15,8 +15,9 @@ import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-d
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
 import { useDebounce } from '@/lib/use-debounce';
+import { useTranslations, useLocale } from 'next-intl';
+import { formatShortDate } from '@/lib/format-date';
 
 interface AllTableProps {
   onImport?: () => void;
@@ -41,7 +42,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     userMap,
     getStudentProgressCount,
   } = useUser();
-  const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
+  const { allCourseId, getCourseById, fetchAllCourses, courseMap } =
+    useCourse();
   const { titleMap, fetchAllTitles } = useTitle();
   const { fetchAllCourseStaff } = useCourseStaff();
   const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
@@ -52,6 +54,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
   const tRole = useTranslations('role');
   const tCommon = useTranslations('common');
   const tForm = useTranslations('user');
+  const locale = useLocale();
 
   // Fetch courses and titles on mount
   React.useEffect(() => {
@@ -142,6 +145,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     .filter((option): option is SelectOption => option !== undefined);
 
   const allColumns = createAllStudentColumns(tColumn, tUser, tRole, titleMap);
+  const allCourses = allCourseId.map((id) => courseMap[id]).filter(Boolean);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -389,6 +393,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         open={isAdd}
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
+        allCourses={allCourses}
         defaultRole="student"
         onUserCreated={refreshData}
       />

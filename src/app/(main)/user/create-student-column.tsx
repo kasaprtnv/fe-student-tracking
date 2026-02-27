@@ -1,5 +1,5 @@
 'use client';
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
 import { ITitle } from '@/types/title';
@@ -34,6 +34,7 @@ export const createStudentColumns = (
   tDegree: (key: string) => string,
   tUser: (key: string) => string,
   titleMap: Record<string, ITitle>,
+  locale: string = 'th',
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
@@ -115,7 +116,7 @@ export const createStudentColumns = (
       cell: (row) => {
         const rawDate = row.getValue<string>();
         if (!rawDate) return <span>-</span>;
-        const localString = formatThaiDate(rawDate);
+        const localString = formatShortDate(rawDate, locale);
         return localString;
       },
     },

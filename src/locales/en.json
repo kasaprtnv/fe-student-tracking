@@ -197,7 +197,9 @@
         "updated-successfully": "Title updated successfully!",
         "update-failed": "Failed to update title. Please try again.",
         "deleted-successfully": "Title deleted successfully!",
-        "deletion-failed": "Failed to delete title. Please try again."
+        "deletion-failed": "Failed to delete title. Please try again.",
+        "cannot-delete-in-use": "Cannot delete this title because it is currently in use.",
+        "delete-error": "Error checking title usage."
       },
       "header": {
         "create": "Create New Title",
@@ -235,9 +237,15 @@
     "contact_admin": "Please contact staff to enroll in a course"
   },
   "milestone-progress": {
+    "dayperiod": "Day Period",
+    "deadline": "Deadline",
+    "NotifyBefore": "Notify Before",
+    "day": "Day",
+    "unlock_conditions": "Unlock Conditions",
     "completed": "Completed",
     "pending": "Pending",
     "declined": "Declined",
+    "deadline_date": "Deadline Date",
     "locked": "Locked",
     "upload_button": "Upload File",
     "uploading": "Uploading...",
@@ -248,6 +256,7 @@
     "accept_file_type": "Accept File Type",
     "progress_count": "completed {completed} out of {total} steps",
     "reason_for_decline": "Reason for Decline",
+    "description": "Description",
     "file_attachment": "File Attachment",
     "confirm_submit_title": "Confirm Submission",
     "confirm_submit_description": "Are you sure you want to submit this file?",
@@ -404,7 +413,7 @@
       "course-name": "Course name",
       "course-description": "Description",
       "course-code": "Course code",
-      "course":"Course",
+      "course": "Course",
       "select-milestone": "Select Milestone"
     },
 
@@ -438,7 +447,8 @@
       "title": "Confirm Save?",
       "description": "Are you sure you want to save all unlock conditions?",
       "cancel": "Cancel",
-      "confirm": "Save"
+      "confirm": "Save",
+      "success": "Prerequisites saved successfully!"
     },
 
     "toast": {
@@ -563,6 +573,7 @@
         "enroll-date": "Select enroll date",
         "search-course": "Search course...",
         "no-course-found": "No course found",
+        "select-degree-first": "Select education level first",
         "search-year": "Search year...",
         "no-year-found": "No year found",
         "study-plan": "Select study plan",
@@ -739,9 +750,10 @@
     }
   },
   "student-page": {
+    "export": "Export PDF",
     "title": "Student List",
     "description": "View all student information. Click on a row to view profile.",
-    "personal-information-student": "Personal Information",
+    "personal-information-student": "Student Information",
     "export-button": "Export Data"
   },
   "degree": {
@@ -765,7 +777,7 @@
       "unit-courses": "courses"
     },
     "charts": {
-      "students-by-course": "Students by Course",
+      "students-by-course": "Students by Course and Academic Year",
       "students-by-degree": "Students by Degree",
       "graduation-by-year": "Graduation Status by Year",
       "no-data": "No student data"
@@ -774,10 +786,10 @@
       "all-courses": "All Courses",
       "all-degrees": "All Education Levels",
       "all-years": "All Years",
-      "all": "All",
-      "years-3": "Last 3 years",
-      "years-5": "Last 5 years",
-      "years-10": "Last 10 years",
+      "all": "All Years",
+      "years-3": "Last 3 Years",
+      "years-5": "Last 5 Years",
+      "years-10": "Last 10 Years",
       "course": "Course",
       "degree": "Degree",
       "year": "Year"
@@ -805,7 +817,13 @@
     "milestone_step": "Milestone Step",
     "enroll_date": "Submit Date",
     "actions": "Download",
-    "no-files": "No approved files"
+    "no-files": "No approved files",
+    "delete-title": "Confirm Deletion",
+    "delete-description": "Are you sure you want to delete {count} selected file(s)? This action cannot be undone.",
+    "toast": {
+      "deleteSuccess": "Successfully deleted {count} file(s)",
+      "deleteFailed": "Failed to delete {count} file(s)"
+    }
   },
   "status": {
     "locked": "Locked",

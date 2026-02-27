@@ -343,8 +343,8 @@ export function DataTableClickable<TData, TValue>({
                     }
                     className={
                       onView
-                        ? 'hover:bg-muted/50 cursor-pointer transition-colors'
-                        : undefined
+                        ? 'hover:bg-muted/50 h-[60px] cursor-pointer transition-colors'
+                        : 'h-[49px]'
                     }
                     onClick={(e) => {
                       if (!onView) return;

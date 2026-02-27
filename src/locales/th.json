@@ -58,7 +58,7 @@
     "notify-receiver-email": "อีเมลแจ้งเตือน",
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
     "select-milestone": "ไปยังขั้นตอนการศึกษา",
-    "created_at": "วันที่สร้าง",
+    "created_at": "วันที่เพิ่ม",
     "updated_at": "วันที่แก้ไขล่าสุด",
     "full-name": "ชื่อ-นามสกุล",
     "email": "อีเมล",
@@ -87,7 +87,7 @@
     "course-code": "รหัสหลักสูตร",
     "course-name": "ชื่อหลักสูตร",
     "course-description": "คำอธิบายหลักสูตร",
-    "title-name": "ชื่อคำนำหน้า",
+    "title-name": "คำนำหน้า",
     "title-description": "คำอธิบายคำนำหน้า"
   },
   "common": {
@@ -103,8 +103,8 @@
   },
   "student-form": {
     "label": {
-      "student-id": "รหัสนักศึกษา",
-      "student-id-placeholder": "กรอกรหัสนักศึกษา",
+      "student-id": "รหัสนิสิต",
+      "student-id-placeholder": "กรอกรหัสนิสิต",
       "first-name": "ชื่อ",
       "first-name-placeholder": "กรอกชื่อ",
       "last-name": "นามสกุล",
@@ -113,7 +113,7 @@
       "degree-placeholder": "กรอกวุฒิการศึกษา"
     },
     "errors": {
-      "student-id-required": "กรุณากรอกรหัสนักศึกษา",
+      "student-id-required": "กรุณากรอกรหัสนิสิต",
       "first-name-required": "กรุณากรอกชื่อ",
       "first-name-min": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
       "first-name-max": "ชื่อต้องไม่เกิน 50 ตัวอักษร",
@@ -184,7 +184,7 @@
         "name-duplicate": "ชื่อคำนำหน้านี้มีอยู่แล้ว"
       },
       "label": {
-        "name": "ชื่อคำนำหน้า",
+        "name": "คำนำหน้า",
         "description": "คำอธิบายคำนำหน้า"
       },
       "placeholder": {
@@ -192,19 +192,21 @@
         "description": "กรอกคำอธิบายคำนำหน้า"
       },
       "toast": {
-        "created-successfully": "สร้างคำนำหน้าสำเร็จ!",
+        "created-successfully": "เพิ่มคำนำหน้าสำเร็จ!",
         "creation-failed": "ไม่สามารถสร้างคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
         "updated-successfully": "แก้ไขคำนำหน้าสำเร็จ!",
         "update-failed": "ไม่สามารถแก้ไขคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
         "deleted-successfully": "ลบคำนำหน้าสำเร็จ!",
-        "deletion-failed": "ไม่สามารถลบคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง"
+        "deletion-failed": "ไม่สามารถลบคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
+        "cannot-delete-in-use": "ไม่สามารถลบคำนำหน้านี้ได้ เนื่องจากยังมีการใช้งานอยู่",
+        "delete-error": "เกิดข้อผิดพลาดในการตรวจสอบการใช้งานคำนำหน้า"
       },
       "header": {
-        "create": "เพิ่มคำนำหน้าใหม่",
+        "create": "เพิ่มคำนำหน้า",
         "edit": "แก้ไขคำนำหน้า"
       },
       "header_description": {
-        "create": "กรอกข้อมูลเพื่อเพิ่มคำนำหน้าใหม่ในระบบ",
+        "create": "กรอกข้อมูลเพื่อเพิ่มคำนำหน้า",
         "edit": "แก้ไขข้อมูลคำนำหน้าผ่านแบบฟอร์มด้านล่าง"
       }
     },
@@ -220,7 +222,7 @@
       "email": "อีเมล",
       "phone": "เบอร์โทรศัพท์",
       "year": "ปีที่เข้าศึกษา",
-      "student_id": "รหัสนักศึกษา",
+      "student_id": "รหัสนิสิต",
       "major": "สาขาวิชา",
       "faculty": "คณะ",
       "course": "หลักสูตร",
@@ -233,9 +235,15 @@
     "contact_admin": "โปรดติดต่อเจ้าหน้าที่เพื่อลงทะเบียนหลักสูตร"
   },
   "milestone-progress": {
+    "dayperiod": "ระยะเวลา",
+    "deadline": "กำหนดส่ง",
+    "NotifyBefore": "แจ้งเตือนก่อน",
+    "day": "วัน",
+    "unlock_conditions": "เงื่อนไขการปลดล็อก",
     "completed": "อนุมัติ",
     "pending": "รอตรวจสอบ",
     "declined": "ไม่อนุมัติ",
+    "deadline_date": "วันที่กำหนดส่ง",
     "locked": "ไม่สามารถทำได้",
     "upload_button": "อัปโหลดไฟล์",
     "uploading": "กำลังอัปโหลด...",
@@ -246,6 +254,7 @@
     "accept_file_type": "รองรับไฟล์ประเภท",
     "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน",
     "reason_for_decline": "เหตุผลที่ปฏิเสธ",
+    "description": "คำอธิบาย",
     "file_attachment": "เอกสารที่แนบส่งมา",
     "confirm_submit_title": "ยืนยันการส่ง",
     "confirm_submit_description": "คุณต้องการยืนยันการส่งไฟล์นี้หรือไม่?",
@@ -404,7 +413,7 @@
       "course-name": "ชื่อหลักสูตร",
       "course-description": "คำอธิบายหลักสูตร",
       "course-code": "รหัสหลักสูตร",
-      "course":"หลักสูตร",
+      "course": "หลักสูตร",
       "select-milestone": "เลือกขั้นตอนการศึกษา"
     },
 
@@ -438,7 +447,8 @@
       "title": "ยืนยันการบันทึก?",
       "description": "คุณต้องการบันทึกเงื่อนไขการปลดล็อกทั้งหมดใช่หรือไม่?",
       "cancel": "ยกเลิก",
-      "confirm": "บันทึก"
+      "confirm": "บันทึก",
+      "success": "บันทึกเงื่อนไขสำเร็จ!"
     },
 
     "toast": {
@@ -505,7 +515,7 @@
       "deleted-successfully": "ลบผู้ใช้งานสำเร็จ!",
       "deleted-multiple-successfully": "ลบผู้ใช้หลายคนสำเร็จ",
       "delete-failed": "ลบผู้ใช้ไม่สำเร็จ",
-      "milestone-progress-exists": "ไม่สามารถลบได้ มีนักศึกษา {count} คนอยู่ในขั้นตอนการศึกษา"
+      "milestone-progress-exists": "ไม่สามารถลบได้ มีนิสิต {count} คนอยู่ในขั้นตอนการศึกษา"
     },
     "dialog": {
       "confirm_course_change_with_progress": "นักเรียนคนนี้มีความคืบหน้า {count} รายการ หากเปลี่ยนหลักสูตร ข้อมูลความคืบหน้าทั้งหมดจะถูกลบ คุณต้องการดำเนินการต่อหรือไม่?",
@@ -562,6 +572,7 @@
         "enroll-date": "เลือกวันที่ลงทะเบียน",
         "search-course": "ค้นหาหลักสูตร...",
         "no-course-found": "ไม่พบหลักสูตร",
+        "select-degree-first": "กรุณาเลือกระดับการศึกษา",
         "search-year": "ค้นหาปีการศึกษา...",
         "no-year-found": "ไม่พบปีการศึกษา",
         "study-plan": "เลือกแผนการเรียน",
@@ -652,10 +663,10 @@
     "teacher": "อาจารย์"
   },
   "verify-certificate": {
-    "title": "ตรวจสอบหลักฐานนักศึกษา",
+    "title": "ตรวจสอบหลักฐานนิสิต",
     "breadcrumb": {
       "home": "แดชบอร์ด",
-      "verify": "ตรวจสอบหลักฐานนักศึกษา",
+      "verify": "ตรวจสอบหลักฐานนิสิต",
       "detail": "รายละเอียด"
     },
     "search_placeholder": "ค้นหา",
@@ -736,6 +747,7 @@
     }
   },
   "student-page": {
+    "export": "ส่งออกข้อมูลเป็น PDF",
     "title": "รายชื่อนิสิต",
     "description": "แสดงข้อมูลนิสิตทั้งหมดในระบบ คลิกที่ชื่อหรือแถวเพื่อดูโปรไฟล์",
     "personal-information-student": "ข้อมูลส่วนตัวของนิสิต",
@@ -757,20 +769,20 @@
       "total-teachers": "อาจารย์",
       "total-courses": "หลักสูตรทั้งหมด",
       "students-in-courses": "นิสิตทั้งหมดในหลักสูตร",
-      "managed-courses": "ดูแลหลักสูตรทั้งหมด",
+      "managed-courses": "หลักสูตรที่ดูแลทั้งหมด",
       "unit-people": "คน",
       "unit-courses": "หลักสูตร"
     },
     "charts": {
-      "students-by-course": "จำนวนนิสิตในแต่ละหลักสูตร",
-      "students-by-degree": "นิสิตตามระดับปริญญา",
-      "graduation-by-year": "สถานะจบการศึกษาตามปี",
-      "no-data": "ไม่มีข้อมูลนักศึกษา"
+      "students-by-course": "จำนวนนิสิตแยกตามหลักสูตรและปีการศึกษา",
+      "students-by-degree": "จำนวนนิสิตตามระดับปริญญา",
+      "graduation-by-year": "สถานะการสำเร็จการศึกษา",
+      "no-data": "ไม่มีข้อมูลนิสิต"
     },
     "filters": {
       "all-courses": "ทุกหลักสูตร",
       "all-degrees": "ทุกระดับการศึกษา",
-      "all-years": "ทุกปี",
+      "all-years": "ทุกปีการศึกษา",
       "all": "ทั้งหมด",
       "years-3": "3 ปีล่าสุด",
       "years-5": "5 ปีล่าสุด",
@@ -802,7 +814,13 @@
     "milestone_step": "ขั้นตอน",
     "enroll_date": "วันที่ส่ง",
     "actions": "ดาวน์โหลด",
-    "no-files": "ไม่มีไฟล์ที่อนุมัติ"
+    "no-files": "ไม่มีไฟล์ที่อนุมัติ",
+    "delete-title": "ยืนยันการลบไฟล์",
+    "delete-description": "คุณต้องการลบไฟล์ที่เลือกจำนวน {count} รายการหรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
+    "toast": {
+      "deleteSuccess": "ลบไฟล์สำเร็จ {count} รายการ",
+      "deleteFailed": "ลบไฟล์ไม่สำเร็จ {count} รายการ"
+    }
   },
   "status": {
     "locked": "ยังไม่เริ่มดำเนินการ",
@@ -870,7 +888,7 @@
     "no-results": "ไม่พบผลลัพธ์",
     "apply": "ค้นหา",
     "cancel": "ยกเลิก",
-    "reset": "รีเซ็ต",
+    "reset": "คืนค่า",
     "filter-button": "ตัวกรองขั้นสูง",
     "date-format": "วว/ดด/ปปปป",
     "select-date-range": "เลือกช่วงวันที่",

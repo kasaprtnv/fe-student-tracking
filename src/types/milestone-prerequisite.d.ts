@@ -27,3 +27,8 @@ export interface MilestonePrerequisiteDTO {
   requiredStepId?: string;
   courseId?: string;
 }
+
+export interface UnlockCondition {
+  type: 'milestone' | 'step';
+  id: string;
+}

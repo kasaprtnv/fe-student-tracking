@@ -45,6 +45,14 @@ import { uploadService } from '@/services/upload.service';
 import { UploadFileDialog } from './upload-file-dialog';
 import { StudentStepAttempts } from '@/types/student-step-attempts';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
+import { UnlockCondition } from '@/types/milestone-prerequisite';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
+import { Textarea } from '../ui/textarea';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
@@ -61,6 +69,9 @@ interface MilestoneProgressProps {
   isSubmitting?: Record<string, boolean>;
   stepProgressMap?: Record<string, string>;
   userId?: string;
+  courseIsUsed?: boolean;
+  displayMode?: 'normal' | 'select-milestone';
+  lockInfoMap?: Record<string, UnlockCondition[]>;
 }
 
 const isStepCompleted = (status: string) => status === 'approved';
@@ -84,6 +95,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   isSubmitting,
   stepProgressMap = {},
   userId,
+  courseIsUsed = false,
+  lockInfoMap = {},
+  displayMode = 'normal',
 }) => {
   const t = useTranslations('milestone-progress');
   const language = useLocale();
@@ -93,7 +107,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const attemptMap = useMemo(() => {
     const map: Record<string, StudentStepAttempts> = {};
     stepAttempts?.forEach((attempt) => {
-      const stepId = attempt.stepProgress.mileStoneStepId;
+      const stepId = attempt.stepProgress.milestoneStepId;
       if (!map[stepId] || attempt.attemptNo > map[stepId].attemptNo) {
         map[stepId] = attempt;
       }
@@ -106,6 +120,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   );
   const [internalFileNames, setInternalFileNames] = useState<
     Record<string, string[]>
+  >({});
+  const [internalComments, setInternalComments] = useState<
+    Record<string, string>
   >({});
   const [internalSubmitting, setInternalSubmitting] = useState<
     Record<string, boolean>
@@ -151,6 +168,23 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     return total > 0 ? Math.round((completed / total) * 100) : 0;
   };
 
+  const getConditionName = (condition: UnlockCondition) => {
+    if (condition.type === 'milestone') {
+      const ms = milestones.find((m) => m.id === condition.id);
+      return ms?.name ?? 'Unknown milestone';
+    }
+
+    if (condition.type === 'step') {
+      for (const ms of milestones) {
+        const step = ms.steps?.find((s) => s.id === condition.id);
+        if (step) return step.name;
+      }
+      return 'Unknown step';
+    }
+
+    return '';
+  };
+
   const toggleMilestone = (milestoneId: string) => {
     setOpenMilestones((prev) => ({
       ...prev,
@@ -193,14 +227,21 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     if (!pendingStepId) return;
     const stepId = pendingStepId;
     const files = internalFiles[stepId];
+    const studentComment = internalComments[stepId];
     setConfirmModalOpen(false);
     if (!files || files.length === 0) {
       const res = await studentStepProgressService.submitForReview(
         stepId,
         userId || '',
+        studentComment,
       );
       if (res.success) {
         onSubmitSuccess?.(stepId);
+        setInternalComments((prev) => {
+          const newComments = { ...prev };
+          delete newComments[stepId];
+          return newComments;
+        });
       }
       onSubmit?.(stepId);
       return res;
@@ -208,6 +249,25 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     setInternalSubmitting((prev) => ({ ...prev, [stepId]: true }));
     try {
       const progressId = stepProgressMap[stepId] || stepId;
+
+      // ลบไฟล์เก่าก่อน upload ใหม่ (กรณีส่งกลับหลังถูกปฏิเสธ)
+      try {
+        const existingAttachments =
+          await uploadService.getAttachmentsByProgress(progressId);
+        // ลบเฉพาะไฟล์ที่ student เป็นคนอัพโหลด
+        const studentAttachments = existingAttachments.filter(
+          (att) => att.uploadedByUserId === userId,
+        );
+        for (const att of studentAttachments) {
+          if (att.id) {
+            await uploadService.deleteAttachment(att.id);
+          }
+        }
+      } catch (deleteError) {
+        console.warn('Error deleting old attachments:', deleteError);
+        // ไม่ block การ upload ถ้าลบไม่ได้
+      }
+
       const response = await uploadService.createAttachment(
         progressId,
         files,
@@ -311,20 +371,52 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             {milestone.name}
                           </CardTitle>
                           {mode === 'edit' && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className={`h-8 w-8 ${milestoneLocked ? 'bg-red-300 text-red-500' : ''}`}
-                              onClick={() =>
-                                onToggleLock?.(milestone.id, 'milestone')
-                              }
-                            >
-                              {milestoneLocked ? (
-                                <Lock className="h-4 w-4 text-red-500" />
-                              ) : (
-                                <Unlock className="h-4 w-4" />
-                              )}
-                            </Button>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      disabled={courseIsUsed}
+                                      className={`h-8 w-8 ${
+                                        milestoneLocked
+                                          ? 'bg-red-300 text-red-500'
+                                          : ''
+                                      }`}
+                                      onClick={() =>
+                                        onToggleLock?.(
+                                          milestone.id,
+                                          'milestone',
+                                        )
+                                      }
+                                    >
+                                      {milestoneLocked ? (
+                                        <Lock className="h-4 w-4 text-red-500" />
+                                      ) : (
+                                        <Unlock className="h-4 w-4" />
+                                      )}
+                                    </Button>
+                                  </span>
+                                </TooltipTrigger>
+
+                                {lockInfoMap?.[milestone.id]?.length > 0 && (
+                                  <TooltipContent className="max-w-xs">
+                                    <div className="space-y-1">
+                                      <div className="font-semibold">
+                                        {t('unlock_conditions')}
+                                      </div>
+
+                                      {lockInfoMap[milestone.id].map((c) => (
+                                        <div key={c.id} className="text-xs">
+                                          • {getConditionName(c)}{' '}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
+                            </TooltipProvider>
                           )}
                         </div>
                         <CardDescription>
@@ -420,27 +512,68 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       <Paperclip className="text-muted-foreground h-4 w-4" />
                                     )}
                                     {mode === 'edit' && (
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className={`ml-auto h-6 w-6 ${stepLocked ? 'bg-red-300 text-red-500' : ''}`}
-                                        onClick={() =>
-                                          onToggleLock?.(step.id, 'step')
-                                        }
-                                      >
-                                        {stepLocked ? (
-                                          <Lock className="h-3 w-3 text-red-500" />
-                                        ) : (
-                                          <Unlock className="h-3 w-3" />
-                                        )}
-                                      </Button>
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <span>
+                                              <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                disabled={courseIsUsed}
+                                                className={`ml-auto h-6 w-6 ${
+                                                  stepLocked
+                                                    ? 'bg-red-300 text-red-500'
+                                                    : ''
+                                                }`}
+                                                onClick={() =>
+                                                  onToggleLock?.(
+                                                    step.id,
+                                                    'step',
+                                                  )
+                                                }
+                                              >
+                                                {stepLocked ? (
+                                                  <Lock className="h-3 w-3 text-red-500" />
+                                                ) : (
+                                                  <Unlock className="h-3 w-3" />
+                                                )}
+                                              </Button>
+                                            </span>
+                                          </TooltipTrigger>
+
+                                          {lockInfoMap?.[step.id]?.length >
+                                            0 && (
+                                            <TooltipContent className="max-w-xs">
+                                              <div className="space-y-1">
+                                                <div className="font-semibold">
+                                                  {t('unlock_conditions')}
+                                                </div>
+
+                                                {lockInfoMap[step.id].map(
+                                                  (c) => (
+                                                    <div
+                                                      key={c.id}
+                                                      className="text-xs"
+                                                    >
+                                                      •{' '}
+                                                      {getConditionName(c)}{' '}
+                                                    </div>
+                                                  ),
+                                                )}
+                                              </div>
+                                            </TooltipContent>
+                                          )}
+                                        </Tooltip>
+                                      </TooltipProvider>
                                     )}
                                   </div>
 
                                   <div className="mb-2 flex flex-row items-center gap-6">
-                                    <p className="text-muted-foreground text-sm">
-                                      {step.description}
-                                    </p>
+                                    {step.description && (
+                                      <p className="text-muted-foreground text-sm">
+                                        {step.description}
+                                      </p>
+                                    )}
                                     {/* Upload Button */}
                                     {mode === 'upload' &&
                                       step.requiresAttachment &&
@@ -480,11 +613,33 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       )}
                                   </div>
                                   <div className="text-muted-foreground flex items-center gap-4 text-xs">
-                                    <div className="flex items-center gap-1">
-                                      <Calendar className="h-3 w-3" />
-                                      กำหนดส่ง : 
-                                      <span>{formatDate(deadline)}</span>
-                                    </div>
+                                    {displayMode === 'select-milestone' ? (
+                                      <>
+                                        <div className="flex items-center gap-2">
+                                          <Calendar className="h-3 w-3" />
+                                          {t('dayperiod')} :
+                                          <span>
+                                            {milestone.dayPeriod} {t('day')}
+                                          </span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                          {t('NotifyBefore')} :
+                                          <span>
+                                            {milestone.notifyBeforeDays}{' '}
+                                            {t('day')}
+                                          </span>
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <div className="flex items-center gap-1">
+                                        <Calendar className="h-3 w-3" />
+                                        <span className="mr-1">
+                                          {t('deadline_date')} :
+                                        </span>
+                                        <span>{formatDate(deadline)}</span>
+                                      </div>
+                                    )}
                                     {completed && (
                                       <>
                                         <div className="flex items-center gap-1.5">
@@ -565,6 +720,27 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         </div>
                                       </>
                                     )}
+                                    {displayMode !== 'select-milestone' &&
+                                      !step.requiresAttachment &&
+                                      (available || declined) && (
+                                        <div>
+                                          <div className="mt-3 font-bold">
+                                            {t('description')}
+                                          </div>
+                                          <Textarea
+                                            className="mt-3 h-24 w-1/2 resize-none rounded-2xl border"
+                                            value={
+                                              internalComments[step.id] || ''
+                                            }
+                                            onChange={(e) =>
+                                              setInternalComments((prev) => ({
+                                                ...prev,
+                                                [step.id]: e.target.value,
+                                              }))
+                                            }
+                                          />
+                                        </div>
+                                      )}
                                   </div>
                                   {mode === 'upload' &&
                                     (available || declined) &&

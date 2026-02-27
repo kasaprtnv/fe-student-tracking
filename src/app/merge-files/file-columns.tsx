@@ -4,6 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Download } from 'lucide-react';
 
 export type FileItem = {
+  attachmentId: string;
   filename: string;
   fullname: string;
   email: string;
