@@ -71,21 +71,37 @@ const MilestonePage = () => {
     pagination.pageSize,
   );
 
+  // Local sorting state for server-side sorting
+  const [currentSortBy, setCurrentSortBy] = React.useState<string | undefined>(
+    undefined,
+  );
+  const [currentSortOrder, setCurrentSortOrder] = React.useState<
+    'asc' | 'desc' | undefined
+  >(undefined);
+
   const debounceSearchQuery = useDebounce(searchQuery, 500);
 
   const milestoneFetcher = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async ([_key, searchQuery, page, pageSize]: [
+    async ([_key, searchQuery, page, pageSize, sortBy, sortOrder]: [
       string,
       string,
       number,
       number,
+      string | undefined,
+      'asc' | 'desc' | undefined,
     ]) => {
       try {
         if (searchQuery && searchQuery.trim() !== '') {
-          return await searchForMilestones(searchQuery, page, pageSize);
+          return await searchForMilestones(
+            searchQuery,
+            page,
+            pageSize,
+            sortBy,
+            sortOrder,
+          );
         } else {
-          return await fetchAllMilestones(page, pageSize);
+          return await fetchAllMilestones(page, pageSize, sortBy, sortOrder);
         }
       } catch (err) {
         toast.error(tForm('toast.fetch_error'));
@@ -96,7 +112,14 @@ const MilestonePage = () => {
   );
 
   const { mutate } = useSWR(
-    ['fetch-milestones', debounceSearchQuery, currentPage, currentPageSize],
+    [
+      'fetch-milestones',
+      debounceSearchQuery,
+      currentPage,
+      currentPageSize,
+      currentSortBy,
+      currentSortOrder,
+    ],
     milestoneFetcher,
     {
       revalidateOnFocus: false,
@@ -161,6 +184,16 @@ const MilestonePage = () => {
     [setPageSize],
   );
 
+  const handleSortChange = React.useCallback(
+    (sortBy: string | undefined, sortOrder: 'asc' | 'desc' | undefined) => {
+      setCurrentSortBy(sortBy);
+      setCurrentSortOrder(sortOrder);
+      setCurrentPage(1);
+      setPage(1);
+    },
+    [setPage],
+  );
+
   // Memoize refresh function
   const refreshData = React.useCallback(() => {
     mutate();
@@ -193,6 +226,8 @@ const MilestonePage = () => {
           searchQuery={searchQuery}
           isLoading={loader || storeAction !== 'none'}
           manualPagination={true}
+          manualSorting={true}
+          onSortChange={handleSortChange}
           page={currentPage}
           pageSize={currentPageSize}
           rowCount={pagination.total}

@@ -8,14 +8,23 @@ export const fetchMilestones = createAsyncThunk(
     {
       page,
       pageSize,
+      sortBy,
+      sortOrder,
     }: {
       page?: number;
       pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
     },
     { rejectWithValue },
   ) => {
     try {
-      const res = await milestoneService.getAllMilestone(page, pageSize);
+      const res = await milestoneService.getAllMilestone(
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -33,7 +42,15 @@ export const searchMilestones = createAsyncThunk(
       searchQuery,
       page,
       pageSize,
-    }: { searchQuery: string; page: number; pageSize: number },
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
     { rejectWithValue },
   ) => {
     try {
@@ -41,6 +58,8 @@ export const searchMilestones = createAsyncThunk(
         searchQuery,
         page,
         pageSize,
+        sortBy,
+        sortOrder,
       );
       return res;
     } catch (err: unknown) {
