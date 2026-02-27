@@ -62,9 +62,6 @@ export const selectAllCourseId = createSelector(
 export const selectAllCoursesFromMap = createSelector(
   [selectCourseMap],
   (courseMap) => {
-    const sortedCourses = Object.values(courseMap).sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
-    return sortedCourses;
+    return Object.values(courseMap);
   },
 );

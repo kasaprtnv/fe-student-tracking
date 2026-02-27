@@ -58,6 +58,12 @@ interface DataTableProps<TData, TValue> {
   rowCount?: number;
   pageSizeOptions?: number[];
 
+  manualSorting?: boolean;
+  onSortChange?: (
+    sortBy: string | undefined,
+    sortOrder: 'asc' | 'desc' | undefined,
+  ) => void;
+
   filterColumns?: DataTableFilterField<TData>[];
 
   buttonAddLabel?: string;
@@ -105,6 +111,9 @@ export function DataTable<TData, TValue>({
   pageSize = 10,
   pageSizeOptions,
   rowCount,
+
+  manualSorting = false,
+  onSortChange,
 
   filterColumns = [],
 
@@ -175,8 +184,23 @@ export function DataTable<TData, TValue>({
           getFilteredRowModel: getFilteredRowModel(),
         }),
 
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: (updaterOrValue) => {
+      const newSorting =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(sorting)
+          : updaterOrValue;
+      setSorting(newSorting);
+      if (manualSorting && onSortChange) {
+        if (newSorting.length > 0) {
+          onSortChange(newSorting[0].id, newSorting[0].desc ? 'desc' : 'asc');
+        } else {
+          onSortChange(undefined, undefined);
+        }
+      }
+    },
+    ...(manualSorting
+      ? { manualSorting: true }
+      : { getSortedRowModel: getSortedRowModel() }),
 
     onColumnFiltersChange: setColumnFilters,
 
