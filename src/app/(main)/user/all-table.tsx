@@ -402,6 +402,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         }
         user={isEdit.user}
         courseOptions={courseOptions}
+        allCourses={allCourses}
         allCourseStaff={allCourseStaff}
         onCourseStaffChange={refetchCourseStaff}
       />

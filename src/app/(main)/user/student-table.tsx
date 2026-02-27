@@ -326,6 +326,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         onOpenChange={(open) =>
           setIsEdit({ isEditing: open, user: isEdit.user })
         }
+        allCourses={allCourses}
         user={isEdit.user}
         courseOptions={courseOptions}
       />

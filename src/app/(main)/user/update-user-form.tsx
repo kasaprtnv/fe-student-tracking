@@ -44,11 +44,13 @@ import {
   UserFormValues,
   UserRole,
 } from '@/validations/user';
+import { ICourse } from '@/types/course';
 
 interface UpdateUserFormDialogProps {
   open: boolean;
   user: User | undefined;
   courseOptions: SelectOption[];
+  allCourses: ICourse[];
   allCourseStaff?: ICourseStaff[];
   onOpenChange: (open: boolean) => void;
   onCourseStaffChange?: () => void;
@@ -60,6 +62,7 @@ export function UpdateUserFormDialog({
   user,
   courseOptions,
   allCourseStaff = [],
+  allCourses,
   onCourseStaffChange,
 }: UpdateUserFormDialogProps) {
   const tForm = useTranslations('user.user-form');
@@ -369,7 +372,7 @@ export function UpdateUserFormDialog({
               {selectedRole === 'student' && (
                 <StudentFormFields
                   form={form}
-                  courseOptions={courseOptions}
+                  allCourses={allCourses}
                   disabledFields={[
                     'code',
                     'courseId',

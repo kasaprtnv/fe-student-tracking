@@ -37,7 +37,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     storeAction,
     loader,
   } = useUser();
-  const { allCourseId, getCourseById } = useCourse();
+  const { allCourseId, getCourseById, courseMap } = useCourse();
   const { titleMap, fetchAllTitles } = useTitle();
   const { fetchAllCourseStaff } = useCourseStaff();
   const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
@@ -204,6 +204,8 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     isDeleting: false,
   });
 
+  const allCourses = allCourseId.map((id) => courseMap[id]).filter(Boolean);
+
   const onConfirmDelete = async () => {
     if (!isDelete.userIds || isDelete.userIds.length === 0) return;
 
@@ -304,6 +306,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
         defaultRole="teacher"
+        allCourses={allCourses}
         onUserCreated={() => {
           refreshData();
           refetchCourseStaff();
@@ -316,6 +319,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
         }
         user={isEdit.user}
         courseOptions={courseOptions}
+        allCourses={allCourses}
         allCourseStaff={allCourseStaff}
         onCourseStaffChange={refetchCourseStaff}
       />

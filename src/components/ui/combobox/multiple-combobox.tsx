@@ -75,7 +75,7 @@ export function MultiCombobox({
           tabIndex={0}
           disabled={disabled}
           className={cn(
-            'border-input h-[max-content] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm transition-all',
+            'border-input h-[max-content] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-normal transition-all',
             'focus:ring-ring focus:ring-1 focus:outline-none',
             'flex items-center justify-between',
             errorMessage && 'border-red-500',
@@ -125,7 +125,7 @@ export function MultiCombobox({
                 >
                   <div className="flex w-full flex-col text-left leading-tight">
                     <span
-                      className="truncate overflow-hidden font-medium whitespace-nowrap"
+                      className="truncate overflow-hidden whitespace-nowrap"
                       title={option.label}
                     >
                       {option.label}
@@ -148,9 +148,7 @@ export function MultiCombobox({
           </CommandList>
         </Command>
       </PopoverContent>
-      {errorMessage && (
-        <p className="text-xs font-semibold text-red-500">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="text-xs text-red-500">{errorMessage}</p>}
     </Popover>
   );
 }
