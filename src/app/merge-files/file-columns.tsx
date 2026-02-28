@@ -10,11 +10,13 @@ export type FileItem = {
   email: string;
   education_level: string;
   grad_year: string;
+  course_code: string;
   course: string;
   course_name: string;
   milestone_step: string;
   enroll_date: string;
   file_url: string;
+  reviewed_by: string;
 };
 
 type TranslationFunction = (key: string) => string;
@@ -90,21 +92,28 @@ export function createFileColumns(
     },
     {
       accessorKey: 'milestone_step',
-      header: t ? t('merge-files.milestone_step') : 'ขั้นตอน',
+      header: t ? t('merge-files.milestone_step') : 'ขั้นตอนการศึกษาย่อย',
       sortingFn: mixedThEnTextSort<FileItem>(),
       cell: ({ row }: { row: { original: FileItem } }) =>
         row.original.milestone_step,
     },
     {
       accessorKey: 'enroll_date',
-      header: t ? t('merge-files.enroll_date') : 'วันที่ส่ง',
+      header: t ? t('merge-files.enroll_date') : 'วันที่ส่งหลักฐาน',
       sortingFn: 'datetime',
       cell: ({ row }: { row: { original: FileItem } }) =>
         row.original.enroll_date,
     },
     {
+      accessorKey: 'reviewed_by',
+      header: t ? t('merge-files.reviewed_by') : 'ผู้ตรวจสอบ',
+      sortingFn: mixedThEnTextSort<FileItem>(),
+      cell: ({ row }: { row: { original: FileItem } }) =>
+        row.original.reviewed_by,
+    },
+    {
       accessorKey: 'actions',
-      header: t ? t('merge-files.actions') : 'ดาวน์โหลด',
+      header: t ? t('merge-files.actions') : 'บันทึกไฟล์',
       cell: ({ row }: { row: { original: FileItem } }) => (
         <Button
           variant="ghost"
