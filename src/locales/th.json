@@ -717,12 +717,13 @@
     },
     "review": {
       "title": "ตรวจสอบการดำเนินการ",
-      "decline_reason": "เหตุผลที่ไม่อนุมัติ",
-      "decline_reason_placeholder": "กรุณาระบุเหตุผลให้ชัดเจน",
+      "decline_reason": "ความคิดเห็นเพิ่มเติม",
+      "decline_reason_placeholder": "กรอกความคิดเห็นเพิ่มเติม",
       "approve": "อนุมัติ",
       "decline": "ไม่อนุมัติ",
-      "staff_attachment": "แนบไฟล์เอกสารเพิ่มเติม (กรณีแก้ไข/ไม่อนุมัติ)",
-      "click_to_upload": "คลิกเพื่ออัปโหลด หรือลากวางไฟล์มาวาง"
+      "staff_attachment": "แนบไฟล์เพิ่มเติม",
+      "click_to_upload": "ลากไฟล์มาวางที่นี้ หรือคลิกเพื่อไฟล์",
+      "file_types": "รองรับไฟล์ PDF, PNG, JPEG, JPG และ DOCX (ขนาดรวมไม่เกิน 20MB)"
     },
     "success": {
       "title": "สำเร็จ",

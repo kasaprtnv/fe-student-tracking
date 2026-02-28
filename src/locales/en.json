@@ -266,9 +266,9 @@
     "submit_success_description": "Your file has been submitted successfully.",
     "ok": "OK",
     "student_attachment_label": "Submitted Document",
-    "decline_reason_label": "Reason for Decline",
-    "staff_attachment_label": "Additional File from Staff",
-    "decline_reason": "Decline Reason",
+    "decline_reason_label": "Additional Comments",
+    "staff_attachment_label": "Enter additional comments",
+    "decline_reason": "Additional Comments",
     "download": "Download"
   },
   "milestone": {
@@ -722,7 +722,8 @@
       "approve": "Approve",
       "decline": "Decline",
       "staff_attachment": "Attach Additional Document (for revision/decline)",
-      "click_to_upload": "Click to upload or drag and drop"
+      "click_to_upload": "Drag or click to upload file",
+      "file_types": "Supports PDF, PNG, JPEG, JPG and DOCX (max 20MB)"
     },
     "success": {
       "title": "Success",

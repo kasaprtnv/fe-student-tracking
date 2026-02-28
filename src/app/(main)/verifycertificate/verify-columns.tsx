@@ -74,14 +74,14 @@ export function createVerifyColumns(
     },
     {
       accessorKey: 'stepName',
-      header: t('table.step'),
+      header: t('detail.step'),
       sortingFn: mixedThEnTextSort<IStudentStepProgress>(),
       cell: ({ row }) =>
         row.original.stepName || row.original.step?.name || '-',
     },
     {
       accessorKey: 'submittedAt',
-      header: t('table.submit_date'),
+      header: t('detail.submit_date'),
       sortingFn: 'datetime',
       cell: ({ row }) => formatDate(row.original.submittedAt),
     },
