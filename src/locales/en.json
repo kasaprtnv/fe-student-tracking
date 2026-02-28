@@ -8,7 +8,7 @@
     "studentReport": "Student Report",
     "progressVerify": "Progress Verify",
     "stepProgressReport": "Step Progress Report",
-    "mergeFiles": "Merge Files",
+    "mergeFiles": "Approved evidence files",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -266,9 +266,9 @@
     "submit_success_description": "Your file has been submitted successfully.",
     "ok": "OK",
     "student_attachment_label": "Submitted Document",
-    "decline_reason_label": "Reason for Decline",
-    "staff_attachment_label": "Additional File from Staff",
-    "decline_reason": "Decline Reason",
+    "decline_reason_label": "Additional Comments",
+    "staff_attachment_label": "Enter additional comments",
+    "decline_reason": "Additional Comments",
     "download": "Download"
   },
   "milestone": {
@@ -665,10 +665,11 @@
     "teacher": "teacher"
   },
   "verify-certificate": {
-    "title": "Verify Graduate Certificate",
+    "title": "Progress Verify",
+    "description": "Display evidence pending verification from students",
     "breadcrumb": {
       "home": "Dashboard",
-      "verify": "Verify Graduate Certificate",
+      "verify": "Progress Verify",
       "detail": "Detail"
     },
     "search_placeholder": "Search",
@@ -715,7 +716,8 @@
       "submit_date": "Submit Date",
       "reason": "Reason",
       "decline_reason": "Decline Reason",
-      "staff_attachment": "Attached Document"
+      "staff_attachment": "Attached Document",
+      "student_comment": "Student Comment"
     },
     "review": {
       "title": "Review Submission",
@@ -724,7 +726,8 @@
       "approve": "Approve",
       "decline": "Decline",
       "staff_attachment": "Attach Additional Document (for revision/decline)",
-      "click_to_upload": "Click to upload or drag and drop"
+      "click_to_upload": "Drag or click to upload file",
+      "file_types": "Supports PDF, PNG, JPEG, JPG and DOCX (max 20MB)"
     },
     "success": {
       "title": "Success",
@@ -804,7 +807,7 @@
     }
   },
   "merge-files": {
-    "title": "Approved Evidence Files",
+    "title": "Approved evidence files",
     "description": "Display all approved evidence files",
     "loading": "Loading data...",
     "error-loading": "Error loading data",
@@ -812,12 +815,13 @@
     "fullname": "Full Name",
     "email": "Email",
     "education_level": "Education Level",
-    "grad_year": "Year",
+    "grad_year": "Academic Year",
     "course": "Course",
     "course_name": "Course Name",
-    "milestone_step": "Milestone Step",
-    "enroll_date": "Submit Date",
-    "actions": "Download",
+    "milestone_step": "Sub-step",
+    "enroll_date": "Evidence Submit Date",
+    "reviewed_by": "Reviewer",
+    "actions": "Save File",
     "no-files": "No approved files",
     "delete-title": "Confirm Deletion",
     "delete-description": "Are you sure you want to delete {count} selected file(s)? This action cannot be undone.",

@@ -263,7 +263,7 @@ export default function VerifyDetailPage() {
     return date.toLocaleDateString('th-TH', {
       day: 'numeric',
       month: 'short',
-      year: '2-digit',
+      year: 'numeric',
     });
   };
 
@@ -351,6 +351,12 @@ export default function VerifyDetailPage() {
           { label: t('breadcrumb.detail'), isPage: true },
         ]}
       />
+
+      <div className="container mx-auto">
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+        </div>
+      </div>
 
       {/* Content */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

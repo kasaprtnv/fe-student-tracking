@@ -22,6 +22,7 @@ export interface IStudentStepProgress {
   staffAttachmentId?: string;
   studentCode?: string;
   studentName?: string;
+  courseCode?: string;
   courseName?: string;
   stepName?: string;
   fileName?: string;
@@ -36,6 +37,7 @@ export interface IStudentStepProgress {
     code: string;
     firstName: string;
     lastName: string;
+    courseCode?: string;
     courseName?: string;
     degree?: string;
     year?: string;
@@ -44,7 +46,9 @@ export interface IStudentStepProgress {
     id: string;
     name: string;
     milestoneId: string;
+    requiresAttachment?: boolean;
   };
+  studentComment?: string;
   attachment?: {
     id: string;
     fileName: string;

@@ -5,9 +5,9 @@ import { createFileColumns, FileItem } from './file-columns';
 import { PageHeader } from '@/components/page-header';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Loader2 } from 'lucide-react';
-import { formatDate } from '@/lib/format-date';
+import { formatDateByLocale } from '@/lib/format-date';
 import { uploadService } from '@/services/upload.service';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { toast } from 'sonner';
@@ -33,6 +33,7 @@ function mapYear(year?: string) {
 
 export default function FileListPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,69 +45,89 @@ export default function FileListPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Flatten progress records to file items (1 row = 1 file)
-  const transformToFileItems = (item: IStudentStepProgress): FileItem[] => {
-    const studentName =
-      item.studentName ||
-      (item.student
-        ? `${item.student.firstName} ${item.student.lastName}`
-        : '-');
-    const studentCode = item.studentCode || item.student?.code || '-';
-    const courseName = item.courseName || item.student?.courseName || '-';
-    const stepName = item.stepName || item.step?.name || '-';
+  const transformToFileItems = useCallback(
+    (item: IStudentStepProgress): FileItem[] => {
+      const studentName =
+        item.studentName ||
+        (item.student
+          ? `${item.student.firstName} ${item.student.lastName}`
+          : '-');
+      const studentCode = item.studentCode || item.student?.code || '-';
+      const courseCode = item.courseCode || item.student?.courseCode || '';
+      const courseName = item.courseName || item.student?.courseName || '-';
+      const stepName = item.stepName || item.step?.name || '-';
 
-    const degreeRaw =
-      item.studentDegree ?? item.degree ?? item.student?.degree ?? '-';
-    const yearRaw = item.studentYear ?? item.year ?? item.student?.year ?? '-';
-    const educationLevel = mapDegree(degreeRaw);
-    const gradYear = mapYear(yearRaw);
+      const degreeRaw =
+        item.studentDegree ?? item.degree ?? item.student?.degree ?? '-';
+      const yearRaw =
+        item.studentYear ?? item.year ?? item.student?.year ?? '-';
+      const educationLevel = mapDegree(degreeRaw);
+      const gradYear = mapYear(yearRaw);
 
-    // Base file item data (shared across attachments)
-    const baseItem = {
-      fullname: studentName,
-      email: `${studentCode}@go.buu.ac.th`,
-      education_level: educationLevel,
-      grad_year: gradYear,
-      course: courseName,
-      course_name: courseName,
-      milestone_step: stepName,
-      enroll_date: item.submittedAt ? formatDate(item.submittedAt) : '-',
-    };
-
-    // If attachments array exists, flatten to multiple rows
-    if (item.attachments && item.attachments.length > 0) {
-      type AttachmentWithDeleted = (typeof item.attachments)[number] & {
-        isDeleted?: boolean;
+      // Base file item data (shared across attachments)
+      const baseItem = {
+        fullname: studentName,
+        email: `${studentCode}@go.buu.ac.th`,
+        education_level: educationLevel,
+        grad_year: gradYear,
+        course_code: courseCode,
+        course: courseCode ? `${courseCode} - ${courseName}` : courseName,
+        course_name: courseName,
+        milestone_step: stepName,
+        enroll_date: item.submittedAt
+          ? formatDateByLocale(item.submittedAt, locale)
+          : '-',
+        reviewed_by: item.reviewedBy || '-',
       };
-      const activeAttachments = (
-        item.attachments as AttachmentWithDeleted[]
-      ).filter((a) => !a.isDeleted);
-      return activeAttachments.map((attachment) => ({
-        ...baseItem,
-        attachmentId: attachment.attachmentId || '',
-        filename: attachment.fileName || '-',
-        file_url: attachment.fileUrl || attachment.fileKey || '',
-      }));
-    }
 
-    // Fallback to single attachment or fileName field
-    const fileName = item.fileName || item.attachment?.fileName || '-';
-    const fileUrl =
-      item.fileUrl ||
-      item.fileKey ||
-      item.attachment?.fileUrl ||
-      item.attachment?.fileKey ||
-      '';
-    const attachmentId = item.attachment?.id || '';
+      // If attachments array exists, flatten to multiple rows
+      if (item.attachments && item.attachments.length > 0) {
+        type AttachmentWithDeleted = (typeof item.attachments)[number] & {
+          isDeleted?: boolean;
+        };
+        const activeAttachments = (
+          item.attachments as AttachmentWithDeleted[]
+        ).filter((a) => !a.isDeleted && (a.fileUrl || a.fileKey));
 
-    return [
-      {
-        ...baseItem,
-        attachmentId,
-        filename: fileName,
-        file_url: fileUrl,
-      },
-    ];
-  };
+        // ถ้าไม่มี attachment ที่ active ให้ return empty array
+        if (activeAttachments.length === 0) {
+          return [];
+        }
+
+        return activeAttachments.map((attachment) => ({
+          ...baseItem,
+          attachmentId: attachment.attachmentId || '',
+          filename: attachment.fileName || '-',
+          file_url: attachment.fileUrl || attachment.fileKey || '',
+        }));
+      }
+
+      // Fallback to single attachment or fileName field
+      const fileName = item.fileName || item.attachment?.fileName || '-';
+      const fileUrl =
+        item.fileUrl ||
+        item.fileKey ||
+        item.attachment?.fileUrl ||
+        item.attachment?.fileKey ||
+        '';
+      const attachmentId = item.attachment?.id || '';
+
+      // ถ้าไม่มีไฟล์แนบ ให้ return empty array (ไม่แสดงในตาราง)
+      if (!fileUrl || fileName === '-') {
+        return [];
+      }
+
+      return [
+        {
+          ...baseItem,
+          attachmentId,
+          filename: fileName,
+          file_url: fileUrl,
+        },
+      ];
+    },
+    [locale],
+  );
 
   // ดึงข้อมูลไฟล์ที่อนุมัติแล้ว
   const fetchApprovedFiles = useCallback(async () => {
@@ -129,7 +150,7 @@ export default function FileListPage() {
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [t, transformToFileItems]);
 
   useEffect(() => {
     fetchApprovedFiles();
@@ -155,7 +176,10 @@ export default function FileListPage() {
         file.fullname?.toLowerCase().includes(lowerQuery) ||
         file.email?.toLowerCase().includes(lowerQuery) ||
         file.course?.toLowerCase().includes(lowerQuery) ||
-        file.milestone_step?.toLowerCase().includes(lowerQuery),
+        file.milestone_step?.toLowerCase().includes(lowerQuery) ||
+        file.education_level?.toLowerCase().includes(lowerQuery) ||
+        file.grad_year?.toLowerCase().includes(lowerQuery) ||
+        file.reviewed_by?.toLowerCase().includes(lowerQuery),
     );
   }, [files, searchQuery]);
 
