@@ -5,9 +5,9 @@ import { createFileColumns, FileItem } from './file-columns';
 import { PageHeader } from '@/components/page-header';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Loader2 } from 'lucide-react';
-import { formatDate } from '@/lib/format-date';
+import { formatDateByLocale } from '@/lib/format-date';
 import { uploadService } from '@/services/upload.service';
 import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { toast } from 'sonner';
@@ -33,6 +33,7 @@ function mapYear(year?: string) {
 
 export default function FileListPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +70,9 @@ export default function FileListPage() {
       course: courseName,
       course_name: courseName,
       milestone_step: stepName,
-      enroll_date: item.submittedAt ? formatDate(item.submittedAt) : '-',
+      enroll_date: item.submittedAt
+        ? formatDateByLocale(item.submittedAt, locale)
+        : '-',
     };
 
     // If attachments array exists, flatten to multiple rows
@@ -155,7 +158,9 @@ export default function FileListPage() {
         file.fullname?.toLowerCase().includes(lowerQuery) ||
         file.email?.toLowerCase().includes(lowerQuery) ||
         file.course?.toLowerCase().includes(lowerQuery) ||
-        file.milestone_step?.toLowerCase().includes(lowerQuery),
+        file.milestone_step?.toLowerCase().includes(lowerQuery) ||
+        file.education_level?.toLowerCase().includes(lowerQuery) ||
+        file.grad_year?.toLowerCase().includes(lowerQuery),
     );
   }, [files, searchQuery]);
 

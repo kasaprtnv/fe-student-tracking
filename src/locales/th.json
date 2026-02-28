@@ -661,10 +661,10 @@
     "teacher": "อาจารย์"
   },
   "verify-certificate": {
-    "title": "ตรวจสอบหลักฐานนักศึกษา",
+    "title": "ตรวจสอบหลักฐาน",
     "breadcrumb": {
       "home": "แดชบอร์ด",
-      "verify": "ตรวจสอบหลักฐานนักศึกษา",
+      "verify": "ตรวจสอบหลักฐาน",
       "detail": "รายละเอียด"
     },
     "search_placeholder": "ค้นหา",
@@ -711,7 +711,8 @@
       "submit_date": "วันที่ส่ง",
       "reason": "เหตุผล",
       "decline_reason": "เหตุผลในการปฏิเสธ",
-      "staff_attachment": "เอกสารที่แนบมา"
+      "staff_attachment": "เอกสารที่แนบมา",
+      "student_comment": "คำอธิบายจากนักศึกษา"
     },
     "review": {
       "title": "ตรวจสอบการดำเนินการ",

@@ -11,6 +11,26 @@ export function formatDate(
   }
 }
 
+export function formatDateByLocale(
+  date: number | string | Date | null | undefined,
+  locale: string = 'en',
+): string {
+  if (!date) return '-';
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '-';
+
+    const localeCode = locale === 'th' ? 'th-TH' : 'en-US';
+    return d.toLocaleDateString(localeCode, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  } catch {
+    return '-';
+  }
+}
+
 export function formatThaiDate(
   date: Date | string | number | null | undefined,
 ): string {

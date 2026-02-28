@@ -661,10 +661,10 @@
     "teacher": "teacher"
   },
   "verify-certificate": {
-    "title": "Verify Graduate Certificate",
+    "title": "Progress Verify",
     "breadcrumb": {
       "home": "Dashboard",
-      "verify": "Verify Graduate Certificate",
+      "verify": "Progress Verify",
       "detail": "Detail"
     },
     "search_placeholder": "Search",
@@ -711,7 +711,8 @@
       "submit_date": "Submit Date",
       "reason": "Reason",
       "decline_reason": "Decline Reason",
-      "staff_attachment": "Attached Document"
+      "staff_attachment": "Attached Document",
+      "student_comment": "Student Comment"
     },
     "review": {
       "title": "Review Submission",
