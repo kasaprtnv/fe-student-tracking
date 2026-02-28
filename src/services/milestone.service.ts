@@ -19,12 +19,21 @@ class MilestoneService extends APIService {
   async getAllMilestone(
     page?: number,
     pageSize?: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
   ): Promise<IApiGetResponse<IMilestone>> {
-    let url = '/milestones';
+    const params = new URLSearchParams();
     if (page !== undefined && pageSize !== undefined) {
-      url += `?page=${page}&pageSize=${pageSize}`;
+      params.append('page', page.toString());
+      params.append('pageSize', pageSize.toString());
+    }
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
     }
 
+    const query = params.toString();
+    const url = query ? `/milestones?${query}` : '/milestones';
     return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {
@@ -36,10 +45,21 @@ class MilestoneService extends APIService {
     searchQuery: string,
     page: number,
     pageSize: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
   ): Promise<IApiGetResponse<IMilestone>> {
-    return this.get(
-      `/milestones/search?query=${encodeURIComponent(searchQuery)}&page=${page}&pageSize=${pageSize}`,
-    )
+    const params = new URLSearchParams();
+    if (searchQuery !== undefined) params.append('query', searchQuery);
+    if (page !== undefined) params.append('page', page.toString());
+    if (pageSize !== undefined) params.append('pageSize', pageSize.toString());
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+
+    const query = params.toString();
+    const url = query ? `/milestones/search?${query}` : '/milestones/search';
+    return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

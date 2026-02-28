@@ -1,5 +1,5 @@
 'use client';
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
 import { ITitle } from '@/types/title';
@@ -17,6 +17,8 @@ import {
   mixedThEnTextSort,
   numericStringSort,
 } from '../../../lib/table-sorted';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface ColumnActions {
   onEdit?: (data: User) => void;
@@ -30,7 +32,9 @@ interface ColumnActions {
 export const createStudentColumns = (
   t: (key: string) => string,
   tDegree: (key: string) => string,
+  tUser: (key: string) => string,
   titleMap: Record<string, ITitle>,
+  locale: string = 'th',
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
@@ -112,7 +116,7 @@ export const createStudentColumns = (
       cell: (row) => {
         const rawDate = row.getValue<string>();
         if (!rawDate) return <span>-</span>;
-        const localString = formatThaiDate(rawDate);
+        const localString = formatShortDate(rawDate, locale);
         return localString;
       },
     },
@@ -124,6 +128,28 @@ export const createStudentColumns = (
       cell: ({ row }) => {
         const graduated = row.original.graduated;
         return graduated ? t('graduated-yes') : t('graduated-no');
+      },
+    },
+    {
+      header: t('status'),
+      accessorKey: 'isActive',
+      cell: ({ row }) => {
+        const record = row.original;
+
+        return (
+          <div className="flex w-[110px] items-center justify-center">
+            <Badge
+              className={cn(
+                'px-2 py-0.5 text-xs',
+                record.isActive
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800',
+              )}
+            >
+              {record.isActive ? tUser?.('active') : tUser?.('inactive')}
+            </Badge>
+          </div>
+        );
       },
     },
   ];

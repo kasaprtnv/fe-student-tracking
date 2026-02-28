@@ -463,6 +463,8 @@
     }
   },
   "user": {
+    "active": "Active",
+    "inactive": "Inactive",
     "add-user": "Add User",
     "edit-user": "Edit User",
     "add-student": "Add Student",
@@ -514,7 +516,8 @@
       "deleted-successfully": "User deleted successfully",
       "deleted-multiple-successfully": "Multiple users deleted successfully",
       "delete-failed": "Failed to delete user",
-      "milestone-progress-exists": "Cannot delete: {count} student(s) have study progress records"
+      "milestone-progress-exists": "Cannot delete: {count} student(s) have study progress records",
+      "fetch_error": "Failed to fetch users. Please try again."
     },
     "dialog": {
       "confirm_course_change_with_progress": "This student has {count} progress records. If you change the course, all progress data will be deleted. Do you want to proceed?",
@@ -550,7 +553,7 @@
         "degree": "Education Level",
         "year": "Academic Year",
         "enroll-date": "Enroll Date",
-        "is-active": "Is Active",
+        "is-active": "Active Status",
         "study-plan": "Study Plan",
         "teacher-degree": "Degree",
         "academic-position": "Academic Position",
@@ -571,6 +574,7 @@
         "enroll-date": "Select enroll date",
         "search-course": "Search course...",
         "no-course-found": "No course found",
+        "select-degree-first": "Select education level first",
         "search-year": "Search year...",
         "no-year-found": "No year found",
         "study-plan": "Select study plan",
@@ -777,7 +781,7 @@
       "unit-courses": "courses"
     },
     "charts": {
-      "students-by-course": "Students by Course",
+      "students-by-course": "Students by Course and Academic Year",
       "students-by-degree": "Students by Degree",
       "graduation-by-year": "Graduation Status by Year",
       "no-data": "No student data"
@@ -786,10 +790,10 @@
       "all-courses": "All Courses",
       "all-degrees": "All Education Levels",
       "all-years": "All Years",
-      "all": "All",
-      "years-3": "Last 3 years",
-      "years-5": "Last 5 years",
-      "years-10": "Last 10 years",
+      "all": "All Years",
+      "years-3": "Last 3 Years",
+      "years-5": "Last 5 Years",
+      "years-10": "Last 10 Years",
       "course": "Course",
       "degree": "Degree",
       "year": "Year"
@@ -828,7 +832,7 @@
   },
   "status": {
     "locked": "Locked",
-    "pending": "Pending",
+    "pending approval": "Pending Approval",
     "declined": "Declined",
     "approved": "Approved",
     "available": "Available"

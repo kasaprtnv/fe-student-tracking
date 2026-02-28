@@ -99,6 +99,7 @@ export function StudentsByDegreeChart({
               placeholder={tFilters('all-courses')}
               placeholderSearch={tFilters('course')}
               placeholderEmpty={t('charts.no-data')}
+              displayString={tFilters('course')}
             />
             <Select value={selectedYear} onValueChange={setSelectedYear}>
               <SelectTrigger className="w-auto min-w-[80px]">

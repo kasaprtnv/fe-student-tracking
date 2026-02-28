@@ -17,11 +17,13 @@ import { DynamicInputList } from '@/components/ui/dynamic-input-list';
 interface TeacherFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
   courseOptions: SelectOption[];
+  disabledFields?: string[];
 }
 
 export const TeacherFormFields = ({
   form,
   courseOptions,
+  disabledFields = [],
 }: TeacherFormFieldsProps) => {
   const t = useTranslations('user.user-form');
   return (
@@ -35,7 +37,11 @@ export const TeacherFormFields = ({
               {t('label.teacher-degree')}
             </FormLabel>
             <FormControl>
-              <Input {...field} placeholder={t('placeholder.teacher-degree')} />
+              <Input
+                {...field}
+                placeholder={t('placeholder.teacher-degree')}
+                disabled={disabledFields.includes('teacherDegree')}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -55,6 +61,7 @@ export const TeacherFormFields = ({
                 onChange={field.onChange}
                 placeholder={t('placeholder.academic-position')}
                 buttonLabel={t('label.add-academic-position')}
+                disabled={disabledFields.includes('academicPosition')}
               />
             </FormControl>
             <FormMessage />
@@ -77,6 +84,7 @@ export const TeacherFormFields = ({
                 placeholderEmpty={t('placeholder.course')}
                 options={courseOptions}
                 onChange={field.onChange}
+                disabled={disabledFields.includes('courseIds')}
               />
             </FormControl>
             <FormMessage />

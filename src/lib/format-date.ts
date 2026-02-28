@@ -1,5 +1,22 @@
 import { format } from 'date-fns';
+import { th, enUS } from 'date-fns/locale';
 
+export function formatShortDate(
+  date: Date | string | number | null | undefined,
+  localeStr: string = 'th',
+): string {
+  if (!date) return '';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
+
+  if (localeStr === 'th') {
+    const year = d.getFullYear() + 543;
+    const formattedWithoutYear = format(d, 'dd MMM', { locale: th });
+    return `${formattedWithoutYear} ${year}`;
+  } else {
+    return format(d, 'dd MMM yyyy', { locale: enUS });
+  }
+}
 export function formatDate(
   date: number | string | Date,
   time?: boolean,

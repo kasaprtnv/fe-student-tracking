@@ -31,6 +31,7 @@ interface CompactMultiComboboxProps {
   placeholderEmpty?: string;
   className?: string;
   maxDisplayLength?: number;
+  displayString?: string;
 }
 
 export function CompactMultiCombobox({
@@ -42,6 +43,7 @@ export function CompactMultiCombobox({
   placeholderEmpty = 'No results found',
   className,
   maxDisplayLength = 12,
+  displayString = '',
 }: CompactMultiComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -69,8 +71,9 @@ export function CompactMultiCombobox({
       firstName.length > maxDisplayLength - 3
         ? firstName.slice(0, maxDisplayLength - 3) + '...'
         : firstName;
-    return `${truncatedName} +${value.length - 1}`;
-  }, [value, options, placeholder, maxDisplayLength]);
+    const additionalCount = value.length - 1;
+    return `${truncatedName} +${additionalCount}${displayString ? ` ${displayString}` : ''}`;
+  }, [value, options, placeholder, maxDisplayLength, displayString]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -79,7 +82,10 @@ export function CompactMultiCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn('w-auto min-w-[120px] justify-between', className)}
+          className={cn(
+            'h-9 w-auto min-w-[120px] justify-between text-sm font-normal',
+            className,
+          )}
         >
           <span className="truncate">{displayText}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

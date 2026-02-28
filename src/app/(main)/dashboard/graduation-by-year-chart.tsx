@@ -22,15 +22,16 @@ import {
   CartesianGrid,
   LabelList,
 } from 'recharts';
-import { Loader2 } from 'lucide-react';
-import { dashboardService } from '@/services/dashboard.service';
+import { User } from '@/types/user';
 import { ICourse } from '@/types/course';
 import { useTranslations } from 'next-intl';
 import { CompactMultiCombobox } from '@/components/ui/combobox/compact-multi-combobox';
 
 interface GraduationByYearChartProps {
+  students: User[];
   courseMap: Record<string, ICourse>;
   allCourseIds: string[];
+  allYears: string[];
 }
 
 const chartConfig = {
@@ -39,6 +40,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function GraduationByYearChart({
+  students,
   courseMap,
   allCourseIds,
 }: GraduationByYearChartProps) {
@@ -50,10 +52,6 @@ export function GraduationByYearChart({
   const [selectedCourses, setSelectedCourses] = React.useState<string[]>([]);
   const [selectedDegree, setSelectedDegree] = React.useState<string>('all');
   const [yearRange, setYearRange] = React.useState<string>('3');
-  const [rawData, setRawData] = React.useState<
-    { year: string; graduated: number; notGraduated: number }[]
-  >([]);
-  const [loading, setLoading] = React.useState(false);
 
   // Prepare course options for selection
   const courseOptions = React.useMemo(() => {
@@ -63,30 +61,50 @@ export function GraduationByYearChart({
     }));
   }, [allCourseIds, courseMap]);
 
-  // Fetch graduation stats when filter changes
-  React.useEffect(() => {
-    const fetchStats = async () => {
-      setLoading(true);
-      try {
-        // Use first selected course or undefined if none selected
-        const courseId =
-          selectedCourses.length === 1 ? selectedCourses[0] : undefined;
-        const degree = selectedDegree === 'all' ? undefined : selectedDegree;
-        const response = await dashboardService.getGraduationStatsByYear(
-          courseId,
-          degree,
-        );
-        if (response?.data) {
-          setRawData(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching graduation stats:', error);
-      } finally {
-        setLoading(false);
+  // Filter students based on selected filters
+  const filteredStudents = React.useMemo(() => {
+    let filtered = students;
+
+    if (selectedCourses.length > 0) {
+      filtered = filtered.filter((s) =>
+        selectedCourses.includes(s.courseId || ''),
+      );
+    }
+
+    if (selectedDegree !== 'all') {
+      filtered = filtered.filter((s) => s.degree === selectedDegree);
+    }
+
+    return filtered;
+  }, [students, selectedCourses, selectedDegree]);
+
+  // Group filtered students by year
+  const rawData = React.useMemo(() => {
+    const yearMap: Record<string, { graduated: number; notGraduated: number }> =
+      {};
+
+    for (const student of filteredStudents) {
+      const year = student.year || 'Unknown';
+      if (!yearMap[year]) {
+        yearMap[year] = { graduated: 0, notGraduated: 0 };
       }
-    };
-    fetchStats();
-  }, [selectedCourses, selectedDegree]);
+
+      if (student.graduated) {
+        yearMap[year].graduated++;
+      } else {
+        yearMap[year].notGraduated++;
+      }
+    }
+
+    // Convert to sorted array
+    return Object.entries(yearMap)
+      .map(([year, stats]) => ({
+        year,
+        graduated: stats.graduated,
+        notGraduated: stats.notGraduated,
+      }))
+      .sort((a, b) => a.year.localeCompare(b.year));
+  }, [filteredStudents]);
 
   // Filter data by year range
   const data = React.useMemo(() => {
@@ -95,6 +113,7 @@ export function GraduationByYearChart({
     const yearsToShow = parseInt(yearRange);
     return rawData.filter((item) => {
       const year = parseInt(item.year);
+      if (isNaN(year)) return false;
       return year >= currentYear - yearsToShow + 1;
     });
   }, [rawData, yearRange]);
@@ -102,11 +121,11 @@ export function GraduationByYearChart({
   return (
     <Card className="min-h-[420px] overflow-hidden">
       <CardHeader className="pb-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <CardTitle className="text-lg font-bold">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="min-w-0 truncate text-lg font-bold">
             {t('charts.graduation-by-year')}
           </CardTitle>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <CompactMultiCombobox
               value={selectedCourses}
               onChange={setSelectedCourses}
@@ -114,6 +133,7 @@ export function GraduationByYearChart({
               placeholder={tFilters('all-courses')}
               placeholderSearch={tFilters('course')}
               placeholderEmpty={t('charts.no-data')}
+              displayString={tFilters('course')}
             />
             <Select value={selectedDegree} onValueChange={setSelectedDegree}>
               <SelectTrigger className="w-auto min-w-[100px]">
@@ -143,11 +163,7 @@ export function GraduationByYearChart({
       </CardHeader>
       <CardContent>
         <div className="flex h-[320px] flex-col">
-          {loading ? (
-            <div className="flex flex-1 items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-          ) : data.length > 0 ? (
+          {data.length > 0 ? (
             <>
               <ChartContainer config={chartConfig} className="h-[250px] w-full">
                 <BarChart

@@ -203,8 +203,13 @@ const milestoneSlice = createSlice({
         state.loader = true;
         state.storeAction = 'reorder';
       })
+      .addCase(reorderMilestones.fulfilled, (state) => {
+        state.loader = false;
+        state.storeAction = 'none';
+      })
       .addCase(reorderMilestones.rejected, (state, action) => {
         state.loader = false;
+        state.storeAction = 'none';
         state.error = action.payload as string;
       });
 

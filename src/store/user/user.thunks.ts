@@ -4,9 +4,28 @@ import { User } from '@/types/user';
 
 export const fetchUsers = createAsyncThunk(
   'users/fetchAll',
-  async (_, { rejectWithValue }) => {
+  async (
+    {
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      page?: number;
+      pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await userService.getAll();
+      const res = await userService.getAll(
+        page,
+        pageSize,
+        undefined,
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -17,11 +36,67 @@ export const fetchUsers = createAsyncThunk(
   },
 );
 
+export const searchUsers = createAsyncThunk(
+  'users/search',
+  async (
+    {
+      searchQuery,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await userService.searchUsers(
+        searchQuery,
+        page,
+        pageSize,
+        undefined,
+        sortBy,
+        sortOrder,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to search users');
+    }
+  },
+);
+
 export const fetchStudentUsers = createAsyncThunk(
   'users/fetchStudents',
-  async (_, { rejectWithValue }) => {
+  async (
+    {
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      page?: number;
+      pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await userService.getStudents();
+      const res = await userService.getAll(
+        page,
+        pageSize,
+        'student',
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -34,15 +109,108 @@ export const fetchStudentUsers = createAsyncThunk(
 
 export const fetchTeacherUsers = createAsyncThunk(
   'users/fetchTeachers',
-  async (_, { rejectWithValue }) => {
+  async (
+    {
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      page?: number;
+      pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await userService.getTeachers();
+      const res = await userService.getAll(
+        page,
+        pageSize,
+        'teacher',
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to fetch teacher users');
+    }
+  },
+);
+
+export const searchStudents = createAsyncThunk(
+  'users/searchStudents',
+  async (
+    {
+      searchQuery,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await userService.searchUsers(
+        searchQuery,
+        page,
+        pageSize,
+        'student',
+        sortBy,
+        sortOrder,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to search students');
+    }
+  },
+);
+
+export const searchTeachers = createAsyncThunk(
+  'users/searchTeachers',
+  async (
+    {
+      searchQuery,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await userService.searchUsers(
+        searchQuery,
+        page,
+        pageSize,
+        'teacher',
+        sortBy,
+        sortOrder,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to search teachers');
     }
   },
 );

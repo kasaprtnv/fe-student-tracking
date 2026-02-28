@@ -16,8 +16,54 @@ class UserService extends APIService {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAll(): Promise<IApiGetResponse<User>> {
-    return this.get('/users')
+  async getAll(
+    page?: number,
+    pageSize?: number,
+    role?: UserRole,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<IApiGetResponse<User>> {
+    const params = new URLSearchParams();
+    if (page !== undefined) params.append('page', String(page));
+    if (pageSize !== undefined) params.append('limit', String(pageSize));
+
+    if (role) params.append('role', role);
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+
+    const query = params.toString();
+    const url = query ? `/users?${query}` : '/users';
+
+    return this.get(url)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async searchUsers(
+    searchQuery: string,
+    page: number,
+    pageSize: number,
+    role?: UserRole,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<IApiGetResponse<User>> {
+    const params = new URLSearchParams();
+    params.append('query', searchQuery);
+    params.append('page', String(page));
+    params.append('limit', String(pageSize));
+    if (role) params.append('role', role);
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+    const query = params.toString();
+    const url = `/users/search?${query}`;
+
+    return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -142,6 +188,7 @@ class UserService extends APIService {
           'courseId',
           'teacherDegree',
           'academicPosition',
+          'isActive',
         ]
       : [
           'code',
@@ -156,10 +203,12 @@ class UserService extends APIService {
           'role',
           'courseId',
           'enrollDate',
+          'isActive',
         ];
 
     // Fields that can be cleared (empty string should be sent to backend)
-    const clearableFields = ['academicPosition', 'teacherDegree'];
+    // isActive is included because `false` is a valid value that must not be filtered out
+    const clearableFields = ['academicPosition', 'teacherDegree', 'isActive'];
 
     const filteredData: Record<string, unknown> = {};
     for (const key of allowedFields) {

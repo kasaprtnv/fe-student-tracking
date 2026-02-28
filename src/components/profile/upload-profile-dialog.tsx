@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -80,7 +81,8 @@ export const UploadProfileDialog = ({
       </DialogTrigger>
       <DialogContent className="md:max-w-[750px]">
         <DialogHeader>
-          <DialogTitle>อัปโหลดรูปโปรไฟล์</DialogTitle>
+          <DialogTitle>แก้ไขรูปโปรไฟล์</DialogTitle>
+          <DialogDescription>เลือกรูปภาพที่ต้องการใช้</DialogDescription>
         </DialogHeader>
         <div
           {...getRootProps()}
@@ -118,8 +120,8 @@ export const UploadProfileDialog = ({
               <>
                 <div className="mb-1 text-center text-lg">
                   {isDragActive
-                    ? 'ปล่อยไฟล์ที่นี่...'
-                    : 'ลากและปล่อยไฟล์ หรือคลิกเพื่อเลือกไฟล์'}
+                    ? 'วางไฟล์ที่นี่...'
+                    : 'ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์'}
                 </div>
                 <div className="text-center text-sm text-gray-600">
                   รองรับไฟล์ PNG, JPG, JPEG (ขนาดไม่เกิน 5MB)
@@ -135,7 +137,7 @@ export const UploadProfileDialog = ({
             </Button>
           </DialogClose>
           <Button type="submit" onClick={handleUpload} disabled={!file}>
-            ยืนยัน
+            บันทึก
           </Button>
         </DialogFooter>
       </DialogContent>

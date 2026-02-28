@@ -12,6 +12,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
 import { mixedThEnTextSort } from '@/lib/table-sorted';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface ColumnActions {
   onEdit?: (data: User) => void;
@@ -23,7 +25,7 @@ interface ColumnActions {
 
 export const createAllStudentColumns = (
   t: (key: string) => string,
-  tDegree: (key: string) => string,
+  tUser: (key: string) => string,
   tRole: (key: string) => string,
   titleMap: Record<string, ITitle>,
 ): ColumnDef<User>[] => {
@@ -67,6 +69,28 @@ export const createAllStudentColumns = (
           admin: tRole('admin'),
         };
         return roleMap[role] || role;
+      },
+    },
+    {
+      header: t('status'),
+      accessorKey: 'isActive',
+      cell: ({ row }) => {
+        const record = row.original;
+
+        return (
+          <div className="flex w-[110px] items-center justify-center">
+            <Badge
+              className={cn(
+                'px-2 py-0.5 text-xs',
+                record.isActive
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800',
+              )}
+            >
+              {record.isActive ? tUser?.('active') : tUser?.('inactive')}
+            </Badge>
+          </div>
+        );
       },
     },
   ];

@@ -8,11 +8,68 @@ export const selectUserState = (state: RootState) => state.users;
 
 export const selectUserMap = (state: RootState) => state.users.userMap;
 
+export const selectPaginatedUserMap = (state: RootState) =>
+  state.users.paginatedUserMap;
+
+export const selectPaginatedStudentMap = (state: RootState) =>
+  state.users.paginatedStudentMap;
+
+export const selectPaginatedTeacherMap = (state: RootState) =>
+  state.users.paginatedTeacherMap;
+
 export const selectSearchQuery = (state: RootState) => state.users.searchQuery;
+
+export const selectPagination = (state: RootState) => state.users.pagination;
+
+export const selectStudentPagination = (state: RootState) =>
+  state.users.studentPagination;
+
+export const selectTeacherPagination = (state: RootState) =>
+  state.users.teacherPagination;
+
+export const selectPaginationPage = (state: RootState) =>
+  state.courses.pagination.page;
+
+export const selectPaginationPageSize = (state: RootState) =>
+  state.courses.pagination.pageSize;
+
+export const selectPaginationTotal = (state: RootState) =>
+  state.courses.pagination.total;
 
 // ============================
 // Memoized Selectors
 // ============================
+
+export const selectAllUsersFromMap = createSelector(
+  [selectUserMap],
+  (userMap) => {
+    return Object.values(userMap).sort((a, b) =>
+      a.firstName.localeCompare(b.firstName),
+    );
+  },
+);
+
+export const selectPaginatedUsersFromMap = createSelector(
+  [selectPaginatedUserMap],
+  (paginatedUserMap) => {
+    return Object.values(paginatedUserMap);
+  },
+);
+
+export const selectPaginatedStudentsFromMap = createSelector(
+  [selectPaginatedStudentMap],
+  (paginatedStudentMap) => {
+    return Object.values(paginatedStudentMap);
+  },
+);
+
+export const selectPaginatedTeachersFromMap = createSelector(
+  [selectPaginatedTeacherMap],
+  (paginatedTeacherMap) => {
+    return Object.values(paginatedTeacherMap);
+  },
+);
+
 export const selectFilteredUserIds = createSelector(
   [selectUserMap, selectSearchQuery],
   (userMap, searchQuery) => {

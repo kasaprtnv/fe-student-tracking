@@ -57,16 +57,29 @@ export const useMilestone = () => {
   );
 
   const fetchAllMilestones = useCallback(
-    (page?: number, pageSize?: number) => {
-      return dispatch(fetchMilestones({ page, pageSize })).unwrap();
+    (
+      page?: number,
+      pageSize?: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) => {
+      return dispatch(
+        fetchMilestones({ page, pageSize, sortBy, sortOrder }),
+      ).unwrap();
     },
     [dispatch],
   );
 
   const searchForMilestones = useCallback(
-    (searchQuery: string, page: number, pageSize: number) => {
+    (
+      searchQuery: string,
+      page: number,
+      pageSize: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) => {
       return dispatch(
-        searchMilestones({ searchQuery, page, pageSize }),
+        searchMilestones({ searchQuery, page, pageSize, sortBy, sortOrder }),
       ).unwrap();
     },
     [dispatch],

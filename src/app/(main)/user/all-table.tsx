@@ -1,10 +1,13 @@
 'use client';
 
 import React from 'react';
+import useSWR from 'swr';
 import { DataTable } from '@/components/data-table/data-table';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
 import { useTitle } from '@/hooks/use-title';
+import { useCourseStaff } from '@/hooks/use-course_staff';
+import { ICourseStaff } from '@/types/course-staff';
 import { createAllStudentColumns } from './create-all-column';
 import { CreateUserFormDialog } from './create-user-form';
 import { UpdateUserFormDialog } from './update-user-form';
@@ -12,8 +15,8 @@ import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-d
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
+import { useDebounce } from '@/lib/use-debounce';
 import { useTranslations } from 'next-intl';
-import { formatThaiDate } from '@/lib/format-date';
 
 interface AllTableProps {
   onImport?: () => void;
@@ -22,121 +25,123 @@ interface AllTableProps {
 
 export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
   const {
+    paginatedUsersFromMap,
+    pagination,
     searchQuery,
     setSearch: setSearchQuery,
+    setPage,
+    setPageSize,
+    fetchAllUsers,
+    searchForUsers,
     deleteExistingUser,
     deleteExistingUsers,
     getUserById,
     storeAction,
+    loader,
     userMap,
     getStudentProgressCount,
   } = useUser();
-  const { allCourseId, getCourseById, fetchAllCourses } = useCourse();
+  const { allCourseId, getCourseById, fetchAllCourses, courseMap } =
+    useCourse();
   const { titleMap, fetchAllTitles } = useTitle();
-  const t = useTranslations('user');
+  const { fetchAllCourseStaff } = useCourseStaff();
+  const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
+    [],
+  );
+  const tUser = useTranslations('user');
   const tColumn = useTranslations('column');
-  const tDegree = useTranslations('degree');
   const tRole = useTranslations('role');
   const tCommon = useTranslations('common');
+  const tForm = useTranslations('user');
 
   // Fetch courses and titles on mount
   React.useEffect(() => {
     fetchAllCourses();
     fetchAllTitles();
-  }, [fetchAllCourses, fetchAllTitles]);
+    fetchAllCourseStaff().then((response) => {
+      if (response.data) {
+        setAllCourseStaff(response.data);
+      }
+    });
+  }, [fetchAllCourses, fetchAllTitles, fetchAllCourseStaff]);
 
-  // Get all users data directly from Redux store userMap and enrich with courseName
-  const allUsers = React.useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    return Object.values(userMap)
-      .filter((user) => {
-        if (!query) return true;
-        // Create full name to allow searching like "นายสมชาย ใจดี"
-        const titleName = user.titleId
-          ? titleMap[user.titleId]?.name || ''
-          : '';
-        const fullName =
-          `${titleName}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-        // Strip non-digit characters for phone search
-        const queryDigits = query.replace(/\D/g, '');
-        const phoneDigits = user.phone?.replace(/\D/g, '') || '';
-        // Strip spaces for flexible search
-        const queryNoSpaces = query.replace(/\s/g, '');
-        // Map role to Thai display text for search
-        const roleDisplay =
-          user.role === 'student'
-            ? 'นิสิต'
-            : user.role === 'teacher'
-              ? 'อาจารย์'
-              : user.role === 'admin'
-                ? 'ผู้ดูแลระบบ'
-                : '';
-        // Map degree to Thai display text for search
-        const degreeDisplay =
-          user.degree === 'bachelor'
-            ? 'ปริญญาตรี'
-            : user.degree === 'master'
-              ? 'ปริญญาโท'
-              : user.degree === 'doctorate'
-                ? 'ปริญญาเอก'
-                : '';
-        // Map degree to English display text for search
-        const degreeDisplayEn =
-          user.degree === 'bachelor'
-            ? "bachelor's degree"
-            : user.degree === 'master'
-              ? "master's degree"
-              : user.degree === 'doctorate'
-                ? 'doctoral degree'
-                : '';
-        // Map role to English display text for search
-        const roleDisplayEn =
-          user.role === 'student'
-            ? 'student'
-            : user.role === 'teacher'
-              ? 'staff members'
-              : user.role === 'admin'
-                ? 'admin'
-                : '';
-        // Map graduated to Thai/English display text for search
-        const graduatedDisplayTh = user.graduated
-          ? 'สำเร็จการศึกษา'
-          : 'ยังไม่สำเร็จ';
-        const graduatedDisplayEn = user.graduated
-          ? 'graduated'
-          : 'not graduated';
-        return (
-          titleName.toLowerCase().startsWith(query) ||
-          user.firstName?.toLowerCase().startsWith(query) ||
-          user.lastName?.toLowerCase().startsWith(query) ||
-          user.code?.toLowerCase().startsWith(query) ||
-          user.email?.toLowerCase().startsWith(query) ||
-          user.year?.toLowerCase().startsWith(query) ||
-          user.degree?.toLowerCase().startsWith(query) ||
-          degreeDisplay.toLowerCase().startsWith(query) ||
-          degreeDisplayEn.toLowerCase().startsWith(query) ||
-          user.courseName?.toLowerCase().includes(query) ||
-          (queryNoSpaces &&
-            user.courseName
-              ?.toLowerCase()
-              .replace(/\s/g, '')
-              .includes(queryNoSpaces)) ||
-          user.role?.toLowerCase().startsWith(query) ||
-          roleDisplay.toLowerCase().startsWith(query) ||
-          roleDisplayEn.toLowerCase().startsWith(query) ||
-          user.studyPlan?.toLowerCase().startsWith(query) ||
-          graduatedDisplayTh.startsWith(query) ||
-          graduatedDisplayEn.toLowerCase().startsWith(query) ||
-          (user.enrollDate &&
-            formatThaiDate(user.enrollDate).toLowerCase().startsWith(query)) ||
-          (queryDigits && phoneDigits.startsWith(queryDigits)) ||
-          fullName.startsWith(query) ||
-          (queryNoSpaces &&
-            fullName.replace(/\s/g, '').startsWith(queryNoSpaces))
-        );
-      })
-      .map((user) => {
-        // Enrich user with courseName (always format as Code - Name)
+  const refetchCourseStaff = React.useCallback(() => {
+    fetchAllCourseStaff().then((response) => {
+      if (response.data) {
+        setAllCourseStaff(response.data);
+      }
+    });
+  }, [fetchAllCourseStaff]);
+
+  // Local pagination state for immediate useSWR key updates
+  const [currentPage, setCurrentPage] = React.useState(pagination.page);
+  const [currentPageSize, setCurrentPageSize] = React.useState(
+    pagination.pageSize,
+  );
+
+  // Local sorting state for server-side sorting
+  const [currentSortBy, setCurrentSortBy] = React.useState<string | undefined>(
+    undefined,
+  );
+  const [currentSortOrder, setCurrentSortOrder] = React.useState<
+    'asc' | 'desc' | undefined
+  >(undefined);
+
+  // Debounce search to avoid fetching on every keystroke
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  // Stable reference to fetcher function
+  const usersFetcher = React.useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async ([_key, searchQuery, page, pageSize, sortBy, sortOrder]: [
+      string,
+      string,
+      number,
+      number,
+      string | undefined,
+      'asc' | 'desc' | undefined,
+    ]) => {
+      try {
+        if (searchQuery && searchQuery.trim() !== '') {
+          return await searchForUsers(
+            searchQuery,
+            page,
+            pageSize,
+            sortBy,
+            sortOrder,
+          );
+        } else {
+          return await fetchAllUsers(page, pageSize, sortBy, sortOrder);
+        }
+      } catch (err) {
+        toast.error(tForm('toast.fetch_error'));
+        throw err;
+      }
+    },
+    [fetchAllUsers, searchForUsers, tForm],
+  );
+
+  const { mutate } = useSWR(
+    [
+      'fetch-all-users',
+      debouncedSearchQuery,
+      currentPage,
+      currentPageSize,
+      currentSortBy,
+      currentSortOrder,
+    ],
+    usersFetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 1000,
+      keepPreviousData: true, // Keep previous data while fetching new
+    },
+  );
+
+  // Enrich users with courseName
+  const allUsers = React.useMemo(
+    () =>
+      paginatedUsersFromMap.map((user) => {
         if (user.courseId) {
           const course = getCourseById(user.courseId);
           if (course) {
@@ -147,8 +152,9 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
           }
         }
         return user;
-      });
-  }, [userMap, searchQuery, getCourseById, titleMap]);
+      }),
+    [paginatedUsersFromMap, getCourseById],
+  );
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId
@@ -159,7 +165,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const allColumns = createAllStudentColumns(tColumn, tDegree, tRole, titleMap);
+  const allColumns = createAllStudentColumns(tColumn, tUser, tRole, titleMap);
+  const allCourses = allCourseId.map((id) => courseMap[id]).filter(Boolean);
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -187,11 +194,11 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     // For students with progress records
     if (isDelete.isStudentDelete) {
       if (isDelete.userIds.length === 1) {
-        return t('dialog.confirm_delete_user_with_progress', {
+        return tUser('dialog.confirm_delete_user_with_progress', {
           count: isDelete.progressCount,
         });
       } else {
-        return t('dialog.delete-users-with-progress-description', {
+        return tUser('dialog.delete-users-with-progress-description', {
           count: isDelete.userIds.length,
           progressCount: isDelete.progressCount,
         });
@@ -200,9 +207,11 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
 
     // For teachers or students without progress
     if (isDelete.userIds.length === 1) {
-      return t('delete-user-description');
+      return tUser('delete-user-description');
     } else {
-      return t('delete-users-description', { count: isDelete.userIds.length });
+      return tUser('delete-users-description', {
+        count: isDelete.userIds.length,
+      });
     }
   };
 
@@ -226,12 +235,12 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
 
     if (isDelete.userIds.length > 1) {
       if (isDelete.isStudentDelete && isDelete.progressCount > 0) {
-        return t('dialog.warning-delete-users-with-progress', {
+        return tUser('dialog.warning-delete-users-with-progress', {
           count: isDelete.userIds.length,
           progressCount: isDelete.progressCount,
         });
       }
-      return t('warning-delete-user', { count: isDelete.userIds.length });
+      return tUser('warning-delete-user', { count: isDelete.userIds.length });
     }
   };
 
@@ -309,11 +318,12 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     try {
       if (isDelete.userIds.length === 1) {
         await deleteExistingUser(isDelete.userIds[0]);
-        toast.success(t('toast.deleted-successfully'));
+        toast.success(tUser('toast.deleted-successfully'));
       } else {
         await deleteExistingUsers(isDelete.userIds);
-        toast.success(t('toast.deleted-multiple-successfully'));
+        toast.success(tUser('toast.deleted-multiple-successfully'));
       }
+      refreshData();
       setIsDelete({
         isDeleting: false,
         userIds: undefined,
@@ -323,23 +333,65 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     } catch (error) {
       console.error('Failed to delete user(s):', error);
       // Parse error message and translate if it's a known error code
-      let errorMessage = t('toast.delete-failed');
+      let errorMessage = tUser('toast.delete-failed');
       if (typeof error === 'string') {
         try {
           const parsed = JSON.parse(error);
           if (parsed.code === 'MILESTONE_PROGRESS_EXISTS') {
-            errorMessage = t('toast.milestone-progress-exists', {
+            errorMessage = tUser('toast.milestone-progress-exists', {
               count: parsed.count,
             });
           }
         } catch {
           // Not JSON, use as-is or fallback
-          errorMessage = error || t('toast.delete-failed');
+          errorMessage = error || tUser('toast.delete-failed');
         }
       }
       toast.error(errorMessage);
     }
   };
+
+  // Memoize search handler
+  const onSearchChange = React.useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+      setPage(1);
+    },
+    [setSearchQuery, setPage],
+  );
+
+  const handlePageChange = React.useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      setPage(page);
+    },
+    [setPage],
+  );
+
+  const handlePageSizeChange = React.useCallback(
+    (pageSize: number) => {
+      setCurrentPageSize(pageSize);
+      setCurrentPage(1);
+      setPageSize(pageSize);
+    },
+    [setPageSize],
+  );
+
+  const handleSortChange = React.useCallback(
+    (sortBy: string | undefined, sortOrder: 'asc' | 'desc' | undefined) => {
+      setCurrentSortBy(sortBy);
+      setCurrentSortOrder(sortOrder);
+      setCurrentPage(1);
+      setPage(1);
+    },
+    [setPage],
+  );
+
+  // Memoize refresh function
+  const refreshData = React.useCallback(() => {
+    mutate();
+  }, [mutate]);
 
   return (
     <>
@@ -347,7 +399,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         columns={allColumns}
         data={allUsers}
         searchQuery={searchQuery}
-        onSearch={setSearchQuery}
+        onSearch={onSearchChange}
         onAdd={() => setIsAdd(true)}
         onEdit={(user) => {
           setIsEdit({ isEditing: true, user: user });
@@ -360,12 +412,23 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         }}
         onImport={onImport}
         buttonImportLabel={importLabel}
+        isLoading={loader || storeAction !== 'none'}
+        manualPagination={true}
+        manualSorting={true}
+        onSortChange={handleSortChange}
+        page={currentPage}
+        pageSize={currentPageSize}
+        rowCount={pagination.total}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
       />
       <CreateUserFormDialog
         open={isAdd}
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
+        allCourses={allCourses}
         defaultRole="student"
+        onUserCreated={refreshData}
       />
       <UpdateUserFormDialog
         open={isEdit.isEditing}
@@ -374,6 +437,9 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         }
         user={isEdit.user}
         courseOptions={courseOptions}
+        allCourses={allCourses}
+        allCourseStaff={allCourseStaff}
+        onCourseStaffChange={refetchCourseStaff}
       />
       <DeleteTextConfirmationDialog
         open={isDelete.isDeleting}
@@ -390,8 +456,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         onConfirm={onConfirmDelete}
         title={
           isDelete.userIds?.length === 1
-            ? t('delete-user-title')
-            : t('delete-users-title')
+            ? tUser('delete-user-title')
+            : tUser('delete-users-title')
         }
         description={getDeleteDescription()}
         confirmText={getConfirmText()}

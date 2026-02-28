@@ -34,6 +34,7 @@ interface MultiComboboxProps {
   placeholderEmpty: string;
   errorMessage?: string;
   loader?: boolean;
+  disabled?: boolean;
 }
 
 export function MultiCombobox({
@@ -45,6 +46,7 @@ export function MultiCombobox({
   placeholderEmpty,
   errorMessage,
   loader = false,
+  disabled = false,
 }: MultiComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState<Set<string>>(
@@ -67,12 +69,13 @@ export function MultiCombobox({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          onClick={() => setOpen(!open)}
+          onClick={() => !disabled && setOpen(!open)}
           role="combobox"
           aria-expanded={open}
           tabIndex={0}
+          disabled={disabled}
           className={cn(
-            'border-input h-[max-content] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm transition-all',
+            'border-input h-[max-content] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-normal transition-all',
             'focus:ring-ring focus:ring-1 focus:outline-none',
             'flex items-center justify-between',
             errorMessage && 'border-red-500',
@@ -122,7 +125,7 @@ export function MultiCombobox({
                 >
                   <div className="flex w-full flex-col text-left leading-tight">
                     <span
-                      className="truncate overflow-hidden font-medium whitespace-nowrap"
+                      className="truncate overflow-hidden whitespace-nowrap"
                       title={option.label}
                     >
                       {option.label}
@@ -145,9 +148,7 @@ export function MultiCombobox({
           </CommandList>
         </Command>
       </PopoverContent>
-      {errorMessage && (
-        <p className="text-xs font-semibold text-red-500">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="text-xs text-red-500">{errorMessage}</p>}
     </Popover>
   );
 }

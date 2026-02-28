@@ -70,6 +70,7 @@ export const createCourseColumns = (
     },
     {
       accessorKey: 'users',
+      enableSorting: false,
       header: 'course-staff',
       cell: (info) => {
         const users = info.getValue<User[] | undefined>();
@@ -228,6 +229,5 @@ export const createCourseColumns = (
       );
     },
   });
-
   return columns;
 };

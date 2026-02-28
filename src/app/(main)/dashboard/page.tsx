@@ -158,8 +158,10 @@ const DashboardPage = () => {
             allYears={allYears}
           />
           <GraduationByYearChart
+            students={filteredStudents}
             courseMap={filteredCourseMap}
             allCourseIds={filteredCourseIds}
+            allYears={allYears}
           />
         </div>
       </div>

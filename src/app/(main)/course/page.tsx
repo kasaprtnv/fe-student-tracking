@@ -76,6 +76,14 @@ const CoursePage = () => {
     pagination.pageSize,
   );
 
+  // Local sorting state for server-side sorting
+  const [currentSortBy, setCurrentSortBy] = React.useState<string | undefined>(
+    undefined,
+  );
+  const [currentSortOrder, setCurrentSortOrder] = React.useState<
+    'asc' | 'desc' | undefined
+  >(undefined);
+
   // Debounce search to avoid fetching on every keystroke
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -93,17 +101,25 @@ const CoursePage = () => {
   // Stable reference to fetcher function to prevent unnecessary re-renders
   const coursesFetcher = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async ([_key, searchQuery, page, pageSize]: [
+    async ([_key, searchQuery, page, pageSize, sortBy, sortOrder]: [
       string,
       string,
       number,
       number,
+      string | undefined,
+      'asc' | 'desc' | undefined,
     ]) => {
       try {
         if (searchQuery && searchQuery.trim() !== '') {
-          return await searchForCourses(searchQuery, page, pageSize);
+          return await searchForCourses(
+            searchQuery,
+            page,
+            pageSize,
+            sortBy,
+            sortOrder,
+          );
         } else {
-          return await fetchAllCourses(page, pageSize);
+          return await fetchAllCourses(page, pageSize, sortBy, sortOrder);
         }
       } catch (err) {
         toast.error(tForm('toast.fetch_error'));
@@ -114,7 +130,14 @@ const CoursePage = () => {
   );
 
   const { mutate } = useSWR(
-    ['courses', debouncedSearchQuery, currentPage, currentPageSize],
+    [
+      'courses',
+      debouncedSearchQuery,
+      currentPage,
+      currentPageSize,
+      currentSortBy,
+      currentSortOrder,
+    ],
     coursesFetcher,
     {
       revalidateOnFocus: false,
@@ -209,6 +232,16 @@ const CoursePage = () => {
     [setPageSize],
   );
 
+  const handleSortChange = React.useCallback(
+    (sortBy: string | undefined, sortOrder: 'asc' | 'desc' | undefined) => {
+      setCurrentSortBy(sortBy);
+      setCurrentSortOrder(sortOrder);
+      setCurrentPage(1); // Reset to first page on sort change
+      setPage(1);
+    },
+    [setPage],
+  );
+
   // Memoize refresh function
   const refreshData = React.useCallback(() => {
     mutate();
@@ -243,6 +276,8 @@ const CoursePage = () => {
           searchQuery={searchQuery}
           isLoading={loader || storeAction !== 'none'}
           manualPagination={true}
+          manualSorting={true}
+          onSortChange={handleSortChange}
           page={currentPage}
           pageSize={currentPageSize}
           rowCount={pagination.total}

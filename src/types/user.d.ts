@@ -1,4 +1,4 @@
-import { StoreAction } from '@/types/index';
+import { IPagination, StoreAction } from '@/types/index';
 
 export type UserRole = 'admin' | 'teacher' | 'student';
 
@@ -30,10 +30,18 @@ export interface User {
 export interface UserState {
   // Data
   userMap: Record<string, User>;
+  paginatedUserMap: Record<string, User>;
+  paginatedStudentMap: Record<string, User>;
+  paginatedTeacherMap: Record<string, User>;
 
   // UI States
   searchQuery: string;
   storeAction: StoreAction;
   loader: boolean;
   error: string | null;
+
+  // Pagination (per-tab)
+  pagination: IPagination;
+  studentPagination: IPagination;
+  teacherPagination: IPagination;
 }
