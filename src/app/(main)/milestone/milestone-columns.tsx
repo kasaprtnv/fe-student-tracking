@@ -17,6 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { formatShortDate } from '@/lib/format-date';
 
 interface ColumnActions {
   onEdit?: (data: IMilestone) => void;
@@ -26,16 +27,9 @@ interface ColumnActions {
   t?: (key: string) => string;
 }
 
-const formatDate = (date?: string | Date) => {
-  if (!date) return '-';
-  return new Intl.DateTimeFormat('th-TH', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(new Date(date));
-};
-
-export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
+export const createMilestoneColumns = (
+  locale: string = 'th',
+): ColumnDef<IMilestone>[] => {
   const columns: ColumnDef<IMilestone>[] = [
     {
       accessorKey: 'name',
@@ -71,13 +65,23 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
       accessorKey: 'createdAt',
       header: 'created_at',
       sortingFn: 'datetime',
-      cell: ({ row }) => formatDate(row.original.createdAt),
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
+      },
     },
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
       sortingFn: 'datetime',
-      cell: ({ row }) => formatDate(row.original.updatedAt),
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
+      },
     },
     // {
     //   accessorKey: 'notifyBeforeDays',

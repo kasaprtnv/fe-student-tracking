@@ -1,4 +1,4 @@
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 import { ITitle } from '@/types/title';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -25,7 +25,9 @@ type ColumnActions = {
   t?: (key: string) => string;
 };
 
-export const createTitleColumns = (): ColumnDef<ITitle>[] => {
+export const createTitleColumns = (
+  locale: string = 'th',
+): ColumnDef<ITitle>[] => {
   const columns: ColumnDef<ITitle>[] = [
     {
       accessorKey: 'name',
@@ -57,20 +59,22 @@ export const createTitleColumns = (): ColumnDef<ITitle>[] => {
       accessorKey: 'createdAt',
       header: 'created_at',
       sortingFn: 'datetime',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
       sortingFn: 'datetime',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
   ];

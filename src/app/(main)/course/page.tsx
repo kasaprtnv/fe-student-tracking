@@ -1,7 +1,7 @@
 'use client';
 
 import { useCourse } from '@/hooks/use-course';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { createCourseColumns } from './course-column';
 import React from 'react';
 import useSWR from 'swr';
@@ -40,11 +40,12 @@ const CoursePage = () => {
   } = useCourse();
   // const { fetchAllCourseStaff } = useCourseStaff();
   const { fetchTeachers, allUserIds, getUserById } = useUser();
+  const locale = useLocale();
 
   // Memoize columns to prevent unnecessary re-renders
   const courseColumns = React.useMemo(
     () =>
-      createCourseColumns(tDegree).map((column) => {
+      createCourseColumns(tDegree, locale).map((column) => {
         if (typeof column.header === 'string') {
           return {
             ...column,
@@ -53,7 +54,7 @@ const CoursePage = () => {
         }
         return column;
       }),
-    [tDegree, tCol],
+    [tDegree, tCol, locale],
   );
 
   const [isEdit, setIsEdit] = React.useState<{

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTitle } from '@/hooks/use-title';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { createTitleColumns } from './title-column';
 import React from 'react';
 import useSWR from 'swr';
@@ -17,6 +17,7 @@ const TitlePage = () => {
   const tForm = useTranslations('title.title-form');
   const tCol = useTranslations('column');
   const tTitle = useTranslations('title');
+  const locale = useLocale();
 
   const {
     filteredTitlesId,
@@ -28,7 +29,7 @@ const TitlePage = () => {
     checkTitleInUse,
   } = useTitle();
 
-  const titleColumns = createTitleColumns().map((column) => {
+  const titleColumns = createTitleColumns(locale).map((column) => {
     if (typeof column.header === 'string') {
       return {
         ...column,
