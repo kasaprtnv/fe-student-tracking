@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchCourses,
+  getCoursesByTeacherId,
   searchCourses,
   fetchCourseById,
   createCourse,
@@ -81,6 +82,25 @@ const courseSlice = createSlice({
         }
       })
       .addCase(fetchCourses.rejected, (state, action) => {
+        state.loader = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch courses by teacher ID
+    builder
+      .addCase(getCoursesByTeacherId.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(getCoursesByTeacherId.fulfilled, (state, action) => {
+        state.loader = false;
+        state.courseMap = {};
+        action.payload.data.forEach((course: ICourse) => {
+          const { degreeTH, degreeEN } = getdegreeMap(course.degree);
+          state.courseMap[course.id] = { ...course, degreeTH, degreeEN };
+        });
+      })
+      .addCase(getCoursesByTeacherId.rejected, (state, action) => {
         state.loader = false;
         state.error = action.payload as string;
       });
