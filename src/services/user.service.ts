@@ -1,4 +1,4 @@
-import { User, UserRole } from '@/types/user';
+import { User, UserRole, StudentFilterPayload } from '@/types/user';
 import { APIService } from '@/services/api.service';
 import {
   IApiGetResponse,
@@ -262,6 +262,33 @@ class UserService extends APIService {
     const formData = new FormData();
     formData.append('file', file);
     return this.post('/users/import', formData)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async filterStudents(
+    filters: StudentFilterPayload,
+    page?: number,
+    pageSize?: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<IApiGetResponse<User>> {
+    const params = new URLSearchParams();
+    if (page !== undefined) params.append('page', String(page));
+    if (pageSize !== undefined) params.append('limit', String(pageSize));
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+
+    const query = params.toString();
+    const url = query
+      ? `/users/students/filter?${query}`
+      : '/users/students/filter';
+
+    return this.post(url, filters)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

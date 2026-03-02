@@ -15,6 +15,7 @@ import {
   searchUsers,
   searchStudents,
   searchTeachers,
+  filterStudentUsers,
 } from '@/store/user/user.thunks';
 import { userService } from '@/services/user.service';
 
@@ -31,6 +32,9 @@ import {
   selectPaginatedUsersFromMap,
   selectPaginatedStudentsFromMap,
   selectPaginatedTeachersFromMap,
+  selectFilteredStudentsFromMap,
+  selectFilteredStudentPagination,
+  selectFilteredStudentLoader,
 } from '@/store/user/user.selectors';
 
 import {
@@ -45,8 +49,10 @@ import {
   setStudentPaginationPageSize,
   setTeacherPaginationPage,
   setTeacherPaginationPageSize,
+  setFilteredStudentPaginationPage,
+  setFilteredStudentPaginationPageSize,
 } from '@/store/user/user.slice';
-import { User } from '@/types/user';
+import { User, StudentFilterPayload } from '@/types/user';
 import { fetchUserProfile } from '@/store/auth/auth.thunks';
 
 export const useUser = () => {
@@ -61,6 +67,11 @@ export const useUser = () => {
   const paginatedUsersFromMap = useSelector(selectPaginatedUsersFromMap);
   const paginatedStudentsFromMap = useSelector(selectPaginatedStudentsFromMap);
   const paginatedTeachersFromMap = useSelector(selectPaginatedTeachersFromMap);
+  const filteredStudentsFromMap = useSelector(selectFilteredStudentsFromMap);
+  const filteredStudentPagination = useSelector(
+    selectFilteredStudentPagination,
+  );
+  const filteredStudentLoader = useSelector(selectFilteredStudentLoader);
   const pagination = useSelector(selectPagination);
   const studentPagination = useSelector(selectStudentPagination);
   const teacherPagination = useSelector(selectTeacherPagination);
@@ -153,6 +164,21 @@ export const useUser = () => {
     ) =>
       dispatch(
         searchTeachers({ searchQuery, page, pageSize, sortBy, sortOrder }),
+      ).unwrap(),
+    [dispatch],
+  );
+
+  // Filter students (for /students page with advanced filters)
+  const fetchFilteredStudents = useCallback(
+    (
+      filters: StudentFilterPayload,
+      page?: number,
+      pageSize?: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) =>
+      dispatch(
+        filterStudentUsers({ filters, page, pageSize, sortBy, sortOrder }),
       ).unwrap(),
     [dispatch],
   );
@@ -269,6 +295,20 @@ export const useUser = () => {
     [dispatch],
   );
 
+  const setFilteredStudentPage = useCallback(
+    (page: number) => {
+      dispatch(setFilteredStudentPaginationPage(page));
+    },
+    [dispatch],
+  );
+
+  const setFilteredStudentPageSize = useCallback(
+    (pageSize: number) => {
+      dispatch(setFilteredStudentPaginationPageSize(pageSize));
+    },
+    [dispatch],
+  );
+
   const getStudentProgressCount = useCallback(
     (userId: string) => userService.getStudentProgressCount(userId),
     [],
@@ -284,6 +324,9 @@ export const useUser = () => {
     paginatedUsersFromMap,
     paginatedStudentsFromMap,
     paginatedTeachersFromMap,
+    filteredStudentsFromMap,
+    filteredStudentPagination,
+    filteredStudentLoader,
     pagination,
     studentPagination,
     teacherPagination,
@@ -298,6 +341,7 @@ export const useUser = () => {
     searchForUsers,
     searchForStudents,
     searchForTeachers,
+    fetchFilteredStudents,
     fetchStudents,
     fetchTeachers,
     fetchUserDetails,
@@ -323,5 +367,7 @@ export const useUser = () => {
     setStudentPageSize,
     setTeacherPage,
     setTeacherPageSize,
+    setFilteredStudentPage,
+    setFilteredStudentPageSize,
   };
 };
