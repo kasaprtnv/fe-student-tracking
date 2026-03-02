@@ -666,7 +666,7 @@
   },
   "verify-certificate": {
     "title": "ตรวจสอบหลักฐาน",
-    "description": "แสดงรายการหลักฐานที่รอการตรวจสอบจากนิสิต",
+    "description": "แสดงรายการหลักฐานที่รอการตรวจสอบ",
     "breadcrumb": {
       "home": "แดชบอร์ด",
       "verify": "ตรวจสอบหลักฐาน",
@@ -698,7 +698,7 @@
       "step": "หัวข้อที่ดำเนินการ",
       "submit_date": "วันที่ส่ง",
       "status": "สถานะ",
-      "action": ""
+      "action": "ตรวจสอบ"
     },
     "loading": "กำลังโหลด...",
     "no_data": "ไม่พบข้อมูล",
@@ -717,21 +717,24 @@
       "reason": "เหตุผล",
       "decline_reason": "เหตุผลในการปฏิเสธ",
       "staff_attachment": "เอกสารที่แนบมา",
-      "student_comment": "คำอธิบายจากนักศึกษา"
+      "student_comment": "คำอธิบายเพิ่มเติม"
     },
     "review": {
       "title": "ตรวจสอบการดำเนินการ",
       "decline_reason": "ความคิดเห็นเพิ่มเติม",
       "decline_reason_placeholder": "กรอกความคิดเห็นเพิ่มเติม",
+      "decline_reason_required": "กรุณากรอกความคิดเห็นเพิ่มเติมก่อนกดไม่อนุมัติ",
       "approve": "อนุมัติ",
       "decline": "ไม่อนุมัติ",
       "staff_attachment": "แนบไฟล์เพิ่มเติม",
       "click_to_upload": "ลากไฟล์มาวางที่นี้ หรือคลิกเพื่อไฟล์",
-      "file_types": "รองรับไฟล์ PDF, PNG, JPEG, JPG และ DOCX (ขนาดรวมไม่เกิน 20MB)"
+      "file_types": "รองรับไฟล์ PDF, PNG, JPEG, JPG และ DOCX (ขนาดรวมไม่เกิน 20MB)",
+      "invalid_file_type": "ไม่สามารถแนบไฟล์นี้ได้ รองรับเฉพาะ PDF, PNG, JPEG, JPG และ DOCX เท่านั้น",
+      "file_too_large": "ไฟล์มีขนาดเกิน 20MB ไม่สามารถแนบได้"
     },
     "success": {
       "title": "สำเร็จ",
-      "approved": "อนุมัติหลักฐานเรียบร้อยแล้ว",
+      "approved": "หลักฐานได้รับการอนุมัติเรียบร้อยแล้ว",
       "declined": "ปฏิเสธหลักฐานเรียบร้อยแล้ว",
       "ok": "ตกลง"
     },

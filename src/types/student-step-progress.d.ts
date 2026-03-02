@@ -37,6 +37,7 @@ export interface IStudentStepProgress {
     code: string;
     firstName: string;
     lastName: string;
+    courseId?: string;
     courseCode?: string;
     courseName?: string;
     degree?: string;

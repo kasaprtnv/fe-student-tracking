@@ -86,11 +86,6 @@ export function createVerifyColumns(
       cell: ({ row }) => formatDate(row.original.submittedAt),
     },
     {
-      accessorKey: 'status',
-      header: t('table.status'),
-      cell: ({ row }) => getStatusBadge(row.original.status, t),
-    },
-    {
       id: 'actions',
       header: t('table.action'),
       cell: ({ row }) => (

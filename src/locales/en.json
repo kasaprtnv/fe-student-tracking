@@ -699,7 +699,7 @@
       "step": "Step",
       "submit_date": "Submit Date",
       "status": "Status",
-      "action": ""
+      "action": "Verify"
     },
     "loading": "Loading...",
     "no_data": "No data found",
@@ -724,11 +724,14 @@
       "title": "Review Submission",
       "decline_reason": "Decline Reason",
       "decline_reason_placeholder": "Please specify the reason",
+      "decline_reason_required": "Please enter a reason before declining",
       "approve": "Approve",
       "decline": "Decline",
       "staff_attachment": "Attach Additional Document (for revision/decline)",
       "click_to_upload": "Drag or click to upload file",
-      "file_types": "Supports PDF, PNG, JPEG, JPG and DOCX (max 20MB)"
+      "file_types": "Supports PDF, PNG, JPEG, JPG and DOCX (max 20MB)",
+      "invalid_file_type": "This file type is not supported. Only PDF, PNG, JPEG, JPG and DOCX are allowed.",
+      "file_too_large": "File size exceeds 20MB limit and cannot be attached."
     },
     "success": {
       "title": "Success",
