@@ -175,7 +175,7 @@ export default function VerifyDetailPage() {
     if (!user?.id) return;
     setSubmitting(true);
     try {
-      await studentStepProgressService.approve(id, user.id);
+      await studentStepProgressService.approve(id, user.id, declineReason);
       refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.approved'));
       setShowSuccessModal(true);

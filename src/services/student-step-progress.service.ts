@@ -80,8 +80,12 @@ class StudentStepProgressService extends APIService {
   async approve(
     id: string,
     reviewedBy: string,
+    recommendation?: string,
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
-    return this.patch(`/student-step-progress/${id}/approve`, { reviewedBy })
+    return this.patch(`/student-step-progress/${id}/approve`, {
+      reviewedBy,
+      recommendation,
+    })
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

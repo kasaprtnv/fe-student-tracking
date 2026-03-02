@@ -64,24 +64,26 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
       <div className="flex flex-col items-center justify-center">
         {/* Profile Image + Name + Position */}
         <div className="relative mb-6 flex flex-col items-center justify-center">
-          <Avatar className="h-60 w-60 border-4 border-white bg-white">
-            <AvatarImage
-              src={
-                user?.profileImageUrl
-                  ? `${API_STATIC_URL}${user.profileImageUrl}`
-                  : '/profile.png'
-              }
-            />
-            <AvatarFallback className="text-4xl">{`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`}</AvatarFallback>
-          </Avatar>
-          <div className="absolute right-22 bottom-22">
-            <UploadProfileDialog
-              userId={user?.id}
-              firstName={user?.firstName}
-              lastName={user?.lastName}
-            />
+          <div className="relative">
+            <Avatar className="h-60 w-60 border-4 border-white bg-white">
+              <AvatarImage
+                src={
+                  user?.profileImageUrl
+                    ? `${API_STATIC_URL}${user.profileImageUrl}`
+                    : '/profile.png'
+                }
+              />
+              <AvatarFallback className="text-4xl">{`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`}</AvatarFallback>
+            </Avatar>
+            <div className="absolute right-4 bottom-4">
+              <UploadProfileDialog
+                userId={user?.id}
+                firstName={user?.firstName}
+                lastName={user?.lastName}
+              />
+            </div>
           </div>
-          <div className="mt-4 text-center text-2xl font-bold">{`${user?.firstName} ${user?.lastName}`}</div>
+          <div className="mt-4 text-center text-2xl font-bold">{`${user?.titleName}${user?.firstName} ${user?.lastName}`}</div>
           <div className="text-center text-lg font-medium text-red-700">
             {t('personal_information.teacher_position') ||
               'อาจารย์ประจำหลักสูตร'}

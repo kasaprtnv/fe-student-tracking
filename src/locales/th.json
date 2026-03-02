@@ -254,6 +254,7 @@
     "accept_file_type": "รองรับไฟล์ประเภท",
     "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน",
     "reason_for_decline": "เหตุผลที่ไม่อนุมัติ",
+    "recommendation": "คำแนะนำ",
     "description": "คำอธิบาย",
     "file_attachment": "ไฟล์ที่แนบมาจากผู้ดูแลหลักสูตร",
     "confirm_submit_title": "ยืนยันการส่ง",

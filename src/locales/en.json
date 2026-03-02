@@ -256,6 +256,7 @@
     "accept_file_type": "Accept File Type",
     "progress_count": "completed {completed} out of {total} steps",
     "reason_for_decline": "Reason for Decline",
+    "recommendation": "Recommendation",
     "description": "Description",
     "file_attachment": "File Attachment",
     "confirm_submit_title": "Confirm Submission",
