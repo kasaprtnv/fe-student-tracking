@@ -41,9 +41,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     userMap,
     getStudentProgressCount,
   } = useUser();
-  const { allCourseId, getCourseById, fetchAllCourses, courseMap } =
-    useCourse();
-  const { titleMap, fetchAllTitles } = useTitle();
+  const { allCourseId, getCourseById, courseMap } = useCourse();
+  const { titleMap } = useTitle();
   const { fetchAllCourseStaff } = useCourseStaff();
   const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
     [],
@@ -56,14 +55,14 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
 
   // Fetch courses and titles on mount
   React.useEffect(() => {
-    fetchAllCourses();
-    fetchAllTitles();
+    // fetchAllCourses();
+    // fetchAllTitles();
     fetchAllCourseStaff().then((response) => {
       if (response.data) {
         setAllCourseStaff(response.data);
       }
     });
-  }, [fetchAllCourses, fetchAllTitles, fetchAllCourseStaff]);
+  }, [fetchAllCourseStaff]);
 
   const refetchCourseStaff = React.useCallback(() => {
     fetchAllCourseStaff().then((response) => {

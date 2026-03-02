@@ -1,6 +1,6 @@
 import { userService } from '@/services/user.service';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { User } from '@/types/user';
+import { User, StudentFilterPayload } from '@/types/user';
 
 export const fetchUsers = createAsyncThunk(
   'users/fetchAll',
@@ -330,6 +330,42 @@ export const deleteMultipleUsers = createAsyncThunk(
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to delete users');
+    }
+  },
+);
+
+export const filterStudentUsers = createAsyncThunk(
+  'users/filterStudents',
+  async (
+    {
+      filters,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      filters: StudentFilterPayload;
+      page?: number;
+      pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await userService.filterStudents(
+        filters,
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to filter students');
     }
   },
 );

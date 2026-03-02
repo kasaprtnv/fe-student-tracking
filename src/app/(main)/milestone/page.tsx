@@ -1,7 +1,7 @@
 'use client';
 
 import { useMilestone } from '@/hooks/use-milestone';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import React from 'react';
 import useSWR from 'swr';
 import { toast } from 'sonner';
@@ -21,6 +21,7 @@ const MilestonePage = () => {
   const tForm = useTranslations('milestone.milestone-form');
   const tCol = useTranslations('column');
   const tMilestone = useTranslations('milestone');
+  const locale = useLocale();
 
   const {
     allMilestoneFormMap,
@@ -41,7 +42,7 @@ const MilestonePage = () => {
 
   const milestoneColumns = React.useMemo(
     () =>
-      createMilestoneColumns().map((column) => {
+      createMilestoneColumns(locale).map((column) => {
         if (typeof column.header === 'string') {
           return {
             ...column,
@@ -50,7 +51,7 @@ const MilestonePage = () => {
         }
         return column;
       }),
-    [tCol],
+    [tCol, locale],
   );
 
   const [isEdit, setIsEdit] = React.useState<{

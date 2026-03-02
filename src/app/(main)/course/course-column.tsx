@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/tooltip';
 import { getAvatarFallbackName } from '@/lib/avatar-fallback-name';
 // import { Switch } from '@/components/ui/switch';
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 import { mixedThEnTextSort } from '@/lib/table-sorted';
 import { cn } from '@/lib/utils';
 import { ICourse } from '@/types/course';
@@ -34,6 +34,7 @@ interface ColumnActions {
 
 export const createCourseColumns = (
   tDegree: (key: string) => string,
+  locale: string = 'th',
 ): ColumnDef<ICourse>[] => {
   const columns: ColumnDef<ICourse>[] = [
     {
@@ -124,20 +125,22 @@ export const createCourseColumns = (
       accessorKey: 'createdAt',
       header: 'created_at',
       sortingFn: 'datetime',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
       sortingFn: 'datetime',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
     {
