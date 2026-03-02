@@ -83,11 +83,6 @@ export function createVerifyColumns(
       },
     },
     {
-      accessorKey: 'status',
-      header: t('table.status'),
-      cell: ({ row }) => getStatusBadge(row.original.status, t),
-    },
-    {
       id: 'actions',
       header: t('table.action'),
       cell: ({ row }) => (

@@ -275,6 +275,18 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
         userId,
       );
       if (response.success) {
+        // บันทึก studentComment หลังอัปโหลดไฟล์สำเร็จ
+        if (studentComment) {
+          try {
+            await studentStepProgressService.submitForReview(
+              stepId,
+              userId || '',
+              studentComment,
+            );
+          } catch (commentError) {
+            console.warn('Error saving student comment:', commentError);
+          }
+        }
         setSuccessModalOpen(true);
         onSubmitSuccess?.(stepId);
         setInternalFiles((prev) => {
@@ -286,6 +298,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
           const newNames = { ...prev };
           delete newNames[stepId];
           return newNames;
+        });
+        setInternalComments((prev) => {
+          const newComments = { ...prev };
+          delete newComments[stepId];
+          return newComments;
         });
       } else {
         console.error('Upload failed:', response.error);

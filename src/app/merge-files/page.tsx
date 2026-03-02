@@ -276,6 +276,7 @@ export default function FileListPage() {
           onSearch={setSearchQuery}
           searchQuery={searchQuery}
           enabledPagination={true}
+          enabledMultiSelect={false}
           onMultiDelete={handleMultiDelete}
           getRowId={getRowId}
         />
