@@ -9,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Camera, UserCircle2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';

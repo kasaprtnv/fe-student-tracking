@@ -7,6 +7,7 @@ export interface User {
   profileImageUrl?: string;
   code: string;
   titleId?: string;
+  titleName?: string;
   firstName: string;
   lastName: string;
   email?: string;
