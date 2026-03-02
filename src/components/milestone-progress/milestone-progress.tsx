@@ -721,6 +721,20 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         </div>
                                       </>
                                     )}
+                                    {attemptMap[step.id] &&
+                                      completed &&
+                                      attemptMap[step.id].staffComment != '' &&
+                                      attemptMap[step.id].staffComment !=
+                                        null && (
+                                        <>
+                                          <div className="mt-3 font-bold">
+                                            {t('recommendation')}
+                                          </div>
+                                          <div className="mt-3 h-24 w-1/2 rounded-2xl border border-gray-300 p-4">
+                                            {attemptMap[step.id].staffComment}
+                                          </div>
+                                        </>
+                                      )}
                                     {displayMode !== 'select-milestone' &&
                                       (available || declined) && (
                                         <div>
