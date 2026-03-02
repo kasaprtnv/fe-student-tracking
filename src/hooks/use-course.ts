@@ -11,6 +11,7 @@ import {
   updateCourse,
   deleteCourse,
   deleteCourses,
+  getCoursesByTeacherId,
 } from '@/store/course/course.thunks';
 
 import {
@@ -60,6 +61,14 @@ export const useCourse = () => {
       return dispatch(
         fetchCourses({ page, pageSize, sortBy, sortOrder }),
       ).unwrap();
+    },
+    [dispatch],
+  );
+
+  // Fetch courses by teacher ID
+  const fetchCoursesByTeacherId = useCallback(
+    (teacherId: string) => {
+      return dispatch(getCoursesByTeacherId(teacherId)).unwrap();
     },
     [dispatch],
   );
@@ -161,6 +170,7 @@ export const useCourse = () => {
 
     // Async Actions
     fetchAllCourses,
+    fetchCoursesByTeacherId,
     searchForCourses,
     fetchCourseDetails,
     createNewCourse,

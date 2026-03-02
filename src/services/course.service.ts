@@ -37,6 +37,16 @@ class CourseService extends APIService {
       });
   }
 
+  async getCoursesByTeacherId(
+    teacherId: string,
+  ): Promise<IApiGetResponse<ICourse>> {
+    return this.get(`/courses/teacher/${teacherId}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
   async searchCourses(
     searchQuery: string,
     page: number,

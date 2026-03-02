@@ -102,7 +102,10 @@ export function MultiCombobox({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-w-[var(--radix-popover-trigger-width)] p-0">
+      <PopoverContent
+        className="w-[var(--radix-popover-trigger-width)] max-w-[var(--radix-popover-trigger-width)] p-0"
+        onWheel={(e) => e.stopPropagation()}
+      >
         <Command
           filter={(value, search) => {
             if (
@@ -114,7 +117,7 @@ export function MultiCombobox({
           }}
         >
           <CommandInput placeholder={placeholderSearch} />
-          <CommandList>
+          <CommandList className="max-h-60 overflow-y-auto">
             <CommandEmpty>{placeholderEmpty}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
