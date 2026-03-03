@@ -626,6 +626,7 @@
         "course-required": "กรุณาเลือกหลักสูตร",
         "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน",
         "enroll-date-future": "วันที่ลงทะเบียนต้องไม่เกินวันที่ปัจจุบัน",
+        "title-required": "กรุณาเลือกคำนำหน้า",
         "study-plan-required": "กรุณากรอกแผนการเรียน"
       },
       "toast": {

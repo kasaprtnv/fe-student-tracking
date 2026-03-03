@@ -627,6 +627,7 @@
         "course-required": "Course is required",
         "enroll-date-required": "Enroll date is required",
         "enroll-date-future": "Enroll date cannot be in the future",
+        "title-required": "Title is required",
         "study-plan-required": "Study plan is required"
       },
       "toast": {
