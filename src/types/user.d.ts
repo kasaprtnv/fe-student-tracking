@@ -21,6 +21,7 @@ export interface User {
   academicPosition?: string;
   courseId?: string;
   courseName?: string;
+  managedCourses?: { id: string; name: string }[];
   enrollDate?: string;
   graduated?: boolean;
   isActive?: boolean;
