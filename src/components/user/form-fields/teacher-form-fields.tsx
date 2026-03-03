@@ -30,6 +30,25 @@ export const TeacherFormFields = ({
     <>
       <FormField
         control={form.control}
+        name="major"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium text-gray-700">
+              {t('label.major')}
+            </FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                placeholder={t('placeholder.major')}
+                disabled={disabledFields.includes('major')}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
         name="teacherDegree"
         render={({ field }) => (
           <FormItem>

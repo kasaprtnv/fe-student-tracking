@@ -59,6 +59,19 @@ export const createTeacherColumns = (
       },
     },
     {
+      header: t('major'),
+      accessorKey: 'major',
+      sortingFn: mixedThEnTextSort<User>(),
+      cell: ({ row }) => {
+        const value = row.original.major || '-';
+        return (
+          <span className="block max-w-[200px] truncate" title={value}>
+            {value}
+          </span>
+        );
+      },
+    },
+    {
       header: t('teacher-degree'),
       accessorKey: 'teacherDegree',
       cell: ({ row }) => row.original.teacherDegree || '-',

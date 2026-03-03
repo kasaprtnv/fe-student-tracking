@@ -66,17 +66,18 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     });
   }, [fetchAllCourseStaff]);
 
-  // Listen for user import events to refetch course_staff
+  // Listen for user import events to refetch course_staff and table data
   React.useEffect(() => {
     const handleUserImported = () => {
       refetchCourseStaff();
+      mutate();
     };
 
     window.addEventListener('user-imported', handleUserImported);
     return () => {
       window.removeEventListener('user-imported', handleUserImported);
     };
-  }, [refetchCourseStaff]);
+  }, [refetchCourseStaff, mutate]);
 
   // Local pagination state for immediate useSWR key updates
   const [currentPage, setCurrentPage] = React.useState(teacherPagination.page);

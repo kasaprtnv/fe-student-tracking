@@ -75,6 +75,7 @@
     "course-staff": "Course Staff",
     "teacher-degree": "Degree",
     "student-code": "Student Code",
+    "major": "Department",
     "milestone-name": "Milestone Name",
     "milestone-description": "Milestone Description",
     "step-name": "Step Name",
@@ -556,6 +557,7 @@
         "enroll-date": "Enroll Date",
         "is-active": "Active Status",
         "study-plan": "Study Plan",
+        "major": "Department",
         "teacher-degree": "Degree",
         "academic-position": "Academic Position",
         "add-academic-position": "Add Academic Position"
@@ -581,6 +583,7 @@
         "study-plan": "Select study plan",
         "search-study-plan": "Search study plan...",
         "no-study-plan-found": "No study plan found",
+        "major": "Enter department",
         "teacher-degree": "Enter teacher degree",
         "academic-position": "Enter academic position"
       },
@@ -628,7 +631,8 @@
         "enroll-date-required": "Enroll date is required",
         "enroll-date-future": "Enroll date cannot be in the future",
         "title-required": "Title is required",
-        "study-plan-required": "Study plan is required"
+        "study-plan-required": "Study plan is required",
+        "major-required": "Department is required"
       },
       "toast": {
         "created-successfully": "User created successfully",

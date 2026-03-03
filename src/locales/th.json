@@ -76,6 +76,7 @@
     "course-staff": "ผู้ดูแลหลักสูตร",
     "teacher-degree": "วุฒิการศึกษา",
     "academic-position": "ตำแหน่งทางวิชาการ",
+    "major": "สาขาวิชา",
     "graduated": "สถานะการศึกษา",
     "graduated-yes": "สำเร็จ",
     "graduated-no": "ยังไม่สำเร็จ",
@@ -555,6 +556,7 @@
         "is-active": "สถานะการใช้งาน",
         "course": "หลักสูตร",
         "study-plan": "แผนการเรียน",
+        "major": "สาขาวิชา",
         "teacher-degree": "วุฒิการศึกษา",
         "academic-position": "ตำแหน่งทางวิชาการ",
         "add-academic-position": "เพิ่มตำแหน่งทางวิชาการ"
@@ -580,6 +582,7 @@
         "study-plan": "เลือกแผนการเรียน",
         "search-study-plan": "ค้นหาแผนการเรียน...",
         "no-study-plan-found": "ไม่พบแผนการเรียน",
+        "major": "กรอกสาขาวิชา",
         "teacher-degree": "กรอกวุฒิการศึกษา",
         "academic-position": "กรอกตำแหน่งทางวิชาการ"
       },
@@ -627,7 +630,8 @@
         "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน",
         "enroll-date-future": "วันที่ลงทะเบียนต้องไม่เกินวันที่ปัจจุบัน",
         "title-required": "กรุณาเลือกคำนำหน้า",
-        "study-plan-required": "กรุณากรอกแผนการเรียน"
+        "study-plan-required": "กรุณากรอกแผนการเรียน",
+        "major-required": "กรุณากรอกสาขาวิชา"
       },
       "toast": {
         "created-successfully": "เพิ่มผู้ใช้สำเร็จ!",
