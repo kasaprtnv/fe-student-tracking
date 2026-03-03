@@ -92,19 +92,24 @@ class StudentStepProgressService extends APIService {
       });
   }
 
-  // ปฏิเสธ
+  // ปฏิเสธ - รองรับหลายไฟล์ โดยแต่ละไฟล์จะสร้าง attempt ใหม่
   async decline(
     id: string,
     reviewedBy: string,
     declineReason: string,
-    staffAttachmentFile?: File,
+    staffAttachmentFiles?: File[],
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
     const formData = new FormData();
     formData.append('reviewedBy', reviewedBy);
     formData.append('declineReason', declineReason);
-    if (staffAttachmentFile) {
-      formData.append('staffAttachmentFile', staffAttachmentFile);
+
+    // ส่งหลายไฟล์ด้วย field name เดียวกัน
+    if (staffAttachmentFiles) {
+      for (const file of staffAttachmentFiles) {
+        formData.append('staffAttachmentFile', file);
+      }
     }
+
     return fetch(`${this.baseURL}/student-step-progress/${id}/decline`, {
       method: 'PATCH',
       body: formData,

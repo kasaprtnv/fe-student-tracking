@@ -201,28 +201,6 @@ export default function VerifyDetailPage() {
     if (!user?.id) return;
     setSubmitting(true);
     try {
-      await studentStepProgressService.approve(id, user.id, declineReason);
-      refreshPendingCount(); // Refresh pending count ทันที
-      setSuccessMessage(t('success.approved'));
-      setShowSuccessModal(true);
-    } catch (error) {
-      console.error('Error approving:', error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDecline = async () => {
-    if (!user?.id) return;
-
-    // ตรวจสอบว่ากรอกความคิดเห็นหรือยัง
-    if (!declineReason.trim()) {
-      setDeclineReasonError(true);
-      return;
-    }
-
-    setSubmitting(true);
-    try {
       // Upload staff attachments if exists - ใช้ stepId จาก data
       if (staffAttachmentFiles.length > 0 && data) {
         setUploadingStaffFile(true);
@@ -251,11 +229,35 @@ export default function VerifyDetailPage() {
         setUploadingStaffFile(false);
       }
 
+      await studentStepProgressService.approve(id, user.id, declineReason);
+      refreshPendingCount(); // Refresh pending count ทันที
+      setSuccessMessage(t('success.approved'));
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error('Error approving:', error);
+    } finally {
+      setSubmitting(false);
+      setUploadingStaffFile(false);
+    }
+  };
+
+  const handleDecline = async () => {
+    if (!user?.id) return;
+
+    // ตรวจสอบว่ากรอกความคิดเห็นหรือยัง
+    if (!declineReason.trim()) {
+      setDeclineReasonError(true);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // ส่งไฟล์ทั้งหมดไปให้ backend สร้างหลาย attempt (แต่ละ attempt ชี้ไปทีละไฟล์)
       await studentStepProgressService.decline(
         id,
         user.id,
         declineReason,
-        staffAttachmentFiles.length > 0 ? staffAttachmentFiles[0] : undefined,
+        staffAttachmentFiles.length > 0 ? staffAttachmentFiles : undefined,
       );
       refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.declined'));
@@ -337,6 +339,25 @@ export default function VerifyDetailPage() {
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 25, 200));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 25, 50));
 
+  // Helper function สำหรับแก้ไขชื่อไฟล์ภาษาไทยที่ encode ผิด (Mojibake)
+  const decodeFileName = (name: string): string => {
+    if (!name) return 'Document.pdf';
+    try {
+      // ตรวจสอบว่าเป็น mojibake หรือไม่ (มีตัวอักษรแปลกๆ เช่น Ã, à)
+      if (/[\xC0-\xFF]/.test(name) && !/[\u0E00-\u0E7F]/.test(name)) {
+        // ลอง decode จาก Latin-1 เป็น UTF-8
+        const bytes = new Uint8Array([...name].map((c) => c.charCodeAt(0)));
+        const decoded = new TextDecoder('utf-8').decode(bytes);
+        if (/[\u0E00-\u0E7F]/.test(decoded)) {
+          return decoded;
+        }
+      }
+      return name;
+    } catch {
+      return name;
+    }
+  };
+
   // Helpers for selected batch & file
   // Always show only the latest batch
   const selectedBatch = attachmentBatches[0] || [];
@@ -347,7 +368,8 @@ export default function VerifyDetailPage() {
     if (!fileKey) return null;
     return uploadService.getFileUrl(fileKey);
   };
-  const getFileName = () => selectedAttachment?.fileName || 'Document.pdf';
+  const getFileName = () =>
+    decodeFileName(selectedAttachment?.fileName || 'Document.pdf');
   const isImage = () => {
     if (!selectedAttachment) return false;
     const mimeType = selectedAttachment.mimeType || '';
@@ -441,9 +463,11 @@ export default function VerifyDetailPage() {
                       className={`max-w-[200px] flex-shrink-0 truncate rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
                       onClick={() => setSelectedAttachmentIdx(idx)}
                       type="button"
-                      title={att.fileName || `ไฟล์ที่ ${idx + 1}`}
+                      title={decodeFileName(
+                        att.fileName || `ไฟล์ที่ ${idx + 1}`,
+                      )}
                     >
-                      {att.fileName || `ไฟล์ที่ ${idx + 1}`}
+                      {decodeFileName(att.fileName || `ไฟล์ที่ ${idx + 1}`)}
                     </button>
                   ))}
                 </div>
