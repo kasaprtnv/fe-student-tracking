@@ -30,6 +30,7 @@ export interface AdvancedFilterValues {
   fullName: string;
   email: string;
   phone: string;
+  major: string;
   degree: string[];
   year: string[];
   courseId: string[];
@@ -44,6 +45,7 @@ export const defaultFilterValues: AdvancedFilterValues = {
   fullName: '',
   email: '',
   phone: '',
+  major: '',
   degree: [],
   year: [],
   courseId: [],
@@ -179,7 +181,21 @@ export function AdvancedFilterPopover({
             />
           </div>
 
-          {/* Row 3: Degree, Year */}
+          {/* Row 3: Major, Degree */}
+          <div className="space-y-1">
+            <Label htmlFor="major" className="text-xs">
+              {t('major')}
+            </Label>
+            <Input
+              id="major"
+              placeholder={t('major-placeholder')}
+              value={filters.major}
+              onChange={(e) =>
+                setFilters({ ...filters, major: e.target.value })
+              }
+              className="h-8 text-sm"
+            />
+          </div>
           <div className="space-y-1">
             <Label className="text-xs">{t('degree')}</Label>
 
@@ -308,7 +324,7 @@ export function AdvancedFilterPopover({
             </Popover>
           </div>
 
-          {/* Row 4: Course, Study Plan */}
+          {/* Row 4: Year, Course */}
           <div className="space-y-1">
             <Label className="text-xs">{t('course')}</Label>
 

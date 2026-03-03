@@ -21,11 +21,29 @@ export interface User {
   academicPosition?: string;
   courseId?: string;
   courseName?: string;
+  managedCourses?: { id: string; name: string }[];
   enrollDate?: string;
   graduated?: boolean;
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface StudentFilterPayload {
+  code?: string;
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  major?: string;
+  degree?: string[];
+  year?: string[];
+  courseId?: string[];
+  studyPlan?: string[];
+  enrollDateFrom?: string;
+  enrollDateTo?: string;
+  graduated?: string[];
+  search?: string;
+  managedCourseIds?: string[];
 }
 
 export interface UserState {
@@ -34,15 +52,18 @@ export interface UserState {
   paginatedUserMap: Record<string, User>;
   paginatedStudentMap: Record<string, User>;
   paginatedTeacherMap: Record<string, User>;
+  filteredStudentMap: Record<string, User>;
 
   // UI States
   searchQuery: string;
   storeAction: StoreAction;
   loader: boolean;
+  filteredStudentLoader: boolean;
   error: string | null;
 
   // Pagination (per-tab)
   pagination: IPagination;
   studentPagination: IPagination;
   teacherPagination: IPagination;
+  filteredStudentPagination: IPagination;
 }

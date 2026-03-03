@@ -6,18 +6,9 @@ import { Eye } from 'lucide-react';
 import { IStudentStepProgress } from '@/types/student-step-progress';
 import { ColumnDef } from '@tanstack/react-table';
 import { mixedThEnTextSort } from '@/lib/table-sorted';
+import { formatShortDate } from '@/lib/format-date';
 
 type TranslationFunction = (key: string) => string;
-
-const formatDate = (dateString?: string) => {
-  if (!dateString) return '-';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('th-TH', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-};
 
 const getStatusBadge = (status: string, t: TranslationFunction) => {
   switch (status) {
@@ -47,6 +38,7 @@ const getStatusBadge = (status: string, t: TranslationFunction) => {
 export function createVerifyColumns(
   t: TranslationFunction,
   onView: (id: string) => void,
+  locale: string = 'th',
 ): ColumnDef<IStudentStepProgress>[] {
   return [
     {
@@ -83,7 +75,12 @@ export function createVerifyColumns(
       accessorKey: 'submittedAt',
       header: t('detail.submit_date'),
       sortingFn: 'datetime',
-      cell: ({ row }) => formatDate(row.original.submittedAt),
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
+      },
     },
     {
       id: 'actions',

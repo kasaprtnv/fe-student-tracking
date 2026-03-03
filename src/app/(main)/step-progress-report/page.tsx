@@ -15,14 +15,16 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { SkeletonTable } from '@/components/loading-skeleton-table';
 import { exportToExcel } from './export-step-progress-report';
+import { useAuth } from '@/hooks/use-auth';
 const StepProgressReportPage = () => {
   const tProgressReport = useTranslations('step-progress-report');
   const tDegree = useTranslations('degree');
   const tColumn = useTranslations('column');
   const tStatus = useTranslations('status');
 
-  const { fetchAllCourses } = useCourse();
-
+  const { fetchCoursesByTeacherId } = useCourse();
+  const { user } = useAuth();
+  console.log('User in StepProgressReportPage:', user);
   const { fetchStepProgressReportByFilter, loader } = useStepProgressReport();
 
   const [reportData, setReportData] = React.useState<IStepProgressReport[]>([]);
@@ -42,9 +44,10 @@ const StepProgressReportPage = () => {
   );
 
   useSWR(
-    'fetch-milestones',
+    user?.id ? `fetch-milestones-${user.id}` : null,
     async () => {
-      await fetchAllCourses();
+      console.log('Fetching courses for teacher ID:', user!.id);
+      await fetchCoursesByTeacherId(user!.id);
     },
     { revalidateOnFocus: false },
   );

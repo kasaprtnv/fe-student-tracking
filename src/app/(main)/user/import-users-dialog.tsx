@@ -144,6 +144,7 @@ export function ImportUsersDialog({
       'นามสกุล',
       'อีเมล',
       'รหัสนิสิต',
+      'สาขาวิชา',
       'เบอร์โทรศัพท์',
       'ระดับการศึกษา',
       'ปีการศึกษา',
@@ -175,6 +176,7 @@ export function ImportUsersDialog({
       'นามสกุล',
       'อีเมล',
       'เบอร์โทรศัพท์',
+      'สาขาวิชา',
       'วุฒิการศึกษา',
       'รหัสหลักสูตร',
       'ตำแหน่งทางวิชาการ',
@@ -235,6 +237,8 @@ export function ImportUsersDialog({
         วุฒิการศึกษาอาจารย์: 'teacherDegree',
         วุฒิการศึกษา: 'teacherDegree',
         ตำแหน่งทางวิชาการ: 'academicPosition',
+        สาขาวิชา: 'major',
+        major: 'major',
       };
 
       // Map courseName to courseId and convert Thai keys to English

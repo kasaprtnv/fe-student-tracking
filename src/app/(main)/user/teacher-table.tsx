@@ -66,18 +66,6 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     });
   }, [fetchAllCourseStaff]);
 
-  // Listen for user import events to refetch course_staff
-  React.useEffect(() => {
-    const handleUserImported = () => {
-      refetchCourseStaff();
-    };
-
-    window.addEventListener('user-imported', handleUserImported);
-    return () => {
-      window.removeEventListener('user-imported', handleUserImported);
-    };
-  }, [refetchCourseStaff]);
-
   // Local pagination state for immediate useSWR key updates
   const [currentPage, setCurrentPage] = React.useState(teacherPagination.page);
   const [currentPageSize, setCurrentPageSize] = React.useState(
@@ -142,6 +130,19 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
       keepPreviousData: true, // Keep previous data while fetching new
     },
   );
+
+  // Listen for user import events to refetch course_staff and table data
+  React.useEffect(() => {
+    const handleUserImported = () => {
+      refetchCourseStaff();
+      mutate();
+    };
+
+    window.addEventListener('user-imported', handleUserImported);
+    return () => {
+      window.removeEventListener('user-imported', handleUserImported);
+    };
+  }, [refetchCourseStaff, mutate]);
 
   // Enrich teachers with managedCourses
   const filterTeacher = React.useMemo(

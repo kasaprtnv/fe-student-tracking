@@ -75,6 +75,7 @@
     "course-staff": "Course Staff",
     "teacher-degree": "Degree",
     "student-code": "Student Code",
+    "major": "Department",
     "milestone-name": "Milestone Name",
     "milestone-description": "Milestone Description",
     "step-name": "Step Name",
@@ -228,7 +229,7 @@
       "major": "Department",
       "faculty": "Faculty",
       "degree": "Degree",
-      "teacher_position": "Academic Position",
+      "teacher_position": "Teacher",
       "academic_position": "Academic Position",
       "education": "Education",
       "polsci-law": "Political Science And Law"
@@ -556,6 +557,7 @@
         "enroll-date": "Enroll Date",
         "is-active": "Active Status",
         "study-plan": "Study Plan",
+        "major": "Department",
         "teacher-degree": "Degree",
         "academic-position": "Academic Position",
         "add-academic-position": "Add Academic Position"
@@ -581,6 +583,7 @@
         "study-plan": "Select study plan",
         "search-study-plan": "Search study plan...",
         "no-study-plan-found": "No study plan found",
+        "major": "Enter department",
         "teacher-degree": "Enter teacher degree",
         "academic-position": "Enter academic position"
       },
@@ -627,7 +630,9 @@
         "course-required": "Course is required",
         "enroll-date-required": "Enroll date is required",
         "enroll-date-future": "Enroll date cannot be in the future",
-        "study-plan-required": "Study plan is required"
+        "title-required": "Title is required",
+        "study-plan-required": "Study plan is required",
+        "major-required": "Department is required"
       },
       "toast": {
         "created-successfully": "User created successfully",
@@ -878,13 +883,15 @@
     "title": "Advanced Filter",
     "description": "Filter student data by specific criteria",
     "code": "Code",
-    "code-placeholder": "Input code",
+    "code-placeholder": "Enter code",
     "full-name": "Full Name",
-    "full-name-placeholder": "Input name",
+    "full-name-placeholder": "Enter name",
     "email": "Email",
-    "email-placeholder": "Input email",
+    "email-placeholder": "Enter email",
     "phone": "Phone Number",
-    "phone-placeholder": "Input phone number",
+    "phone-placeholder": "Enter phone number",
+    "major": "Department",
+    "major-placeholder": "Enter department",
     "degree": "Education Level",
     "degree-placeholder": "Select education level",
     "year": "Academic Year",

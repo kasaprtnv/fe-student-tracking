@@ -35,6 +35,21 @@ export const fetchCourses = createAsyncThunk(
   },
 );
 
+export const getCoursesByTeacherId = createAsyncThunk(
+  'course/getByTeacherId',
+  async (teacherId: string, { rejectWithValue }) => {
+    try {
+      const response = await courseService.getCoursesByTeacherId(teacherId);
+      return response;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to fetch courses by teacher ID');
+    }
+  },
+);
+
 export const searchCourses = createAsyncThunk(
   'course/search',
   async (

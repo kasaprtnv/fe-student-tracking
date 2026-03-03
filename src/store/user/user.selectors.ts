@@ -27,6 +27,15 @@ export const selectStudentPagination = (state: RootState) =>
 export const selectTeacherPagination = (state: RootState) =>
   state.users.teacherPagination;
 
+export const selectFilteredStudentMap = (state: RootState) =>
+  state.users.filteredStudentMap;
+
+export const selectFilteredStudentPagination = (state: RootState) =>
+  state.users.filteredStudentPagination;
+
+export const selectFilteredStudentLoader = (state: RootState) =>
+  state.users.filteredStudentLoader;
+
 export const selectPaginationPage = (state: RootState) =>
   state.courses.pagination.page;
 
@@ -67,6 +76,13 @@ export const selectPaginatedTeachersFromMap = createSelector(
   [selectPaginatedTeacherMap],
   (paginatedTeacherMap) => {
     return Object.values(paginatedTeacherMap);
+  },
+);
+
+export const selectFilteredStudentsFromMap = createSelector(
+  [selectFilteredStudentMap],
+  (filteredStudentMap) => {
+    return Object.values(filteredStudentMap);
   },
 );
 

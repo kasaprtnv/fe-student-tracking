@@ -12,6 +12,7 @@ import {
   searchUsers,
   searchStudents,
   searchTeachers,
+  filterStudentUsers,
 } from './user.thunks';
 import { User, UserState } from '@/types/user';
 
@@ -27,13 +28,16 @@ const initialState: UserState = {
   paginatedUserMap: {},
   paginatedStudentMap: {},
   paginatedTeacherMap: {},
+  filteredStudentMap: {},
   searchQuery: '',
   storeAction: 'none',
   loader: false,
+  filteredStudentLoader: false,
   error: null,
   pagination: { ...defaultPagination },
   studentPagination: { ...defaultPagination },
   teacherPagination: { ...defaultPagination },
+  filteredStudentPagination: { ...defaultPagination },
 };
 
 const userSlice = createSlice({
@@ -66,6 +70,19 @@ const userSlice = createSlice({
     setTeacherPaginationPageSize: (state, action: PayloadAction<number>) => {
       state.teacherPagination.pageSize = action.payload;
       state.teacherPagination.page = 1;
+    },
+    setFilteredStudentPaginationPage: (
+      state,
+      action: PayloadAction<number>,
+    ) => {
+      state.filteredStudentPagination.page = action.payload;
+    },
+    setFilteredStudentPaginationPageSize: (
+      state,
+      action: PayloadAction<number>,
+    ) => {
+      state.filteredStudentPagination.pageSize = action.payload;
+      state.filteredStudentPagination.page = 1;
     },
     addToCache: (state, action: PayloadAction<User>) => {
       state.paginatedUserMap[action.payload.id] = action.payload;
@@ -432,6 +449,40 @@ const userSlice = createSlice({
         state.loader = false;
         state.error = action.payload as string;
       });
+
+    // Filter students (for /students page)
+    builder
+      .addCase(filterStudentUsers.pending, (state) => {
+        state.filteredStudentLoader = true;
+        state.error = null;
+      })
+      .addCase(filterStudentUsers.fulfilled, (state, action) => {
+        state.filteredStudentLoader = false;
+        state.filteredStudentMap = {};
+        const users = action.payload.data;
+        users.forEach((user: User) => {
+          state.filteredStudentMap[user.id] = user;
+        });
+        // Also merge active users into userMap
+        users
+          .filter((user: User) => user.isActive !== false)
+          .forEach((user: User) => {
+            state.userMap[user.id] = user;
+          });
+        if (action.payload.pagination) {
+          state.filteredStudentPagination.total =
+            action.payload.pagination.total || 0;
+          state.filteredStudentPagination.totalPages =
+            action.payload.pagination.totalPages || 0;
+          state.filteredStudentPagination.page = action.payload.pagination.page;
+          state.filteredStudentPagination.pageSize =
+            action.payload.pagination.pageSize;
+        }
+      })
+      .addCase(filterStudentUsers.rejected, (state, action) => {
+        state.filteredStudentLoader = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
@@ -447,6 +498,8 @@ export const {
   setStudentPaginationPageSize,
   setTeacherPaginationPage,
   setTeacherPaginationPageSize,
+  setFilteredStudentPaginationPage,
+  setFilteredStudentPaginationPageSize,
 } = userSlice.actions;
 
 export default userSlice.reducer;

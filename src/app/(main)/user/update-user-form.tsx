@@ -112,6 +112,7 @@ export function UpdateUserFormDialog({
         email: user?.email || '',
         phone: user?.phone || '',
         degree: user?.degree || '',
+        major: user?.major || '',
         year: user?.year || '',
         studyPlan: user?.studyPlan
           ? user.studyPlan.startsWith('แผน')
@@ -130,6 +131,7 @@ export function UpdateUserFormDialog({
         lastName: user?.lastName || '',
         email: user?.email || '',
         phone: user?.phone || '',
+        major: user?.major || '',
         teacherDegree: user?.teacherDegree || '',
         academicPosition: user?.academicPosition || '',
         courseIds: [],

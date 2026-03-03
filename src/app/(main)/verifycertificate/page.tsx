@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -27,6 +27,7 @@ export default function VerifyCertificatePage() {
   const t = useTranslations('verify-certificate');
   const router = useRouter();
   const { user, initialized } = useAuth();
+  const locale = useLocale();
 
   useEffect(() => {
     if (!initialized) return;
@@ -184,8 +185,8 @@ export default function VerifyCertificatePage() {
   );
 
   const columns = useMemo(
-    () => createVerifyColumns(t, handleView),
-    [t, handleView],
+    () => createVerifyColumns(t, handleView, locale),
+    [t, handleView, locale],
   );
 
   if (loading) {
