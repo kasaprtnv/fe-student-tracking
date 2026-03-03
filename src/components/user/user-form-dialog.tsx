@@ -34,8 +34,7 @@ import { useCourse } from '@/hooks/use-course';
 import {
   createUserSchema,
   updateUserSchema,
-  CreateUserFormData,
-  UpdateUserFormData,
+  UserFormValues,
 } from '@/validations/user';
 
 interface UserFormDialogProps {
@@ -70,8 +69,9 @@ const UserFormDialog = ({
   // Use different schema based on mode
   const schema = mode === 'create' ? createUserSchema(t) : updateUserSchema(t);
 
-  const form = useForm<CreateUserFormData | UpdateUserFormData>({
-    resolver: zodResolver(schema),
+  const form = useForm<UserFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       code: '',
       firstName: '',
@@ -109,7 +109,7 @@ const UserFormDialog = ({
         role: validRole,
         courseId: user.courseId || '',
         enrollDate: user.enrollDate || '',
-      } as CreateUserFormData | UpdateUserFormData);
+      } as UserFormValues);
     } else if (!user && open && mode === 'create') {
       form.reset({
         code: '',
@@ -125,9 +125,7 @@ const UserFormDialog = ({
     }
   }, [user, open, form, mode]);
 
-  const handleSubmit = async (
-    data: CreateUserFormData | UpdateUserFormData,
-  ) => {
+  const handleSubmit = async (data: UserFormValues) => {
     await onSubmit(data);
   };
 
