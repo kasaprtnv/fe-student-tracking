@@ -34,6 +34,7 @@ export interface StudentFilterPayload {
   fullName?: string;
   email?: string;
   phone?: string;
+  major?: string;
   degree?: string[];
   year?: string[];
   courseId?: string[];

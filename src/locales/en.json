@@ -890,6 +890,8 @@
     "email-placeholder": "Enter email",
     "phone": "Phone Number",
     "phone-placeholder": "Enter phone number",
+    "major": "Department",
+    "major-placeholder": "Enter department",
     "degree": "Education Level",
     "degree-placeholder": "Select education level",
     "year": "Academic Year",

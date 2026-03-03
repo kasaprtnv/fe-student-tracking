@@ -886,6 +886,8 @@
     "email-placeholder": "กรอกอีเมล",
     "phone": "เบอร์โทรศัพท์",
     "phone-placeholder": "กรอกเบอร์โทรศัพท์",
+    "major": "สาขาวิชา",
+    "major-placeholder": "กรอกสาขาวิชา",
     "degree": "ระดับการศึกษา",
     "degree-placeholder": "เลือกระดับการศึกษา",
     "year": "ปีการศึกษา",

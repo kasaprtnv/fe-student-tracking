@@ -66,6 +66,14 @@ export const createStudentColumns = (
       cell: ({ row }) => formatPhoneNumber(row.original.phone),
     },
     {
+      header: t('major'),
+      accessorKey: 'major',
+      sortingFn: mixedThEnTextSort<User>(),
+      cell: ({ row }) => (
+        <span className="block max-w-[200px] truncate">{row.original.major || '-'}</span>
+      ),
+    },
+    {
       header: t('education-level'),
       accessorKey: 'degree',
       cell: ({ row }) => {
