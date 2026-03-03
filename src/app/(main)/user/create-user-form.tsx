@@ -99,6 +99,7 @@ export function CreateUserFormDialog({
           email: '',
           phone: '',
           degree: '',
+          major: '',
           year: '',
           studyPlan: '',
           courseId: '',
@@ -112,6 +113,7 @@ export function CreateUserFormDialog({
           lastName: '',
           email: '',
           phone: '',
+          major: '',
           teacherDegree: '',
           academicPosition: '',
           courseId: '',
@@ -135,6 +137,7 @@ export function CreateUserFormDialog({
         email: currentValues.email || '',
         phone: currentValues.phone || '',
         degree: '',
+        major: '',
         year: '',
         studyPlan: '',
         courseId: '',
@@ -149,6 +152,7 @@ export function CreateUserFormDialog({
         email: currentValues.email || '',
         courseId: '',
         phone: currentValues.phone || '',
+        major: '',
       });
     }
   };

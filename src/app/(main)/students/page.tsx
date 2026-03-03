@@ -92,6 +92,7 @@ export default function StudentPage() {
     if (advancedFilters.fullName) payload.fullName = advancedFilters.fullName;
     if (advancedFilters.email) payload.email = advancedFilters.email;
     if (advancedFilters.phone) payload.phone = advancedFilters.phone;
+    if (advancedFilters.major) payload.major = advancedFilters.major;
     if (advancedFilters.degree.length > 0)
       payload.degree = advancedFilters.degree;
     if (advancedFilters.year.length > 0) payload.year = advancedFilters.year;
@@ -218,6 +219,7 @@ export default function StudentPage() {
       advancedFilters.fullName !== '' ||
       advancedFilters.email !== '' ||
       advancedFilters.phone !== '' ||
+      advancedFilters.major !== '' ||
       advancedFilters.degree.length > 0 ||
       advancedFilters.year.length > 0 ||
       advancedFilters.courseId.length > 0 ||

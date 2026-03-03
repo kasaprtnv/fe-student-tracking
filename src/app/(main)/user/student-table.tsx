@@ -111,6 +111,17 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     },
   );
 
+  // Listen for user import events to refetch table data
+  React.useEffect(() => {
+    const handleUserImported = () => {
+      mutate();
+    };
+    window.addEventListener('user-imported', handleUserImported);
+    return () => {
+      window.removeEventListener('user-imported', handleUserImported);
+    };
+  }, [mutate]);
+
   // Enrich users with courseName
   const filterStudent = React.useMemo(
     () =>

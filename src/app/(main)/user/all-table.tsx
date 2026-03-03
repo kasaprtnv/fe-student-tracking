@@ -137,6 +137,18 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     },
   );
 
+  // Listen for user import events to refetch table data
+  React.useEffect(() => {
+    const handleUserImported = () => {
+      mutate();
+      refetchCourseStaff();
+    };
+    window.addEventListener('user-imported', handleUserImported);
+    return () => {
+      window.removeEventListener('user-imported', handleUserImported);
+    };
+  }, [mutate, refetchCourseStaff]);
+
   // Enrich users with courseName
   const allUsers = React.useMemo(
     () =>

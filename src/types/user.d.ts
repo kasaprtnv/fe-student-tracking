@@ -21,6 +21,7 @@ export interface User {
   academicPosition?: string;
   courseId?: string;
   courseName?: string;
+  managedCourses?: { id: string; name: string }[];
   enrollDate?: string;
   graduated?: boolean;
   isActive?: boolean;
@@ -33,6 +34,7 @@ export interface StudentFilterPayload {
   fullName?: string;
   email?: string;
   phone?: string;
+  major?: string;
   degree?: string[];
   year?: string[];
   courseId?: string[];

@@ -23,20 +23,8 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
   isLoading,
 }) => {
   const t = useTranslations('profile');
-  const tDegree = useTranslations('degree');
   const API_STATIC_URL =
     process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
-
-  const mappedDegree = (degree: string) => {
-    if (!degree) return '-';
-    const degreeMap: Record<string, string> = {
-      bachelor: tDegree('bachelor'),
-      master: tDegree('master'),
-      doctorate: tDegree('doctorate'),
-    };
-    return degreeMap[degree] || degree;
-  };
-
   if (isLoading) {
     return (
       <div>
@@ -116,7 +104,9 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
                   <GraduationCap className="size-5 text-red-800" />
                 </span>
                 <span className="text-xl">
-                  {mappedDegree(user?.degree ?? '')}
+                  {user?.managedCourses && user.managedCourses.length > 0
+                    ? user.managedCourses.map((c) => c.name).join(', ')
+                    : '-'}
                 </span>
               </div>
             </div>

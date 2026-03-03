@@ -74,6 +74,26 @@ export const StudentFormFields = ({
           </FormItem>
         )}
       />
+      <FormField
+        control={form.control}
+        name="major"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium text-gray-700">
+              {t('label.major')}
+            </FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                placeholder={t('placeholder.major')}
+                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                disabled={disabledFields.includes('major')}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       {/* Degree must come BEFORE courseId so user selects degree first */}
       <FormField
         control={form.control}
