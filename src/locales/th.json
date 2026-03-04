@@ -860,7 +860,9 @@
       "major": "สาขาวิชา",
       "status": "สถานะ",
       "apply-filters": "ใช้ตัวกรอง",
-      "export-excel": " ส่งออกรายงาน"
+      "export-excel": " ส่งออกรายงาน",
+      "all": "ทั้งหมด",
+      "applied-filters": "ตัวกรองที่ใช้"
     }
   },
   "components": {

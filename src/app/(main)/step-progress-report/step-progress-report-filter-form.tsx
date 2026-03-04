@@ -24,7 +24,10 @@ interface FilterStepProgressReportFormProps {
   yearOptions: SelectOption[];
   degreeOptions: SelectOption[];
   statusOptions: SelectOption[];
-  onApplyFilter?: (data: IStepProgressReportFilter) => void;
+  onApplyFilter?: (
+    data: IStepProgressReportFilter,
+    filterSummary: { label: string; value: string }[],
+  ) => void;
   onExportExcel?: () => void;
 }
 
@@ -156,9 +159,44 @@ export function FilterStepProgressReportForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMilestoneIds, allMilestoneData]);
 
+  const resolveLabels = (
+    ids: string[] | undefined,
+    options: SelectOption[],
+  ): string => {
+    if (!ids || ids.length === 0) return t('all');
+    return (
+      options
+        .filter((o) => ids.includes(o.value))
+        .map((o) => o.label)
+        .join(', ') || t('all')
+    );
+  };
+
   const onSubmit = (data: IStepProgressReportFilter) => {
+    const summary = [
+      { label: t('year'), value: resolveLabels(data.years, yearOptions) },
+      {
+        label: t('course'),
+        value: resolveLabels(data.courseIds, courseOptions),
+      },
+      {
+        label: t('milestone'),
+        value: resolveLabels(data.milestoneIds, milestoneOptions),
+      },
+      { label: t('step'), value: resolveLabels(data.stepIds, stepOptions) },
+      { label: t('major'), value: data.major || t('all') },
+      {
+        label: t('degree'),
+        value: resolveLabels(data.degrees, degreeOptions),
+      },
+      {
+        label: t('status'),
+        value: resolveLabels(data.statuses as string[], statusOptions),
+      },
+    ];
+
     if (onApplyFilter) {
-      onApplyFilter(data);
+      onApplyFilter(data, summary);
     }
     setIsSubmit(true);
   };

@@ -27,11 +27,6 @@ export const createStepProgressReportColumns = (
       },
     },
     {
-      accessorKey: 'studentYear',
-      header: 'year',
-      sortingFn: 'basic',
-    },
-    {
       accessorKey: 'studentMajor',
       header: 'major',
       sortingFn: mixedThEnTextSort<IStepProgressReport>(),
@@ -50,6 +45,11 @@ export const createStepProgressReportColumns = (
         };
         return degreeMap[degree] || degree;
       },
+    },
+    {
+      accessorKey: 'studentYear',
+      header: 'year',
+      sortingFn: 'basic',
     },
     {
       accessorKey: 'courseName',

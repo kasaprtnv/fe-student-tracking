@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/use-auth';
 
 const StepProgressReportPage = () => {
   const tProgressReport = useTranslations('step-progress-report');
+  const tFilter = useTranslations('step-progress-report.filter-form');
   const locale = useLocale();
 
   const tDegree = useTranslations('degree');
@@ -30,6 +31,9 @@ const StepProgressReportPage = () => {
   const { fetchStepProgressReportByFilter, loader } = useStepProgressReport();
 
   const [reportData, setReportData] = React.useState<IStepProgressReport[]>([]);
+  const [filterSummary, setFilterSummary] = React.useState<
+    { label: string; value: string }[]
+  >([]);
   const [isApplyingFilter, setIsApplyingFilter] =
     React.useState<boolean>(false);
 
@@ -77,10 +81,14 @@ const StepProgressReportPage = () => {
     { label: tStatus('available'), value: 'available' },
   ];
 
-  const onSubmit = async (data: IStepProgressReportFilter) => {
+  const onSubmit = async (
+    data: IStepProgressReportFilter,
+    summary: { label: string; value: string }[],
+  ) => {
     try {
       const result = await fetchStepProgressReportByFilter(data);
       setReportData(result);
+      setFilterSummary(summary);
       setIsApplyingFilter(true);
     } catch (error) {
       console.error('Error fetching step progress report:', error);
@@ -93,6 +101,10 @@ const StepProgressReportPage = () => {
       {
         tColumn,
         tStatus,
+        tDegree,
+        locale,
+        filters: filterSummary,
+        filterTitle: tFilter('applied-filters'),
       },
       'step-progress-report.xlsx',
     );

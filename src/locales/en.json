@@ -864,7 +864,9 @@
       "major": "Department",
       "status": "Status",
       "apply-filters": "Apply Filters",
-      "export-excel": "Export as Excel"
+      "export-excel": "Export as Excel",
+      "all": "All",
+      "applied-filters": "Applied Filters"
     }
   },
   "components": {
