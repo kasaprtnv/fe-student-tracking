@@ -1,12 +1,14 @@
-import { formatThaiDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import { IStepProgressReport } from '@/types/step-progress-report';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { mixedThEnTextSort } from '@/lib/table-sorted';
+import { formatShortDate } from '@/lib/format-date';
 
 export const createStepProgressReportColumns = (
   tStatus: (key: string) => string,
+  tDegree: (key: string) => string,
+  locale: string = 'th',
 ): ColumnDef<IStepProgressReport>[] => {
   const columns: ColumnDef<IStepProgressReport>[] = [
     {
@@ -22,6 +24,31 @@ export const createStepProgressReportColumns = (
         const fullName =
           `${row.studentFirstName} ${row.studentLastName}`.trim();
         return fullName || '-';
+      },
+    },
+    {
+      accessorKey: 'studentYear',
+      header: 'year',
+      sortingFn: 'basic',
+    },
+    {
+      accessorKey: 'studentMajor',
+      header: 'major',
+      sortingFn: mixedThEnTextSort<IStepProgressReport>(),
+    },
+    {
+      accessorKey: 'studentDegree',
+      header: 'degree',
+      sortingFn: 'basic',
+      cell: ({ row }) => {
+        const degree = row.original.studentDegree;
+        if (!degree) return '-';
+        const degreeMap: Record<string, string> = {
+          bachelor: tDegree('bachelor'),
+          master: tDegree('master'),
+          doctorate: tDegree('doctorate'),
+        };
+        return degreeMap[degree] || degree;
       },
     },
     {
@@ -56,11 +83,11 @@ export const createStepProgressReportColumns = (
       accessorKey: 'dueDate',
       header: 'due-date',
       sortingFn: 'datetime',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        if (!rawDate) return '-';
-        const localDate = formatThaiDate(rawDate);
-        return <span>{localDate}</span>;
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
   ];

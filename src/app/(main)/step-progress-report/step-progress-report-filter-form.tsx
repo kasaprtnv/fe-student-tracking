@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { IStepProgressReportFilter } from '@/types/step-progress-report';
 import { IMilestone } from '@/types/milestone';
 import { Filter, Table } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 interface FilterStepProgressReportFormProps {
   yearOptions: SelectOption[];
@@ -46,6 +47,7 @@ export function FilterStepProgressReportForm({
       years: [],
       degrees: [],
       statuses: [],
+      major: '',
     },
   });
 
@@ -247,6 +249,23 @@ export function FilterStepProgressReportForm({
                       onChange={field.onChange}
                       maxDisplayItems={1}
                       enableEachCancel={false}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="major"
+              render={({ field }) => (
+                <FormItem className="min-w-[180px] flex-1">
+                  <FormLabel>{t('major')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="border-input bg-background h-10"
+                      placeholder={t('major-placeholder')}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

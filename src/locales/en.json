@@ -442,7 +442,7 @@
       "no-conditions": "The lock condition cannot be selected because there is only one milestone step available.",
       "cancel": "Cancel",
       "save": "Save",
-      "from": "form milestone"
+      "from": "from milestone"
     },
 
     "confirm-save": {
@@ -860,6 +860,8 @@
       "milestone": "Milestone",
       "step": "Milestone Step",
       "degree": "Education Level",
+      "major-placeholder": "Enter department",
+      "major": "Department",
       "status": "Status",
       "apply-filters": "Apply Filters",
       "export-excel": "Export as Excel"
