@@ -637,15 +637,14 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           <Calendar className="h-3 w-3" />
                                           {t('dayperiod')} :
                                           <span>
-                                            {milestone.dayPeriod} {t('day')}
+                                            {step.dayPeriod} {t('day')}
                                           </span>
                                         </div>
 
                                         <div className="flex items-center gap-2">
                                           {t('NotifyBefore')} :
                                           <span>
-                                            {milestone.notifyBeforeDays}{' '}
-                                            {t('day')}
+                                            {step.notifyBeforeDays} {t('day')}
                                           </span>
                                         </div>
                                       </>
