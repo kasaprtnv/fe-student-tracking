@@ -1,4 +1,4 @@
-import { IApiPostResponse } from '@/types';
+import { IApiPatchResponse, IApiPostResponse } from '@/types';
 import { APIService } from './api.service';
 import { SignUp } from '@/types/auth';
 import { User } from '@/types/user';
@@ -39,6 +39,17 @@ class AuthService extends APIService {
 
   async validateToken(): Promise<IApiPostResponse<{ valid: boolean }>> {
     return this.get('/auth/validate')
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async changePassword(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<IApiPatchResponse<null>> {
+    return this.patch('/auth/change-password', { currentPassword, newPassword })
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
