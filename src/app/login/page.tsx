@@ -66,7 +66,6 @@ export default function LoginPage() {
         <h2 className="mb-4 text-center text-3xl font-bold text-white">
           Progress Tracking
         </h2>
-        <p className="text-xl text-white">ระบบติดตามการเรียน</p>
       </div>
       <div className="flex h-full w-full items-center justify-center bg-gray-100 px-4 py-8 sm:p-8 lg:w-1/2">
         <form
