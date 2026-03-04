@@ -42,7 +42,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     getStudentProgressCount,
   } = useUser();
   const { allCourseId, getCourseById, courseMap } = useCourse();
-  const { titleMap } = useTitle();
+  const { titleMap, fetchTitlesUsage } = useTitle();
   const { fetchAllCourseStaff } = useCourseStaff();
   const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
     [],
@@ -335,6 +335,8 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         toast.success(tUser('toast.deleted-multiple-successfully'));
       }
       refreshData();
+      // Refresh title usage status after user deletion
+      fetchTitlesUsage();
       setIsDelete({
         isDeleting: false,
         userIds: undefined,
@@ -451,6 +453,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         allCourses={allCourses}
         allCourseStaff={allCourseStaff}
         onCourseStaffChange={refetchCourseStaff}
+        onUserUpdated={() => fetchTitlesUsage()}
       />
       <DeleteTextConfirmationDialog
         open={isDelete.isDeleting}

@@ -2,6 +2,7 @@ export interface ITitle {
   id: string;
   name: string;
   description?: string;
+  isInUse?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -10,6 +10,8 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 import { mixedThEnTextSort } from '@/lib/table-sorted';
 import {
@@ -52,6 +54,27 @@ export const createTitleColumns = (
               </TooltipContent>
             )}
           </Tooltip>
+        );
+      },
+    },
+    {
+      accessorKey: 'isInUse',
+      header: 'is_used',
+      cell: ({ row, table }) => {
+        const isInUse = row.original.isInUse;
+        const { t } = table.options.meta as ColumnActions;
+
+        return (
+          <Badge
+            className={cn(
+              'px-2 py-0.5 text-xs',
+              isInUse
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800',
+            )}
+          >
+            {isInUse ? t?.('yes') : t?.('no')}
+          </Badge>
         );
       },
     },
@@ -113,9 +136,18 @@ export const createTitleColumns = (
             )}
 
             {onDelete && (
-              <DropdownMenuItem onSelect={() => onDelete(record.id)}>
+              <DropdownMenuItem
+                onSelect={() => onDelete(record.id)}
+                disabled={record.isInUse}
+                className={
+                  record.isInUse ? 'cursor-not-allowed opacity-50' : ''
+                }
+              >
                 <div className="flex items-center gap-2">
-                  <Trash2 size={14} color="#e7000b" />
+                  <Trash2
+                    size={14}
+                    color={record.isInUse ? '#999' : '#e7000b'}
+                  />
                   {t?.('delete')}
                 </div>
               </DropdownMenuItem>

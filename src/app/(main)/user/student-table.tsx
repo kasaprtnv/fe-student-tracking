@@ -38,7 +38,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     getStudentProgressCount,
   } = useUser();
   const { allCourseId, getCourseById, courseMap } = useCourse();
-  const { titleMap } = useTitle();
+  const { titleMap, fetchTitlesUsage } = useTitle();
   const tUser = useTranslations('user');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
@@ -266,6 +266,8 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         toast.success(tUser('toast.deleted-multiple-successfully'));
       }
       refreshData();
+      // Refresh title usage status after user deletion
+      fetchTitlesUsage();
       setIsDelete({ isDeleting: false, userIds: undefined, progressCount: 0 });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
@@ -375,6 +377,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         allCourses={allCourses}
         user={isEdit.user}
         courseOptions={courseOptions}
+        onUserUpdated={() => fetchTitlesUsage()}
       />
       <DeleteTextConfirmationDialog
         open={isDelete.isDeleting}
