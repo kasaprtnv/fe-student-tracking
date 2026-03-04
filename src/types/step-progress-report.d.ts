@@ -12,6 +12,9 @@ export interface IStepProgressReport {
   studentCode: string;
   studentFirstName: string;
   studentLastName: string;
+  studentYear: string;
+  studentMajor: string;
+  studentDegree: string;
 }
 
 export interface IStepProgressReportFilter {
@@ -26,6 +29,7 @@ export interface IStepProgressReportFilter {
     | 'available'[];
   degrees?: string[];
   years?: string[];
+  major?: string;
 }
 
 export interface StepProgressReportState {

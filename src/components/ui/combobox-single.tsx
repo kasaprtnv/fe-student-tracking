@@ -99,8 +99,13 @@ export function SingleCombobox({
                     key={option.value}
                     value={option.label}
                     onSelect={(selectedLabel) => {
+                      const normalizedSelected = selectedLabel
+                        .toLowerCase()
+                        .trim();
                       const selected = options.find(
-                        (option) => option.label === selectedLabel,
+                        (option) =>
+                          option.label.toLowerCase().trim() ===
+                          normalizedSelected,
                       );
                       const newValue = selected?.value ?? '';
                       setValue(newValue);

@@ -1,7 +1,7 @@
 'use client';
 import { PageHeader } from '@/components/page-header';
 import { useCourse } from '@/hooks/use-course';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import useSWR from 'swr';
 import { FilterStepProgressReportForm } from './step-progress-report-filter-form';
 import { DataTable } from '@/components/data-table/data-table';
@@ -16,32 +16,40 @@ import { Search } from 'lucide-react';
 import { SkeletonTable } from '@/components/loading-skeleton-table';
 import { exportToExcel } from './export-step-progress-report';
 import { useAuth } from '@/hooks/use-auth';
+
 const StepProgressReportPage = () => {
   const tProgressReport = useTranslations('step-progress-report');
+  const tFilter = useTranslations('step-progress-report.filter-form');
+  const locale = useLocale();
+
   const tDegree = useTranslations('degree');
   const tColumn = useTranslations('column');
   const tStatus = useTranslations('status');
 
   const { fetchCoursesByTeacherId } = useCourse();
   const { user } = useAuth();
-  console.log('User in StepProgressReportPage:', user);
   const { fetchStepProgressReportByFilter, loader } = useStepProgressReport();
 
   const [reportData, setReportData] = React.useState<IStepProgressReport[]>([]);
+  const [filterSummary, setFilterSummary] = React.useState<
+    { label: string; value: string }[]
+  >([]);
   const [isApplyingFilter, setIsApplyingFilter] =
     React.useState<boolean>(false);
 
-  const reportColumn = createStepProgressReportColumns(tStatus).map(
-    (column) => {
-      if (typeof column.header === 'string') {
-        return {
-          ...column,
-          header: tColumn(column.header),
-        };
-      }
-      return column;
-    },
-  );
+  const reportColumn = createStepProgressReportColumns(
+    tStatus,
+    tDegree,
+    locale,
+  ).map((column) => {
+    if (typeof column.header === 'string') {
+      return {
+        ...column,
+        header: tColumn(column.header),
+      };
+    }
+    return column;
+  });
 
   useSWR(
     user?.id ? `fetch-milestones-${user.id}` : null,
@@ -73,10 +81,14 @@ const StepProgressReportPage = () => {
     { label: tStatus('available'), value: 'available' },
   ];
 
-  const onSubmit = async (data: IStepProgressReportFilter) => {
+  const onSubmit = async (
+    data: IStepProgressReportFilter,
+    summary: { label: string; value: string }[],
+  ) => {
     try {
       const result = await fetchStepProgressReportByFilter(data);
       setReportData(result);
+      setFilterSummary(summary);
       setIsApplyingFilter(true);
     } catch (error) {
       console.error('Error fetching step progress report:', error);
@@ -89,6 +101,10 @@ const StepProgressReportPage = () => {
       {
         tColumn,
         tStatus,
+        tDegree,
+        locale,
+        filters: filterSummary,
+        filterTitle: tFilter('applied-filters'),
       },
       'step-progress-report.xlsx',
     );
