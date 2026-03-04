@@ -219,6 +219,7 @@
   "profile": {
     "personal_information": {
       "title": "Personal Information",
+      "personal_information_title": "Personal Information",
       "name": "Name",
       "email": "Email",
       "course": "Course",
@@ -233,6 +234,13 @@
       "academic_position": "Academic Position",
       "education": "Education",
       "polsci-law": "Political Science And Law"
+    },
+    "change_password": {
+      "title": "Security",
+      "current_password": "Current Password",
+      "new_password": "New Password",
+      "confirm_new_password": "Confirm New Password",
+      "success": "Password changed successfully"
     },
     "progress_title": "Graduate Progress",
     "contact_admin": "Please contact staff to enroll in a course"
@@ -251,6 +259,7 @@
     "upload_button": "Upload File",
     "uploading": "Uploading...",
     "uploaded_file": "Uploaded File",
+    "student_file_attachment": "Student File Attachment",
     "submitting": "Submitting...",
     "submit_button": "Confirm Submission",
     "overall_progress": "Overall Progress",
@@ -260,6 +269,7 @@
     "recommendation": "Recommendation",
     "description": "Description",
     "file_attachment": "File Attachment",
+    "description_placeholder": "Enter additional description (if any)",
     "confirm_submit_title": "Confirm Submission",
     "confirm_submit_description": "Are you sure you want to submit this file?",
     "cancel": "Cancel",

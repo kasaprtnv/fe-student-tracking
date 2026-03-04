@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, X } from 'lucide-react';
 import { IMilestoneStep } from '@/types/milestone-step';
@@ -73,15 +73,6 @@ export const UploadFileDialog = ({
       prev.filter((f) => !(f.name === name && f.size === size)),
     );
   };
-
-  // เมื่อกดปุ่มอัปโหลด
-  // const handleUpload = () => {
-  //   if (file && onFileUpload) {
-  //     onFileUpload(step.id, file);
-  //     setFile(null);
-  //     setOpen(false);
-  //   }
-  // };
 
   // เมื่อปิด dialog ให้ reset file
   const handleOpenChange = (isOpen: boolean) => {

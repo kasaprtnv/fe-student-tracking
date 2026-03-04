@@ -54,6 +54,7 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip';
 import { Textarea } from '../ui/textarea';
+import { Separator } from '../ui/separator';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
@@ -116,6 +117,80 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     return map;
   }, [stepAttempts]);
 
+  const { milestoneRequiredMap, stepRequiredMap } = useMemo(() => {
+    const milestoneMap: Record<
+      string,
+      {
+        steps: { id: string; name: string }[];
+        milestones: { id: string; name: string }[];
+      }
+    > = {};
+
+    const stepMap: Record<
+      string,
+      {
+        steps: { id: string; name: string }[];
+        milestones: { id: string; name: string }[];
+      }
+    > = {};
+
+    milestones.forEach((m) => {
+      const milestone =
+        m.requiredMilestoneIds?.map((milestoneId) => {
+          const foundMilestone = milestones.find((ms) => ms.id === milestoneId);
+          return {
+            id: milestoneId,
+            name: foundMilestone ? foundMilestone.name : milestoneId,
+          };
+        }) || [];
+
+      const stepsReq =
+        m.requiredStepIds?.map((stepId) => {
+          for (const ms of milestones) {
+            const foundStep = ms.steps?.find((st) => st.id === stepId);
+            if (foundStep) {
+              return { id: stepId, name: foundStep.name };
+            }
+          }
+          return { id: stepId, name: stepId };
+        }) || [];
+
+      milestoneMap[m.id] = {
+        steps: stepsReq,
+        milestones: milestone,
+      };
+
+      m.steps?.forEach((s) => {
+        const steps =
+          s.requiredStepIds?.map((stepId) => {
+            for (const ms of milestones) {
+              const foundStep = ms.steps?.find((st) => st.id === stepId);
+              if (foundStep) {
+                return { id: stepId, name: foundStep.name };
+              }
+            }
+            return { id: stepId, name: stepId };
+          }) || [];
+
+        const milestonesReq =
+          s.requiredMilestoneIds?.map((milestoneId) => {
+            const foundMilestone = milestones.find(
+              (ms) => ms.id === milestoneId,
+            );
+            return {
+              id: milestoneId,
+              name: foundMilestone ? foundMilestone.name : milestoneId,
+            };
+          }) || [];
+
+        stepMap[s.id] = {
+          steps,
+          milestones: milestonesReq,
+        };
+      });
+    });
+    return { milestoneRequiredMap: milestoneMap, stepRequiredMap: stepMap };
+  }, [milestones]);
   const [internalFiles, setInternalFiles] = useState<Record<string, File[]>>(
     {},
   );
@@ -135,14 +210,11 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
   const stepDeadlineMap = useMemo(() => {
     if (!enrollDate) return {};
     const map: Record<string, Date> = {};
-    let lastDeadline = new Date(enrollDate);
-
     milestones.forEach((milestone) => {
       milestone.steps?.forEach((step) => {
-        const deadlineDate = new Date(lastDeadline);
-        deadlineDate.setDate(deadlineDate.getDate() + step.dayPeriod);
-        map[step.id] = deadlineDate;
-        lastDeadline = deadlineDate;
+        if (step.deadline) {
+          map[step.id] = new Date(step.deadline);
+        }
       });
     });
     return map;
@@ -326,12 +398,56 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     });
   };
 
+  const getUnlockMessage = (
+    requiredMilestones: { id: string; name: string }[],
+    requiredSteps: { id: string; name: string }[],
+    currentName: string,
+    milestoneOrStep: 'milestone' | 'step',
+    t: (key: string) => string,
+  ) => {
+    // กรณีไม่มีเงื่อนไข
+    if (requiredMilestones.length === 0 && requiredSteps.length === 0) {
+      return t('locked');
+    }
+
+    const messages: string[] = [];
+
+    // เงื่อนไขสำหรับ milestone
+    if (requiredMilestones.length > 0) {
+      const milestoneNames = requiredMilestones
+        .map((m) => `"${m.name}"`)
+        .join(', ')
+        .replace(/, ([^,]*)$/, ' และ $1');
+
+      messages.push(
+        `คุณต้องดำเนินการขั้นตอนการศึกษาย่อยทั้งหมดของ ${milestoneNames}`,
+      );
+    }
+
+    // เงื่อนไขสำหรับ step
+    if (requiredSteps.length > 0) {
+      const stepNames = requiredSteps
+        .map((s) => `"${s.name}"`)
+        .join(', ')
+        .replace(/, ([^,]*)$/, ' และ $1');
+
+      const prefix =
+        requiredMilestones.length > 0
+          ? 'และดำเนินการขั้นตอนการศึกษาย่อย'
+          : 'คุณต้องดำเนินการขั้นตอนการศึกษาย่อย';
+
+      messages.push(`${prefix} ${stepNames}`);
+    }
+
+    return messages;
+  };
+
   return (
     <div className="w-full space-y-6">
       {/* Overall Progress Card */}
       {mode !== 'edit' && (
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="px-8 py-2">
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <TrendingUp className="text-primary h-5 w-5" />
@@ -440,6 +556,24 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                         <CardDescription>
                           {milestone.description}
                         </CardDescription>
+                        {(milestoneRequiredMap[milestone.id]?.milestones
+                          ?.length > 0 ||
+                          milestoneRequiredMap[milestone.id]?.steps?.length >
+                            0) && (
+                          <div className="mt-2 flex w-fit items-center gap-2 rounded-md bg-gray-100 px-4 py-2">
+                            <Lock className="h-4 w-4 text-gray-600" />
+                            <p className="text-sm text-gray-700">
+                              {getUnlockMessage(
+                                milestoneRequiredMap[milestone.id]
+                                  ?.milestones || [],
+                                milestoneRequiredMap[milestone.id]?.steps || [],
+                                milestone.name,
+                                'milestone',
+                                t,
+                              )}
+                            </p>
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
@@ -622,11 +756,6 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                               );
                                             }}
                                           />
-                                          {/* {internalFileNames[step.id] && (
-                                            <span className="ml-2 text-sm text-green-600">
-                                              ✓ {internalFileNames[step.id]}
-                                            </span>
-                                          )} */}
                                         </div>
                                       )}
                                   </div>
@@ -691,8 +820,16 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       <>
                                         <div className="flex items-center gap-1.5">
                                           <Lock className="size-5 text-gray-600" />
-                                          <span className="text-lg text-gray-600">
-                                            {t('locked')}
+                                          <span className="text-md text-gray-600">
+                                            {getUnlockMessage(
+                                              stepRequiredMap[step.id]
+                                                ?.milestones || [],
+                                              stepRequiredMap[step.id]?.steps ||
+                                                [],
+                                              step.name,
+                                              'step',
+                                              t,
+                                            )}
                                           </span>
                                         </div>
                                       </>
@@ -700,43 +837,52 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                   </div>
                                   <div>
                                     {/* Attachment Preview */}
-                                    {attemptMap[step.id] && declined && (
-                                      <>
-                                        {attemptMap[step.id]
-                                          .staffAttachment && (
-                                          <>
-                                            <div className="mt-3 font-bold">
-                                              {t('file_attachment')}
-                                            </div>
-                                            <div className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4">
-                                              <File className="mr-2" />
-                                              {
-                                                attemptMap[step.id]
-                                                  .staffAttachment?.fileName
-                                              }
-                                              <div className="ml-auto">
-                                                <Download
-                                                  className="hover:cursor-pointer"
-                                                  onClick={() =>
-                                                    downloadFile(
-                                                      attemptMap[step.id]
-                                                        .staffAttachment
-                                                        ?.fileKey || '',
-                                                    )
-                                                  }
-                                                />
+                                    {attemptMap[step.id] &&
+                                      (completed || declined) && (
+                                        <>
+                                          {attemptMap[step.id]
+                                            .staffAttachment && (
+                                            <>
+                                              <div className="mt-3 font-bold">
+                                                {t('file_attachment')}
                                               </div>
-                                            </div>
-                                          </>
-                                        )}
-                                        <div className="mt-3 font-bold text-red-500">
-                                          {t('reason_for_decline')}
-                                        </div>
-                                        <div className="mt-3 h-24 w-1/2 rounded-2xl border p-4">
-                                          {attemptMap[step.id].staffComment}
-                                        </div>
-                                      </>
-                                    )}
+                                              <div className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4">
+                                                <File className="mr-2" />
+                                                {
+                                                  attemptMap[step.id]
+                                                    .staffAttachment?.fileName
+                                                }
+                                                <div className="ml-auto">
+                                                  <Download
+                                                    className="hover:cursor-pointer"
+                                                    onClick={() =>
+                                                      downloadFile(
+                                                        attemptMap[step.id]
+                                                          .staffAttachment
+                                                          ?.fileKey || '',
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                              </div>
+                                            </>
+                                          )}
+                                        </>
+                                      )}
+                                    {attemptMap[step.id] &&
+                                      attemptMap[step.id].staffComment != '' &&
+                                      attemptMap[step.id].staffComment !=
+                                        null &&
+                                      declined && (
+                                        <>
+                                          <div className="mt-3 font-bold text-red-500">
+                                            {t('reason_for_decline')}
+                                          </div>
+                                          <div className="mt-3 h-24 w-1/2 rounded-2xl border p-4">
+                                            {attemptMap[step.id].staffComment}
+                                          </div>
+                                        </>
+                                      )}
                                     {attemptMap[step.id] &&
                                       completed &&
                                       attemptMap[step.id].staffComment != '' &&
@@ -751,6 +897,36 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                           </div>
                                         </>
                                       )}
+                                    {displayMode !== 'select-milestone' &&
+                                      attemptMap[step.id] &&
+                                      attemptMap[step.id].staffAttachment &&
+                                      attemptMap[step.id].staffComment != '' &&
+                                      attemptMap[step.id].staffComment !=
+                                        null &&
+                                      declined && (
+                                        <Separator className="my-6" />
+                                      )}
+                                    {/* List file Upload */}
+                                    {internalFileNames[step.id] && (
+                                      <>
+                                        <div className="mt-3 font-bold">
+                                          {t('student_file_attachment')}
+                                        </div>
+                                        {internalFileNames[step.id]?.map(
+                                          (name, idx) => (
+                                            <div
+                                              className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4"
+                                              key={idx}
+                                            >
+                                              <File className="mr-2" />
+                                              <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                                {name}
+                                              </span>
+                                            </div>
+                                          ),
+                                        )}
+                                      </>
+                                    )}
                                     {displayMode !== 'select-milestone' &&
                                       (available || declined) && (
                                         <div>
@@ -768,6 +944,9 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                                 [step.id]: e.target.value,
                                               }))
                                             }
+                                            placeholder={t(
+                                              'description_placeholder',
+                                            )}
                                           />
                                         </div>
                                       )}
