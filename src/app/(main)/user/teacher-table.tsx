@@ -156,9 +156,13 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
         const managedCourses = teacherCourseStaff
           .map((cs) => {
             const course = getCourseById(cs.courseId);
-            return course ? `${course.code} - ${course.name}` : null;
+            return course
+              ? { id: course.id, name: `${course.code} - ${course.name}` }
+              : null;
           })
-          .filter((name): name is string => name !== null);
+          .filter(
+            (course): course is { id: string; name: string } => course !== null,
+          );
 
         return {
           ...user,

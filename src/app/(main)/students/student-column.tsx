@@ -70,7 +70,9 @@ export const createStudentColumns = (
       accessorKey: 'major',
       sortingFn: mixedThEnTextSort<User>(),
       cell: ({ row }) => (
-        <span className="block max-w-[200px] truncate">{row.original.major || '-'}</span>
+        <span className="block max-w-[200px] truncate">
+          {row.original.major || '-'}
+        </span>
       ),
     },
     {

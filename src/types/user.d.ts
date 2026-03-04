@@ -27,7 +27,6 @@ export interface User {
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
-  managedCourses?: { id: string; name: string }[];
 }
 
 export interface StudentFilterPayload {

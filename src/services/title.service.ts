@@ -66,7 +66,9 @@ class TitleService extends APIService {
       });
   }
 
-  async getAllTitlesUsage(titleIds: string[]): Promise<Record<string, boolean>> {
+  async getAllTitlesUsage(
+    titleIds: string[],
+  ): Promise<Record<string, boolean>> {
     try {
       // Check usage for each title in parallel
       const results = await Promise.all(
@@ -77,9 +79,9 @@ class TitleService extends APIService {
           } catch {
             return { id, inUse: false };
           }
-        })
+        }),
       );
-      
+
       const usageMap: Record<string, boolean> = {};
       results.forEach(({ id, inUse }) => {
         usageMap[id] = inUse;
