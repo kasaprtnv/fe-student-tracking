@@ -39,6 +39,7 @@ interface UpdateCourseFormDialogProps {
   onOpenChange: (open: boolean) => void;
   course: ICourse | undefined;
   teacherOptions: SelectOption[];
+  onSuccess?: () => void;
 }
 
 export function UpdateCourseFormDialog({
@@ -46,6 +47,7 @@ export function UpdateCourseFormDialog({
   onOpenChange,
   course,
   teacherOptions,
+  onSuccess,
 }: UpdateCourseFormDialogProps) {
   const t = useTranslations('course.course-form');
   const tCommon = useTranslations('common');
@@ -90,6 +92,7 @@ export function UpdateCourseFormDialog({
         await updateExistingCourse(course.id, data);
         form.reset();
         onOpenChange(false);
+        onSuccess?.();
         toast.success(t('toast.updated-successfully'));
       }
     } catch (error) {
@@ -137,7 +140,7 @@ export function UpdateCourseFormDialog({
                       disabled={course?.isUsed}
                       maxLength={10}
                       placeholder={t('placeholder.code')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="border-gray-300 bg-white"
                       {...field}
                     />
                   </FormControl>
@@ -157,7 +160,7 @@ export function UpdateCourseFormDialog({
                     <Input
                       disabled={course?.isUsed}
                       placeholder={t('placeholder.name')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="border-gray-300 bg-white"
                       {...field}
                     />
                   </FormControl>
@@ -177,7 +180,7 @@ export function UpdateCourseFormDialog({
                     <Textarea
                       disabled={course?.isUsed}
                       placeholder={t('placeholder.description')}
-                      className="resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="resize-none border-gray-300 bg-white"
                       {...field}
                     />
                   </FormControl>

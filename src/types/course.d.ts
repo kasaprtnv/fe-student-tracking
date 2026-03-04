@@ -1,3 +1,4 @@
+import { IPagination } from '.';
 import { User } from './user';
 export interface ICourse {
   id: string;
@@ -11,6 +12,8 @@ export interface ICourse {
 
   staffIds?: string[];
   users?: User[];
+  degreeTH?: string;
+  degreeEN?: string;
 }
 
 export interface ICourseCreateDTO {
@@ -30,6 +33,7 @@ export interface CourseState {
   storeAction: StoreAction;
   loader: boolean;
   error: string | null;
+  pagination: IPagination;
 }
 
 // types/course-milestone.ts

@@ -1,22 +1,72 @@
 import { milestoneService } from '@/services/milestone.service';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  IMilestone,
-  IMilestoneCreateDTO,
-  ICourseMilestone,
-} from '@/types/milestone';
+import { IMilestone, IMilestoneCreateDTO } from '@/types/milestone';
 
 export const fetchMilestones = createAsyncThunk(
   'milestones/fetchAll',
-  async (_, { rejectWithValue }) => {
+  async (
+    {
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      page?: number;
+      pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await milestoneService.getAllMilestone();
+      const res = await milestoneService.getAllMilestone(
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to fetch milestones');
+    }
+  },
+);
+
+export const searchMilestones = createAsyncThunk(
+  'milestones/search',
+  async (
+    {
+      searchQuery,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await milestoneService.searchMilestones(
+        searchQuery,
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to search milestones');
     }
   },
 );
@@ -32,6 +82,21 @@ export const fetchMilestoneById = createAsyncThunk(
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to fetch milestone');
+    }
+  },
+);
+
+export const fetchMilestonesByCourseId = createAsyncThunk(
+  'milestones/fetchByCourseId',
+  async (courseId: string, { rejectWithValue }) => {
+    try {
+      const res = await milestoneService.getMilestonesByCourseId(courseId);
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to fetch milestones by course');
     }
   },
 );

@@ -65,31 +65,51 @@ class StudentStepProgressService extends APIService {
       });
   }
 
-  // อนุมัติ
-  async approve(
-    id: string,
-    reviewedBy: string,
-  ): Promise<IApiPatchResponse<IStudentStepProgress>> {
-    return this.patch(`/student-step-progress/${id}/approve`, { reviewedBy })
+  // ดึง attempts ตาม progressId
+  async getAttemptsByProgressId(
+    progressId: string,
+  ): Promise<IApiGetResponse<StudentStepAttempts>> {
+    return this.get(`/student-step-progress/${progressId}/progress-attempts`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
       });
   }
 
-  // ปฏิเสธ
+  // อนุมัติ
+  async approve(
+    id: string,
+    reviewedBy: string,
+    recommendation?: string,
+  ): Promise<IApiPatchResponse<IStudentStepProgress>> {
+    return this.patch(`/student-step-progress/${id}/approve`, {
+      reviewedBy,
+      recommendation,
+    })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  // ปฏิเสธ - รองรับหลายไฟล์ โดยแต่ละไฟล์จะสร้าง attempt ใหม่
   async decline(
     id: string,
     reviewedBy: string,
     declineReason: string,
-    staffAttachmentFile?: File,
+    staffAttachmentFiles?: File[],
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
     const formData = new FormData();
     formData.append('reviewedBy', reviewedBy);
     formData.append('declineReason', declineReason);
-    if (staffAttachmentFile) {
-      formData.append('staffAttachmentFile', staffAttachmentFile);
+
+    // ส่งหลายไฟล์ด้วย field name เดียวกัน
+    if (staffAttachmentFiles) {
+      for (const file of staffAttachmentFiles) {
+        formData.append('staffAttachmentFile', file);
+      }
     }
+
     return fetch(`${this.baseURL}/student-step-progress/${id}/decline`, {
       method: 'PATCH',
       body: formData,
@@ -107,11 +127,13 @@ class StudentStepProgressService extends APIService {
   async submitForReview(
     stepId: string,
     studentId: string,
+    studentComment?: string,
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
     return this.patch(`/student-step-progress/submit`, {
       stepId,
       studentId,
       status: 'pending',
+      studentComment,
     })
       .then((response) => response?.data)
       .catch((error) => {

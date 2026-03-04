@@ -16,7 +16,15 @@ import React from 'react';
 import { DataTableFilter } from './data-table-filter';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { Button } from '../ui/button';
-import { ArrowDown, ArrowDownUp, ArrowUp, Plus, Trash2, X } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowDownUp,
+  ArrowUp,
+  Plus,
+  Trash2,
+  Upload,
+  X,
+} from 'lucide-react';
 import { DataTableViewOptions } from './data-table-view-options';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import {
@@ -30,26 +38,43 @@ import {
 import { Checkbox } from '../ui/checkbox';
 import { DataTablePagination } from './data-table-pagination';
 import { Input } from '../ui/input';
+import { DataTableSkeleton } from './data-table-skeleton';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+
   enabledSearch?: boolean;
   searchQuery?: string;
   searchPlaceholder?: string;
+
   enabledMultiSelect?: boolean;
-  buttonAddLabel?: string;
-  buttonFilterLabel?: string;
   enabledSelectColumns?: boolean;
   enabledPagination?: boolean;
+
   manualPagination?: boolean;
   page?: number;
   pageSize?: number;
   rowCount?: number;
   pageSizeOptions?: number[];
+
+  manualSorting?: boolean;
+  onSortChange?: (
+    sortBy: string | undefined,
+    sortOrder: 'asc' | 'desc' | undefined,
+  ) => void;
+
   filterColumns?: DataTableFilterField<TData>[];
+
+  buttonAddLabel?: string;
+  buttonFilterLabel?: string;
+  buttonImportLabel?: string;
+
+  isLoading?: boolean;
+
   onFilter?: () => void;
   onAdd?: () => void;
+  onImport?: () => void;
   onEdit?: (data: TData) => void;
   onView?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -65,6 +90,7 @@ interface DataTableProps<TData, TValue> {
   setHiddenColumns?: (
     hiddenColumns: Column<TData, unknown>[],
   ) => Column<TData, unknown>[];
+
   actionHeader?: React.ReactNode;
   extraToolbarAction?: React.ReactNode;
   actionHeaderId?: string;
@@ -77,18 +103,29 @@ export function DataTable<TData, TValue>({
   searchQuery = '',
   searchPlaceholder = 'search_placeholder',
   enabledMultiSelect = true,
-  buttonAddLabel = 'add',
-  buttonFilterLabel = 'filter',
   enabledSelectColumns = true,
   enabledPagination = true,
+
   manualPagination = false,
   page = 1,
   pageSize = 10,
-  rowCount,
   pageSizeOptions,
+  rowCount,
+
+  manualSorting = false,
+  onSortChange,
+
   filterColumns = [],
+
+  buttonAddLabel = 'add',
+  buttonFilterLabel = 'filter',
+  buttonImportLabel = 'import',
+
+  isLoading = false,
+
   onFilter,
   onAdd,
+  onImport,
   onEdit,
   onView,
   onDelete,
@@ -100,6 +137,7 @@ export function DataTable<TData, TValue>({
   onSearch,
   onPageSizeChange,
   onPageChange,
+
   extraToolbarAction,
   getRowId,
   setHiddenColumns,
@@ -107,31 +145,77 @@ export function DataTable<TData, TValue>({
   actionHeaderId,
 }: DataTableProps<TData, TValue>) {
   const t = useTranslations('data-table');
+
   const [searchValue, setSearchValue] = React.useState(searchQuery);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [rowSelection, setRowSelection] = React.useState({});
+
   const [pagination, setPagination] = React.useState({
     pageIndex: page - 1,
     pageSize: pageSize,
   });
+
+  React.useEffect(() => {
+    setPagination({
+      pageIndex: page - 1,
+      pageSize,
+    });
+  }, [page, pageSize]);
+
+  React.useEffect(() => {
+    setSearchValue(searchQuery);
+  }, [searchQuery]);
+
+  const totalPages =
+    manualPagination && rowCount ? Math.ceil(rowCount / pageSize) : undefined;
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+
+    ...(manualPagination
+      ? {}
+      : {
+          getPaginationRowModel: getPaginationRowModel(),
+          getFilteredRowModel: getFilteredRowModel(),
+        }),
+
+    onSortingChange: (updaterOrValue) => {
+      const newSorting =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(sorting)
+          : updaterOrValue;
+      setSorting(newSorting);
+      if (manualSorting && onSortChange) {
+        if (newSorting.length > 0) {
+          onSortChange(newSorting[0].id, newSorting[0].desc ? 'desc' : 'asc');
+        } else {
+          onSortChange(undefined, undefined);
+        }
+      }
+    },
+    ...(manualSorting
+      ? { manualSorting: true }
+      : { getSortedRowModel: getSortedRowModel() }),
+
     onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
+
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
+
     getRowId,
     autoResetPageIndex: false,
+
     manualPagination,
-    rowCount,
+    pageCount: totalPages,
+
+    defaultColumn: {
+      sortDescFirst: false,
+    },
     state: {
       sorting,
       columnFilters,
@@ -154,7 +238,6 @@ export function DataTable<TData, TValue>({
     setSearchValue(value);
     if (onSearch) {
       onSearch(value);
-      table.resetPageIndex();
       return;
     }
     table.setGlobalFilter(value);
@@ -245,6 +328,11 @@ export function DataTable<TData, TValue>({
               {t(buttonFilterLabel)}
             </Button>
           )}
+          {onImport && (
+            <Button onClick={onImport} variant="outline">
+              <Upload /> {t(buttonImportLabel)}
+            </Button>
+          )}
           {onAdd && (
             <Button onClick={onAdd} variant="outline">
               <Plus /> {t(buttonAddLabel)}
@@ -310,50 +398,62 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))}
             </TableHeader>
+
             <TableBody className="bg-white">
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={
-                      enabledMultiSelect
-                        ? row.getIsSelected() && 'selected'
-                        : false
-                    }
-                  >
-                    {enabledMultiSelect && (
-                      <TableCell className="w-[50px]">
-                        <Checkbox
-                          checked={row.getIsSelected()}
-                          onCheckedChange={(value) =>
-                            row.toggleSelected(!!value)
-                          }
-                          aria-label="Select row"
-                        />
-                      </TableCell>
-                    )}
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        width={cell.column.columnDef.size}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
+              {isLoading ? (
+                <DataTableSkeleton
+                  table={table}
+                  columns={columns}
+                  enabledMultiSelect={enabledMultiSelect}
+                  pageSize={table.getState().pagination.pageSize}
+                />
               ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length + 1}
-                    className="h-24 text-center"
-                  >
-                    {t('no_results')}
-                  </TableCell>
-                </TableRow>
+                <>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={
+                          enabledMultiSelect
+                            ? row.getIsSelected() && 'selected'
+                            : false
+                        }
+                      >
+                        {enabledMultiSelect && (
+                          <TableCell className="w-[50px]">
+                            <Checkbox
+                              checked={row.getIsSelected()}
+                              onCheckedChange={(value) =>
+                                row.toggleSelected(!!value)
+                              }
+                              aria-label="Select row"
+                            />
+                          </TableCell>
+                        )}
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            key={cell.id}
+                            width={cell.column.columnDef.size}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length + 1}
+                        className="h-24 text-center"
+                      >
+                        {t('no_results')}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
               )}
             </TableBody>
           </Table>

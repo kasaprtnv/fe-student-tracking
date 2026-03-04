@@ -4,10 +4,11 @@
     "welcomeMessage": "Welcome to the Student Tracker Application!",
     "dashboard": "Dashboard",
     "graduateList": "List Student",
-    "userManagement": "User",
+    "userManagement": "User Management",
     "studentReport": "Student Report",
     "progressVerify": "Progress Verify",
-    "mergeFiles": "Merge Files",
+    "stepProgressReport": "Step Progress Report",
+    "mergeFiles": "Approved evidence files",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -30,18 +31,22 @@
     "add": "Add",
     "delete_selected": "{count} item(s) selected",
     "to-milestone-step": "To Milestone Steps",
-    "select-milestone": "Select Milestone"
+    "select-milestone": "Select Milestone",
+    "import": "Import",
+    "import-users": "Import Data"
   },
   "column": {
     "name": "Name",
     "description": "Description",
+    "name-Milestone": "Milestone Name",
+    "description-Milestone": "Milestone Description",
     "courseId": "CourseId",
     "position": "Position",
     "deadlineDate": "DeadlineDate",
     "Actions": "Actions",
     "code": "Code",
     "is_active": "Is Active",
-    "is_used": "Is Used",
+    "is_used": "Active Status",
     "active": "Active",
     "inactive": "Inactive",
     "edit": "Edit",
@@ -56,23 +61,35 @@
     "updated_at": "Updated At",
     "full-name": "Full Name",
     "email": "Email",
-    "phone": "Phone",
+    "phone": "Phone Number",
     "role": "Role",
     "education-level": "Education Level",
     "year": "Year",
-    "course-name": "Enroll Course Name",
+    "enrolled-course-name": "Course Name",
     "enroll-date": "Enroll Date",
     "course": "Course",
     "academic-year": "Academic Year",
     "degree": "Degree",
     "study-plan": "Study Plan",
     "managed-courses": "Managed Courses",
+    "course-staff": "Course Staff",
     "teacher-degree": "Degree",
+    "student-code": "Student Code",
+    "major": "Department",
+    "milestone-name": "Milestone Name",
+    "milestone-description": "Milestone Description",
+    "step-name": "Step Name",
+    "status": "Status",
+    "due-date": "Due Date",
     "academic-position": "Academic Position",
-    "graduated": "Graduated",
+    "graduated": "Academic Status",
     "graduated-yes": "Graduated",
     "graduated-no": "Not Graduated",
-    "student-code": "Student Code"
+    "course-code": "Course Code",
+    "course-name": "Course Name",
+    "course-description": "Course Description",
+    "title-name": "Title Name",
+    "title-description": "Title Description"
   },
   "common": {
     "submit": "Submit",
@@ -110,7 +127,7 @@
     }
   },
   "course": {
-    "title": "Courses",
+    "title": "Course Management",
     "sub_title": "Manage your courses here.",
     "course-form": {
       "errors": {
@@ -142,14 +159,15 @@
         "updated-successfully": "Course updated successfully!",
         "update-failed": "Failed to update course. Please try again.",
         "deleted-successfully": "Course deleted successfully!",
-        "deletion-failed": "Failed to delete course. Please try again."
+        "deletion-failed": "Failed to delete course. Please try again.",
+        "fetch_error": "Failed to fetch courses. Please try again."
       },
       "header": {
         "create": "Create New Course",
         "edit": "Edit Course"
       },
       "header_description": {
-        "create": "Fill out the form below to create a new course.",
+        "create": "Fill out the form to create a new course.",
         "edit": "Update the course details below."
       }
     },
@@ -159,7 +177,7 @@
     }
   },
   "title": {
-    "page-title": "Title Prefix",
+    "page-title": "Title Prefix Management",
     "sub_title": "Manage your title prefixes here.",
     "title-form": {
       "errors": {
@@ -180,14 +198,16 @@
         "updated-successfully": "Title updated successfully!",
         "update-failed": "Failed to update title. Please try again.",
         "deleted-successfully": "Title deleted successfully!",
-        "deletion-failed": "Failed to delete title. Please try again."
+        "deletion-failed": "Failed to delete title. Please try again.",
+        "cannot-delete-in-use": "Cannot delete this title because it is currently in use.",
+        "delete-error": "Error checking title usage."
       },
       "header": {
         "create": "Create New Title",
         "edit": "Edit Title"
       },
       "header_description": {
-        "create": "Fill out the form below to create a new title.",
+        "create": "Fill out the form to create a new title.",
         "edit": "Update the title details below."
       }
     },
@@ -199,39 +219,57 @@
   "profile": {
     "personal_information": {
       "title": "Personal Information",
+      "personal_information_title": "Personal Information",
       "name": "Name",
       "email": "Email",
+      "course": "Course",
       "phone": "Phone",
       "address": "Address",
       "year": "Year of Enrollment",
       "student_id": "Student ID",
       "major": "Department",
       "faculty": "Faculty",
-      "course": "Course",
       "degree": "Degree",
-      "teacher_position": "Academic Position",
+      "teacher_position": "Teacher",
       "academic_position": "Academic Position",
       "education": "Education",
       "polsci-law": "Political Science And Law"
+    },
+    "change_password": {
+      "title": "Security",
+      "current_password": "Current Password",
+      "new_password": "New Password",
+      "confirm_new_password": "Confirm New Password",
+      "success": "Password changed successfully"
     },
     "progress_title": "Graduate Progress",
     "contact_admin": "Please contact staff to enroll in a course"
   },
   "milestone-progress": {
+    "dayperiod": "Day Period",
+    "deadline": "Deadline",
+    "NotifyBefore": "Notify Before",
+    "day": "Day",
+    "unlock_conditions": "Unlock Conditions",
     "completed": "Completed",
     "pending": "Pending",
     "declined": "Declined",
+    "deadline_date": "Deadline Date",
     "locked": "Locked",
     "upload_button": "Upload File",
     "uploading": "Uploading...",
     "uploaded_file": "Uploaded File",
+    "student_file_attachment": "Student File Attachment",
     "submitting": "Submitting...",
     "submit_button": "Confirm Submission",
     "overall_progress": "Overall Progress",
     "accept_file_type": "Accept File Type",
     "progress_count": "completed {completed} out of {total} steps",
     "reason_for_decline": "Reason for Decline",
+    "recommendation": "Recommendation",
+    "description": "Description",
     "file_attachment": "File Attachment",
+    "description_placeholder": "Enter additional description (if any)",
     "confirm_submit_title": "Confirm Submission",
     "confirm_submit_description": "Are you sure you want to submit this file?",
     "cancel": "Cancel",
@@ -240,13 +278,13 @@
     "submit_success_description": "Your file has been submitted successfully.",
     "ok": "OK",
     "student_attachment_label": "Submitted Document",
-    "decline_reason_label": "Reason for Decline",
-    "staff_attachment_label": "Additional File from Staff",
-    "decline_reason": "Decline Reason",
+    "decline_reason_label": "Additional Comments",
+    "staff_attachment_label": "Enter additional comments",
+    "decline_reason": "Additional Comments",
     "download": "Download"
   },
   "milestone": {
-    "title": "Milestones",
+    "title": "Milestone Management",
     "sub_title": "Manage your milestones here.",
     "milestone-form": {
       "header": {
@@ -254,8 +292,8 @@
         "edit": "Edit Milestone"
       },
       "header_description": {
-        "create": "Add a new milestone to the system",
-        "edit": "Edit milestone details"
+        "create": "Fill out the form to create a new milestone.",
+        "edit": "Update the milestone details below."
       },
       "label": {
         "name": "Milestone Name",
@@ -283,7 +321,8 @@
         "updated-successfully": "Milestone updated successfully!",
         "update-failed": "Failed to update milestone. Please try again.",
         "deleted-successfully": "Milestone deleted successfully!",
-        "deletion-failed": "Failed to delete milestone. Please try again."
+        "deletion-failed": "Failed to delete milestone. Please try again.",
+        "fetch_error": "Failed to fetch milestones. Please try again."
       },
       "errors": {
         "code-duplicate": "Course code already exists",
@@ -323,14 +362,16 @@
     "add-step": "Add Milestone Step",
     "requires-attachment": "Requires Attachment",
     "no-attachment-required": "No Attachment Required",
+    "notify-before-days": "Notify Before Days",
+    "day-period": "Day Period",
     "milestone-step-form": {
       "header": {
         "create": "Create Milestone Step",
         "edit": "Edit Milestone Step"
       },
       "header_description": {
-        "create": "Add a new milestone step to the system",
-        "edit": "Edit milestone step details"
+        "create": "Fill out the form to create a new milestone step.",
+        "edit": "Update the milestone step details below."
       },
       "label": {
         "name": "Step Name",
@@ -355,7 +396,8 @@
         "updated-successfully": "Milestone step updated successfully!",
         "update-failed": "Failed to update milestone step. Please try again.",
         "deleted-successfully": "Milestone step deleted successfully!",
-        "deletion-failed": "Failed to delete milestone step. Please try again."
+        "deletion-failed": "Failed to delete milestone step. Please try again.",
+        "position-updated": "Milestone step positions updated successfully!"
       },
       "errors": {
         "name-required": "Step name is required",
@@ -364,9 +406,8 @@
 
         "position-integer": "Position must be a number",
         "position-min": "Position must be at least 1",
-
         "dayPeriod-integer": "Day period must be a number",
-
+        "notifyBeforeDays-greater-than-dayPeriod": "Notify before days cannot be greater than day period",
         "notifyBeforeDays-integer": "Notify-before-days must be a number",
 
         "dayPeriod-exceeds": "Day period cannot exceed milestone's day period of {value} days"
@@ -382,7 +423,10 @@
       "title": "Select Milestone",
       "breadcrumb": "Milestone Prerequisites",
       "course-name": "Course name",
-      "course-description": "Description"
+      "course-description": "Description",
+      "course-code": "Course code",
+      "course": "Course",
+      "select-milestone": "Select Milestone"
     },
 
     "course": {
@@ -395,7 +439,8 @@
       "milestone": "Milestones",
       "select-placeholder": "Select milestone",
       "add": "Add",
-      "next": "Next"
+      "next": "Next",
+      "preview": "Preview Milestone Steps"
     },
 
     "unlock-condition": {
@@ -404,17 +449,18 @@
       "step-section": "Steps",
       "lock": "Lock",
       "unlock": "Unlock",
-      "no-conditions": "No unlock conditions yet",
+      "no-conditions": "The lock condition cannot be selected because there is only one milestone step available.",
       "cancel": "Cancel",
       "save": "Save",
-      "from": "form"
+      "from": "from milestone"
     },
 
     "confirm-save": {
       "title": "Confirm Save?",
       "description": "Are you sure you want to save all unlock conditions?",
       "cancel": "Cancel",
-      "confirm": "Save"
+      "confirm": "Save",
+      "success": "Prerequisites saved successfully!"
     },
 
     "toast": {
@@ -429,6 +475,8 @@
     }
   },
   "user": {
+    "active": "Active",
+    "inactive": "Inactive",
     "add-user": "Add User",
     "edit-user": "Edit User",
     "add-student": "Add Student",
@@ -448,7 +496,7 @@
     "last-name-placeholder": "Enter last name",
     "email": "Email",
     "email-placeholder": "Enter email",
-    "phone": "Phone",
+    "phone": "Phone Number",
     "phone-placeholder": "Enter phone number",
     "degree": "Degree",
     "degree-placeholder": "Enter degree",
@@ -475,28 +523,32 @@
     "delete-user-description": "Are you sure you want to delete this user? This action cannot be undone.",
     "delete-users-title": "Confirm Delete Multiple Users",
     "delete-users-description": "Are you sure you want to delete {count} users? This action cannot be undone.",
+    "warning-delete-user": "Warning: You are about to delete {count} users. This action cannot be undone.",
     "toast": {
       "deleted-successfully": "User deleted successfully",
       "deleted-multiple-successfully": "Multiple users deleted successfully",
       "delete-failed": "Failed to delete user",
-      "milestone-progress-exists": "Cannot delete: {count} student(s) have study progress records"
+      "milestone-progress-exists": "Cannot delete: {count} student(s) have study progress records",
+      "fetch_error": "Failed to fetch users. Please try again."
     },
     "dialog": {
       "confirm_course_change_with_progress": "This student has {count} progress records. If you change the course, all progress data will be deleted. Do you want to proceed?",
-      "confirm_delete_user_with_progress": "This user has {count} progress records. Deleting will remove all data. Confirm?"
+      "confirm_delete_user_with_progress": "This user has {count} progress records. Deleting will remove all data. Confirm?",
+      "delete-users-with-progress-description": "Are you sure you want to delete {count} users with a total of {progressCount} progress records? This action cannot be undone.",
+      "warning-delete-users-with-progress": "Warning: You are about to delete {count} users with a total of {progressCount} progress records. This action cannot be undone."
     },
     "user-form": {
       "header": {
-        "create": "Add User",
-        "create-student": "Add Student",
-        "create-teacher": "Add Staff Member",
+        "create": "Create New User",
+        "create-student": "Create New Student",
+        "create-teacher": "Create New Staff Member",
         "edit": "Edit User"
       },
       "header_description": {
-        "create": "Fill in the form to add a new user.",
-        "create-student": "Fill in the form to add a new student.",
-        "create-teacher": "Fill in the form to add a new staff member.",
-        "edit": "Edit user information."
+        "create": "Fill out the form to create a new user.",
+        "create-student": "Fill out the form to create a new student.",
+        "create-teacher": "Fill out the form to create a new staff member.",
+        "edit": "Update the user details below."
       },
 
       "label": {
@@ -509,14 +561,16 @@
         "first-name": "First Name",
         "last-name": "Last Name",
         "email": "Email",
-        "phone": "Phone",
+        "phone": "Phone Number",
         "degree": "Education Level",
         "year": "Academic Year",
         "enroll-date": "Enroll Date",
-        "is-active": "Is Active",
+        "is-active": "Active Status",
         "study-plan": "Study Plan",
-        "teacher-degree": "Type your degree",
-        "academic-position": "Academic Position"
+        "major": "Department",
+        "teacher-degree": "Degree",
+        "academic-position": "Academic Position",
+        "add-academic-position": "Add Academic Position"
       },
       "placeholder": {
         "role": "Select role",
@@ -533,13 +587,15 @@
         "enroll-date": "Select enroll date",
         "search-course": "Search course...",
         "no-course-found": "No course found",
+        "select-degree-first": "Select education level first",
         "search-year": "Search year...",
         "no-year-found": "No year found",
         "study-plan": "Select study plan",
         "search-study-plan": "Search study plan...",
         "no-study-plan-found": "No study plan found",
-        "teacher-degree": "Type teacher degree",
-        "academic-position": "Type academic position"
+        "major": "Enter department",
+        "teacher-degree": "Enter teacher degree",
+        "academic-position": "Enter academic position"
       },
       "study-plan-options": {
         "plan-a": "Plan ก",
@@ -573,15 +629,20 @@
         "email-invalid": "Invalid email format",
         "email-exists": "This email already exists in the system",
         "phone-required": "Phone is required",
-        "phone-max": "Phone must not exceed 20 characters",
+        "phone-length": "Phone number must be exactly 10 digits",
         "code-required": "Code is required",
+        "code-length": "Student ID must be exactly 8 digits",
+        "code-exists": "Student ID already exists",
         "degree-required": "Education level is required",
         "degree-max": "Education level must not exceed 100 characters",
         "year-required": "Year is required",
         "year-max": "Year must not exceed 10 characters",
         "course-required": "Course is required",
         "enroll-date-required": "Enroll date is required",
-        "study-plan-required": "Study plan is required"
+        "enroll-date-future": "Enroll date cannot be in the future",
+        "title-required": "Title is required",
+        "study-plan-required": "Study plan is required",
+        "major-required": "Department is required"
       },
       "toast": {
         "created-successfully": "User created successfully",
@@ -591,24 +652,25 @@
       }
     },
     "import-dialog": {
-      "title": "Import Users from Excel",
+      "title": "Import Users data from Excel",
       "description": "Upload an Excel file to import multiple users at once",
       "drag-drop-text": "Drag and drop file here, or click to select",
       "file-format": "Supports .xlsx and .xls files (max 5MB)",
-      "upload-button": "Upload",
+      "upload-button": "import",
       "download-template": "Download Template",
       "download-student-template": "Student Template",
       "download-teacher-template": "Teacher Template",
       "errors": {
         "invalid-file-type": "Please select an Excel file (.xlsx or .xls)",
-        "no-file-selected": "Please select a file before uploading"
+        "no-file-selected": "Please select a file before uploading",
+        "file-too-large": "File is too large (Maximum {size})"
       },
       "toast": {
         "import-success": "Import successful",
         "import-partial": "Failed to import {failed} user(s)",
         "import-updated": "Updated {count} user(s)",
         "import-skipped": "Skipped {count} user(s) (no changes)",
-        "import-failed": "Failed to import users",
+        "import-failed": "Failed to import users data",
         "template-downloaded": "Template downloaded successfully"
       }
     }
@@ -619,10 +681,11 @@
     "teacher": "teacher"
   },
   "verify-certificate": {
-    "title": "Verify Graduate Certificate",
+    "title": "Progress Verify",
+    "description": "Display evidence pending verification from students",
     "breadcrumb": {
       "home": "Dashboard",
-      "verify": "Verify Graduate Certificate",
+      "verify": "Progress Verify",
       "detail": "Detail"
     },
     "search_placeholder": "Search",
@@ -651,7 +714,7 @@
       "step": "Step",
       "submit_date": "Submit Date",
       "status": "Status",
-      "action": ""
+      "action": "Verify"
     },
     "loading": "Loading...",
     "no_data": "No data found",
@@ -669,16 +732,21 @@
       "submit_date": "Submit Date",
       "reason": "Reason",
       "decline_reason": "Decline Reason",
-      "staff_attachment": "Attached Document"
+      "staff_attachment": "Attached Document",
+      "student_comment": "Student Comment"
     },
     "review": {
       "title": "Review Submission",
       "decline_reason": "Decline Reason",
       "decline_reason_placeholder": "Please specify the reason",
+      "decline_reason_required": "Please enter a reason before declining",
       "approve": "Approve",
       "decline": "Decline",
       "staff_attachment": "Attach Additional Document (for revision/decline)",
-      "click_to_upload": "Click to upload or drag and drop"
+      "click_to_upload": "Drag or click to upload file",
+      "file_types": "Supports PDF, PNG, JPEG, JPG and DOCX (max 20MB)",
+      "invalid_file_type": "This file type is not supported. Only PDF, PNG, JPEG, JPG and DOCX are allowed.",
+      "file_too_large": "File size exceeds 20MB limit and cannot be attached."
     },
     "success": {
       "title": "Success",
@@ -696,8 +764,8 @@
   },
   "user-page": {
     "title": "User Management",
-    "description": "Manage your users here.",
-    "import-button": "Upload File",
+    "description": "Add, edit, and delete users in the system here.",
+    "import-button": "Import Data",
     "tabs": {
       "all": "All Users",
       "students": "Students",
@@ -705,8 +773,10 @@
     }
   },
   "student-page": {
+    "export": "Export PDF",
     "title": "Student List",
     "description": "View all student information. Click on a row to view profile.",
+    "personal-information-student": "Student Information",
     "export-button": "Export Data"
   },
   "degree": {
@@ -730,7 +800,7 @@
       "unit-courses": "courses"
     },
     "charts": {
-      "students-by-course": "Students by Course",
+      "students-by-course": "Students by Course and Academic Year",
       "students-by-degree": "Students by Degree",
       "graduation-by-year": "Graduation Status by Year",
       "no-data": "No student data"
@@ -739,10 +809,10 @@
       "all-courses": "All Courses",
       "all-degrees": "All Education Levels",
       "all-years": "All Years",
-      "all": "All",
-      "years-3": "Last 3 years",
-      "years-5": "Last 5 years",
-      "years-10": "Last 10 years",
+      "all": "All Years",
+      "years-3": "Last 3 Years",
+      "years-5": "Last 5 Years",
+      "years-10": "Last 10 Years",
       "course": "Course",
       "degree": "Degree",
       "year": "Year"
@@ -756,7 +826,7 @@
     }
   },
   "merge-files": {
-    "title": "Approved Evidence Files",
+    "title": "Approved evidence files",
     "description": "Display all approved evidence files",
     "loading": "Loading data...",
     "error-loading": "Error loading data",
@@ -764,25 +834,78 @@
     "fullname": "Full Name",
     "email": "Email",
     "education_level": "Education Level",
-    "grad_year": "Year",
+    "grad_year": "Academic Year",
     "course": "Course",
     "course_name": "Course Name",
-    "milestone_step": "Milestone Step",
-    "enroll_date": "Submit Date",
-    "actions": "Download",
-    "no-files": "No approved files"
+    "milestone_step": "Sub-step",
+    "enroll_date": "Evidence Submit Date",
+    "reviewed_by": "Reviewer",
+    "actions": "Save File",
+    "no-files": "No approved files",
+    "delete-title": "Confirm Deletion",
+    "delete-description": "Are you sure you want to delete {count} selected file(s)? This action cannot be undone.",
+    "toast": {
+      "deleteSuccess": "Successfully deleted {count} file(s)",
+      "deleteFailed": "Failed to delete {count} file(s)"
+    }
+  },
+  "status": {
+    "locked": "Locked",
+    "pending approval": "Pending Approval",
+    "declined": "Declined",
+    "approved": "Approved",
+    "available": "Available"
+  },
+  "step-progress-report": {
+    "title": "Step Progress Report",
+    "sub_title": "Generate and view reports on student progress for each milestone step.",
+    "please-select-filters": "Please select filters to generate the report",
+    "filter_instruction-line-1": "Select academic year, course, milestone, milestone step, education level",
+    "filter_instruction-line-2": "Status, and click the 'Apply Filters' button to display data",
+    "filter_instruction-line-3": "Graduate progress",
+    "loading": "Loading report data...",
+    "filter-form": {
+      "year": "Academic Year",
+      "course": "Course",
+      "milestone": "Milestone",
+      "step": "Milestone Step",
+      "degree": "Education Level",
+      "major-placeholder": "Enter department",
+      "major": "Department",
+      "status": "Status",
+      "apply-filters": "Apply Filters",
+      "export-excel": "Export as Excel",
+      "all": "All",
+      "applied-filters": "Applied Filters"
+    }
+  },
+  "components": {
+    "multi-select": {
+      "placeholder": "Select options...",
+      "selected_items": "{count} items selected",
+      "search_placeholder": "Search...",
+      "no_results": "No results found."
+    },
+    "loading-dot": {
+      "loading": "Loading"
+    },
+    "delete-text-confirmation-dialog": {
+      "confirmation-text": "Type \"{text}\" to confirm deletion"
+    }
   },
   "advanced-filter": {
     "title": "Advanced Filter",
     "description": "Filter student data by specific criteria",
     "code": "Code",
-    "code-placeholder": "Search code...",
+    "code-placeholder": "Enter code",
     "full-name": "Full Name",
-    "full-name-placeholder": "Search name...",
+    "full-name-placeholder": "Enter name",
     "email": "Email",
-    "email-placeholder": "Search email...",
-    "phone": "Phone",
-    "phone-placeholder": "Search phone...",
+    "email-placeholder": "Enter email",
+    "phone": "Phone Number",
+    "phone-placeholder": "Enter phone number",
+    "major": "Department",
+    "major-placeholder": "Enter department",
     "degree": "Education Level",
     "degree-placeholder": "Select education level",
     "year": "Academic Year",
@@ -793,8 +916,8 @@
     "study-plan-placeholder": "Select study plan",
     "enroll-date-from": "Enroll Date (From)",
     "enroll-date-to": "Enroll Date (To)",
-    "graduated": "Graduated",
-    "graduated-placeholder": "Select status",
+    "graduated": "Academic Status",
+    "graduated-placeholder": "Select academic status",
     "search": "Search...",
     "no-results": "No results found",
     "apply": "Apply",
@@ -804,6 +927,7 @@
     "date-format": "mm/dd/yyyy",
     "select-date-range": "Select date range",
     "enroll-date-range": "Enroll Date",
-    "clear-date": "Clear date"
+    "clear-date": "Clear date",
+    "selected-count": "Selected {count} items"
   }
 }

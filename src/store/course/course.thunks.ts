@@ -4,15 +4,84 @@ import { ICourse, ICourseCreateDTO } from '@/types/course';
 
 export const fetchCourses = createAsyncThunk(
   'course/getList',
-  async (_, { rejectWithValue }) => {
+  async (
+    {
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      page?: number;
+      pageSize?: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
     try {
-      const res = await courseService.getAllCourses();
+      const res = await courseService.getAllCourses(
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+      );
       return res;
     } catch (err: unknown) {
       if (err instanceof Error) {
         return rejectWithValue(err.message);
       }
       return rejectWithValue('Failed to fetch courses');
+    }
+  },
+);
+
+export const getCoursesByTeacherId = createAsyncThunk(
+  'course/getByTeacherId',
+  async (teacherId: string, { rejectWithValue }) => {
+    try {
+      const response = await courseService.getCoursesByTeacherId(teacherId);
+      return response;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to fetch courses by teacher ID');
+    }
+  },
+);
+
+export const searchCourses = createAsyncThunk(
+  'course/search',
+  async (
+    {
+      searchQuery,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    }: {
+      searchQuery: string;
+      page: number;
+      pageSize: number;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await courseService.searchCourses(
+        searchQuery,
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+      );
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to search courses');
     }
   },
 );

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import useSWR from 'swr';
 import { DataTable } from '@/components/data-table/data-table';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
@@ -8,113 +9,124 @@ import { useTitle } from '@/hooks/use-title';
 import { createStudentColumns } from './create-student-column';
 import { CreateUserFormDialog } from './create-user-form';
 import { UpdateUserFormDialog } from './update-user-form';
-import DeleteConfirmationDialog from '@/components/delete-dialog';
 import { SelectOption } from '@/types';
 import { User } from '@/types/user';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
-import { formatThaiDate } from '@/lib/format-date';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { useLocale, useTranslations } from 'next-intl';
+import { DeleteTextConfirmationDialog } from '@/components/confirmation-delete-dialog';
+import { useDebounce } from '@/lib/use-debounce';
+interface StudentTableProps {
+  onImport?: () => void;
+  importLabel?: string;
+}
 
-export const StudentTable = () => {
+export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
   const {
+    paginatedStudentsFromMap,
+    studentPagination,
     searchQuery,
     setSearch: setSearchQuery,
+    setStudentPage,
+    setStudentPageSize,
+    fetchStudents,
+    searchForStudents,
     deleteExistingUser,
     deleteExistingUsers,
+    getUserById,
     storeAction,
-    userMap,
+    loader,
     getStudentProgressCount,
   } = useUser();
-  const { allCourseId, getCourseById } = useCourse();
-  const { titleMap, fetchAllTitles } = useTitle();
-  const t = useTranslations('user');
+  const { allCourseId, getCourseById, courseMap } = useCourse();
+  const { titleMap, fetchTitlesUsage } = useTitle();
+  const tUser = useTranslations('user');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
   const tCommon = useTranslations('common');
+  const tForm = useTranslations('user');
+  const locale = useLocale();
 
-  // Fetch titles on mount
+  // Local pagination state for immediate useSWR key updates
+  const [currentPage, setCurrentPage] = React.useState(studentPagination.page);
+  const [currentPageSize, setCurrentPageSize] = React.useState(
+    studentPagination.pageSize,
+  );
+
+  // Local sorting state for server-side sorting
+  const [currentSortBy, setCurrentSortBy] = React.useState<string | undefined>(
+    undefined,
+  );
+  const [currentSortOrder, setCurrentSortOrder] = React.useState<
+    'asc' | 'desc' | undefined
+  >(undefined);
+
+  // Debounce search to avoid fetching on every keystroke
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  // Stable reference to fetcher function
+  const studentsFetcher = React.useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async ([_key, searchQuery, page, pageSize, sortBy, sortOrder]: [
+      string,
+      string,
+      number,
+      number,
+      string | undefined,
+      'asc' | 'desc' | undefined,
+    ]) => {
+      try {
+        if (searchQuery && searchQuery.trim() !== '') {
+          return await searchForStudents(
+            searchQuery,
+            page,
+            pageSize,
+            sortBy,
+            sortOrder,
+          );
+        } else {
+          return await fetchStudents(page, pageSize, sortBy, sortOrder);
+        }
+      } catch (err) {
+        toast.error(tForm('toast.fetch_error'));
+        throw err;
+      }
+    },
+    [fetchStudents, searchForStudents, tForm],
+  );
+
+  const { mutate } = useSWR(
+    [
+      'fetch-students',
+      debouncedSearchQuery,
+      currentPage,
+      currentPageSize,
+      currentSortBy,
+      currentSortOrder,
+    ],
+    studentsFetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 1000,
+      keepPreviousData: true, // Keep previous data while fetching new
+    },
+  );
+
+  // Listen for user import events to refetch table data
   React.useEffect(() => {
-    fetchAllTitles();
-  }, [fetchAllTitles]);
+    const handleUserImported = () => {
+      mutate();
+    };
+    window.addEventListener('user-imported', handleUserImported);
+    return () => {
+      window.removeEventListener('user-imported', handleUserImported);
+    };
+  }, [mutate]);
 
-  // Get student data directly from Redux store userMap and enrich with courseName
-  const filterStudent = React.useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    return Object.values(userMap)
-      .filter((user) => {
-        if (user.role !== 'student') return false;
-        if (!query) return true;
-        const titleName = user.titleId
-          ? titleMap[user.titleId]?.name || ''
-          : '';
-        const fullName =
-          `${titleName}${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-        // Strip non-digit characters for phone search
-        const queryDigits = query.replace(/\D/g, '');
-        const phoneDigits = user.phone?.replace(/\D/g, '') || '';
-        // Strip spaces for flexible search
-        const queryNoSpaces = query.replace(/\s/g, '');
-        // Map degree to Thai display text for search
-        const degreeDisplay =
-          user.degree === 'bachelor'
-            ? 'ปริญญาตรี'
-            : user.degree === 'master'
-              ? 'ปริญญาโท'
-              : user.degree === 'doctorate'
-                ? 'ปริญญาเอก'
-                : '';
-        // Map degree to English display text for search
-        const degreeDisplayEn =
-          user.degree === 'bachelor'
-            ? "bachelor's degree"
-            : user.degree === 'master'
-              ? "master's degree"
-              : user.degree === 'doctorate'
-                ? 'doctoral degree'
-                : '';
-        // Map role to Thai/English display text for search
-        const roleDisplay =
-          user.role === 'student'
-            ? 'นักศึกษา student'
-            : 'ผู้ดูแลหลักสูตร staff';
-        return (
-          titleName.toLowerCase().includes(query) ||
-          user.firstName?.toLowerCase().includes(query) ||
-          user.lastName?.toLowerCase().includes(query) ||
-          user.code?.toLowerCase().includes(query) ||
-          user.email?.toLowerCase().includes(query) ||
-          user.year?.toLowerCase().includes(query) ||
-          user.degree?.toLowerCase().includes(query) ||
-          degreeDisplay.toLowerCase().includes(query) ||
-          degreeDisplayEn.toLowerCase().includes(query) ||
-          user.courseName?.toLowerCase().includes(query) ||
-          (queryNoSpaces &&
-            user.courseName
-              ?.toLowerCase()
-              .replace(/\s/g, '')
-              .includes(queryNoSpaces)) ||
-          user.role?.toLowerCase().includes(query) ||
-          roleDisplay.toLowerCase().includes(query) ||
-          (user.enrollDate &&
-            formatThaiDate(user.enrollDate).toLowerCase().includes(query)) ||
-          (queryDigits && phoneDigits.includes(queryDigits)) ||
-          fullName.includes(query) ||
-          (queryNoSpaces && fullName.replace(/\s/g, '').includes(queryNoSpaces))
-        );
-      })
-      .map((user) => {
-        // Enrich user with courseName if courseId exists but courseName doesn't
-        if (user.courseId && !user.courseName) {
+  // Enrich users with courseName
+  const filterStudent = React.useMemo(
+    () =>
+      paginatedStudentsFromMap.map((user) => {
+        if (user.courseId) {
           const course = getCourseById(user.courseId);
           if (course) {
             return {
@@ -124,8 +136,9 @@ export const StudentTable = () => {
           }
         }
         return user;
-      });
-  }, [userMap, searchQuery, getCourseById, titleMap]);
+      }),
+    [paginatedStudentsFromMap, getCourseById],
+  );
 
   // Create course options for dropdown
   const courseOptions: SelectOption[] = allCourseId
@@ -136,7 +149,15 @@ export const StudentTable = () => {
     })
     .filter((option): option is SelectOption => option !== undefined);
 
-  const studentColumns = createStudentColumns(tColumn, tDegree, titleMap);
+  const allCourses = allCourseId.map((id) => courseMap[id]).filter(Boolean);
+
+  const studentColumns = createStudentColumns(
+    tColumn,
+    tDegree,
+    tUser,
+    titleMap,
+    locale,
+  );
 
   const [isEdit, setIsEdit] = React.useState<{
     isEditing: boolean;
@@ -148,20 +169,54 @@ export const StudentTable = () => {
   const [isDelete, setIsDelete] = React.useState<{
     isDeleting: boolean;
     userIds?: string[];
+    progressCount: number;
   }>({
     isDeleting: false,
+    progressCount: 0,
   });
 
-  // Progress deletion warning state
-  const [progressDeleteState, setProgressDeleteState] = React.useState<{
-    isOpen: boolean;
-    userIds: string[] | null;
-    count: number;
-  }>({
-    isOpen: false,
-    userIds: null,
-    count: 0,
-  });
+  const getDeleteDescription = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return '';
+    }
+
+    if (isDelete.userIds.length === 1) {
+      return tUser('dialog.confirm_delete_user_with_progress', {
+        count: isDelete.userIds.length,
+      });
+    } else {
+      return tUser('dialog.delete-users-with-progress-description', {
+        count: isDelete.userIds.length,
+        progressCount: isDelete.progressCount,
+      });
+    }
+  };
+
+  const getConfirmText = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return '';
+    }
+
+    if (isDelete.userIds.length === 1) {
+      const user = getUserById(isDelete.userIds[0]);
+      return user ? user.code || user.firstName : 'DELETE USER';
+    } else {
+      return 'DELETE SELECTED USERS';
+    }
+  };
+
+  const getWarningText = () => {
+    if (!isDelete.userIds || isDelete.userIds.length === 0) {
+      return undefined;
+    }
+
+    if (isDelete.userIds.length > 1) {
+      return tUser('dialog.warning-delete-users-with-progress', {
+        count: isDelete.userIds.length,
+        progressCount: isDelete.progressCount,
+      });
+    }
+  };
 
   const handleMultiDeleteClick = async (users: User[]) => {
     // In student table, everyone is a student, so we check all
@@ -175,52 +230,27 @@ export const StudentTable = () => {
         );
         totalProgressCount = counts.reduce((acc, curr) => acc + curr, 0);
 
-        if (totalProgressCount > 0) {
-          setProgressDeleteState({
-            isOpen: true,
-            userIds: users.map((u) => u.id),
-            count: totalProgressCount,
-          });
-          return;
-        }
+        setIsDelete({
+          isDeleting: true,
+          userIds: users.map((u) => u.id),
+          progressCount: totalProgressCount,
+        });
       } catch (error) {
         console.error('Error checking progress count:', error);
       }
     }
-
-    // Normal multi-delete flow
-    setIsDelete({ isDeleting: true, userIds: users.map((u) => u.id) });
   };
 
   const handleDeleteClick = async (userId: string) => {
     try {
       const count = await getStudentProgressCount(userId);
-      if (count > 0) {
-        setProgressDeleteState({
-          isOpen: true,
-          userIds: [userId],
-          count: count,
-        });
-        return;
-      }
+      setIsDelete({
+        isDeleting: true,
+        userIds: [userId],
+        progressCount: count,
+      });
     } catch (error) {
       console.error('Error checking progress count:', error);
-    }
-
-    // Normal delete flow
-    setIsDelete({ isDeleting: true, userIds: [userId] });
-  };
-
-  const handleConfirmProgressDelete = async () => {
-    if (progressDeleteState.userIds && progressDeleteState.userIds.length > 0) {
-      if (progressDeleteState.userIds.length === 1) {
-        await deleteExistingUser(progressDeleteState.userIds[0]);
-        toast.success(t('toast.deleted-successfully'));
-      } else {
-        await deleteExistingUsers(progressDeleteState.userIds);
-        toast.success(t('toast.deleted-multiple-successfully'));
-      }
-      setProgressDeleteState({ isOpen: false, userIds: null, count: 0 });
     }
   };
 
@@ -230,32 +260,77 @@ export const StudentTable = () => {
     try {
       if (isDelete.userIds.length === 1) {
         await deleteExistingUser(isDelete.userIds[0]);
-        toast.success(t('toast.deleted-successfully'));
+        toast.success(tUser('toast.deleted-successfully'));
       } else {
         await deleteExistingUsers(isDelete.userIds);
-        toast.success(t('toast.deleted-multiple-successfully'));
+        toast.success(tUser('toast.deleted-multiple-successfully'));
       }
-      setIsDelete({ isDeleting: false, userIds: undefined });
+      refreshData();
+      // Refresh title usage status after user deletion
+      fetchTitlesUsage();
+      setIsDelete({ isDeleting: false, userIds: undefined, progressCount: 0 });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
       // Parse error message and translate if it's a known error code
-      let errorMessage = t('toast.delete-failed');
+      let errorMessage = tUser('toast.delete-failed');
       if (typeof error === 'string') {
         try {
           const parsed = JSON.parse(error);
           if (parsed.code === 'MILESTONE_PROGRESS_EXISTS') {
-            errorMessage = t('toast.milestone-progress-exists', {
+            errorMessage = tUser('toast.milestone-progress-exists', {
               count: parsed.count,
             });
           }
         } catch {
           // Not JSON, use as-is or fallback
-          errorMessage = error || t('toast.delete-failed');
+          errorMessage = error || tUser('toast.delete-failed');
         }
       }
       toast.error(errorMessage);
     }
   };
+
+  // Memoize search handler
+  const onSearchChange = React.useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+      setStudentPage(1);
+    },
+    [setSearchQuery, setStudentPage],
+  );
+
+  const handlePageChange = React.useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      setStudentPage(page);
+    },
+    [setStudentPage],
+  );
+
+  const handlePageSizeChange = React.useCallback(
+    (pageSize: number) => {
+      setCurrentPageSize(pageSize);
+      setCurrentPage(1);
+      setStudentPageSize(pageSize);
+    },
+    [setStudentPageSize],
+  );
+
+  const handleSortChange = React.useCallback(
+    (sortBy: string | undefined, sortOrder: 'asc' | 'desc' | undefined) => {
+      setCurrentSortBy(sortBy);
+      setCurrentSortOrder(sortOrder);
+      setCurrentPage(1);
+      setStudentPage(1);
+    },
+    [setStudentPage],
+  );
+
+  // Memoize refresh function
+  const refreshData = React.useCallback(() => {
+    mutate();
+  }, [mutate]);
 
   return (
     <>
@@ -263,7 +338,7 @@ export const StudentTable = () => {
         columns={studentColumns}
         data={filterStudent}
         searchQuery={searchQuery}
-        onSearch={setSearchQuery}
+        onSearch={onSearchChange}
         onAdd={() => setIsAdd(true)}
         onEdit={(user) => {
           setIsEdit({ isEditing: true, user: user });
@@ -274,73 +349,57 @@ export const StudentTable = () => {
         onMultiDelete={(users) => {
           handleMultiDeleteClick(users);
         }}
+        onImport={onImport}
+        buttonImportLabel={importLabel}
+        isLoading={loader || storeAction !== 'none'}
+        manualPagination={true}
+        manualSorting={true}
+        onSortChange={handleSortChange}
+        page={currentPage}
+        pageSize={currentPageSize}
+        rowCount={studentPagination.total}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
       />
       <CreateUserFormDialog
         open={isAdd}
         onOpenChange={setIsAdd}
         courseOptions={courseOptions}
+        allCourses={allCourses}
         defaultRole="student"
+        onUserCreated={refreshData}
       />
       <UpdateUserFormDialog
         open={isEdit.isEditing}
         onOpenChange={(open) =>
           setIsEdit({ isEditing: open, user: isEdit.user })
         }
+        allCourses={allCourses}
         user={isEdit.user}
         courseOptions={courseOptions}
+        onUserUpdated={() => fetchTitlesUsage()}
       />
-      <DeleteConfirmationDialog
+      <DeleteTextConfirmationDialog
         open={isDelete.isDeleting}
-        onClose={() => setIsDelete({ isDeleting: false, userIds: undefined })}
-        onConfirm={onConfirmDelete}
-        isLoading={storeAction === 'deleting'}
-        title={
-          isDelete.userIds?.length === 1
-            ? 'delete-user-title'
-            : 'delete-users-title'
-        }
-        description={
-          (isDelete.userIds?.length || 0) === 1
-            ? 'delete-user-description'
-            : 'delete-users-description'
-        }
-        translationKey="user"
-        count={isDelete.userIds?.length || 0}
-      />
-
-      <AlertDialog
-        open={progressDeleteState.isOpen}
         onOpenChange={(open) => {
-          if (!open)
-            setProgressDeleteState((prev) => ({ ...prev, isOpen: false }));
+          if (!open) {
+            setIsDelete({
+              isDeleting: false,
+              userIds: undefined,
+              progressCount: 0,
+            });
+          }
         }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCommon('confirm')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('dialog.confirm_delete_user_with_progress', {
-                count: progressDeleteState.count,
-              })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() =>
-                setProgressDeleteState((prev) => ({ ...prev, isOpen: false }))
-              }
-            >
-              {tCommon('cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmProgressDelete}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-            >
-              {tCommon('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onConfirm={onConfirmDelete}
+        title={tUser('delete-user-title')}
+        description={getDeleteDescription()}
+        confirmText={getConfirmText()}
+        isLoading={storeAction === 'deleting'}
+        destructiveButtonText={tCommon('delete')}
+        cancelButtonText={tCommon('cancel')}
+        warningText={getWarningText()}
+        minWidth="min-w-[680px]"
+      />
     </>
   );
 };

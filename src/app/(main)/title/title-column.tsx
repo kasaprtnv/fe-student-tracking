@@ -1,4 +1,4 @@
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 import { ITitle } from '@/types/title';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -10,7 +10,15 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type ColumnActions = {
   onEdit?: (record: ITitle) => void;
@@ -19,32 +27,77 @@ type ColumnActions = {
   t?: (key: string) => string;
 };
 
-export const createTitleColumns = (): ColumnDef<ITitle>[] => {
+export const createTitleColumns = (
+  locale: string = 'th',
+): ColumnDef<ITitle>[] => {
   const columns: ColumnDef<ITitle>[] = [
     {
       accessorKey: 'name',
-      header: 'name',
+      header: 'title-name',
+      sortingFn: mixedThEnTextSort<ITitle>(),
     },
     {
       accessorKey: 'description',
-      header: 'description',
+      header: 'title-description',
+      sortingFn: mixedThEnTextSort<ITitle>(),
+      cell: (info) => {
+        const description = info.getValue<string>();
+        const isShowTooltip = description && description.length > 100;
+        return (
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="max-w-[300px] truncate">{description || '-'}</div>
+            </TooltipTrigger>
+            {isShowTooltip && (
+              <TooltipContent className="max-w-[250px] break-all">
+                <span>{description}</span>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
+    },
+    {
+      accessorKey: 'isInUse',
+      header: 'is_used',
+      cell: ({ row, table }) => {
+        const isInUse = row.original.isInUse;
+        const { t } = table.options.meta as ColumnActions;
+
+        return (
+          <Badge
+            className={cn(
+              'px-2 py-0.5 text-xs',
+              isInUse
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800',
+            )}
+          >
+            {isInUse ? t?.('yes') : t?.('no')}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: 'createdAt',
       header: 'created_at',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+      sortingFn: 'datetime',
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+      sortingFn: 'datetime',
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
   ];
@@ -83,9 +136,18 @@ export const createTitleColumns = (): ColumnDef<ITitle>[] => {
             )}
 
             {onDelete && (
-              <DropdownMenuItem onSelect={() => onDelete(record.id)}>
+              <DropdownMenuItem
+                onSelect={() => onDelete(record.id)}
+                disabled={record.isInUse}
+                className={
+                  record.isInUse ? 'cursor-not-allowed opacity-50' : ''
+                }
+              >
                 <div className="flex items-center gap-2">
-                  <Trash2 size={14} color="#e7000b" />
+                  <Trash2
+                    size={14}
+                    color={record.isInUse ? '#999' : '#e7000b'}
+                  />
                   {t?.('delete')}
                 </div>
               </DropdownMenuItem>

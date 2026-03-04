@@ -8,6 +8,7 @@ import {
   createTitle,
   updateTitle,
   deleteTitle,
+  fetchAllTitlesUsage,
 } from '@/store/title/title.thunks';
 
 import {
@@ -70,6 +71,42 @@ export const useTitle = () => {
     [dispatch],
   );
 
+  // Check if title is in use
+  const checkTitleInUse = useCallback(async (id: string): Promise<boolean> => {
+    try {
+      const { titleService } = await import('@/services/title.service');
+      return await titleService.checkTitleInUse(id);
+    } catch (error) {
+      console.error('Error checking title usage:', error);
+      throw error;
+    }
+  }, []);
+
+  // Fetch all titles usage status
+  const fetchTitlesUsage = useCallback(async () => {
+    try {
+      const titleIds = Object.keys(titleMap);
+      if (titleIds.length === 0) return {};
+      return await dispatch(fetchAllTitlesUsage(titleIds)).unwrap();
+    } catch {
+      // Silently fail if API doesn't exist
+      return {};
+    }
+  }, [dispatch, titleMap]);
+
+  // Fetch all titles with usage status
+  const fetchAllTitlesWithUsage = useCallback(async () => {
+    const titlesResponse = await dispatch(fetchTitles()).unwrap();
+    try {
+      const titleIds = titlesResponse.data?.map((t: ITitle) => t.id) || [];
+      if (titleIds.length > 0) {
+        await dispatch(fetchAllTitlesUsage(titleIds)).unwrap();
+      }
+    } catch {
+      // Silently fail if API doesn't exist
+    }
+  }, [dispatch]);
+
   // UI actions
   const setSearch = useCallback(
     (query: string) => {
@@ -97,10 +134,13 @@ export const useTitle = () => {
 
     // Actions
     fetchAllTitles,
+    fetchAllTitlesWithUsage,
+    fetchTitlesUsage,
     fetchTitleDetails,
     createNewTitle,
     updateExistingTitle,
     removeTitle,
+    checkTitleInUse,
     setSearch,
     clearErr,
   };

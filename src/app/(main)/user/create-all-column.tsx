@@ -1,4 +1,3 @@
-import { formatThaiDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { User } from '@/types/user';
 import { ITitle } from '@/types/title';
@@ -12,6 +11,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface ColumnActions {
   onEdit?: (data: User) => void;
@@ -23,13 +25,14 @@ interface ColumnActions {
 
 export const createAllStudentColumns = (
   t: (key: string) => string,
-  tDegree: (key: string) => string,
+  tUser: (key: string) => string,
   tRole: (key: string) => string,
   titleMap: Record<string, ITitle>,
 ): ColumnDef<User>[] => {
   const columns: ColumnDef<User>[] = [
     {
       header: t('full-name'),
+      sortingFn: mixedThEnTextSort<User>(),
       accessorFn: (row) => {
         const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
         const firstName = row.firstName || '';
@@ -41,11 +44,17 @@ export const createAllStudentColumns = (
     {
       header: t('email'),
       accessorKey: 'email',
+      sortingFn: 'alphanumeric',
       cell: ({ row }) => row.original.email || '-',
     },
     {
       header: t('phone'),
       accessorKey: 'phone',
+      sortingFn: (rowA, rowB, columnId) => {
+        const a = String(rowA.getValue(columnId) ?? '').replace(/\D/g, '');
+        const b = String(rowB.getValue(columnId) ?? '').replace(/\D/g, '');
+        return a.localeCompare(b);
+      },
       cell: ({ row }) => formatPhoneNumber(row.original.phone),
     },
     {
@@ -60,6 +69,28 @@ export const createAllStudentColumns = (
           admin: tRole('admin'),
         };
         return roleMap[role] || role;
+      },
+    },
+    {
+      header: t('status'),
+      accessorKey: 'isActive',
+      cell: ({ row }) => {
+        const record = row.original;
+
+        return (
+          <div className="flex w-[110px] items-center justify-center">
+            <Badge
+              className={cn(
+                'px-2 py-0.5 text-xs',
+                record.isActive
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800',
+              )}
+            >
+              {record.isActive ? tUser?.('active') : tUser?.('inactive')}
+            </Badge>
+          </div>
+        );
       },
     },
   ];

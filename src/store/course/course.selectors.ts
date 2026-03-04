@@ -11,6 +11,17 @@ export const selectCourseMap = (state: RootState) => state.courses.courseMap;
 export const selectSearchQuery = (state: RootState) =>
   state.courses.searchQuery;
 
+export const selectPagination = (state: RootState) => state.courses.pagination;
+
+export const selectPaginationPage = (state: RootState) =>
+  state.courses.pagination.page;
+
+export const selectPaginationPageSize = (state: RootState) =>
+  state.courses.pagination.pageSize;
+
+export const selectPaginationTotal = (state: RootState) =>
+  state.courses.pagination.total;
+
 // ============================
 // Memoized Selectors
 // ============================
@@ -27,8 +38,11 @@ export const selectFilteredCoursesId = createSelector(
     const filtered = courses
       .filter(
         (course) =>
+          course.code?.toLowerCase().includes(lowerSearchQuery) ||
           course.name?.toLowerCase().includes(lowerSearchQuery) ||
-          course.description?.toLowerCase().includes(lowerSearchQuery),
+          course.description?.toLowerCase().includes(lowerSearchQuery) ||
+          course.degreeTH?.toLowerCase().includes(lowerSearchQuery) ||
+          course.degreeEN?.toLowerCase().includes(lowerSearchQuery),
       )
       .map((course) => course.id);
     return filtered;
@@ -42,5 +56,12 @@ export const selectAllCourseId = createSelector(
       a.name.localeCompare(b.name),
     );
     return sortedCourses.map((course) => course.id);
+  },
+);
+
+export const selectAllCoursesFromMap = createSelector(
+  [selectCourseMap],
+  (courseMap) => {
+    return Object.values(courseMap);
   },
 );

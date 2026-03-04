@@ -11,6 +11,13 @@ import {
 import { Ellipsis, Pencil, Trash2, NotebookPen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { formatShortDate } from '@/lib/format-date';
 
 interface ColumnActions {
   onEdit?: (data: IMilestone) => void;
@@ -20,44 +27,66 @@ interface ColumnActions {
   t?: (key: string) => string;
 }
 
-const formatDate = (date?: string | Date) => {
-  if (!date) return '-';
-  return new Intl.DateTimeFormat('th-TH', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(new Date(date));
-};
-
-export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
+export const createMilestoneColumns = (
+  locale: string = 'th',
+): ColumnDef<IMilestone>[] => {
   const columns: ColumnDef<IMilestone>[] = [
     {
       accessorKey: 'name',
-      header: 'name',
+      header: 'milestone-name',
+      sortingFn: mixedThEnTextSort<IMilestone>(),
     },
     {
       accessorKey: 'description',
-      header: 'description',
+      header: 'milestone-description',
+      sortingFn: mixedThEnTextSort<IMilestone>(),
+      cell: (info) => {
+        const description = info.getValue<string>();
+        const isShowTooltip = description && description.length > 100;
+        return (
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="max-w-[300px] truncate">{description || '-'}</div>
+            </TooltipTrigger>
+            {isShowTooltip && (
+              <TooltipContent className="max-w-[250px] break-all">
+                <span>{description}</span>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
     },
-    {
-      accessorKey: 'dayPeriod',
-      header: 'day-period',
-    },
+    // {
+    //   accessorKey: 'dayPeriod',
+    //   header: 'day-period',
+    // },
     {
       accessorKey: 'createdAt',
       header: 'created_at',
-      cell: ({ row }) => formatDate(row.original.createdAt),
+      sortingFn: 'datetime',
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
+      },
     },
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
-      cell: ({ row }) => formatDate(row.original.updatedAt),
+      sortingFn: 'datetime',
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
+      },
     },
-    {
-      accessorKey: 'notifyBeforeDays',
-      header: 'notify-before-days',
-    },
-
+    // {
+    //   accessorKey: 'notifyBeforeDays',
+    //   header: 'notify-before-days',
+    // },
     {
       accessorKey: 'isUsed',
       header: 'is_used',
@@ -68,6 +97,12 @@ export const createMilestoneColumns = (): ColumnDef<IMilestone>[] => {
         const { t } = table.options.meta as {
           t: (key: string) => string;
         };
+
+        if (typeof record.isUsed !== 'boolean') {
+          return (
+            <div className="flex w-[110px] items-center justify-center">-</div>
+          );
+        }
 
         return (
           <div className="flex w-[110px] items-center justify-center">

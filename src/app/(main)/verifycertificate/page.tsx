@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -15,6 +15,8 @@ import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { studentStepProgressService } from '@/services/student-step-progress.service';
+import { courseStaffService } from '@/services/course-staff.service';
+import { courseService } from '@/services/course.service';
 import { IStudentStepProgress } from '@/types/student-step-progress';
 import { PageHeader } from '@/components/page-header';
 import { useAuth } from '@/hooks/use-auth';
@@ -25,6 +27,7 @@ export default function VerifyCertificatePage() {
   const t = useTranslations('verify-certificate');
   const router = useRouter();
   const { user, initialized } = useAuth();
+  const locale = useLocale();
 
   useEffect(() => {
     if (!initialized) return;
@@ -34,12 +37,45 @@ export default function VerifyCertificatePage() {
   }, [user, initialized, router]);
 
   const [data, setData] = useState<IStudentStepProgress[]>([]);
+  const [managedCourseIds, setManagedCourseIds] = useState<string[]>([]);
+  const [managedCourseCodes, setManagedCourseCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  // Only show pending approval status
-  const [statusFilter, setStatusFilter] = useState<string>('pending approval');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
+  // Fetch teacher's managed courses
+  useEffect(() => {
+    const fetchManagedCourses = async () => {
+      if (!user?.id || user.role === 'admin') return;
+
+      try {
+        const response = await courseStaffService.getCourseStaffByUserId(
+          user.id,
+        );
+        const courseIds = (response.data || []).map((cs) => cs.courseId);
+        setManagedCourseIds(courseIds);
+
+        // ดึง all courses แล้ว filter เฉพาะที่ดูแล เพื่อเอา courseCode
+        if (courseIds.length > 0) {
+          const allCoursesRes = await courseService.getAllCourses();
+          const allCourses = allCoursesRes.data || [];
+          const codes = allCourses
+            .filter((c) => courseIds.includes(c.id))
+            .map((c) => c.code);
+          setManagedCourseCodes(codes);
+        }
+      } catch (error) {
+        console.error('Error fetching managed courses:', error);
+        setManagedCourseIds([]);
+        setManagedCourseCodes([]);
+      }
+    };
+
+    if (initialized && user) {
+      fetchManagedCourses();
+    }
+  }, [user, initialized]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -63,6 +99,29 @@ export default function VerifyCertificatePage() {
   // Filter and sort data
   const displayData = useMemo(() => {
     const filtered = data.filter((item) => {
+      // Filter by teacher's managed courses (skip for admin)
+      if (user?.role === 'teacher') {
+        // If teacher doesn't manage any course, don't show anything
+        if (managedCourseIds.length === 0 && managedCourseCodes.length === 0) {
+          return false;
+        }
+
+        // Check if student's course matches teacher's managed courses
+        const studentCourseId = item.student?.courseId;
+        const studentCourseCode =
+          item.courseCode || item.student?.courseCode || '';
+
+        // Match by courseId OR courseCode
+        const matchesByCourseId =
+          studentCourseId && managedCourseIds.includes(studentCourseId);
+        const matchesByCourseCode =
+          studentCourseCode && managedCourseCodes.includes(studentCourseCode);
+
+        if (!matchesByCourseId && !matchesByCourseCode) {
+          return false;
+        }
+      }
+
       const studentCode = item.studentCode || item.student?.code || '';
       const studentName =
         item.studentName ||
@@ -108,7 +167,15 @@ export default function VerifyCertificatePage() {
       const dateB = b.submittedAt ? new Date(b.submittedAt).getTime() : 0;
       return dateB - dateA;
     });
-  }, [data, searchQuery, startDate, endDate]);
+  }, [
+    data,
+    searchQuery,
+    startDate,
+    endDate,
+    user,
+    managedCourseIds,
+    managedCourseCodes,
+  ]);
 
   const handleView = useCallback(
     (id: string) => {
@@ -118,8 +185,8 @@ export default function VerifyCertificatePage() {
   );
 
   const columns = useMemo(
-    () => createVerifyColumns(t, handleView),
-    [t, handleView],
+    () => createVerifyColumns(t, handleView, locale),
+    [t, handleView, locale],
   );
 
   if (loading) {
@@ -136,9 +203,10 @@ export default function VerifyCertificatePage() {
       <PageHeader
         breadcrumbs={[{ label: t('breadcrumb.verify'), isPage: true }]}
       />
-      <div className="container mx-auto pt-2 pb-8">
+      <div className="container mx-auto py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('description')}</p>
         </div>
 
         <DataTableClickable
@@ -147,6 +215,7 @@ export default function VerifyCertificatePage() {
           onSearch={setSearchQuery}
           searchQuery={searchQuery}
           enabledPagination={true}
+          enabledMultiSelect={false}
           extraToolbarAction={() => (
             <div className="flex items-center gap-4">
               {/* Status dropdown removed, only date picker remains */}
@@ -179,31 +248,21 @@ export default function VerifyCertificatePage() {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="end">
-                  <div className="flex">
-                    <div className="border-r p-2">
-                      <p className="mb-2 text-center text-sm font-medium">
-                        {t('filter.start_date')}
-                      </p>
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={setStartDate}
-                        initialFocus
-                      />
-                    </div>
-                    <div className="p-2">
-                      <p className="mb-2 text-center text-sm font-medium">
-                        {t('filter.end_date')}
-                      </p>
-                      <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={setEndDate}
-                        disabled={(date) =>
-                          startDate ? date < startDate : false
-                        }
-                      />
-                    </div>
+                  <div className="p-2">
+                    <Calendar
+                      mode="range"
+                      selected={
+                        startDate || endDate
+                          ? { from: startDate, to: endDate }
+                          : undefined
+                      }
+                      onSelect={(range) => {
+                        setStartDate(range?.from);
+                        setEndDate(range?.to);
+                      }}
+                      numberOfMonths={1}
+                      initialFocus
+                    />
                   </div>
                   {(startDate || endDate) && (
                     <div className="border-t p-2">

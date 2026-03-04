@@ -5,8 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Upload } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { useAuth } from '@/hooks/use-auth';
 import { TeacherTable } from './teacher-table';
@@ -15,6 +13,7 @@ import { AllTable } from './all-table';
 import { PageHeader } from '../../../components/page-header';
 import { ImportUsersDialog } from './import-users-dialog';
 import { useCourse } from '@/hooks/use-course';
+import { useTitle } from '@/hooks/use-title';
 
 const UserPage = () => {
   const t = useTranslations('user-page');
@@ -23,6 +22,7 @@ const UserPage = () => {
   const { user, initialized } = useAuth();
   const { fetchAllUsers } = useUser();
   const { fetchAllCourses } = useCourse();
+  const { fetchAllTitles } = useTitle();
   const [isImportOpen, setIsImportOpen] = React.useState(false);
 
   // Get the tab from query params, default to 'all'
@@ -36,10 +36,10 @@ const UserPage = () => {
   }, [user, initialized, router]);
 
   useSWR(
-    'fetch-users',
+    'fetch-users-base-data',
     async () => {
       await fetchAllCourses();
-      await fetchAllUsers();
+      await fetchAllTitles();
     },
     {
       revalidateOnFocus: false,
@@ -47,9 +47,10 @@ const UserPage = () => {
   );
 
   const handleImportSuccess = async () => {
-    // Refresh user list and courses after successful import
+    // Refresh user list, courses, and titles after successful import
     await fetchAllUsers();
     await fetchAllCourses();
+    await fetchAllTitles();
 
     // Dispatch event to notify tables to refetch their data
     window.dispatchEvent(new Event('user-imported'));
@@ -60,6 +61,10 @@ const UserPage = () => {
     return null;
   }
 
+  const onImport = () => {
+    setIsImportOpen(true);
+  };
+
   return (
     <>
       <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
@@ -69,10 +74,6 @@ const UserPage = () => {
             <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
             <p className="text-muted-foreground">{t('description')}</p>
           </div>
-          <Button onClick={() => setIsImportOpen(true)}>
-            <Upload className="mr-2 h-4 w-4" />
-            {t('import-button')}
-          </Button>
         </div>
 
         <Tabs defaultValue={defaultTab} className="w-full space-y-4">
@@ -82,13 +83,13 @@ const UserPage = () => {
             <TabsTrigger value="teachers">{t('tabs.teachers')}</TabsTrigger>
           </TabsList>
           <TabsContent value="all">
-            <AllTable />
+            <AllTable onImport={onImport} importLabel="import-users" />
           </TabsContent>
           <TabsContent value="students">
-            <StudentTable />
+            <StudentTable onImport={onImport} importLabel="import-users" />
           </TabsContent>
           <TabsContent value="teachers">
-            <TeacherTable />
+            <TeacherTable onImport={onImport} importLabel="import-users" />
           </TabsContent>
         </Tabs>
       </div>

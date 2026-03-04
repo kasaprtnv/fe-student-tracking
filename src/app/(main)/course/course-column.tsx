@@ -16,7 +16,8 @@ import {
 } from '@/components/ui/tooltip';
 import { getAvatarFallbackName } from '@/lib/avatar-fallback-name';
 // import { Switch } from '@/components/ui/switch';
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
+import { mixedThEnTextSort } from '@/lib/table-sorted';
 import { cn } from '@/lib/utils';
 import { ICourse } from '@/types/course';
 import { User } from '@/types/user';
@@ -33,31 +34,34 @@ interface ColumnActions {
 
 export const createCourseColumns = (
   tDegree: (key: string) => string,
+  locale: string = 'th',
 ): ColumnDef<ICourse>[] => {
   const columns: ColumnDef<ICourse>[] = [
     {
       accessorKey: 'code',
-      header: 'code',
+      header: 'course-code',
+      sortingFn: mixedThEnTextSort<ICourse>(),
     },
     {
       accessorKey: 'name',
-      header: 'name',
+      header: 'course-name',
+      sortingFn: mixedThEnTextSort<ICourse>(),
     },
     {
       accessorKey: 'description',
-      header: 'description',
+      header: 'course-description',
+      sortingFn: mixedThEnTextSort<ICourse>(),
+
       cell: (info) => {
         const description = info.getValue<string>();
         const isShowTooltip = description && description.length > 100;
         return (
           <Tooltip>
             <TooltipTrigger>
-              <span className="max-w-[200px] truncate">
-                {description || '-'}
-              </span>
+              <div className="max-w-[300px] truncate">{description || '-'}</div>
             </TooltipTrigger>
             {isShowTooltip && (
-              <TooltipContent>
+              <TooltipContent className="max-w-[250px] break-all">
                 <span>{description}</span>
               </TooltipContent>
             )}
@@ -67,21 +71,25 @@ export const createCourseColumns = (
     },
     {
       accessorKey: 'users',
-      header: 'staff',
+      enableSorting: false,
+      header: 'course-staff',
       cell: (info) => {
         const users = info.getValue<User[] | undefined>();
+        const sortedUser = users?.sort((a, b) =>
+          a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase()),
+        );
         return (
           <div className="flex items-center gap-2">
-            {users && users.length > 0 ? (
+            {sortedUser && sortedUser.length > 0 ? (
               <AvatarGroup max={3} className="align-start">
-                {users.map((user) => (
+                {sortedUser.map((user) => (
                   <Avatar
                     key={user.id}
                     className="-ml-2 cursor-pointer first:ml-0"
                     title={`${user.firstName} ${user.lastName || ''}`}
                   >
                     <AvatarImage
-                      src={'https://github.com/shadcn.png'}
+                      src={user.profileImageUrl}
                       alt={user.firstName}
                     />
                     <AvatarFallback className="bg-indigo-500 text-white">
@@ -116,27 +124,32 @@ export const createCourseColumns = (
     {
       accessorKey: 'createdAt',
       header: 'created_at',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+      sortingFn: 'datetime',
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
     {
       accessorKey: 'updatedAt',
       header: 'updated_at',
-      cell: (info) => {
-        const rawDate = info.getValue<string>();
-        const localString = formatThaiDate(rawDate);
-        return <span>{localString}</span>;
+      sortingFn: 'datetime',
+      cell: (row) => {
+        const rawDate = row.getValue<string>();
+        if (!rawDate) return <span>-</span>;
+        const localString = formatShortDate(rawDate, locale);
+        return localString;
       },
     },
     {
       accessorKey: 'isUsed',
       header: 'is_used',
       size: 110,
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
         const record = row.original;
+        const { t } = table.options.meta as ColumnActions;
 
         return (
           <div className="flex w-[110px] items-center justify-center">
@@ -148,7 +161,7 @@ export const createCourseColumns = (
                   : 'bg-red-100 text-red-800',
               )}
             >
-              {record.isUsed ? 'Yes' : 'No'}
+              {record.isUsed ? t?.('yes') : t?.('no')}
             </Badge>
           </div>
         );
@@ -219,6 +232,5 @@ export const createCourseColumns = (
       );
     },
   });
-
   return columns;
 };

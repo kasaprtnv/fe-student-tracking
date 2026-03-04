@@ -16,6 +16,7 @@ export interface AttachmentDTO {
   isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  attemptId?: string; // รหัส attempt ที่ attachment นี้ถูกอัปโหลด
 }
 
 export interface UploadResponse {
@@ -125,6 +126,59 @@ class UploadService extends APIService {
     }
     return [];
   }
+
+  // ดึง attachments ตาม attemptId (เฉพาะรอบที่ระบุ)
+  async getAttachmentsByAttemptId(attemptId: string): Promise<AttachmentDTO[]> {
+    try {
+      const response = await this.get(`/attachment/attempt/${attemptId}`);
+      if (Array.isArray(response)) {
+        return response;
+      }
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+      if (response.data && Array.isArray(response.data.data)) {
+        return response.data.data;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  // ดึง attachments เฉพาะจากรอบที่ถูก approved
+  async getApprovedAttachmentsByProgress(
+    progressId: string,
+  ): Promise<AttachmentDTO[]> {
+    try {
+      const response = await this.get(
+        `/attachment/approved-progress/${progressId}`,
+      );
+      console.log(
+        'DEBUG getApprovedAttachmentsByProgress response:',
+        progressId,
+        response,
+      );
+      if (Array.isArray(response)) {
+        return response;
+      }
+      if (Array.isArray(response.data)) {
+        return response.data;
+      }
+      if (response.data && Array.isArray(response.data.data)) {
+        return response.data.data;
+      }
+      return [];
+    } catch (error) {
+      console.error(
+        'DEBUG getApprovedAttachmentsByProgress error:',
+        progressId,
+        error,
+      );
+      return [];
+    }
+  }
+
   // ดึง URL สำหรับดู/ดาวน์โหลดไฟล์
 
   getFileUrl(fileKey: string): string {
@@ -160,10 +214,10 @@ class UploadService extends APIService {
     }
   }
 
-  // ลบ attachment
+  // ลบ attachment (soft delete)
   async deleteAttachment(id: string): Promise<SubmitResponse> {
     try {
-      await this.delete(`/attachment/${id}`);
+      await this.patch(`/attachment/${id}/soft-delete`, {});
       return { success: true };
     } catch (error) {
       return {
@@ -174,9 +228,10 @@ class UploadService extends APIService {
   }
 
   // อัพโหลดไฟล์แนบสำหรับ staff (กรณีปฏิเสธพร้อมแนบไฟล์)
+  // รองรับทั้งไฟล์เดียวและหลายไฟล์
   async uploadStaffAttachment(
     stepId: string,
-    file: File,
+    fileOrFiles: File | File[],
     uploadedByUserId: string,
   ): Promise<UploadResponse> {
     if (!uploadedByUserId) {
@@ -188,11 +243,21 @@ class UploadService extends APIService {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
 
-      // ใช้ endpoint upload-by-step เหมือน attachment ปกติ
+      // รองรับทั้ง single file และ multiple files
+      if (Array.isArray(fileOrFiles)) {
+        // ส่งหลายไฟล์ใน request เดียว
+        for (const file of fileOrFiles) {
+          formData.append('files', file);
+        }
+      } else {
+        // ไฟล์เดียว
+        formData.append('files', fileOrFiles);
+      }
+
+      // ใช้ endpoint upload-multiple-by-step สำหรับส่งหลายไฟล์ในครั้งเดียว
       const response = await fetch(
-        `${API_BASE_URL}/attachment/upload-by-step?stepId=${stepId}&userId=${uploadedByUserId}`,
+        `${API_BASE_URL}/attachment/upload-multiple-by-step?stepId=${stepId}&userId=${uploadedByUserId}`,
         {
           method: 'POST',
           body: formData,

@@ -38,10 +38,12 @@ import React from 'react';
 interface UpdateMilestoneFormSheetProps
   extends React.ComponentPropsWithRef<typeof Dialog> {
   milestone?: IMilestone | null;
+  onSuccess?: () => void;
 }
 
 export function UpdateMilestoneFormSheet({
   milestone,
+  onSuccess,
   onOpenChange,
   ...props
 }: UpdateMilestoneFormSheetProps) {
@@ -104,13 +106,12 @@ export function UpdateMilestoneFormSheet({
 
       toast.success(t('toast.updated-successfully'));
       onOpenChange?.(false);
+      onSuccess?.();
     } catch (error) {
       console.error('Failed to update milestone:', error);
       toast.error(t('toast.update-failed'));
     }
   };
-  const dayPeriod = form.watch('dayPeriod');
-  const notifyBeforeDays = form.watch('notifyBeforeDays');
 
   return (
     <Dialog {...props} onOpenChange={(open) => onOpenChange?.(open)}>
@@ -172,7 +173,7 @@ export function UpdateMilestoneFormSheet({
             />
 
             {/* dayPeriod */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="dayPeriod"
               render={({ field }) => (
@@ -210,10 +211,10 @@ export function UpdateMilestoneFormSheet({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             {/* notifyBeforeDays */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="notifyBeforeDays"
               render={({ field }) => (
@@ -248,7 +249,7 @@ export function UpdateMilestoneFormSheet({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             {/* footer */}
             <DialogFooter>

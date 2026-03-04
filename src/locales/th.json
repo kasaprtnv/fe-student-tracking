@@ -4,10 +4,11 @@
     "welcomeMessage": "ยินดีต้อนรับสู่แอปพลิเคชันตัวติดตามนักเรียน!",
     "dashboard": "แดชบอร์ด",
     "graduateList": "รายชื่อบัณฑิต",
-    "userManagement": "ผู้ใช้งาน",
+    "userManagement": "จัดการผู้ใช้งาน",
     "studentReport": "รายงานบัณฑิต",
     "progressVerify": "ตรวจสอบหลักฐาน",
-    "mergeFiles": "รวมไฟล์",
+    "stepProgressReport": "รายงานความก้าวหน้า",
+    "mergeFiles": "ไฟล์หลักฐานที่อนุมัติ",
     "settings": "การตั้งค่า",
     "logout": "ออกจากระบบ"
   },
@@ -30,19 +31,23 @@
     "add": "เพิ่ม",
     "delete_selected": "เลือก {count} รายการ",
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
-    "select-milestone": "ไปยังขั้นตอนการศึกษา"
+    "select-milestone": "ไปยังขั้นตอนการศึกษา",
+    "import": "นำเข้าข้อมูล",
+    "import-users": "นำเข้าข้อมูล"
   },
   "column": {
     "name": "ชื่อ",
     "description": "คำอธิบาย",
+    "name-Milestone": "ชื่อขั้นตอนการศึกษา",
+    "description-Milestone": "คำอธิบายขั้นตอนการศึกษา",
     "courseId": "รหัสคอร์ส",
     "position": "ตำแหน่ง",
     "deadlineDate": "วันที่กำหนดส่ง",
     "Actions": "ตัวเลือก",
     "code": "รหัส",
-    "student-code": "รหัสนักศึกษา",
+    "student-code": "รหัสนิสิต",
     "is_active": "ใช้งานอยู่",
-    "is_used": "การใช้งาน",
+    "is_used": "สถานะการใช้งาน",
     "active": "ใช้งาน",
     "inactive": "ไม่ใช้งาน",
     "edit": "แก้ไข",
@@ -53,26 +58,38 @@
     "notify-receiver-email": "อีเมลแจ้งเตือน",
     "to-milestone-step": "ไปยังขั้นตอนการศึกษาย่อย",
     "select-milestone": "ไปยังขั้นตอนการศึกษา",
-    "created_at": "สร้างเมื่อ",
-    "updated_at": "อัปเดตเมื่อ",
+    "created_at": "วันที่เพิ่ม",
+    "updated_at": "วันที่แก้ไขล่าสุด",
     "full-name": "ชื่อ-นามสกุล",
     "email": "อีเมล",
-    "phone": "เบอร์โทร",
+    "phone": "เบอร์โทรศัพท์",
     "role": "บทบาท",
     "education-level": "ระดับการศึกษา",
     "year": "ปีการศึกษา",
-    "course-name": "ชื่อหลักสูตรที่ลงทะเบียน",
+    "enrolled-course-name": "หลักสูตรที่ลงทะเบียน",
     "enroll-date": "วันที่ลงทะเบียน",
     "course": "หลักสูตร",
     "academic-year": "ปีการศึกษา",
     "degree": "วุฒิการศึกษา",
     "study-plan": "แผนการเรียน",
     "managed-courses": "ดูแลหลักสูตร",
+    "course-staff": "ผู้ดูแลหลักสูตร",
     "teacher-degree": "วุฒิการศึกษา",
     "academic-position": "ตำแหน่งทางวิชาการ",
-    "graduated": "สำเร็จการศึกษา",
+    "major": "สาขาวิชา",
+    "graduated": "สถานะการศึกษา",
     "graduated-yes": "สำเร็จ",
-    "graduated-no": "ยังไม่สำเร็จ"
+    "graduated-no": "ยังไม่สำเร็จ",
+    "due-date": "กำหนดส่ง",
+    "status": "สถานะ",
+    "milestone-name": "ชื่อขั้นตอนการศึกษา",
+    "milestone-description": "คำอธิบายขั้นตอนการศึกษา",
+    "step-name": "ชื่อขั้นตอนการศึกษาย่อย",
+    "course-code": "รหัสหลักสูตร",
+    "course-name": "ชื่อหลักสูตร",
+    "course-description": "คำอธิบายหลักสูตร",
+    "title-name": "คำนำหน้า",
+    "title-description": "คำอธิบายคำนำหน้า"
   },
   "common": {
     "submit": "ส่ง",
@@ -87,8 +104,8 @@
   },
   "student-form": {
     "label": {
-      "student-id": "รหัสนักศึกษา",
-      "student-id-placeholder": "กรอกรหัสนักศึกษา",
+      "student-id": "รหัสนิสิต",
+      "student-id-placeholder": "กรอกรหัสนิสิต",
       "first-name": "ชื่อ",
       "first-name-placeholder": "กรอกชื่อ",
       "last-name": "นามสกุล",
@@ -97,7 +114,7 @@
       "degree-placeholder": "กรอกวุฒิการศึกษา"
     },
     "errors": {
-      "student-id-required": "กรุณากรอกรหัสนักศึกษา",
+      "student-id-required": "กรุณากรอกรหัสนิสิต",
       "first-name-required": "กรุณากรอกชื่อ",
       "first-name-min": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
       "first-name-max": "ชื่อต้องไม่เกิน 50 ตัวอักษร",
@@ -110,9 +127,17 @@
     }
   },
   "course": {
-    "title": "หลักสูตร",
-    "sub_title": "จัดการหลักสูตรของคุณที่นี่",
+    "title": "จัดการหลักสูตร",
+    "sub_title": "ใช้สำหรับเพิ่ม แก้ไข และลบหลักสูตรภายในระบบได้ที่นี่",
     "course-form": {
+      "header": {
+        "create": "เพิ่มหลักสูตร",
+        "edit": "แก้ไขหลักสูตร"
+      },
+      "header_description": {
+        "create": "กรอกข้อมูลเพื่อเพิ่มหลักสูตรใหม่ในระบบ",
+        "edit": "แก้ไขข้อมูลหลักสูตรผ่านแบบฟอร์มด้านล่าง"
+      },
       "errors": {
         "code-required": "กรุณากรอกรหัสหลักสูตร",
         "name-required": "กรุณากรอกชื่อหลักสูตร",
@@ -125,32 +150,25 @@
         "name": "ชื่อหลักสูตร",
         "description": "คำอธิบายหลักสูตร",
         "degree": "วุฒิการศึกษา",
-        "staffIds": "อาจารย์"
+        "staffIds": "ผู้ดูแลหลักสูตร"
       },
       "placeholder": {
         "code": "กรอกรหัสหลักสูตร",
         "name": "กรอกชื่อหลักสูตร",
         "description": "กรอกคำอธิบายหลักสูตร",
         "degree": "กรอกวุฒิการศึกษา",
-        "staffIds": "เลือกอาจารย์",
-        "search-staff": "ค้นหาอาจารย์...",
-        "no-staff-found": "ไม่พบอาจารย์"
+        "staffIds": "เลือกผู้ดูแลหลักสูตร",
+        "search-staff": "ค้นหาผู้ดูแลหลักสูตร...",
+        "no-staff-found": "ไม่พบผู้ดูแลหลักสูตร"
       },
       "toast": {
-        "created-successfully": "สร้างหลักสูตรสำเร็จ!",
-        "creation-failed": "ไม่สามารถสร้างหลักสูตรได้ กรุณาลองใหม่อีกครั้ง",
-        "updated-successfully": "อัปเดตหลักสูตรสำเร็จ!",
-        "update-failed": "ไม่สามารถอัปเดตหลักสูตรได้ กรุณาลองใหม่อีกครั้ง",
+        "created-successfully": "เพิ่มหลักสูตรสำเร็จ!",
+        "creation-failed": "ไม่สามารถเพิ่มหลักสูตรได้ กรุณาลองใหม่อีกครั้ง",
+        "updated-successfully": "แก้ไขหลักสูตรสำเร็จ!",
+        "update-failed": "ไม่สามารถแก้ไขหลักสูตรได้ กรุณาลองใหม่อีกครั้ง",
         "deleted-successfully": "ลบหลักสูตรสำเร็จ!",
-        "deletion-failed": "ไม่สามารถลบหลักสูตรได้ กรุณาลองใหม่อีกครั้ง"
-      },
-      "header": {
-        "create": "สร้างหลักสูตรใหม่",
-        "edit": "แก้ไขหลักสูตร"
-      },
-      "header_description": {
-        "create": "กรอกแบบฟอร์มด้านล่างเพื่อสร้างหลักสูตรใหม่",
-        "edit": "อัปเดตรายละเอียดหลักสูตรด้านล่าง"
+        "deletion-failed": "ไม่สามารถลบหลักสูตรได้ กรุณาลองใหม่อีกครั้ง",
+        "fetch_error": "ไม่สามารถดึงข้อมูลหลักสูตรได้ กรุณาลองใหม่อีกครั้ง"
       }
     },
     "delete": {
@@ -159,15 +177,15 @@
     }
   },
   "title": {
-    "page-title": "คำนำหน้า",
-    "sub_title": "จัดการคำนำหน้า",
+    "page-title": "จัดการคำนำหน้า",
+    "sub_title": "ใช้สำหรับเพิ่ม แก้ไข และลบคำนำหน้าภายในระบบได้ที่นี่",
     "title-form": {
       "errors": {
         "name-required": "กรุณากรอกชื่อคำนำหน้า",
         "name-duplicate": "ชื่อคำนำหน้านี้มีอยู่แล้ว"
       },
       "label": {
-        "name": "ชื่อคำนำหน้า",
+        "name": "คำนำหน้า",
         "description": "คำอธิบายคำนำหน้า"
       },
       "placeholder": {
@@ -175,20 +193,22 @@
         "description": "กรอกคำอธิบายคำนำหน้า"
       },
       "toast": {
-        "created-successfully": "สร้างคำนำหน้าสำเร็จ!",
+        "created-successfully": "เพิ่มคำนำหน้าสำเร็จ!",
         "creation-failed": "ไม่สามารถสร้างคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
-        "updated-successfully": "อัปเดตคำนำหน้าสำเร็จ!",
-        "update-failed": "ไม่สามารถอัปเดตคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
+        "updated-successfully": "แก้ไขคำนำหน้าสำเร็จ!",
+        "update-failed": "ไม่สามารถแก้ไขคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
         "deleted-successfully": "ลบคำนำหน้าสำเร็จ!",
-        "deletion-failed": "ไม่สามารถลบคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง"
+        "deletion-failed": "ไม่สามารถลบคำนำหน้าได้ กรุณาลองใหม่อีกครั้ง",
+        "cannot-delete-in-use": "ไม่สามารถลบคำนำหน้านี้ได้ เนื่องจากยังมีการใช้งานอยู่",
+        "delete-error": "เกิดข้อผิดพลาดในการตรวจสอบการใช้งานคำนำหน้า"
       },
       "header": {
-        "create": "สร้างคำนำหน้าใหม่",
+        "create": "เพิ่มคำนำหน้า",
         "edit": "แก้ไขคำนำหน้า"
       },
       "header_description": {
-        "create": "กรอกแบบฟอร์มด้านล่างเพื่อสร้างคำนำหน้าใหม่",
-        "edit": "อัปเดตรายละเอียดคำนำหน้าด้านล่าง"
+        "create": "กรอกข้อมูลเพื่อเพิ่มคำนำหน้า",
+        "edit": "แก้ไขข้อมูลคำนำหน้าผ่านแบบฟอร์มด้านล่าง"
       }
     },
     "delete": {
@@ -199,11 +219,12 @@
   "profile": {
     "personal_information": {
       "title": "รายละเอียดข้อมูลส่วนตัว",
+      "personal_information_title": "ข้อมูลส่วนตัว",
       "name": "ชื่อ-นามสกุล",
       "email": "อีเมล",
       "phone": "เบอร์โทรศัพท์",
       "year": "ปีที่เข้าศึกษา",
-      "student_id": "รหัสนักศึกษา",
+      "student_id": "รหัสนิสิต",
       "major": "สาขาวิชา",
       "faculty": "คณะ",
       "course": "หลักสูตร",
@@ -212,24 +233,41 @@
       "degree": "วุฒิการศึกษา",
       "polsci-law": "รัฐศาสตร์และนิติศาสตร์"
     },
+    "change_password": {
+      "title": "ความปลอดภัย",
+      "current_password": "รหัสผ่านปัจจุบัน",
+      "new_password": "รหัสผ่านใหม่",
+      "confirm_new_password": "ยืนยันรหัสผ่านใหม่",
+      "success": "เปลี่ยนรหัสผ่านสำเร็จ"
+    },
     "progress_title": "ความคืบหน้าของนักศึกษา",
     "contact_admin": "โปรดติดต่อเจ้าหน้าที่เพื่อลงทะเบียนหลักสูตร"
   },
   "milestone-progress": {
+    "dayperiod": "ระยะเวลา",
+    "deadline": "กำหนดส่ง",
+    "NotifyBefore": "แจ้งเตือนก่อน",
+    "day": "วัน",
+    "unlock_conditions": "เงื่อนไขการปลดล็อก",
     "completed": "อนุมัติ",
     "pending": "รอตรวจสอบ",
     "declined": "ไม่อนุมัติ",
-    "locked": "ไม่สามารถทำได้",
-    "upload_button": "อัปโหลดไฟล์",
+    "deadline_date": "วันที่กำหนดส่ง",
+    "locked": "ไม่สามารถดำเนินขั้นตอนย่อยนี้ได้",
+    "upload_button": "แนบไฟล์หลักฐาน",
     "uploading": "กำลังอัปโหลด...",
     "uploaded_file": "ไฟล์ที่อัปโหลด",
+    "student_file_attachment": "ไฟล์ที่แนบหลักฐาน",
     "submitting": "กำลังส่ง...",
-    "submit_button": "ยืนยันการส่ง",
+    "submit_button": "ยืนยันการดำเนินการ",
     "overall_progress": "ความคืบหน้า",
     "accept_file_type": "รองรับไฟล์ประเภท",
     "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน",
-    "reason_for_decline": "เหตุผลที่ปฏิเสธ",
-    "file_attachment": "เอกสารที่แนบส่งมา",
+    "reason_for_decline": "เหตุผลที่ไม่อนุมัติ",
+    "description_placeholder": "กรอกคำอธิบายเพิ่มเติม (ถ้ามี)",
+    "recommendation": "คำแนะนำ",
+    "description": "คำอธิบาย",
+    "file_attachment": "ไฟล์ที่แนบมาจากผู้ดูแลหลักสูตร",
     "confirm_submit_title": "ยืนยันการส่ง",
     "confirm_submit_description": "คุณต้องการยืนยันการส่งไฟล์นี้หรือไม่?",
     "cancel": "ยกเลิก",
@@ -244,14 +282,14 @@
     "download": "ดาวน์โหลด"
   },
   "milestone": {
-    "title": "ขั้นตอนการศึกษา",
-    "sub_title": "จัดการขั้นตอนการศึกษาของคุณที่นี่",
+    "title": "จัดการขั้นตอนการศึกษา",
+    "sub_title": "ใช้สำหรับเพิ่ม แก้ไข และลบขั้นตอนการศึกษาภายในระบบได้ที่นี่",
     "milestone-form": {
-      "header": {
-        "create": "เพิ่มขั้นตอนการศึกษา",
-        "edit": "แก้ไขขั้นตอนการศึกษา"
-      },
       "header_description": {
+        "create": "กรอกข้อมูลเพื่อเพิ่มขั้นตอนการศึกษาใหม่ในระบบ",
+        "edit": "แก้ไขข้อมูลขั้นตอนการศึกษาผ่านแบบฟอร์มด้านล่าง"
+      },
+      "header": {
         "create": "เพิ่มขั้นตอนการศึกษาใหม่ในระบบ",
         "edit": "แก้ไขข้อมูลขั้นตอนการศึกษา"
       },
@@ -276,12 +314,13 @@
         "notifyBeforeDays": "จำนวนวันก่อนแจ้งเตือน"
       },
       "toast": {
-        "created-successfully": "สร้างขั้นตอนการศึกษาสำเร็จ!",
-        "creation-failed": "ไม่สามารถสร้างขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง",
+        "created-successfully": "เพิ่มขั้นตอนการศึกษาสำเร็จ!",
+        "creation-failed": "ไม่สามารถเพิ่มขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง",
         "updated-successfully": "แก้ไขขั้นตอนการศึกษาสำเร็จ!",
         "update-failed": "ไม่สามารถแก้ไขขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง",
         "deleted-successfully": "ลบขั้นตอนการศึกษาสำเร็จ!",
-        "deletion-failed": "ไม่สามารถลบขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง"
+        "deletion-failed": "ไม่สามารถลบขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง",
+        "fetch_error": "ไม่สามารถดึงข้อมูลขั้นตอนการศึกษาได้ กรุณาลองใหม่อีกครั้ง"
       },
       "errors": {
         "code-duplicate": "รหัสหลักสูตรนี้มีอยู่แล้ว",
@@ -317,24 +356,26 @@
     "milestone": "ขั้นตอนการศึกษา",
     "description": "คำอธิบาย",
     "title": "ขั้นตอนการศึกษาย่อย",
-    "sub_title": "จัดการขั้นตอนการศึกษาย่อยของคุณที่นี่",
+    "sub_title": "ใช้สำหรับเพิ่ม แก้ไข และลบขั้นตอนการศึกษาย่อยภายในระบบได้ที่นี่",
     "add-step": "เพิ่มขั้นตอนการศึกษาย่อย",
-    "requires-attachment": "ต้องการไฟล์แนบ",
-    "no-attachment-required": "ไม่ต้องการไฟล์แนบ",
+    "requires-attachment": "สามารถแนบไฟล์หลักฐานได้",
+    "no-attachment-required": "ไม่สามารถแนบไฟล์หลักฐานได้",
+    "notify-before-days": "แจ้งเตือนล่วงหน้า",
+    "day-period": "ระยะเวลา",
     "milestone-step-form": {
       "header": {
-        "create": "สร้างขั้นตอนการศึกษาย่อย",
+        "create": "เพิ่มขั้นตอนการศึกษาย่อย",
         "edit": "แก้ไขขั้นตอนการศึกษาย่อย"
       },
       "header_description": {
-        "create": "เพิ่มขั้นตอนการศึกษาย่อยใหม่ในระบบ",
-        "edit": "แก้ไขรายละเอียดขั้นตอนการศึกษาย่อย"
+        "create": "กรอกข้อมูลเพื่อเพิ่มขั้นตอนการศึกษาย่อยใหม่ในระบบ",
+        "edit": "แก้ไขข้อมูลขั้นตอนการศึกษาย่อยผ่านแบบฟอร์มด้านล่าง"
       },
       "label": {
         "name": "ชื่อขั้นตอนการศึกษาย่อย",
-        "description": "คำอธิบาย",
+        "description": "คำอธิบายขั้นตอนการศึกษาย่อย",
         "position": "ลำดับ",
-        "requiresAttachment": "ต้องการไฟล์แนบ",
+        "requiresAttachment": "สามารถแนบไฟล์หลักฐานได้หรือไม่",
         "dayPeriod": "ระยะเวลา (วัน)",
         "notifyBeforeDays": "แจ้งเตือนล่วงหน้า (วัน)",
         "isActive": "ใช้งานอยู่",
@@ -342,18 +383,19 @@
       },
       "placeholder": {
         "name": "กรอกชื่อขั้นตอนการศึกษาย่อย",
-        "description": "กรอกคำอธิบายขั้นตอน",
+        "description": "กรอกคำอธิบายขั้นตอนการศึกษาย่อย",
         "position": "เช่น 1",
         "dayPeriod": "จำนวนวันในช่วงเวลา",
         "notifyBeforeDays": "จำนวนวันก่อนแจ้งเตือน"
       },
       "toast": {
-        "created-successfully": "สร้างขั้นตอนการศึกษาย่อยสำเร็จ!",
-        "creation-failed": "ไม่สามารถสร้างขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง",
-        "updated-successfully": "อัปเดตขั้นตอนการศึกษาย่อยสำเร็จ!",
-        "update-failed": "ไม่สามารถอัปเดตขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง",
+        "created-successfully": "เพิ่มขั้นตอนการศึกษาย่อยสำเร็จ!",
+        "creation-failed": "ไม่สามารถเพิ่มขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง",
+        "updated-successfully": "แก้ไขขั้นตอนการศึกษาย่อยสำเร็จ!",
+        "update-failed": "ไม่สามารถแก้ไขขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง",
         "deleted-successfully": "ลบขั้นตอนการศึกษาย่อยสำเร็จ!",
-        "deletion-failed": "ไม่สามารถลบขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง"
+        "deletion-failed": "ไม่สามารถลบขั้นตอนการศึกษาย่อยได้ กรุณาลองใหม่อีกครั้ง",
+        "position-updated": "แก้ไข้ลำดับขั้นตอนการศึกษาย่อยสำเร็จ!"
       },
       "errors": {
         "name-required": "กรุณากรอกชื่อขั้นตอนการศึกษาย่อย",
@@ -364,6 +406,8 @@
         "position-min": "ลำดับต้องมีค่าอย่างน้อย 1",
 
         "dayPeriod-integer": "ช่วงเวลาต้องเป็นตัวเลข",
+
+        "notifyBeforeDays-greater-than-dayPeriod": "จำนวนวันแจ้งเตือนล่วงหน้าต้องไม่มากกว่าระยะเวลา",
 
         "notifyBeforeDays-integer": "จำนวนวันก่อนแจ้งเตือนต้องเป็นตัวเลข",
         "dayPeriod-exceeds": "ช่วงเวลาไม่สามารถเกินช่วงเวลาของขั้นตอนการศึกษาที่ {value} วัน"
@@ -379,7 +423,10 @@
       "title": "เลือกขั้นตอนการศึกษา",
       "breadcrumb": "ตั้งค่าเงื่อนไขการปลดล็อก",
       "course-name": "ชื่อหลักสูตร",
-      "course-description": "คำอธิบายหลักสูตร"
+      "course-description": "คำอธิบายหลักสูตร",
+      "course-code": "รหัสหลักสูตร",
+      "course": "หลักสูตร",
+      "select-milestone": "เลือกขั้นตอนการศึกษา"
     },
 
     "course": {
@@ -392,7 +439,8 @@
       "milestone": "ขั้นตอนการศึกษา",
       "select-placeholder": "เลือกขั้นตอนการศึกษา",
       "add": "เพิ่ม",
-      "next": "ถัดไป"
+      "next": "ถัดไป",
+      "preview": "ตัวอย่างการแสดงขั้นตอนการศึกษา"
     },
 
     "unlock-condition": {
@@ -401,17 +449,18 @@
       "step-section": "ขั้นตอนการศึกษาย่อย",
       "lock": "ล็อก",
       "unlock": "ปลดล็อก",
-      "no-conditions": "ยังไม่มีเงื่อนไขการปลดล็อก",
+      "no-conditions": "ไม่สามารถเลือกเงื่อนไขการล็อกได้ เนื่องจากมีขั้นตอนการศึกษาหรือขั้นตอนการศึกษาย่อยเพียง 1 ขั้นตอนเท่านั้น",
       "cancel": "ยกเลิก",
       "save": "บันทึก",
-      "from": "จาก"
+      "from": "จากขั้นตอนการศึกษา"
     },
 
     "confirm-save": {
       "title": "ยืนยันการบันทึก?",
       "description": "คุณต้องการบันทึกเงื่อนไขการปลดล็อกทั้งหมดใช่หรือไม่?",
       "cancel": "ยกเลิก",
-      "confirm": "บันทึก"
+      "confirm": "บันทึก",
+      "success": "บันทึกเงื่อนไขสำเร็จ!"
     },
 
     "toast": {
@@ -426,17 +475,19 @@
     }
   },
   "user": {
+    "active": "เปิดการใช้งาน",
+    "inactive": "ปิดการใช้งาน",
     "add-user": "เพิ่มผู้ใช้",
     "edit-user": "แก้ไขผู้ใช้",
-    "add-student": "เพิ่มนักศึกษา",
-    "edit-student": "แก้ไขข้อมูลนักศึกษา",
+    "add-student": "เพิ่มนิสิต",
+    "edit-student": "แก้ไขข้อมูลนิสิต",
     "add-teacher": "เพิ่มอาจารย์",
     "edit-teacher": "แก้ไขข้อมูลอาจารย์",
     "code": "รหัส",
     "code-placeholder": "กรอกรหัส",
     "role": "ตำแหน่ง",
     "select-role": "เลือกตำแหน่ง",
-    "student": "นักศึกษา",
+    "student": "นิสิต",
     "teacher": "อาจารย์",
     "first-name": "ชื่อ",
     "first-name-placeholder": "กรอกชื่อ",
@@ -468,51 +519,57 @@
     "course-placeholder": "กรอกรหัสหลักสูตร",
     "course-required-for-student": "กรุณาเลือกหลักสูตร",
     "delete-user-title": "ยืนยันการลบผู้ใช้",
-    "delete-user-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "delete-user-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้ การกระทำนี้ไม่สามารถย้อนกลับได้",
     "delete-users-title": "ยืนยันการลบผู้ใช้หลายคน",
-    "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "delete-users-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "warning-delete-user": "คำเตือน: คุณกำลังจะลบผู้ใช้ {count} คน การกระทำนี้ไม่สามารถย้อนกลับได้",
     "toast": {
-      "deleted-successfully": "ลบผู้ใช้สำเร็จ",
+      "deleted-successfully": "ลบผู้ใช้งานสำเร็จ!",
       "deleted-multiple-successfully": "ลบผู้ใช้หลายคนสำเร็จ",
       "delete-failed": "ลบผู้ใช้ไม่สำเร็จ",
-      "milestone-progress-exists": "ไม่สามารถลบได้ มีนักศึกษา {count} คนอยู่ในขั้นตอนการศึกษา"
+      "milestone-progress-exists": "ไม่สามารถลบได้ มีนิสิต {count} คนอยู่ในขั้นตอนการศึกษา",
+      "fetch_error": "ไม่สามารถดึงข้อมูลผู้ใช้ได้ กรุณาลองใหม่อีกครั้ง"
     },
     "dialog": {
       "confirm_course_change_with_progress": "นักเรียนคนนี้มีความคืบหน้า {count} รายการ หากเปลี่ยนหลักสูตร ข้อมูลความคืบหน้าทั้งหมดจะถูกลบ คุณต้องการดำเนินการต่อหรือไม่?",
-      "confirm_delete_user_with_progress": "ผู้ใช้นี้มีความคืบหน้า {count} รายการ การลบจะทำให้ข้อมูลทั้งหมดหายไป ยืนยันหรือไม่?"
+      "confirm_delete_user_with_progress": "ผู้ใช้นี้มีความคืบหน้า {count} รายการ การลบจะทำให้ข้อมูลทั้งหมดหายไป ยืนยันหรือไม่?",
+      "delete-users-with-progress-description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ {count} คน และมีความคืบหน้ารวม {progressCount} รายการ การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "warning-delete-users-with-progress": "คำเตือน: คุณกำลังจะลบผู้ใช้ {count} คน และมีความคืบหน้ารวม {progressCount} รายการ การกระทำนี้ไม่สามารถย้อนกลับได้"
     },
     "user-form": {
       "header": {
         "create": "เพิ่มผู้ใช้งาน",
-        "create-student": "เพิ่มนักศึกษา",
+        "create-student": "เพิ่มนิสิต",
         "create-teacher": "เพิ่มอาจารย์",
         "edit": "แก้ไขผู้ใช้งาน"
       },
       "header_description": {
-        "create": "กรอกข้อมูลเพื่อเพิ่มผู้ใช้งานใหม่",
-        "create-student": "กรอกข้อมูลเพื่อเพิ่มนักศึกษาใหม่",
-        "create-teacher": "กรอกข้อมูลเพื่อเพิ่มอาจารย์ใหม่",
-        "edit": "แก้ไขข้อมูลผู้ใช้งาน"
+        "create": "กรอกข้อมูลเพื่อเพิ่มผู้ใช้งานใหม่ในระบบ",
+        "create-student": "กรอกข้อมูลเพื่อเพิ่มนิสิตใหม่ในระบบ",
+        "create-teacher": "กรอกข้อมูลเพื่อเพิ่มอาจารย์ใหม่ในระบบ",
+        "edit": "แก้ไขข้อมูลผู้ใช้งานผ่านแบบฟอร์มด้านล่าง"
       },
       "label": {
         "role": "บทบาท",
         "code": "รหัส",
         "student-code": "รหัสนิสิต",
-        "student-course": "ลงทะเบียนหลักสูตร",
+        "student-course": "หลักสูตรที่ลงทะเบียน",
         "teacher-course": "หลักสูตรที่รับผิดชอบ",
         "title": "คำนำหน้า",
         "first-name": "ชื่อ",
         "last-name": "นามสกุล",
         "email": "อีเมล",
-        "phone": "เบอร์โทร",
+        "phone": "เบอร์โทรศัพท์",
         "degree": "ระดับการศึกษา",
         "year": "ปีการศึกษา",
         "enroll-date": "วันที่ลงทะเบียน",
         "is-active": "สถานะการใช้งาน",
         "course": "หลักสูตร",
         "study-plan": "แผนการเรียน",
+        "major": "สาขาวิชา",
         "teacher-degree": "วุฒิการศึกษา",
-        "academic-position": "ตำแหน่งทางวิชาการ"
+        "academic-position": "ตำแหน่งทางวิชาการ",
+        "add-academic-position": "เพิ่มตำแหน่งทางวิชาการ"
       },
       "placeholder": {
         "role": "เลือกประเภทผู้ใช้",
@@ -523,26 +580,28 @@
         "first-name": "กรอกชื่อ",
         "last-name": "กรอกนามสกุล",
         "email": "กรอกอีเมล",
-        "phone": "กรอกเบอร์โทร",
+        "phone": "กรอกเบอร์โทรศัพท์",
         "degree": "เลือกระดับการศึกษา",
         "year": "เลือกปีการศึกษา",
         "enroll-date": "เลือกวันที่ลงทะเบียน",
         "search-course": "ค้นหาหลักสูตร...",
         "no-course-found": "ไม่พบหลักสูตร",
+        "select-degree-first": "กรุณาเลือกระดับการศึกษา",
         "search-year": "ค้นหาปีการศึกษา...",
         "no-year-found": "ไม่พบปีการศึกษา",
         "study-plan": "เลือกแผนการเรียน",
         "search-study-plan": "ค้นหาแผนการเรียน...",
         "no-study-plan-found": "ไม่พบแผนการเรียน",
-        "teacher-degree": "ระบุวุฒิการศึกษา",
-        "academic-position": "ระบุตำแหน่งทางวิชาการ"
+        "major": "กรอกสาขาวิชา",
+        "teacher-degree": "กรอกวุฒิการศึกษา",
+        "academic-position": "กรอกตำแหน่งทางวิชาการ"
       },
       "study-plan-options": {
         "plan-a": "แผน ก",
         "plan-b": "แผน ข"
       },
       "role": {
-        "student": "นักศึกษา",
+        "student": "นิสิต",
         "teacher": "อาจารย์"
       },
       "education-level": {
@@ -568,57 +627,64 @@
         "email-required": "กรุณากรอกอีเมล",
         "email-invalid": "รูปแบบอีเมลไม่ถูกต้อง",
         "email-exists": "อีเมลนี้มีอยู่ในระบบแล้ว",
-        "phone-required": "กรุณากรอกเบอร์โทร",
-        "phone-max": "เบอร์โทรต้องไม่เกิน 20 ตัวอักษร",
+        "phone-required": "กรุณากรอกเบอร์โทรศัพท์",
+        "phone-length": "กรุณากรอกเบอร์โทรศัพท์ให้ครบถ้วน",
         "code-required": "กรุณากรอกรหัส",
+        "code-length": "กรุณากรอกรหัสนิสิตให้ครบ 8 หลัก",
+        "code-exists": "รหัสนิสิตนี้มีอยู่ในระบบแล้ว",
         "degree-required": "กรุณากรอกระดับการศึกษา",
         "degree-max": "ระดับการศึกษาต้องไม่เกิน 100 ตัวอักษร",
         "year-required": "กรุณากรอกปี",
         "year-max": "ปีต้องไม่เกิน 10 ตัวอักษร",
         "course-required": "กรุณาเลือกหลักสูตร",
         "enroll-date-required": "กรุณาเลือกวันที่ลงทะเบียน",
-        "study-plan-required": "กรุณากรอกแผนการเรียน"
+        "enroll-date-future": "วันที่ลงทะเบียนต้องไม่เกินวันที่ปัจจุบัน",
+        "title-required": "กรุณาเลือกคำนำหน้า",
+        "study-plan-required": "กรุณากรอกแผนการเรียน",
+        "major-required": "กรุณากรอกสาขาวิชา"
       },
       "toast": {
-        "created-successfully": "เพิ่มผู้ใช้สำเร็จ",
-        "creation-failed": "เพิ่มผู้ใช้ไม่สำเร็จ",
-        "updated-successfully": "แก้ไขผู้ใช้สำเร็จ",
-        "update-failed": "แก้ไขผู้ใช้ไม่สำเร็จ"
+        "created-successfully": "เพิ่มผู้ใช้สำเร็จ!",
+        "creation-failed": "เพิ่มผู้ใช้ไม่สำเร็จ!",
+        "updated-successfully": "แก้ไขผู้ใช้งานสำเร็จ!",
+        "update-failed": "แก้ไขผู้ใช้งานไม่สำเร็จ!"
       }
     },
     "import-dialog": {
-      "title": "นำเข้าผู้ใช้จากไฟล์ Excel",
+      "title": "นำเข้าข้อมูลผู้ใช้งานจากไฟล์ Excel",
       "description": "อัปโหลดไฟล์ Excel เพื่อนำเข้าผู้ใช้หลายคนพร้อมกัน",
       "drag-drop-text": "ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
       "file-format": "รองรับไฟล์ .xlsx และ .xls (สูงสุด 5MB)",
-      "upload-button": "อัปโหลด",
+      "upload-button": "นำเข้า",
       "download-template": "ดาวน์โหลดไฟล์ตัวอย่าง",
-      "download-student-template": "ไฟล์ตัวอย่างนักศึกษา",
+      "download-student-template": "ไฟล์ตัวอย่างนิสิต",
       "download-teacher-template": "ไฟล์ตัวอย่างอาจารย์",
       "errors": {
         "invalid-file-type": "กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls)",
-        "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด"
+        "no-file-selected": "กรุณาเลือกไฟล์ก่อนอัปโหลด",
+        "file-too-large": "ไฟล์มีขนาดใหญ่เกินไป (สูงสุด {size})"
       },
       "toast": {
-        "import-success": "นำเข้าข้อมูลสำเร็จ",
-        "import-partial": "นำเข้าไม่สำเร็จ {failed} คน",
+        "import-success": "นำเข้าข้อมูลผู้ใช้งานสำเร็จ",
+        "import-partial": "ข้อมูลผู้ใช้งานไม่สำเร็จ {failed} คน",
         "import-updated": "อัพเดทข้อมูล {count} คน",
         "import-skipped": "ข้อมูลไม่มีการเปลี่ยนแปลง {count} คน",
-        "import-failed": "นำเข้าผู้ใช้ไม่สำเร็จ",
+        "import-failed": "นำเข้าข้อมูลผู้ใช้งานไม่สำเร็จ",
         "template-downloaded": "ดาวน์โหลดไฟล์ตัวอย่างสำเร็จ"
       }
     }
   },
   "role": {
     "admin": "ผู้ดูแลระบบ",
-    "student": "นักศึกษา",
+    "student": "นิสิต",
     "teacher": "อาจารย์"
   },
   "verify-certificate": {
-    "title": "ตรวจสอบหลักฐานนักศึกษา",
+    "title": "ตรวจสอบหลักฐาน",
+    "description": "แสดงรายการหลักฐานที่รอการตรวจสอบ",
     "breadcrumb": {
       "home": "แดชบอร์ด",
-      "verify": "ตรวจสอบหลักฐานนักศึกษา",
+      "verify": "ตรวจสอบหลักฐาน",
       "detail": "รายละเอียด"
     },
     "search_placeholder": "ค้นหา",
@@ -642,12 +708,12 @@
     },
     "table": {
       "student_code": "รหัสนิสิต",
-      "name": "ชื่อ-สกุล",
+      "name": "ชื่อ-นามสกุล",
       "course": "หลักสูตร",
       "step": "หัวข้อที่ดำเนินการ",
       "submit_date": "วันที่ส่ง",
       "status": "สถานะ",
-      "action": ""
+      "action": "ตรวจสอบ"
     },
     "loading": "กำลังโหลด...",
     "no_data": "ไม่พบข้อมูล",
@@ -658,27 +724,32 @@
       "page": "หน้า {current} จาก {total}"
     },
     "detail": {
-      "title": "รายละเอียดการส่ง",
+      "title": "รายละเอียดการส่งหลักฐาน",
       "student_code": "รหัสนิสิต",
-      "student_name": "ชื่อผู้ส่ง",
-      "step": "หัวข้อที่ดำเนินการ",
-      "submit_date": "วันที่ส่ง",
+      "student_name": "ชื่อ-นามสกุลผู้ส่งหลักฐาน",
+      "step": "ขั้นตอนการศึกษาย่อยที่ดำเนินการ",
+      "submit_date": "วันที่ส่งหลักฐาน",
       "reason": "เหตุผล",
       "decline_reason": "เหตุผลในการปฏิเสธ",
-      "staff_attachment": "เอกสารที่แนบมา"
+      "staff_attachment": "เอกสารที่แนบมา",
+      "student_comment": "คำอธิบายเพิ่มเติม"
     },
     "review": {
       "title": "ตรวจสอบการดำเนินการ",
-      "decline_reason": "เหตุผลที่ไม่อนุมัติ",
-      "decline_reason_placeholder": "กรุณาระบุเหตุผลให้ชัดเจน",
+      "decline_reason": "ความคิดเห็นเพิ่มเติม",
+      "decline_reason_placeholder": "กรอกความคิดเห็นเพิ่มเติม",
+      "decline_reason_required": "กรุณากรอกความคิดเห็นเพิ่มเติมก่อนกดไม่อนุมัติ",
       "approve": "อนุมัติ",
       "decline": "ไม่อนุมัติ",
-      "staff_attachment": "แนบไฟล์เอกสารเพิ่มเติม (กรณีแก้ไข/ไม่อนุมัติ)",
-      "click_to_upload": "คลิกเพื่ออัปโหลด หรือลากวางไฟล์มาวาง"
+      "staff_attachment": "แนบไฟล์เพิ่มเติม",
+      "click_to_upload": "ลากไฟล์มาวางที่นี้ หรือคลิกเพื่อไฟล์",
+      "file_types": "รองรับไฟล์ PDF, PNG, JPEG, JPG และ DOCX (ขนาดรวมไม่เกิน 20MB)",
+      "invalid_file_type": "ไม่สามารถแนบไฟล์นี้ได้ รองรับเฉพาะ PDF, PNG, JPEG, JPG และ DOCX เท่านั้น",
+      "file_too_large": "ไฟล์มีขนาดเกิน 20MB ไม่สามารถแนบได้"
     },
     "success": {
       "title": "สำเร็จ",
-      "approved": "อนุมัติหลักฐานเรียบร้อยแล้ว",
+      "approved": "หลักฐานได้รับการอนุมัติเรียบร้อยแล้ว",
       "declined": "ปฏิเสธหลักฐานเรียบร้อยแล้ว",
       "ok": "ตกลง"
     },
@@ -690,49 +761,51 @@
   },
   "user-page": {
     "title": "จัดการผู้ใช้งาน",
-    "description": "จัดการผู้ใช้งานในระบบ",
-    "import-button": "อัปโหลดไฟล์",
+    "description": "ใช้สำหรับเพิ่ม แก้ไข และลบผู้ใช้ภายในระบบได้ที่นี่",
+    "import-button": "นำเข้าข้อมูล",
     "tabs": {
       "all": "ผู้ใช้ทั้งหมด",
-      "students": "นักศึกษา",
+      "students": "นิสิต",
       "teachers": "อาจารย์"
     }
   },
   "student-page": {
-    "title": "รายชื่อนักศึกษา",
-    "description": "แสดงข้อมูลนักศึกษาทั้งหมดในระบบ คลิกที่ชื่อหรือแถวเพื่อดูโปรไฟล์",
+    "export": "ส่งออกข้อมูลเป็น PDF",
+    "title": "รายชื่อนิสิต",
+    "description": "แสดงข้อมูลนิสิตทั้งหมดในระบบ คลิกที่ชื่อหรือแถวเพื่อดูโปรไฟล์",
+    "personal-information-student": "ข้อมูลส่วนตัวของนิสิต",
     "export-button": "ส่งออกข้อมูล"
   },
   "degree": {
     "bachelor": "ปริญญาตรี",
     "master": "ปริญญาโท",
     "doctorate": "ปริญญาเอก",
-    "select-degree": "เลือกวุฒิการศึกษา",
-    "not-found": "ไม่พบวุฒิการศึกษา",
-    "search-degree": "ค้นหาวุฒิการศึกษา..."
+    "select-degree": "เลือกระดับการศึกษา",
+    "not-found": "ไม่พบระดับการศึกษา",
+    "search-degree": "ค้นหาระดับการศึกษา"
   },
   "dashboard": {
     "title": "แดชบอร์ด",
-    "description": "ภาพรวมข้อมูลนักศึกษาและหลักสูตร",
+    "description": "ภาพรวมข้อมูลนิสิตและหลักสูตร",
     "summary-cards": {
-      "total-students": "นักศึกษาทั้งหมด",
+      "total-students": "นิสิตทั้งหมด",
       "total-teachers": "อาจารย์",
       "total-courses": "หลักสูตรทั้งหมด",
-      "students-in-courses": "นักศึกษาทั้งหมดในหลักสูตร",
-      "managed-courses": "ดูแลหลักสูตรทั้งหมด",
+      "students-in-courses": "นิสิตทั้งหมดในหลักสูตร",
+      "managed-courses": "หลักสูตรที่ดูแลทั้งหมด",
       "unit-people": "คน",
       "unit-courses": "หลักสูตร"
     },
     "charts": {
-      "students-by-course": "จำนวนนักศึกษาในแต่ละหลักสูตร",
-      "students-by-degree": "นักศึกษาตามระดับปริญญา",
-      "graduation-by-year": "สถานะจบการศึกษาตามปี",
-      "no-data": "ไม่มีข้อมูลนักศึกษา"
+      "students-by-course": "จำนวนนิสิตแยกตามหลักสูตรและปีการศึกษา",
+      "students-by-degree": "จำนวนนิสิตตามระดับปริญญา",
+      "graduation-by-year": "สถานะการสำเร็จการศึกษา",
+      "no-data": "ไม่มีข้อมูลนิสิต"
     },
     "filters": {
       "all-courses": "ทุกหลักสูตร",
       "all-degrees": "ทุกระดับการศึกษา",
-      "all-years": "ทุกปี",
+      "all-years": "ทุกปีการศึกษา",
       "all": "ทั้งหมด",
       "years-3": "3 ปีล่าสุด",
       "years-5": "5 ปีล่าสุด",
@@ -750,7 +823,7 @@
     }
   },
   "merge-files": {
-    "title": "ไฟล์หลักฐานที่อนุมัติแล้ว",
+    "title": "ไฟล์หลักฐานที่อนุมัติ",
     "description": "แสดงรายการไฟล์หลักฐานทั้งหมดที่ผ่านการอนุมัติแล้ว",
     "loading": "กำลังโหลดข้อมูล...",
     "error-loading": "เกิดข้อผิดพลาดในการโหลดข้อมูล",
@@ -758,25 +831,77 @@
     "fullname": "ชื่อ-นามสกุล",
     "email": "อีเมล",
     "education_level": "ระดับการศึกษา",
-    "grad_year": "ระดับชั้นปี",
+    "grad_year": "ปีการศึกษา",
     "course": "หลักสูตร",
     "course_name": "ชื่อหลักสูตร",
-    "milestone_step": "ขั้นตอน",
-    "enroll_date": "วันที่ส่ง",
-    "actions": "ดาวน์โหลด",
-    "no-files": "ไม่มีไฟล์ที่อนุมัติ"
+    "milestone_step": "ขั้นตอนการศึกษาย่อย",
+    "enroll_date": "วันที่ส่งหลักฐาน",
+    "reviewed_by": "ผู้ตรวจสอบหลักฐาน",
+    "actions": "บันทึกไฟล์",
+    "no-files": "ไม่มีไฟล์ที่อนุมัติ",
+    "delete-title": "ยืนยันการลบไฟล์",
+    "delete-description": "คุณต้องการลบไฟล์ที่เลือกจำนวน {count} รายการหรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
+    "toast": {
+      "deleteSuccess": "ลบไฟล์สำเร็จ {count} รายการ",
+      "deleteFailed": "ลบไฟล์ไม่สำเร็จ {count} รายการ"
+    }
+  },
+  "status": {
+    "locked": "ยังไม่เริ่มดำเนินการ",
+    "pending approval": "อยู่ระหว่างรอการอนุมัติ",
+    "declined": "ไม่ผ่านการพิจารณา",
+    "approved": "ผ่านการพิจารณา",
+    "available": "เริ่มดำเนินการ"
+  },
+  "step-progress-report": {
+    "title": "รายงานความก้าวหน้าของขั้นตอนการศึกษา",
+    "sub_title": "สร้างและดูรายงานความก้าวหน้าของนิสิตสำหรับแต่ละขั้นตอนของเป้าหมาย",
+    "please-select-filters": "กรุณาเลือกตัวกรองเพื่อสร้างรายงาน",
+    "filter_instruction-line-1": "เลือกปีการศึกษา หลักสูตร ขั้นตอนการศึกษา ขั้นตอนการศึกษาย่อยระดับการศึกษา",
+    "filter_instruction-line-2": "สถานะ และกดปุ่ม 'ใช้ตัวกรอง' เพื่อแสดงข้อมูล",
+    "filter_instruction-line-3": "ความก้าวหน้าของบัณฑิตศึกษา",
+    "filter-form": {
+      "year": "ปีการศึกษา",
+      "course": "หลักสูตร",
+      "milestone": "ขั้นตอนการศึกษา",
+      "step": "ขั้นตอนการศึกษาย่อย",
+      "degree": "ระดับการศึกษา",
+      "major-placeholder": "กรอกสาขาวิชา",
+      "major": "สาขาวิชา",
+      "status": "สถานะ",
+      "apply-filters": "ใช้ตัวกรอง",
+      "export-excel": " ส่งออกรายงาน",
+      "all": "ทั้งหมด",
+      "applied-filters": "ตัวกรองที่ใช้"
+    }
+  },
+  "components": {
+    "multi-select": {
+      "placeholder": "เลือกรายการ...",
+      "selected_items": "เลือกแล้ว {count} รายการ",
+      "search_placeholder": "ค้นหา...",
+      "no_results": "ไม่พบผลลัพธ์"
+    },
+    "delete-text-confirmation-dialog": {
+      "confirmation-text": "พิมพ์ \"{text}\" เพื่อยืนยันการลบ"
+    },
+    "loading-dot": {
+      "loading": "กำลังโหลด"
+    }
   },
   "advanced-filter": {
     "title": "ตัวกรองขั้นสูง",
-    "description": "กรองข้อมูลนักศึกษาตามเงื่อนไขที่ต้องการ",
-    "code": "รหัส",
-    "code-placeholder": "ค้นหารหัส...",
+    "description": "กรองข้อมูลนิสิตตามเงื่อนไขที่ต้องการ",
+    "code": "รหัสนิสิต",
+    "code-placeholder": "กรอกรหัสนิสิต",
     "full-name": "ชื่อ-นามสกุล",
-    "full-name-placeholder": "ค้นหาชื่อ-นามสกุล...",
+    "full-name-placeholder": "กรอกชื่อ-นามสกุล",
     "email": "อีเมล",
-    "email-placeholder": "ค้นหาอีเมล...",
-    "phone": "เบอร์โทร",
-    "phone-placeholder": "ค้นหาเบอร์โทร...",
+    "email-placeholder": "กรอกอีเมล",
+    "phone": "เบอร์โทรศัพท์",
+    "phone-placeholder": "กรอกเบอร์โทรศัพท์",
+    "major": "สาขาวิชา",
+    "major-placeholder": "กรอกสาขาวิชา",
     "degree": "ระดับการศึกษา",
     "degree-placeholder": "เลือกระดับการศึกษา",
     "year": "ปีการศึกษา",
@@ -787,17 +912,18 @@
     "study-plan-placeholder": "เลือกแผนการเรียน",
     "enroll-date-from": "วันที่ลงทะเบียน (เริ่มต้น)",
     "enroll-date-to": "วันที่ลงทะเบียน (สิ้นสุด)",
-    "graduated": "สำเร็จการศึกษา",
-    "graduated-placeholder": "เลือกสถานะ",
+    "graduated": "สถานะการศึกษา",
+    "graduated-placeholder": "เลือกสถานะการศึกษา",
     "search": "ค้นหา...",
     "no-results": "ไม่พบผลลัพธ์",
     "apply": "ค้นหา",
     "cancel": "ยกเลิก",
-    "reset": "รีเซ็ต",
+    "reset": "คืนค่า",
     "filter-button": "ตัวกรองขั้นสูง",
     "date-format": "วว/ดด/ปปปป",
     "select-date-range": "เลือกช่วงวันที่",
     "enroll-date-range": "วันที่ลงทะเบียน",
-    "clear-date": "ล้างวันที่"
+    "clear-date": "ล้างวันที่",
+    "selected-count": "เลือกแล้ว {count} รายการ"
   }
 }

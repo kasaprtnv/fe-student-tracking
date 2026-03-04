@@ -64,17 +64,21 @@ export default function VerifyDetailPage() {
   );
   const [loading, setLoading] = useState(true);
   const [declineReason, setDeclineReason] = useState('');
+  const [declineReasonError, setDeclineReasonError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [zoom, setZoom] = useState(100);
 
   // Staff attachment states
-  const [staffAttachmentFile, setStaffAttachmentFile] = useState<File | null>(
-    null,
-  );
+  const [staffAttachmentFiles, setStaffAttachmentFiles] = useState<File[]>([]);
   const [uploadingStaffFile, setUploadingStaffFile] = useState(false);
+  const [fileTypeError, setFileTypeError] = useState(false);
+  const [fileSizeError, setFileSizeError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Student comment
+  const [studentComment, setStudentComment] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,9 +93,10 @@ export default function VerifyDetailPage() {
           const attachments = await uploadService.getAttachmentsByProgress(id);
           const studentId =
             response.data?.studentId || response.data?.student?.id;
-          // filter เฉพาะไฟล์ที่ student ส่ง
+          // filter เฉพาะไฟล์ที่ student ส่ง (รวมไฟล์ที่ไม่มี uploadedByUserId ด้วย)
           const studentFiles = (attachments || []).filter(
-            (att) => att.uploadedByUserId === studentId,
+            (att) =>
+              !att.uploadedByUserId || att.uploadedByUserId === studentId,
           );
           // sort ล่าสุดไว้หน้าแรก
           studentFiles.sort(
@@ -101,25 +106,56 @@ export default function VerifyDetailPage() {
           );
           setStudentAttachments(studentFiles);
           setSelectedAttachmentIdx(0);
-          // --- Group attachments by batch (createdAt within 1 minute) ---
+
+          // --- Group attachments by attemptId (or fallback to latest submission time) ---
           const batches: AttachmentDTO[][] = [];
-          let currentBatch: AttachmentDTO[] = [];
-          let lastTime: number | null = null;
-          const BATCH_WINDOW_MS = 60 * 1000; // 1 minute
-          studentFiles.forEach((att) => {
-            const attTime = new Date(att.createdAt || 0).getTime();
-            if (
-              lastTime === null ||
-              Math.abs(lastTime - attTime) > BATCH_WINDOW_MS
-            ) {
-              if (currentBatch.length > 0) batches.push(currentBatch);
-              currentBatch = [att];
-            } else {
-              currentBatch.push(att);
-            }
-            lastTime = attTime;
-          });
-          if (currentBatch.length > 0) batches.push(currentBatch);
+
+          // ตรวจสอบว่ามี attemptId หรือไม่
+          const hasAttemptId = studentFiles.some((att) => att.attemptId);
+
+          if (hasAttemptId) {
+            // Group by attemptId - วิธีที่ถูกต้อง
+            const attemptGroups = new Map<string, AttachmentDTO[]>();
+            studentFiles.forEach((att) => {
+              const attemptKey = att.attemptId || 'unknown';
+              if (!attemptGroups.has(attemptKey)) {
+                attemptGroups.set(attemptKey, []);
+              }
+              attemptGroups.get(attemptKey)!.push(att);
+            });
+            // แปลงเป็น array และ sort โดย attempt ล่าสุดไว้ก่อน
+            const groupArray = Array.from(attemptGroups.entries());
+            groupArray.sort((a, b) => {
+              const aTime = Math.max(
+                ...a[1].map((att) => new Date(att.createdAt || 0).getTime()),
+              );
+              const bTime = Math.max(
+                ...b[1].map((att) => new Date(att.createdAt || 0).getTime()),
+              );
+              return bTime - aTime; // newest first
+            });
+            groupArray.forEach(([, files]) => batches.push(files));
+          } else {
+            // Fallback: Group by batch start time (แก้ไขให้เปรียบเทียบกับเวลาเริ่มต้นของ batch)
+            let currentBatch: AttachmentDTO[] = [];
+            let batchStartTime: number | null = null;
+            const BATCH_WINDOW_MS = 5 * 60 * 1000; // 5 minutes (เพิ่มเป็น 5 นาทีเพื่อรองรับการอัปโหลดหลายไฟล์)
+            studentFiles.forEach((att) => {
+              const attTime = new Date(att.createdAt || 0).getTime();
+              if (
+                batchStartTime === null ||
+                Math.abs(batchStartTime - attTime) > BATCH_WINDOW_MS
+              ) {
+                if (currentBatch.length > 0) batches.push(currentBatch);
+                currentBatch = [att];
+                batchStartTime = attTime; // ใช้เวลาของไฟล์แรกเป็น batch start
+              } else {
+                currentBatch.push(att);
+              }
+            });
+            if (currentBatch.length > 0) batches.push(currentBatch);
+          }
+
           setAttachmentBatches(batches);
           setSelectedBatchIdx(0);
 
@@ -132,6 +168,25 @@ export default function VerifyDetailPage() {
           }
         } catch (attachError) {
           console.error('Error fetching attachments:', attachError);
+        }
+
+        // ดึง studentComment จาก attempts (ตาราง student_step_attempt)
+        try {
+          const attemptsResponse =
+            await studentStepProgressService.getAttemptsByProgressId(id);
+          if (attemptsResponse.data && attemptsResponse.data.length > 0) {
+            // เอา attempt ล่าสุด
+            const latestAttempt =
+              attemptsResponse.data[attemptsResponse.data.length - 1];
+            if (latestAttempt.studentComment) {
+              setStudentComment(latestAttempt.studentComment);
+            }
+          }
+        } catch {
+          // fallback: ลองดึงจาก data โดยตรง
+          if (response.data?.studentComment) {
+            setStudentComment(response.data.studentComment);
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -146,31 +201,17 @@ export default function VerifyDetailPage() {
     if (!user?.id) return;
     setSubmitting(true);
     try {
-      await studentStepProgressService.approve(id, user.id);
-      refreshPendingCount(); // Refresh pending count ทันที
-      setSuccessMessage(t('success.approved'));
-      setShowSuccessModal(true);
-    } catch (error) {
-      console.error('Error approving:', error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDecline = async () => {
-    if (!user?.id || !declineReason.trim()) return;
-    setSubmitting(true);
-    try {
-      // Upload staff attachment if exists - ใช้ stepId จาก data
-      if (staffAttachmentFile && data) {
+      // Upload staff attachments if exists - ใช้ stepId จาก data
+      if (staffAttachmentFiles.length > 0 && data) {
         setUploadingStaffFile(true);
         try {
           // ใช้ stepId จาก data เพื่อ upload attachment
           const stepId = data.stepId || data.step?.id;
           if (stepId) {
+            // Upload all files in one request
             const uploadResult = await uploadService.uploadStaffAttachment(
               stepId,
-              staffAttachmentFile,
+              staffAttachmentFiles,
               user.id,
             );
             if (!uploadResult.success) {
@@ -188,11 +229,35 @@ export default function VerifyDetailPage() {
         setUploadingStaffFile(false);
       }
 
+      await studentStepProgressService.approve(id, user.id, declineReason);
+      refreshPendingCount(); // Refresh pending count ทันที
+      setSuccessMessage(t('success.approved'));
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error('Error approving:', error);
+    } finally {
+      setSubmitting(false);
+      setUploadingStaffFile(false);
+    }
+  };
+
+  const handleDecline = async () => {
+    if (!user?.id) return;
+
+    // ตรวจสอบว่ากรอกความคิดเห็นหรือยัง
+    if (!declineReason.trim()) {
+      setDeclineReasonError(true);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // ส่งไฟล์ทั้งหมดไปให้ backend สร้างหลาย attempt (แต่ละ attempt ชี้ไปทีละไฟล์)
       await studentStepProgressService.decline(
         id,
         user.id,
         declineReason,
-        staffAttachmentFile || undefined,
+        staffAttachmentFiles.length > 0 ? staffAttachmentFiles : undefined,
       );
       refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.declined'));
@@ -206,19 +271,54 @@ export default function VerifyDetailPage() {
   };
 
   // Handle staff file selection
-  const handleStaffFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setStaffAttachmentFile(file);
-    }
+  const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.png', '.jpg', '.jpeg'];
+  const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+
+  const isValidFileType = (file: File): boolean => {
+    const fileName = file.name.toLowerCase();
+    return ALLOWED_EXTENSIONS.some((ext) => fileName.endsWith(ext));
   };
 
-  // Remove selected staff file
-  const removeStaffFile = () => {
-    setStaffAttachmentFile(null);
+  const isValidFileSize = (file: File): boolean => {
+    return file.size <= MAX_FILE_SIZE;
+  };
+
+  const handleStaffFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const allFiles = Array.from(files);
+
+      // ตรวจสอบประเภทไฟล์
+      const validTypeFiles = allFiles.filter(isValidFileType);
+      const invalidTypeFiles = allFiles.filter((f) => !isValidFileType(f));
+
+      if (invalidTypeFiles.length > 0) {
+        setFileTypeError(true);
+        setTimeout(() => setFileTypeError(false), 3000);
+      }
+
+      // ตรวจสอบขนาดไฟล์
+      const validFiles = validTypeFiles.filter(isValidFileSize);
+      const oversizedFiles = validTypeFiles.filter((f) => !isValidFileSize(f));
+
+      if (oversizedFiles.length > 0) {
+        setFileSizeError(true);
+        setTimeout(() => setFileSizeError(false), 3000);
+      }
+
+      if (validFiles.length > 0) {
+        setStaffAttachmentFiles((prev) => [...prev, ...validFiles]);
+      }
+    }
+    // Reset input value to allow selecting the same file again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  // Remove selected staff file by index
+  const removeStaffFile = (index: number) => {
+    setStaffAttachmentFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSuccessClose = () => {
@@ -232,12 +332,31 @@ export default function VerifyDetailPage() {
     return date.toLocaleDateString('th-TH', {
       day: 'numeric',
       month: 'short',
-      year: '2-digit',
+      year: 'numeric',
     });
   };
 
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 25, 200));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 25, 50));
+
+  // Helper function สำหรับแก้ไขชื่อไฟล์ภาษาไทยที่ encode ผิด (Mojibake)
+  const decodeFileName = (name: string): string => {
+    if (!name) return 'Document.pdf';
+    try {
+      // ตรวจสอบว่าเป็น mojibake หรือไม่ (มีตัวอักษรแปลกๆ เช่น Ã, à)
+      if (/[\xC0-\xFF]/.test(name) && !/[\u0E00-\u0E7F]/.test(name)) {
+        // ลอง decode จาก Latin-1 เป็น UTF-8
+        const bytes = new Uint8Array([...name].map((c) => c.charCodeAt(0)));
+        const decoded = new TextDecoder('utf-8').decode(bytes);
+        if (/[\u0E00-\u0E7F]/.test(decoded)) {
+          return decoded;
+        }
+      }
+      return name;
+    } catch {
+      return name;
+    }
+  };
 
   // Helpers for selected batch & file
   // Always show only the latest batch
@@ -249,7 +368,8 @@ export default function VerifyDetailPage() {
     if (!fileKey) return null;
     return uploadService.getFileUrl(fileKey);
   };
-  const getFileName = () => selectedAttachment?.fileName || 'Document.pdf';
+  const getFileName = () =>
+    decodeFileName(selectedAttachment?.fileName || 'Document.pdf');
   const isImage = () => {
     if (!selectedAttachment) return false;
     const mimeType = selectedAttachment.mimeType || '';
@@ -321,87 +441,102 @@ export default function VerifyDetailPage() {
         ]}
       />
 
+      <div className="container mx-auto">
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+        </div>
+      </div>
+
       {/* Content */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Document Preview (with batch & file tabs) */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader className="flex flex-col gap-2 border-b pb-4">
-              {/* Batch tab bar ถูกลบออก */}
-              {/* File tab bar for latest batch only */}
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                {(attachmentBatches[0] || []).map((att, idx) => (
-                  <button
-                    key={att.id || att.fileKey || idx}
-                    className={`rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                    onClick={() => setSelectedAttachmentIdx(idx)}
-                    type="button"
-                  >
-                    {att.fileName || `ไฟล์ที่ ${idx + 1}`}
-                  </button>
-                ))}
-              </div>
-              <div className="flex w-full items-center justify-between gap-2">
-                <CardTitle className="text-base font-medium">
-                  {getFileName()}
-                </CardTitle>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" onClick={handleZoomIn}>
-                    <ZoomIn className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={handleZoomOut}>
-                    <ZoomOut className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={handleDownload}>
-                    <Download className="h-4 w-4" />
-                  </Button>
+        {/* Document Preview (with batch & file tabs) - แสดงเฉพาะเมื่อมีไฟล์แนบ */}
+        {studentAttachments.length > 0 && (
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader className="flex flex-col gap-2 border-b pb-4">
+                {/* Batch tab bar ถูกลบออก */}
+                {/* File tab bar for latest batch only */}
+                <div className="mb-2 flex items-center gap-2 overflow-x-auto">
+                  {(attachmentBatches[0] || []).map((att, idx) => (
+                    <button
+                      key={att.id || att.fileKey || idx}
+                      className={`max-w-[200px] flex-shrink-0 truncate rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                      onClick={() => setSelectedAttachmentIdx(idx)}
+                      type="button"
+                      title={decodeFileName(
+                        att.fileName || `ไฟล์ที่ ${idx + 1}`,
+                      )}
+                    >
+                      {decodeFileName(att.fileName || `ไฟล์ที่ ${idx + 1}`)}
+                    </button>
+                  ))}
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div
-                className="flex items-center justify-center overflow-auto rounded-lg border bg-gray-50"
-                style={{ height: '600px' }}
-              >
-                {getFileUrl() ? (
-                  isImage() ? (
-                    <img
-                      src={getFileUrl() || ''}
-                      alt={getFileName()}
-                      className="max-h-full max-w-full object-contain"
-                      style={{
-                        transform: `scale(${zoom / 100})`,
-                        transformOrigin: 'center center',
-                      }}
-                    />
-                  ) : isPdf() ? (
-                    <iframe
-                      src={getFileUrl() || ''}
-                      className="h-full w-full"
-                      style={{
-                        transform: `scale(${zoom / 100})`,
-                        transformOrigin: 'top center',
-                      }}
-                      title="Document Preview"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-4 text-center">
-                      <p className="text-gray-600">{getFileName()}</p>
-                      <Button onClick={handleDownload}>
-                        <Download className="mr-2 h-4 w-4" />
-                        {t('download')}
-                      </Button>
-                    </div>
-                  )
-                ) : (
-                  <div className="text-center text-gray-500">
-                    <p>{t('no_document')}</p>
+                <div className="flex w-full items-center justify-between gap-2">
+                  <CardTitle className="text-base font-medium">
+                    {getFileName()}
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={handleZoomIn}>
+                      <ZoomIn className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={handleZoomOut}>
+                      <ZoomOut className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleDownload}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
                   </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div
+                  className="flex items-center justify-center overflow-auto rounded-lg border bg-gray-50"
+                  style={{ height: '600px' }}
+                >
+                  {getFileUrl() ? (
+                    isImage() ? (
+                      <img
+                        src={getFileUrl() || ''}
+                        alt={getFileName()}
+                        className="max-h-full max-w-full object-contain"
+                        style={{
+                          transform: `scale(${zoom / 100})`,
+                          transformOrigin: 'center center',
+                        }}
+                      />
+                    ) : isPdf() ? (
+                      <iframe
+                        src={getFileUrl() || ''}
+                        className="h-full w-full"
+                        style={{
+                          transform: `scale(${zoom / 100})`,
+                          transformOrigin: 'top center',
+                        }}
+                        title="Document Preview"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-4 text-center">
+                        <p className="text-gray-600">{getFileName()}</p>
+                        <Button onClick={handleDownload}>
+                          <Download className="mr-2 h-4 w-4" />
+                          {t('download')}
+                        </Button>
+                      </div>
+                    )
+                  ) : (
+                    <div className="text-center text-gray-500">
+                      <p>{t('no_document')}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Details & Actions */}
         <div className="space-y-6">
@@ -448,6 +583,20 @@ export default function VerifyDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Student Comment Card - คำอธิบายเพิ่มเติมจากนักศึกษา */}
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('detail.student_comment')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-lg border bg-gray-50 p-4">
+                <p className="text-sm whitespace-pre-wrap">
+                  {studentComment || '-'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Review Card */}
           {data.status === 'pending approval' && (
             <Card>
@@ -467,13 +616,25 @@ export default function VerifyDetailPage() {
                     onChange={(e) => {
                       const value = e.target.value.slice(0, 1000);
                       setDeclineReason(value);
+                      if (value.trim()) {
+                        setDeclineReasonError(false);
+                      }
                     }}
-                    className="mt-2"
+                    className={`mt-2 ${declineReasonError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                     rows={4}
                   />
-                  <p className="text-muted-foreground mt-1 text-right text-xs">
-                    {declineReason.length}/1000
-                  </p>
+                  <div className="mt-1 flex justify-between">
+                    {declineReasonError ? (
+                      <p className="text-xs text-red-500">
+                        {t('review.decline_reason_required')}
+                      </p>
+                    ) : (
+                      <span />
+                    )}
+                    <p className="text-muted-foreground text-xs">
+                      {declineReason.length}/1000
+                    </p>
+                  </div>
                 </div>
 
                 {/* Staff Attachment Upload */}
@@ -484,51 +645,96 @@ export default function VerifyDetailPage() {
                     onClick={() => fileInputRef.current?.click()}
                     onDrop={(e) => {
                       e.preventDefault();
-                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                        setStaffAttachmentFile(e.dataTransfer.files[0]);
+                      if (
+                        e.dataTransfer.files &&
+                        e.dataTransfer.files.length > 0
+                      ) {
+                        const allFiles = Array.from(e.dataTransfer.files);
+
+                        // ตรวจสอบประเภทไฟล์
+                        const validTypeFiles = allFiles.filter(isValidFileType);
+                        const invalidTypeFiles = allFiles.filter(
+                          (f) => !isValidFileType(f),
+                        );
+
+                        if (invalidTypeFiles.length > 0) {
+                          setFileTypeError(true);
+                          setTimeout(() => setFileTypeError(false), 3000);
+                        }
+
+                        // ตรวจสอบขนาดไฟล์
+                        const validFiles =
+                          validTypeFiles.filter(isValidFileSize);
+                        const oversizedFiles = validTypeFiles.filter(
+                          (f) => !isValidFileSize(f),
+                        );
+
+                        if (oversizedFiles.length > 0) {
+                          setFileSizeError(true);
+                          setTimeout(() => setFileSizeError(false), 3000);
+                        }
+
+                        if (validFiles.length > 0) {
+                          setStaffAttachmentFiles((prev) => [
+                            ...prev,
+                            ...validFiles,
+                          ]);
+                        }
                       }
                     }}
                     onDragOver={(e) => e.preventDefault()}
                   >
-                    {staffAttachmentFile ? (
-                      <div className="flex w-full items-center justify-between rounded-md bg-gray-50 p-3">
-                        <span className="truncate text-sm">
-                          {staffAttachmentFile.name}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeStaffFile();
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="mb-2 h-8 w-8 text-gray-400" />
-                        <p className="text-center text-sm text-gray-500">
-                          {t('review.click_to_upload')}
-                        </p>
-                        <p className="mt-1 text-xs text-gray-400">
-                          PDF, docx, PNG
-                          <br />
-                          <span className="block text-xs text-gray-400">
-                            ลากไฟล์มาวางที่นี่ได้
-                          </span>
-                        </p>
-                      </>
-                    )}
+                    <Upload className="mb-2 h-8 w-8 text-gray-400" />
+                    <p className="text-center text-sm text-gray-500">
+                      {t('review.click_to_upload')}
+                    </p>
+                    <p className="mt-1 text-center text-xs text-gray-400">
+                      {t('review.file_types')}
+                    </p>
                   </div>
+                  {/* File type error message */}
+                  {fileTypeError && (
+                    <p className="mt-2 text-sm text-red-500">
+                      {t('review.invalid_file_type')}
+                    </p>
+                  )}
+                  {/* File size error message */}
+                  {fileSizeError && (
+                    <p className="mt-2 text-sm text-red-500">
+                      {t('review.file_too_large')}
+                    </p>
+                  )}
+                  {/* Selected files list */}
+                  {staffAttachmentFiles.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {staffAttachmentFiles.map((file, index) => (
+                        <div
+                          key={`${file.name}-${index}`}
+                          className="flex items-center justify-between rounded-md bg-gray-50 p-3"
+                        >
+                          <span className="truncate text-sm">{file.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeStaffFile(index);
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept=".pdf,.docx,.png,.jpg,.jpeg"
                     className="hidden"
                     onChange={handleStaffFileChange}
+                    multiple
                   />
                 </div>
 
@@ -536,9 +742,7 @@ export default function VerifyDetailPage() {
                   <Button
                     variant="outline"
                     onClick={handleDecline}
-                    disabled={
-                      submitting || uploadingStaffFile || !declineReason.trim()
-                    }
+                    disabled={submitting || uploadingStaffFile}
                   >
                     {submitting || uploadingStaffFile ? (
                       <Spinner className="mr-2 h-4 w-4" />
@@ -628,22 +832,25 @@ export default function VerifyDetailPage() {
 
       {/* Success Modal */}
       <AlertDialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-green-600">
-              <CheckCircle2 className="h-5 w-5" />
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogTitle className="sr-only">
+            {t('success.title')}
+          </AlertDialogTitle>
+          <button
+            onClick={handleSuccessClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <div className="flex flex-col items-center justify-center py-6">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500">
+              <CheckCircle2 className="h-10 w-10 text-white" />
+            </div>
+            <h2 className="mb-2 text-2xl font-bold text-green-500">
               {t('success.title')}
-            </AlertDialogTitle>
-            <AlertDialogDescription>{successMessage}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction
-              onClick={handleSuccessClose}
-              className="bg-black hover:bg-black"
-            >
-              {t('success.ok')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+            </h2>
+            <p className="text-center text-gray-600">{successMessage}</p>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </div>

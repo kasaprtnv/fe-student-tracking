@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useForm } from 'react-hook-form';
 import {
   Popover,
   PopoverContent,
@@ -8,28 +9,27 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
-import { useTranslations } from 'next-intl';
+import { MultiSelect } from '@/components/ui/combobox-multi';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
+import { useTranslations, useLocale } from 'next-intl';
 import { Filter, RotateCcw, CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { th, enUS } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { useLocale } from 'next-intl';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandInput,
-} from '@/components/ui/command';
-import { Check, ChevronsUpDown } from 'lucide-react';
 
 export interface AdvancedFilterValues {
   code: string;
   fullName: string;
   email: string;
   phone: string;
+  major: string;
   degree: string[];
   year: string[];
   courseId: string[];
@@ -44,6 +44,7 @@ export const defaultFilterValues: AdvancedFilterValues = {
   fullName: '',
   email: '',
   phone: '',
+  major: '',
   degree: [],
   year: [],
   courseId: [],
@@ -78,28 +79,29 @@ export function AdvancedFilterPopover({
   const locale = useLocale();
   const dateLocale = locale === 'th' ? th : enUS;
   const [open, setOpen] = React.useState(false);
-  const [filters, setFilters] =
-    React.useState<AdvancedFilterValues>(currentFilters);
 
+  const form = useForm<AdvancedFilterValues>({
+    defaultValues: currentFilters,
+  });
+
+  // Sync form when popover opens
   React.useEffect(() => {
     if (open) {
-      setFilters(currentFilters);
+      form.reset(currentFilters);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, currentFilters]);
 
-  const toggleArrayValue = (arr: string[], value: string) => {
-    return arr.includes(value)
-      ? arr.filter((v) => v !== value)
-      : [...arr, value];
-  };
+  const enrollDateFrom = form.watch('enrollDateFrom');
+  const enrollDateTo = form.watch('enrollDateTo');
 
-  const handleApply = () => {
-    onApply(filters);
+  const handleApply = (data: AdvancedFilterValues) => {
+    onApply(data);
     setOpen(false);
   };
 
   const handleReset = () => {
-    setFilters(defaultFilterValues);
+    form.reset(defaultFilterValues);
   };
 
   const handleCancel = () => {
@@ -120,508 +122,310 @@ export function AdvancedFilterPopover({
           <p className="text-muted-foreground text-sm">{t('description')}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {/* Row 1: Code, Full Name */}
-          <div className="space-y-1">
-            <Label htmlFor="code" className="text-xs">
-              {t('code')}
-            </Label>
-            <Input
-              id="code"
-              placeholder={t('code-placeholder')}
-              value={filters.code}
-              onChange={(e) => setFilters({ ...filters, code: e.target.value })}
-              className="h-8 text-sm"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="fullName" className="text-xs">
-              {t('full-name')}
-            </Label>
-            <Input
-              id="fullName"
-              placeholder={t('full-name-placeholder')}
-              value={filters.fullName}
-              onChange={(e) =>
-                setFilters({ ...filters, fullName: e.target.value })
-              }
-              className="h-8 text-sm"
-            />
-          </div>
-
-          {/* Row 2: Email, Phone */}
-          <div className="space-y-1">
-            <Label htmlFor="email" className="text-xs">
-              {t('email')}
-            </Label>
-            <Input
-              id="email"
-              placeholder={t('email-placeholder')}
-              value={filters.email}
-              onChange={(e) =>
-                setFilters({ ...filters, email: e.target.value })
-              }
-              className="h-8 text-sm"
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="phone" className="text-xs">
-              {t('phone')}
-            </Label>
-            <Input
-              id="phone"
-              placeholder={t('phone-placeholder')}
-              value={filters.phone}
-              onChange={(e) =>
-                setFilters({ ...filters, phone: e.target.value })
-              }
-              className="h-8 text-sm"
-            />
-          </div>
-
-          {/* Row 3: Degree, Year */}
-          <div className="space-y-1">
-            <Label className="text-xs">{t('degree')}</Label>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between text-sm font-normal"
-                >
-                  <div className="flex flex-wrap gap-1">
-                    {filters.degree.length > 0 ? (
-                      filters.degree.map((val) => (
-                        <span
-                          key={val}
-                          className="bg-muted rounded px-2 py-0.5 text-xs"
-                        >
-                          {degreeOptions.find((o) => o.value === val)?.label ??
-                            val}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-muted-foreground">
-                        {t('degree-placeholder')}
-                      </span>
-                    )}
-                  </div>
-                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                <Command>
-                  <CommandInput placeholder={t('search')} />
-                  <CommandEmpty>{t('no-results')}</CommandEmpty>
-                  <CommandGroup>
-                    {degreeOptions.map((option) => (
-                      <CommandItem
-                        key={option.value}
-                        onSelect={() =>
-                          setFilters({
-                            ...filters,
-                            degree: toggleArrayValue(
-                              filters.degree,
-                              option.value,
-                            ),
-                          })
-                        }
-                      >
-                        <span>{option.label}</span>
-                        <Check
-                          className={cn(
-                            'ml-auto h-4 w-4',
-                            filters.degree.includes(option.value)
-                              ? 'opacity-100'
-                              : 'opacity-0',
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs">{t('year')}</Label>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between text-sm font-normal"
-                >
-                  <div className="flex flex-wrap gap-1">
-                    {filters.year.length > 0 ? (
-                      filters.year.map((val) => (
-                        <span
-                          key={val}
-                          className="bg-muted rounded px-2 py-0.5 text-xs"
-                        >
-                          {yearOptions.find((o) => o.value === val)?.label ??
-                            val}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-muted-foreground">
-                        {t('year-placeholder')}
-                      </span>
-                    )}
-                  </div>
-                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                <Command>
-                  <CommandInput placeholder={t('search')} />
-                  <CommandEmpty>{t('no-results')}</CommandEmpty>
-                  <CommandGroup>
-                    {yearOptions.map((option) => (
-                      <CommandItem
-                        key={option.value}
-                        onSelect={() =>
-                          setFilters({
-                            ...filters,
-                            year: toggleArrayValue(filters.year, option.value),
-                          })
-                        }
-                      >
-                        <span>{option.label}</span>
-                        <Check
-                          className={cn(
-                            'ml-auto h-4 w-4',
-                            filters.year.includes(option.value)
-                              ? 'opacity-100'
-                              : 'opacity-0',
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Row 4: Course, Study Plan */}
-          <div className="space-y-1">
-            <Label className="text-xs">{t('course')}</Label>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between text-sm font-normal"
-                >
-                  <div className="flex flex-wrap gap-1">
-                    {filters.courseId.length > 0 ? (
-                      filters.courseId.map((val) => (
-                        <span
-                          key={val}
-                          className="bg-muted rounded px-2 py-0.5 text-xs"
-                        >
-                          {courseOptions.find((o) => o.value === val)?.label ??
-                            val}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-muted-foreground">
-                        {t('course-placeholder')}
-                      </span>
-                    )}
-                  </div>
-                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                <Command>
-                  <CommandInput placeholder={t('search')} />
-                  <CommandEmpty>{t('no-results')}</CommandEmpty>
-                  <CommandGroup>
-                    {courseOptions.map((option) => (
-                      <CommandItem
-                        key={option.value}
-                        onSelect={() =>
-                          setFilters({
-                            ...filters,
-                            courseId: toggleArrayValue(
-                              filters.courseId,
-                              option.value,
-                            ),
-                          })
-                        }
-                      >
-                        <span>{option.label}</span>
-                        <Check
-                          className={cn(
-                            'ml-auto h-4 w-4',
-                            filters.courseId.includes(option.value)
-                              ? 'opacity-100'
-                              : 'opacity-0',
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="space-y-1">
-            <Label className="text-xs">{t('study-plan')}</Label>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between text-sm font-normal"
-                >
-                  <div className="flex flex-wrap gap-1">
-                    {filters.studyPlan.length > 0 ? (
-                      filters.studyPlan.map((val) => (
-                        <span
-                          key={val}
-                          className="bg-muted rounded px-2 py-0.5 text-xs"
-                        >
-                          {studyPlanOptions.find((o) => o.value === val)
-                            ?.label ?? val}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-muted-foreground">
-                        {t('study-plan-placeholder')}
-                      </span>
-                    )}
-                  </div>
-                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                <Command>
-                  <CommandInput placeholder={t('search')} />
-                  <CommandEmpty>{t('no-results')}</CommandEmpty>
-                  <CommandGroup>
-                    {studyPlanOptions.map((option) => (
-                      <CommandItem
-                        key={option.value}
-                        onSelect={() =>
-                          setFilters({
-                            ...filters,
-                            studyPlan: toggleArrayValue(
-                              filters.studyPlan,
-                              option.value,
-                            ),
-                          })
-                        }
-                      >
-                        <span>{option.label}</span>
-                        <Check
-                          className={cn(
-                            'ml-auto h-4 w-4',
-                            filters.studyPlan.includes(option.value)
-                              ? 'opacity-100'
-                              : 'opacity-0',
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Row 5: Enroll Date Range - Now uses Calendar picker */}
-          <div className="space-y-1">
-            <Label className="text-xs">{t('enroll-date-range')}</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    'border-input min-h-[38px] w-full justify-start px-3 py-2 text-left text-sm font-normal',
-                    !filters.enrollDateFrom &&
-                      !filters.enrollDateTo &&
-                      'text-muted-foreground',
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {filters.enrollDateFrom && filters.enrollDateTo ? (
-                    <>
-                      {format(filters.enrollDateFrom, 'dd MMM yyyy', {
-                        locale: dateLocale,
-                      })}{' '}
-                      -{' '}
-                      {format(filters.enrollDateTo, 'dd MMM yyyy', {
-                        locale: dateLocale,
-                      })}
-                    </>
-                  ) : filters.enrollDateFrom ? (
-                    <>
-                      {format(filters.enrollDateFrom, 'dd MMM yyyy', {
-                        locale: dateLocale,
-                      })}{' '}
-                      - ...
-                    </>
-                  ) : filters.enrollDateTo ? (
-                    <>
-                      ... -{' '}
-                      {format(filters.enrollDateTo, 'dd MMM yyyy', {
-                        locale: dateLocale,
-                      })}
-                    </>
-                  ) : (
-                    <span>{t('select-date-range')}</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <div className="flex">
-                  <div className="border-r p-2">
-                    <p className="mb-2 text-center text-sm font-medium">
-                      {t('enroll-date-from')}
-                    </p>
-                    <Calendar
-                      mode="single"
-                      selected={filters.enrollDateFrom}
-                      onSelect={(date) =>
-                        setFilters({ ...filters, enrollDateFrom: date })
-                      }
-                      initialFocus
-                    />
-                  </div>
-                  <div className="p-2">
-                    <p className="mb-2 text-center text-sm font-medium">
-                      {t('enroll-date-to')}
-                    </p>
-                    <Calendar
-                      mode="single"
-                      selected={filters.enrollDateTo}
-                      onSelect={(date) =>
-                        setFilters({ ...filters, enrollDateTo: date })
-                      }
-                      disabled={(date) =>
-                        filters.enrollDateFrom
-                          ? date < filters.enrollDateFrom
-                          : false
-                      }
-                    />
-                  </div>
-                </div>
-                {(filters.enrollDateFrom || filters.enrollDateTo) && (
-                  <div className="border-t p-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full"
-                      onClick={() =>
-                        setFilters({
-                          ...filters,
-                          enrollDateFrom: undefined,
-                          enrollDateTo: undefined,
-                        })
-                      }
-                    >
-                      {t('clear-date')}
-                    </Button>
-                  </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleApply)}>
+            <div className="grid grid-cols-2 gap-3">
+              {/* Row 1: Code, Full Name */}
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('code')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('code-placeholder')}
+                        className="h-8 text-sm"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
                 )}
-              </PopoverContent>
-            </Popover>
-          </div>
+              />
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('full-name')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('full-name-placeholder')}
+                        className="h-8 text-sm"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-          {/* Row 6: Graduated */}
-          <div className="space-y-1">
-            <Label className="text-xs">{t('graduated')}</Label>
+              {/* Row 2: Email, Phone */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('email')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('email-placeholder')}
+                        className="h-8 text-sm"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('phone')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('phone-placeholder')}
+                        className="h-8 text-sm"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between text-sm font-normal"
-                >
-                  <div className="flex flex-wrap gap-1">
-                    {filters.graduated.length > 0 ? (
-                      filters.graduated.map((val) => (
-                        <span
-                          key={val}
-                          className="bg-muted rounded px-2 py-0.5 text-xs"
-                        >
-                          {graduatedOptions.find((o) => o.value === val)
-                            ?.label ?? val}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-muted-foreground">
-                        {t('graduated-placeholder')}
-                      </span>
-                    )}
-                  </div>
-                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
+              {/* Row 3: Major, Degree */}
+              <FormField
+                control={form.control}
+                name="major"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('major')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('major-placeholder')} {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="degree"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('degree')}</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={degreeOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        maxDisplayItems={2}
+                        enableEachCancel={false}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                <Command>
-                  <CommandInput placeholder={t('search')} />
-                  <CommandEmpty>{t('no-results')}</CommandEmpty>
-                  <CommandGroup>
-                    {graduatedOptions.map((option) => (
-                      <CommandItem
-                        key={option.value}
-                        onSelect={() =>
-                          setFilters({
-                            ...filters,
-                            graduated: toggleArrayValue(
-                              filters.graduated,
-                              option.value,
-                            ),
-                          })
-                        }
-                      >
-                        <span>{option.label}</span>
-                        <Check
-                          className={cn(
-                            'ml-auto h-4 w-4',
-                            filters.graduated.includes(option.value)
-                              ? 'opacity-100'
-                              : 'opacity-0',
-                          )}
+              {/* Row 4: Year, Course */}
+              <FormField
+                control={form.control}
+                name="year"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('year')}</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={yearOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        maxDisplayItems={2}
+                        enableEachCancel={false}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="courseId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('course')}</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={courseOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        maxDisplayItems={1}
+                        enableEachCancel={false}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {/* Row 5: Study Plan, Graduated */}
+              <FormField
+                control={form.control}
+                name="studyPlan"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('study-plan')}</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={studyPlanOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        maxDisplayItems={2}
+                        enableEachCancel={false}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="graduated"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">{t('graduated')}</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={graduatedOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        maxDisplayItems={2}
+                        enableEachCancel={false}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {/* Row 6: Enroll Date Range */}
+              <div className="col-span-2 space-y-1">
+                <FormLabel className="text-xs">
+                  {t('enroll-date-range')}
+                </FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn(
+                        'border-input min-h-[38px] w-full justify-start px-3 py-2 text-left text-sm font-normal',
+                        !enrollDateFrom &&
+                          !enrollDateTo &&
+                          'text-muted-foreground',
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {enrollDateFrom && enrollDateTo ? (
+                        <>
+                          {format(enrollDateFrom, 'dd MMM yyyy', {
+                            locale: dateLocale,
+                          })}{' '}
+                          -{' '}
+                          {format(enrollDateTo, 'dd MMM yyyy', {
+                            locale: dateLocale,
+                          })}
+                        </>
+                      ) : enrollDateFrom ? (
+                        <>
+                          {format(enrollDateFrom, 'dd MMM yyyy', {
+                            locale: dateLocale,
+                          })}{' '}
+                          - ...
+                        </>
+                      ) : enrollDateTo ? (
+                        <>
+                          ... -{' '}
+                          {format(enrollDateTo, 'dd MMM yyyy', {
+                            locale: dateLocale,
+                          })}
+                        </>
+                      ) : (
+                        <span>{t('select-date-range')}</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <div className="flex">
+                      <div className="border-r p-2">
+                        <p className="mb-2 text-center text-sm font-medium">
+                          {t('enroll-date-from')}
+                        </p>
+                        <Calendar
+                          mode="single"
+                          selected={enrollDateFrom}
+                          onSelect={(date) =>
+                            form.setValue('enrollDateFrom', date)
+                          }
+                          initialFocus
                         />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
+                      </div>
+                      <div className="p-2">
+                        <p className="mb-2 text-center text-sm font-medium">
+                          {t('enroll-date-to')}
+                        </p>
+                        <Calendar
+                          mode="single"
+                          selected={enrollDateTo}
+                          onSelect={(date) =>
+                            form.setValue('enrollDateTo', date)
+                          }
+                          disabled={(date) =>
+                            enrollDateFrom ? date < enrollDateFrom : false
+                          }
+                        />
+                      </div>
+                    </div>
+                    {(enrollDateFrom || enrollDateTo) && (
+                      <div className="border-t p-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            form.setValue('enrollDateFrom', undefined);
+                            form.setValue('enrollDateTo', undefined);
+                          }}
+                        >
+                          {t('clear-date')}
+                        </Button>
+                      </div>
+                    )}
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
 
-        <div className="mt-4 flex items-center justify-between border-t pt-4">
-          <Button variant="outline" size="sm" onClick={handleReset}>
-            <RotateCcw className="mr-2 h-3 w-3" />
-            {t('reset')}
-          </Button>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handleCancel}>
-              {t('cancel')}
-            </Button>
-            <Button size="sm" onClick={handleApply}>
-              {t('apply')}
-            </Button>
-          </div>
-        </div>
+            <div className="mt-4 flex items-center justify-between border-t pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleReset}
+              >
+                <RotateCcw className="mr-2 h-3 w-3" />
+                {t('reset')}
+              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCancel}
+                >
+                  {t('cancel')}
+                </Button>
+                <Button type="submit" size="sm">
+                  {t('apply')}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </Form>
       </PopoverContent>
     </Popover>
   );

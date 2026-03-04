@@ -5,12 +5,14 @@ import { AppDispatch } from '@/store';
 import {
   fetchMilestoneById,
   fetchMilestones,
+  searchMilestones,
   addMilestone,
   updateMilestone,
   deleteMilestone,
   deleteMilestones,
   fetchMilestonesWithStatusByCourseId,
   fetchMilestonesByCourseIdWithPosition,
+  fetchMilestonesByCourseId,
   removeCourseMilestone,
   reorderMilestones,
 } from '@/store/milestone/milestone.thunks';
@@ -20,9 +22,16 @@ import {
   selectFilteredMilestoneIds,
   selectAllMilestoneIds,
   selectMilestoneState,
+  selectPagination,
+  selectAllMilestonesFromMap,
 } from '@/store/milestone/milestone.selectors';
 
-import { setSearchQuery, clearError } from '@/store/milestone/milestone.slice';
+import {
+  setSearchQuery,
+  clearError,
+  setPaginationPage,
+  setPaginationPageSize,
+} from '@/store/milestone/milestone.slice';
 
 import { IMilestone, IMilestoneCreateDTO } from '@/types/milestone';
 
@@ -33,6 +42,8 @@ export const useMilestone = () => {
   const milestoneMap = useSelector(selectMilestoneMap);
   const filteredMilestoneIds = useSelector(selectFilteredMilestoneIds);
   const allMilestoneIds = useSelector(selectAllMilestoneIds);
+  const allMilestoneFormMap = useSelector(selectAllMilestonesFromMap);
+  const pagination = useSelector(selectPagination);
   const { searchQuery, storeAction, loader, error } =
     useSelector(selectMilestoneState);
 
@@ -45,13 +56,45 @@ export const useMilestone = () => {
     [milestoneMap],
   );
 
-  const fetchAllMilestones = useCallback(() => {
-    return dispatch(fetchMilestones()).unwrap();
-  }, [dispatch]);
+  const fetchAllMilestones = useCallback(
+    (
+      page?: number,
+      pageSize?: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) => {
+      return dispatch(
+        fetchMilestones({ page, pageSize, sortBy, sortOrder }),
+      ).unwrap();
+    },
+    [dispatch],
+  );
+
+  const searchForMilestones = useCallback(
+    (
+      searchQuery: string,
+      page: number,
+      pageSize: number,
+      sortBy?: string,
+      sortOrder?: 'asc' | 'desc',
+    ) => {
+      return dispatch(
+        searchMilestones({ searchQuery, page, pageSize, sortBy, sortOrder }),
+      ).unwrap();
+    },
+    [dispatch],
+  );
 
   const fetchMilestoneDetails = useCallback(
     (milestoneId: string) => {
       return dispatch(fetchMilestoneById(milestoneId)).unwrap();
+    },
+    [dispatch],
+  );
+
+  const fetchMilestonesByCourse = useCallback(
+    (courseId: string) => {
+      return dispatch(fetchMilestonesByCourseId(courseId)).unwrap();
     },
     [dispatch],
   );
@@ -128,11 +171,27 @@ export const useMilestone = () => {
     dispatch(clearError());
   }, [dispatch]);
 
+  const setPage = useCallback(
+    (page: number) => {
+      dispatch(setPaginationPage(page));
+    },
+    [dispatch],
+  );
+
+  const setPageSize = useCallback(
+    (pageSize: number) => {
+      dispatch(setPaginationPageSize(pageSize));
+    },
+    [dispatch],
+  );
+
   return {
     // Data
     milestoneMap,
     filteredMilestoneIds,
     allMilestoneIds,
+    allMilestoneFormMap,
+    pagination,
     searchQuery,
     storeAction,
     loader,
@@ -141,9 +200,11 @@ export const useMilestone = () => {
     // Methods
     getMilestoneById,
     fetchCourseMilestones,
+    fetchMilestonesByCourse,
     removeCourseMilestoneFromCourse,
     // CRUD Operations
     fetchAllMilestones,
+    searchForMilestones,
     fetchMilestoneDetails,
     fetchMilestonesWithStatus,
     createNewMilestone,
@@ -154,5 +215,7 @@ export const useMilestone = () => {
     // UI State Methods
     setSearch,
     clearCourseError,
+    setPage,
+    setPageSize,
   };
 };

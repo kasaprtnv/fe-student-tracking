@@ -51,10 +51,10 @@ export default function LoginPage() {
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="hidden h-full flex-col items-center justify-center bg-[#7b1f1f] p-12 lg:flex lg:w-1/2">
-        <div className="mb-8">
+        <div className="mb-0">
           <Image
-            src="/LogoStudent.png"
-            alt="Student Logo"
+            src="/NewLogoStudent.png"
+            alt="New Student Logo"
             width={280}
             height={280}
             className="h-72 w-72 object-contain"
@@ -66,7 +66,6 @@ export default function LoginPage() {
         <h2 className="mb-4 text-center text-3xl font-bold text-white">
           Progress Tracking
         </h2>
-        <p className="text-xl text-white">ระบบติดตามการเรียน</p>
       </div>
       <div className="flex h-full w-full items-center justify-center bg-gray-100 px-4 py-8 sm:p-8 lg:w-1/2">
         <form
@@ -90,7 +89,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h2 className="mb-6 text-center text-2xl font-bold text-[#7b1f1f] sm:mb-8 sm:text-3xl lg:mb-12 lg:text-4xl">
-            ลงชื่อเข้าใช้งาน
+            Login to Your Account
           </h2>
           <div className="mb-4 sm:mb-6 lg:mb-8">
             <div className="flex items-center rounded-full border-2 border-gray-300 px-4 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-5">
@@ -142,9 +141,9 @@ export default function LoginPage() {
           </div>
           <button
             type="submit"
-            className="w-full rounded-full bg-[#7b1f1f] px-6 py-3 text-base font-bold tracking-wider text-white uppercase transition-colors duration-300 hover:bg-[#5c1717] sm:px-8 sm:py-4 sm:text-lg lg:px-10 lg:py-5 lg:text-xl"
+            className="w-full rounded-full bg-[#7b1f1f] px-6 py-3 text-base font-bold tracking-wider text-white transition-colors duration-300 hover:bg-[#5c1717] sm:px-8 sm:py-4 sm:text-lg lg:px-10 lg:py-5 lg:text-xl"
           >
-            เข้าสู่ระบบ
+            Login
           </button>
           {message && (
             <p

@@ -21,6 +21,7 @@ import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useCourse } from '@/hooks/use-course';
 import { toast } from 'sonner';
 import { SelectOption } from '@/types';
+import { ICourse } from '@/types/course';
 import { RoleSelector } from '../../../components/user/form-fields/role-selector';
 import { StudentFormFields } from '../../../components/user/form-fields/student-form-fields';
 import { CommonFormFields } from '../../../components/user/form-fields/common-form-fields';
@@ -36,6 +37,7 @@ interface CreateUserFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   courseOptions: SelectOption[];
+  allCourses: ICourse[];
   defaultRole?: UserRole;
   onUserCreated?: () => void;
 }
@@ -44,6 +46,7 @@ export function CreateUserFormDialog({
   open,
   onOpenChange,
   courseOptions,
+  allCourses,
   defaultRole = 'student',
   onUserCreated,
 }: CreateUserFormDialogProps) {
@@ -96,6 +99,7 @@ export function CreateUserFormDialog({
           email: '',
           phone: '',
           degree: '',
+          major: '',
           year: '',
           studyPlan: '',
           courseId: '',
@@ -109,6 +113,7 @@ export function CreateUserFormDialog({
           lastName: '',
           email: '',
           phone: '',
+          major: '',
           teacherDegree: '',
           academicPosition: '',
           courseId: '',
@@ -132,6 +137,7 @@ export function CreateUserFormDialog({
         email: currentValues.email || '',
         phone: currentValues.phone || '',
         degree: '',
+        major: '',
         year: '',
         studyPlan: '',
         courseId: '',
@@ -146,6 +152,7 @@ export function CreateUserFormDialog({
         email: currentValues.email || '',
         courseId: '',
         phone: currentValues.phone || '',
+        major: '',
       });
     }
   };
@@ -179,7 +186,7 @@ export function CreateUserFormDialog({
           await createNewCourseStaff({
             courseId,
             userId: newUserId,
-          } as unknown as { courseId: string; staffId: string });
+          });
 
           // Update course.staffIds
           const course = getCourseById(courseId);
@@ -205,14 +212,23 @@ export function CreateUserFormDialog({
         error instanceof Error ? error.message : String(error);
       if (
         errorMessage.includes('email address has already been registered') ||
-        errorMessage.includes('User already registered') ||
-        errorMessage.includes('already exists')
+        (errorMessage.includes('already exists') &&
+          !errorMessage.includes('Code'))
       ) {
         form.setError('email', {
           type: 'manual',
           message: t('errors.email-exists'),
         });
         toast.error(t('errors.email-exists'));
+      } else if (
+        errorMessage.includes('Code') &&
+        errorMessage.includes('already exists')
+      ) {
+        form.setError('code', {
+          type: 'manual',
+          message: t('errors.code-exists'),
+        });
+        toast.error(t('errors.code-exists'));
       } else {
         toast.error(t('toast.creation-failed'));
       }
@@ -246,7 +262,7 @@ export function CreateUserFormDialog({
             <RoleSelector form={form} handleRoleChange={handleRoleChange} />
             <CommonFormFields form={form} />
             {selectedRole === 'student' && (
-              <StudentFormFields form={form} courseOptions={courseOptions} />
+              <StudentFormFields form={form} allCourses={allCourses} />
             )}
             {selectedRole === 'teacher' && (
               <TeacherFormFields form={form} courseOptions={courseOptions} />

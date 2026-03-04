@@ -12,19 +12,41 @@ import { useTranslations } from 'next-intl';
 import { MultiCombobox } from '@/components/ui/combobox/multiple-combobox';
 
 import { Input } from '@/components/ui/input';
+import { DynamicInputList } from '@/components/ui/dynamic-input-list';
 
 interface TeacherFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
   courseOptions: SelectOption[];
+  disabledFields?: string[];
 }
 
 export const TeacherFormFields = ({
   form,
   courseOptions,
+  disabledFields = [],
 }: TeacherFormFieldsProps) => {
   const t = useTranslations('user.user-form');
   return (
     <>
+      <FormField
+        control={form.control}
+        name="major"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium text-gray-700">
+              {t('label.major')}
+            </FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                placeholder={t('placeholder.major')}
+                disabled={disabledFields.includes('major')}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <FormField
         control={form.control}
         name="teacherDegree"
@@ -34,7 +56,11 @@ export const TeacherFormFields = ({
               {t('label.teacher-degree')}
             </FormLabel>
             <FormControl>
-              <Input {...field} placeholder={t('placeholder.teacher-degree')} />
+              <Input
+                {...field}
+                placeholder={t('placeholder.teacher-degree')}
+                disabled={disabledFields.includes('teacherDegree')}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -49,9 +75,12 @@ export const TeacherFormFields = ({
               {t('label.academic-position')}
             </FormLabel>
             <FormControl>
-              <Input
-                {...field}
+              <DynamicInputList
+                value={field.value}
+                onChange={field.onChange}
                 placeholder={t('placeholder.academic-position')}
+                buttonLabel={t('label.add-academic-position')}
+                disabled={disabledFields.includes('academicPosition')}
               />
             </FormControl>
             <FormMessage />
@@ -74,6 +103,7 @@ export const TeacherFormFields = ({
                 placeholderEmpty={t('placeholder.course')}
                 options={courseOptions}
                 onChange={field.onChange}
+                disabled={disabledFields.includes('courseIds')}
               />
             </FormControl>
             <FormMessage />

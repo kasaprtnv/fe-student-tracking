@@ -22,6 +22,8 @@ export interface IMilestone {
   updatedAt: string | Date;
   createdAt: string | Date;
   steps?: MilestoneStep[];
+  requiredStepIds?: string[];
+  requiredMilestoneIds?: string[];
 }
 
 export interface MilestoneStep {
@@ -46,6 +48,9 @@ export interface MilestoneStep {
     fileUrl?: string;
   };
   staffAttachmentId?: string;
+  requiredStepIds?: string[];
+  requiredMilestoneIds?: string[];
+  deadline?: string | Date;
 }
 
 export interface IMilestoneCreateDTO {
@@ -70,6 +75,7 @@ export interface MilestoneState {
     >;
   };
   // UI States
+  pagination: IPagination;
   searchQuery: string;
   storeAction: StoreAction;
   loader: boolean;

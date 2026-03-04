@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchCourses,
+  getCoursesByTeacherId,
+  searchCourses,
   fetchCourseById,
   createCourse,
   createCourseWithStaff,
@@ -16,6 +18,29 @@ const initialState: CourseState = {
   storeAction: 'none',
   loader: false,
   error: null,
+  pagination: {
+    page: 1,
+    pageSize: 10,
+    total: 0,
+    totalPages: 0,
+  },
+};
+
+const degreeTHMap = {
+  master: 'ปริญญาโท',
+  doctorate: 'ปริญญาเอก',
+} as Record<string, string>;
+
+const degreeENMap = {
+  master: "Master's Degree",
+  doctorate: 'Doctoral Degree',
+} as Record<string, string>;
+
+const getdegreeMap = (degree: string) => {
+  return {
+    degreeTH: degreeTHMap[degree] || '',
+    degreeEN: degreeENMap[degree] || '',
+  };
 };
 
 const courseSlice = createSlice({
@@ -24,6 +49,13 @@ const courseSlice = createSlice({
   reducers: {
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
+    },
+    setPaginationPage: (state, action: PayloadAction<number>) => {
+      state.pagination.page = action.payload;
+    },
+    setPaginationPageSize: (state, action: PayloadAction<number>) => {
+      state.pagination.pageSize = action.payload;
+      state.pagination.page = 1; // Reset to first page when page size changes
     },
     clearError: (state) => {
       state.error = null;
@@ -40,10 +72,61 @@ const courseSlice = createSlice({
         state.loader = false;
         state.courseMap = {};
         action.payload.data.forEach((course: ICourse) => {
-          state.courseMap[course.id] = course;
+          const { degreeTH, degreeEN } = getdegreeMap(course.degree);
+          state.courseMap[course.id] = { ...course, degreeTH, degreeEN };
         });
+        if (action.payload.pagination) {
+          state.pagination.total = action.payload.pagination?.total || 0;
+          state.pagination.totalPages =
+            action.payload.pagination?.totalPages || 0;
+        }
       })
       .addCase(fetchCourses.rejected, (state, action) => {
+        state.loader = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch courses by teacher ID
+    builder
+      .addCase(getCoursesByTeacherId.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(getCoursesByTeacherId.fulfilled, (state, action) => {
+        state.loader = false;
+        state.courseMap = {};
+        action.payload.data.forEach((course: ICourse) => {
+          const { degreeTH, degreeEN } = getdegreeMap(course.degree);
+          state.courseMap[course.id] = { ...course, degreeTH, degreeEN };
+        });
+      })
+      .addCase(getCoursesByTeacherId.rejected, (state, action) => {
+        state.loader = false;
+        state.error = action.payload as string;
+      });
+
+    // Search courses
+    builder
+      .addCase(searchCourses.pending, (state) => {
+        state.loader = true;
+        state.error = null;
+      })
+      .addCase(searchCourses.fulfilled, (state, action) => {
+        state.loader = false;
+        state.courseMap = {};
+        action.payload.data.forEach((course: ICourse) => {
+          const { degreeTH, degreeEN } = getdegreeMap(course.degree);
+          state.courseMap[course.id] = { ...course, degreeTH, degreeEN };
+        });
+        if (action.payload.pagination) {
+          state.pagination.total = action.payload.pagination?.total || 0;
+          state.pagination.totalPages =
+            action.payload.pagination?.totalPages || 0;
+          state.pagination.page = action.payload.pagination.page;
+          state.pagination.pageSize = action.payload.pagination.pageSize;
+        }
+      })
+      .addCase(searchCourses.rejected, (state, action) => {
         state.loader = false;
         state.error = action.payload as string;
       });
@@ -56,7 +139,12 @@ const courseSlice = createSlice({
       })
       .addCase(fetchCourseById.fulfilled, (state, action) => {
         state.loader = false;
-        state.courseMap[action.payload.id] = action.payload;
+        const { degreeTH, degreeEN } = getdegreeMap(action.payload.degree);
+        state.courseMap[action.payload.id] = {
+          ...action.payload,
+          degreeTH,
+          degreeEN,
+        };
       })
       .addCase(fetchCourseById.rejected, (state, action) => {
         state.loader = false;
@@ -71,15 +159,21 @@ const courseSlice = createSlice({
       })
       .addCase(createCourse.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        state.courseMap[action.payload.receivedData.id] =
-          action.payload.receivedData;
+        const { degreeTH, degreeEN } = getdegreeMap(
+          action.payload.receivedData.degree,
+        );
+        state.courseMap[action.payload.receivedData.id] = {
+          ...action.payload.receivedData,
+          degreeTH,
+          degreeEN,
+        };
       })
       .addCase(createCourse.rejected, (state, action) => {
         state.storeAction = 'none';
         state.error = action.payload as string;
       });
 
-    // Craete course with staff
+    // Create course with staff
     builder
       .addCase(createCourseWithStaff.pending, (state) => {
         state.storeAction = 'creating';
@@ -87,8 +181,14 @@ const courseSlice = createSlice({
       })
       .addCase(createCourseWithStaff.fulfilled, (state, action) => {
         state.storeAction = 'none';
-        state.courseMap[action.payload.receivedData.id] =
-          action.payload.receivedData;
+        const { degreeTH, degreeEN } = getdegreeMap(
+          action.payload.receivedData.degree,
+        );
+        state.courseMap[action.payload.receivedData.id] = {
+          ...action.payload.receivedData,
+          degreeTH,
+          degreeEN,
+        };
       })
       .addCase(createCourseWithStaff.rejected, (state, action) => {
         state.storeAction = 'none';
@@ -105,9 +205,12 @@ const courseSlice = createSlice({
         state.storeAction = 'none';
         const updated = action.payload.updatedFields;
         if (updated.id && state.courseMap[updated.id]) {
+          const { degreeTH, degreeEN } = getdegreeMap(updated.degree as string);
           state.courseMap[updated.id] = {
             ...state.courseMap[updated.id],
             ...updated,
+            degreeTH,
+            degreeEN,
           };
         }
       })
@@ -150,5 +253,10 @@ const courseSlice = createSlice({
   },
 });
 
-export const { setSearchQuery, clearError } = courseSlice.actions;
+export const {
+  setSearchQuery,
+  clearError,
+  setPaginationPage,
+  setPaginationPageSize,
+} = courseSlice.actions;
 export default courseSlice.reducer;

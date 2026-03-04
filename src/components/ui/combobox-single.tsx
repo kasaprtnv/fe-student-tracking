@@ -52,7 +52,7 @@ export function SingleCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-full justify-between overflow-hidden font-normal ${errorMessage && 'border-red-500'} dark:bg-neutral-800 dark:text-gray-200`}
+          className={`w-full justify-between overflow-hidden border border-gray-300 bg-white font-normal ${errorMessage && 'border-red-500'} dark:bg-neutral-800 dark:text-gray-200`}
           disabled={disabled}
         >
           <span
@@ -99,8 +99,13 @@ export function SingleCombobox({
                     key={option.value}
                     value={option.label}
                     onSelect={(selectedLabel) => {
+                      const normalizedSelected = selectedLabel
+                        .toLowerCase()
+                        .trim();
                       const selected = options.find(
-                        (option) => option.label === selectedLabel,
+                        (option) =>
+                          option.label.toLowerCase().trim() ===
+                          normalizedSelected,
                       );
                       const newValue = selected?.value ?? '';
                       setValue(newValue);

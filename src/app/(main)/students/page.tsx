@@ -2,9 +2,10 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
-import { Download, RefreshCw } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import useSWR from 'swr';
 import { DataTableClickable } from '@/components/data-table/data-table-clickable';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
@@ -12,10 +13,11 @@ import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { DataTableFilterField } from '@/components/data-table/types';
-import { User } from '@/types/user';
+import { User, StudentFilterPayload } from '@/types/user';
 import { createStudentColumns } from './student-column';
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 import { PageHeader } from '@/components/page-header';
+import { useDebounce } from '@/lib/use-debounce';
 import {
   AdvancedFilterPopover,
   AdvancedFilterValues,
@@ -27,37 +29,60 @@ export default function StudentPage() {
   const t = useTranslations('student-page');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
+  const locale = useLocale();
 
   const { user } = useAuth();
-  const { fetchAllCourses, allCourseId, courseMap } = useCourse();
-  const { allCourseStaffId, courseStaffMap, fetchAllCourseStaff } =
-    useCourseStaff();
+  const { allCourseId, courseMap, fetchCoursesByTeacherId } = useCourse();
+  const { allCourseStaffId } = useCourseStaff();
   const {
-    fetchStudents,
-    studentUsers,
-    loader: isLoading,
+    fetchFilteredStudents,
+    filteredStudentsFromMap,
+    filteredStudentPagination,
+    filteredStudentLoader,
     error,
     clearErr,
   } = useUser();
 
+  // Local state for pagination, sorting, search, and filters
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageSize, setCurrentPageSize] = useState(10);
+  const [currentSortBy, setCurrentSortBy] = useState<string | undefined>(
+    undefined,
+  );
+  const [currentSortOrder, setCurrentSortOrder] = useState<
+    'asc' | 'desc' | undefined
+  >(undefined);
   const [searchQuery, setSearch] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 500);
   const [advancedFilters, setAdvancedFilters] =
     useState<AdvancedFilterValues>(defaultFilterValues);
 
-  useEffect(() => {
-    fetchStudents();
-    fetchAllCourses();
-    fetchAllCourseStaff();
-  }, [fetchStudents, fetchAllCourses, fetchAllCourseStaff]);
+  useSWR(
+    'fetch-course-data',
+    async () => {
+      if (!user) return;
+      if (user.role === 'student') return; // students don't need course data
+      await fetchCoursesByTeacherId(user.id);
+    },
+    { revalidateOnFocus: false },
+  );
 
-  // Get teacher's managed course IDs
-  const teacherManagedCourseIds = useMemo(() => {
-    if (!user || user.role !== 'teacher') return [];
-    return allCourseStaffId
-      .map((id) => courseStaffMap[id])
-      .filter((cs) => (cs as unknown as { userId: string }).userId === user.id)
-      .map((cs) => cs.courseId);
-  }, [user, allCourseStaffId, courseStaffMap]);
+  // State: teacher's managed course IDs (for teacher only)
+  const [teacherManagedCourseIds, setTeacherManagedCourseIds] = useState<
+    string[]
+  >([]);
+
+  useEffect(() => {
+    if (!user || user.role === 'student') {
+      return;
+    }
+    // fetchCoursesByTeacherId จะต้อง return Promise<Course[]> หรือ array ที่มี id
+    fetchCoursesByTeacherId(user.id).then((courses) => {
+      setTeacherManagedCourseIds(
+        Array.isArray(courses) ? courses.map((c) => c.id) : [],
+      );
+    });
+  }, [user, fetchCoursesByTeacherId]);
 
   const allCourses = useMemo(() => {
     return allCourseId.map((id) => courseMap[id]).filter(Boolean);
@@ -67,30 +92,110 @@ export default function StudentPage() {
   const courseOptionsForFilter = useMemo(() => {
     if (!allCourses) return [];
     return allCourses.map((c) => ({
-      label: c.name,
+      label: `${c.code} - ${c.name}`,
       value: c.id,
     }));
   }, [allCourses]);
 
-  const enrichedStudents = useMemo(() => {
-    if (!studentUsers) return [];
-    return studentUsers.map((user) => ({
-      ...user,
-      courseName: user.courseId ? courseMap[user.courseId]?.name || '-' : '-',
-    }));
-  }, [studentUsers, courseMap]);
+  // Build filter payload for API — only include non-empty values
+  const filterPayload = useMemo((): StudentFilterPayload => {
+    const { enrollDateFrom, enrollDateTo, ...rest } = advancedFilters;
 
-  const yearOptions = useMemo(() => {
-    const years = new Set<string>();
-    enrichedStudents.forEach((s) => {
-      if (s.year) {
-        years.add(s.year);
+    // Pick non-empty string/array fields from advancedFilters
+    const entries = Object.entries(rest);
+
+    const filtered = entries.filter(([, value]) => {
+      if (Array.isArray(value)) {
+        return value.length > 0;
       }
+      return !!value;
     });
-    return Array.from(years)
-      .sort((a, b) => b.localeCompare(a))
-      .map((y) => ({ label: y, value: y }));
-  }, [enrichedStudents]);
+
+    const payload = Object.fromEntries(filtered);
+
+    // Date fields need .toISOString() conversion
+    if (enrollDateFrom) payload.enrollDateFrom = enrollDateFrom.toISOString();
+    if (enrollDateTo) payload.enrollDateTo = enrollDateTo.toISOString();
+
+    if (debouncedSearch) payload.search = debouncedSearch;
+
+    // For teacher role, send managed course IDs to backend for filtering
+    if (user?.role === 'teacher' && teacherManagedCourseIds.length > 0) {
+      payload.managedCourseIds = teacherManagedCourseIds;
+    }
+    return payload;
+  }, [advancedFilters, debouncedSearch, user?.role, teacherManagedCourseIds]);
+
+  const handleSearch = useCallback((value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  }, []);
+
+  // Determine if courseStaff is loaded (needed for teacher role)
+  const isCourseStaffReady = useMemo(() => {
+    if (!user) return false;
+    if (user.role !== 'teacher') return true;
+    // For teachers, wait until courseStaff data is loaded
+    return allCourseStaffId.length > 0 || teacherManagedCourseIds.length >= 0;
+  }, [user, allCourseStaffId, teacherManagedCourseIds]);
+
+  // For teacher with no managed courses, return empty
+  const teacherHasNoCourses = useMemo(() => {
+    if (!user || user.role !== 'teacher') return false;
+    if (allCourseStaffId.length === 0) return false; // still loading
+    return teacherManagedCourseIds.length === 0;
+  }, [user, allCourseStaffId, teacherManagedCourseIds]);
+
+  // SWR key — null to defer fetching until ready
+  const swrKey =
+    user && isCourseStaffReady && !teacherHasNoCourses
+      ? [
+          'students-filter',
+          currentPage,
+          currentPageSize,
+          currentSortBy,
+          currentSortOrder,
+          JSON.stringify(filterPayload),
+        ]
+      : null;
+
+  useSWR(
+    swrKey,
+    () =>
+      fetchFilteredStudents(
+        filterPayload,
+        currentPage,
+        currentPageSize,
+        currentSortBy,
+        currentSortOrder,
+      ),
+    { revalidateOnFocus: false },
+  );
+
+  // Enrich students with course name
+  const displayStudents = useMemo(() => {
+    return filteredStudentsFromMap.map((user) => ({
+      ...user,
+      courseName: user.courseId
+        ? courseMap[user.courseId]
+          ? `${courseMap[user.courseId].code} - ${courseMap[user.courseId].name}`
+          : '-'
+        : '-',
+    }));
+  }, [filteredStudentsFromMap, courseMap]);
+
+  // Year options — derived from loaded courses or a static list
+  // Since we no longer load all students, derive from all courses or use a reasonable range
+  const yearOptions = useMemo(() => {
+    // Generate year options from a reasonable range
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 10;
+    const years: string[] = [];
+    for (let y = currentYear + 543; y >= startYear + 543; y--) {
+      years.push(String(y));
+    }
+    return years.map((y) => ({ label: y, value: y }));
+  }, []);
 
   // Degree options for advanced filter
   const degreeOptions = useMemo(
@@ -104,8 +209,8 @@ export default function StudentPage() {
   // Study plan options
   const studyPlanOptions = useMemo(
     () => [
-      { label: 'ก', value: 'ก' },
-      { label: 'ข', value: 'ข' },
+      { label: 'แผน ก', value: 'แผน ก' },
+      { label: 'แผน ข', value: 'แผน ข' },
     ],
     [],
   );
@@ -126,6 +231,7 @@ export default function StudentPage() {
       advancedFilters.fullName !== '' ||
       advancedFilters.email !== '' ||
       advancedFilters.phone !== '' ||
+      advancedFilters.major !== '' ||
       advancedFilters.degree.length > 0 ||
       advancedFilters.year.length > 0 ||
       advancedFilters.courseId.length > 0 ||
@@ -136,179 +242,6 @@ export default function StudentPage() {
     );
   }, [advancedFilters]);
 
-  const displayStudents = useMemo(() => {
-    // Filter by teacher's managed courses first
-    let filteredStudents = enrichedStudents;
-    if (user?.role === 'teacher' && teacherManagedCourseIds.length > 0) {
-      filteredStudents = enrichedStudents.filter((student) =>
-        student.courseId
-          ? teacherManagedCourseIds.includes(student.courseId)
-          : false,
-      );
-    }
-
-    // Apply advanced filters
-    filteredStudents = filteredStudents.filter((student) => {
-      // Code filter
-      if (
-        advancedFilters.code &&
-        !student.code
-          ?.toLowerCase()
-          .includes(advancedFilters.code.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Full name filter
-      if (advancedFilters.fullName) {
-        const fullName =
-          `${student.firstName || ''} ${student.lastName || ''}`.toLowerCase();
-        if (!fullName.includes(advancedFilters.fullName.toLowerCase())) {
-          return false;
-        }
-      }
-
-      // Email filter
-      if (
-        advancedFilters.email &&
-        !student.email
-          ?.toLowerCase()
-          .includes(advancedFilters.email.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Phone filter
-      if (
-        advancedFilters.phone &&
-        !student.phone?.includes(advancedFilters.phone)
-      ) {
-        return false;
-      }
-
-      // Degree filter
-      if (
-        advancedFilters.degree.length > 0 &&
-        !advancedFilters.degree.includes(student.degree || '')
-      ) {
-        return false;
-      }
-
-      // Year filter
-      if (
-        advancedFilters.year.length > 0 &&
-        !advancedFilters.year.includes(student.year || '')
-      ) {
-        return false;
-      }
-
-      // Course filter
-      if (
-        advancedFilters.courseId.length > 0 &&
-        !advancedFilters.courseId.includes(student.courseId || '')
-      ) {
-        return false;
-      }
-
-      // Study plan filter
-      if (
-        advancedFilters.studyPlan.length > 0 &&
-        !advancedFilters.studyPlan.includes(student.studyPlan || '')
-      ) {
-        return false;
-      }
-
-      // Enroll date range filter
-      if (advancedFilters.enrollDateFrom && student.enrollDate) {
-        const enrollDate = new Date(student.enrollDate);
-        const fromDate = new Date(advancedFilters.enrollDateFrom);
-        fromDate.setHours(0, 0, 0, 0);
-        if (enrollDate < fromDate) {
-          return false;
-        }
-      }
-      if (advancedFilters.enrollDateTo && student.enrollDate) {
-        const enrollDate = new Date(student.enrollDate);
-        const toDate = new Date(advancedFilters.enrollDateTo);
-        toDate.setHours(23, 59, 59, 999);
-        if (enrollDate > toDate) {
-          return false;
-        }
-      }
-
-      // Graduated filter
-      if (advancedFilters.graduated.length > 0) {
-        const graduatedValue = student.graduated ? 'true' : 'false';
-        if (!advancedFilters.graduated.includes(graduatedValue)) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-
-    // Then apply search filter
-    if (!searchQuery) return filteredStudents;
-    const lowerQuery = searchQuery.toLowerCase().trim();
-    // Remove spaces for flexible matching
-    const queryNoSpaces = lowerQuery.replace(/\s/g, '');
-
-    return filteredStudents.filter((student) => {
-      // Full name (with and without spaces)
-      const fullName =
-        `${student.firstName || ''} ${student.lastName || ''}`.toLowerCase();
-      const fullNameNoSpaces = fullName.replace(/\s/g, '');
-
-      // Degree mapping to Thai
-      const degreeDisplay =
-        student.degree === 'bachelor'
-          ? 'ปริญญาตรี'
-          : student.degree === 'master'
-            ? 'ปริญญาโท'
-            : student.degree === 'doctorate'
-              ? 'ปริญญาเอก'
-              : '';
-
-      // Graduated mapping
-      const graduatedDisplay = student.graduated ? 'สำเร็จ' : 'ยังไม่สำเร็จ';
-
-      return (
-        // Code
-        student.code?.toLowerCase().includes(lowerQuery) ||
-        // First name
-        student.firstName?.toLowerCase().includes(lowerQuery) ||
-        // Last name
-        student.lastName?.toLowerCase().includes(lowerQuery) ||
-        // Full name (with spaces)
-        fullName.includes(lowerQuery) ||
-        // Full name (without spaces for flexible matching)
-        fullNameNoSpaces.includes(queryNoSpaces) ||
-        // Email
-        student.email?.toLowerCase().includes(lowerQuery) ||
-        // Phone
-        student.phone?.includes(lowerQuery) ||
-        // Degree (English key)
-        student.degree?.toLowerCase().includes(lowerQuery) ||
-        // Degree (Thai display)
-        degreeDisplay.includes(lowerQuery) ||
-        // Year
-        student.year?.toLowerCase().includes(lowerQuery) ||
-        // Course name
-        student.courseName?.toLowerCase().includes(lowerQuery) ||
-        // Study plan
-        student.studyPlan?.toLowerCase().includes(lowerQuery) ||
-        // Graduated status
-        graduatedDisplay.includes(lowerQuery)
-      );
-    });
-  }, [
-    enrichedStudents,
-    searchQuery,
-    user?.role,
-    teacherManagedCourseIds,
-    advancedFilters,
-  ]);
-
   const handleViewProfile = useCallback(
     (id: string) => {
       router.push(`/profile/${id}`);
@@ -317,64 +250,97 @@ export default function StudentPage() {
   );
 
   const studentColumns = useMemo(
-    () => createStudentColumns(tColumn, tDegree, handleViewProfile),
-    [tColumn, tDegree, handleViewProfile],
+    () => createStudentColumns(tColumn, tDegree, handleViewProfile, locale),
+    [tColumn, tDegree, handleViewProfile, locale],
   );
 
   const filterColumns = useMemo<DataTableFilterField<User>[]>(() => {
     return [];
   }, []);
 
-  const handleExport = (data: User[]) => {
-    // Map degree to translated value
-    const getDegreeLabel = (degree: string | undefined) => {
-      if (!degree) return '-';
-      const degreeMap: Record<string, string> = {
-        bachelor: tDegree('bachelor'),
-        master: tDegree('master'),
-        doctorate: tDegree('doctorate'),
+  const handleExport = useCallback(async () => {
+    // Fetch ALL filtered data without pagination for export
+    try {
+      const allData = await fetchFilteredStudents(
+        filterPayload,
+        1,
+        999999, // large number to get all
+        currentSortBy,
+        currentSortOrder,
+      );
+
+      const getDegreeLabel = (degree: string | undefined) => {
+        if (!degree) return '-';
+        const degreeMap: Record<string, string> = {
+          bachelor: tDegree('bachelor'),
+          master: tDegree('master'),
+          doctorate: tDegree('doctorate'),
+        };
+        return degreeMap[degree] || degree;
       };
-      return degreeMap[degree] || degree;
-    };
 
-    const exportData = data.map((student) => ({
-      [tColumn('code')]: student.code || '-',
-      [tColumn('full-name')]:
-        `${student.firstName || ''} ${student.lastName || ''}`.trim() || '-',
-      [tColumn('email')]: student.email || '-',
-      [tColumn('phone')]: student.phone || '-',
-      [tColumn('education-level')]: getDegreeLabel(student.degree),
-      [tColumn('year')]: student.year || '-',
-      [tColumn('course-name')]: student.courseName || '-',
-      [tColumn('study-plan')]: student.studyPlan || '-',
-      [tColumn('enroll-date')]: student.enrollDate
-        ? formatThaiDate(student.enrollDate)
-        : '-',
-      [tColumn('graduated')]: student.graduated
-        ? tColumn('graduated-yes')
-        : tColumn('graduated-no'),
-    }));
+      const exportData = (allData?.data || []).map((student: User) => ({
+        [tColumn('student-code')]: student.code || '-',
+        [tColumn('full-name')]:
+          `${student.firstName || ''} ${student.lastName || ''}`.trim() || '-',
+        [tColumn('email')]: student.email || '-',
+        [tColumn('phone')]: student.phone || '-',
+        [tColumn('education-level')]: getDegreeLabel(student.degree),
+        [tColumn('year')]: student.year || '-',
+        [tColumn('enrolled-course-name')]: student.courseId
+          ? courseMap[student.courseId]
+            ? `${courseMap[student.courseId].code} - ${courseMap[student.courseId].name}`
+            : '-'
+          : '-',
+        [tColumn('study-plan')]: student.studyPlan || '-',
+        [tColumn('enroll-date')]: student.enrollDate
+          ? formatShortDate(student.enrollDate, locale)
+          : '-',
+        [tColumn('graduated')]: student.graduated
+          ? tColumn('graduated-yes')
+          : tColumn('graduated-no'),
+      }));
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
-    XLSX.writeFile(workbook, 'students_export.xlsx');
-  };
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
+      XLSX.writeFile(workbook, 'students_export.xlsx');
+    } catch {
+      console.error('Export failed');
+    }
+  }, [
+    fetchFilteredStudents,
+    filterPayload,
+    currentSortBy,
+    currentSortOrder,
+    tColumn,
+    tDegree,
+    courseMap,
+    locale,
+  ]);
 
   const handleApplyFilter = (filters: AdvancedFilterValues) => {
     setAdvancedFilters(filters);
+    setCurrentPage(1);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin" />
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleSortChange = useCallback(
+    (sortBy: string | undefined, sortOrder: 'asc' | 'desc' | undefined) => {
+      setCurrentSortBy(sortBy);
+      setCurrentSortOrder(sortOrder);
+      setCurrentPage(1);
+    },
+    [],
+  );
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const handlePageSizeChange = useCallback((pageSize: number) => {
+    setCurrentPageSize(pageSize);
+    setCurrentPage(1);
+  }, []);
 
   if (error) {
     return (
@@ -404,11 +370,20 @@ export default function StudentPage() {
         <DataTableClickable
           data={displayStudents}
           columns={studentColumns}
-          onSearch={setSearch}
+          onSearch={handleSearch}
           searchQuery={searchQuery}
           enabledMultiSelect={false}
           filterColumns={filterColumns}
-          extraToolbarAction={(table) => (
+          manualPagination={true}
+          page={currentPage}
+          pageSize={currentPageSize}
+          rowCount={filteredStudentPagination.total}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          manualSorting={true}
+          onSortChange={handleSortChange}
+          isLoading={filteredStudentLoader}
+          extraToolbarAction={() => (
             <div className="flex items-center gap-2">
               <AdvancedFilterPopover
                 onApply={handleApplyFilter}
@@ -420,14 +395,7 @@ export default function StudentPage() {
                 graduatedOptions={graduatedOptions}
                 isActive={isAdvancedFilterActive}
               />
-              <Button
-                variant="outline"
-                onClick={() =>
-                  handleExport(
-                    table.getFilteredRowModel().rows.map((row) => row.original),
-                  )
-                }
-              >
+              <Button variant="outline" onClick={handleExport}>
                 <Download className="mr-2 h-4 w-4" />
                 {t('export-button')}
               </Button>

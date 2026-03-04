@@ -16,8 +16,50 @@ class MilestoneService extends APIService {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAllMilestone(): Promise<IApiGetResponse<IMilestone>> {
-    return this.get('/milestones')
+  async getAllMilestone(
+    page?: number,
+    pageSize?: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<IApiGetResponse<IMilestone>> {
+    const params = new URLSearchParams();
+    if (page !== undefined && pageSize !== undefined) {
+      params.append('page', page.toString());
+      params.append('pageSize', pageSize.toString());
+    }
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+
+    const query = params.toString();
+    const url = query ? `/milestones?${query}` : '/milestones';
+    return this.get(url)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async searchMilestones(
+    searchQuery: string,
+    page: number,
+    pageSize: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<IApiGetResponse<IMilestone>> {
+    const params = new URLSearchParams();
+    if (searchQuery !== undefined) params.append('query', searchQuery);
+    if (page !== undefined) params.append('page', page.toString());
+    if (pageSize !== undefined) params.append('pageSize', pageSize.toString());
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+
+    const query = params.toString();
+    const url = query ? `/milestones/search?${query}` : '/milestones/search';
+    return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -26,6 +68,16 @@ class MilestoneService extends APIService {
 
   async getMilestoneById(id: string): Promise<IApiGetByIdResponse<IMilestone>> {
     return this.get(`/milestones/${id}`)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async getMilestonesByCourseId(
+    courseId: string,
+  ): Promise<IApiGetResponse<IMilestone>> {
+    return this.get(`/milestones/course/${courseId}`)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

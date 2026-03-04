@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, X } from 'lucide-react';
 import { IMilestoneStep } from '@/types/milestone-step';
@@ -74,15 +74,6 @@ export const UploadFileDialog = ({
     );
   };
 
-  // เมื่อกดปุ่มอัปโหลด
-  // const handleUpload = () => {
-  //   if (file && onFileUpload) {
-  //     onFileUpload(step.id, file);
-  //     setFile(null);
-  //     setOpen(false);
-  //   }
-  // };
-
   // เมื่อปิด dialog ให้ reset file
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
@@ -115,10 +106,8 @@ export const UploadFileDialog = ({
       <DialogContent className="md:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>{t('upload_button')}</DialogTitle>
+          <DialogDescription>เลือกไฟล์ที่ต้องการอัปโหลด</DialogDescription>
         </DialogHeader>
-        <DialogDescription className="text-xl">
-          เลือกไฟล์ที่ต้องการอัปโหลด
-        </DialogDescription>
         <div
           {...getRootProps()}
           className={
@@ -136,8 +125,8 @@ export const UploadFileDialog = ({
           <div className="flex w-full flex-col items-center gap-2">
             <span className="text-xl">
               {isDragActive
-                ? 'ปล่อยไฟล์ที่นี่...'
-                : 'ลากหรือคลิกเพื่ออัปโหลดไฟล์'}
+                ? 'วางไฟล์ที่นี่...'
+                : 'ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์'}
             </span>
             <span className="text-sm text-gray-600">
               รองรับไฟล์ PDF, PNG, JPEG, JPG และ DOCX (ขนาดรวมไม่เกิน 20MB)
@@ -177,7 +166,7 @@ export const UploadFileDialog = ({
               ? 'ขนาดไฟล์รวมเกิน 5MB'
               : isUploading?.[step.id]
                 ? 'กำลังอัปโหลด...'
-                : 'อัปโหลด'}
+                : 'แนบไฟล์'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTitle } from '@/hooks/use-title';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { createTitleColumns } from './title-column';
 import React from 'react';
 import useSWR from 'swr';
@@ -17,17 +17,19 @@ const TitlePage = () => {
   const tForm = useTranslations('title.title-form');
   const tCol = useTranslations('column');
   const tTitle = useTranslations('title');
+  const locale = useLocale();
 
   const {
     filteredTitlesId,
     searchQuery,
-    fetchAllTitles,
+    fetchAllTitlesWithUsage,
     getTitleById,
     setSearch: setSearchQuery,
     removeTitle,
+    checkTitleInUse,
   } = useTitle();
 
-  const titleColumns = createTitleColumns().map((column) => {
+  const titleColumns = createTitleColumns(locale).map((column) => {
     if (typeof column.header === 'string') {
       return {
         ...column,
@@ -50,11 +52,12 @@ const TitlePage = () => {
   }>({
     isDeleting: false,
   });
+  const [isDeleteLoading, setIsDeleteLoading] = React.useState(false);
 
   useSWR(
     'fetch-titles',
     async () => {
-      await fetchAllTitles();
+      await fetchAllTitlesWithUsage();
     },
     {
       revalidateOnFocus: false,
@@ -69,19 +72,36 @@ const TitlePage = () => {
     })
     .filter((title) => title !== undefined);
 
-  const onDeleteTitle = (id: string) => {
-    setIsDelete({ isDeleting: true, titleId: id });
+  const onDeleteTitle = async (id: string) => {
+    try {
+      const isInUse = await checkTitleInUse(id);
+      if (isInUse) {
+        toast.error(tForm('toast.cannot-delete-in-use'));
+        return;
+      }
+      setIsDelete({ isDeleting: true, titleId: id });
+    } catch (error) {
+      toast.error(tForm('toast.delete-error'));
+    }
   };
 
   const onConfirmDelete = async () => {
     if (!isDelete.titleId) return;
+    setIsDeleteLoading(true);
     try {
+      // ตรวจสอบอีกครั้งก่อนลบ
+      const isInUse = await checkTitleInUse(isDelete.titleId);
+      if (isInUse) {
+        toast.error(tForm('toast.cannot-delete-in-use'));
+        setIsDelete({ isDeleting: false, titleId: undefined });
+        return;
+      }
       await removeTitle(isDelete.titleId);
       toast.success(tForm('toast.deleted-successfully'));
     } catch (error) {
-      console.error('Error deleting title:', error);
       toast.error(tForm('toast.deletion-failed'));
     } finally {
+      setIsDeleteLoading(false);
       setIsDelete({ isDeleting: false, titleId: undefined });
     }
   };
@@ -126,7 +146,7 @@ const TitlePage = () => {
           open={isDelete.isDeleting}
           onClose={() => setIsDelete({ isDeleting: false, titleId: undefined })}
           onConfirm={onConfirmDelete}
-          isLoading={false}
+          isLoading={isDeleteLoading}
           title="header"
           description="confirm"
           translationKey="title.delete"

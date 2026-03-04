@@ -1,4 +1,4 @@
-import { User, UserRole } from '@/types/user';
+import { User, UserRole, StudentFilterPayload } from '@/types/user';
 import { APIService } from '@/services/api.service';
 import {
   IApiGetResponse,
@@ -16,8 +16,54 @@ class UserService extends APIService {
     super(baseURL ?? API_BASE_URL);
   }
 
-  async getAll(): Promise<IApiGetResponse<User>> {
-    return this.get('/users')
+  async getAll(
+    page?: number,
+    pageSize?: number,
+    role?: UserRole,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<IApiGetResponse<User>> {
+    const params = new URLSearchParams();
+    if (page !== undefined) params.append('page', String(page));
+    if (pageSize !== undefined) params.append('limit', String(pageSize));
+
+    if (role) params.append('role', role);
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+
+    const query = params.toString();
+    const url = query ? `/users?${query}` : '/users';
+
+    return this.get(url)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async searchUsers(
+    searchQuery: string,
+    page: number,
+    pageSize: number,
+    role?: UserRole,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<IApiGetResponse<User>> {
+    const params = new URLSearchParams();
+    params.append('query', searchQuery);
+    params.append('page', String(page));
+    params.append('limit', String(pageSize));
+    if (role) params.append('role', role);
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+    const query = params.toString();
+    const url = `/users/search?${query}`;
+
+    return this.get(url)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;
@@ -90,6 +136,7 @@ class UserService extends APIService {
           'phone',
           'role',
           'courseId',
+          'major',
           'teacherDegree',
           'academicPosition',
         ]
@@ -101,6 +148,7 @@ class UserService extends APIService {
           'email',
           'phone',
           'degree',
+          'major',
           'year',
           'studyPlan',
           'role',
@@ -140,8 +188,10 @@ class UserService extends APIService {
           'phone',
           'role',
           'courseId',
+          'major',
           'teacherDegree',
           'academicPosition',
+          'isActive',
         ]
       : [
           'code',
@@ -151,18 +201,29 @@ class UserService extends APIService {
           'email',
           'phone',
           'degree',
+          'major',
           'year',
           'studyPlan',
           'role',
           'courseId',
           'enrollDate',
+          'isActive',
         ];
+
+    // Fields that can be cleared (empty string should be sent to backend)
+    // isActive is included because `false` is a valid value that must not be filtered out
+    const clearableFields = ['academicPosition', 'teacherDegree', 'isActive'];
 
     const filteredData: Record<string, unknown> = {};
     for (const key of allowedFields) {
       const value = data[key as keyof User];
-      // Only include fields that have actual values (not undefined, not null, not empty string)
-      if (value !== undefined && value !== null && value !== '') {
+      // For clearable fields, include even if empty string (to allow clearing)
+      // For other fields, only include if they have actual values
+      if (clearableFields.includes(key)) {
+        if (value !== undefined && value !== null) {
+          filteredData[key] = value;
+        }
+      } else if (value !== undefined && value !== null && value !== '') {
         filteredData[key] = value;
       }
     }
@@ -205,6 +266,33 @@ class UserService extends APIService {
     const formData = new FormData();
     formData.append('file', file);
     return this.post('/users/import', formData)
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
+
+  async filterStudents(
+    filters: StudentFilterPayload,
+    page?: number,
+    pageSize?: number,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+  ): Promise<IApiGetResponse<User>> {
+    const params = new URLSearchParams();
+    if (page !== undefined) params.append('page', String(page));
+    if (pageSize !== undefined) params.append('limit', String(pageSize));
+    if (sortBy) {
+      params.append('sortBy', sortBy);
+      params.append('sortOrder', sortOrder || 'asc');
+    }
+
+    const query = params.toString();
+    const url = query
+      ? `/users/students/filter?${query}`
+      : '/users/students/filter';
+
+    return this.post(url, filters)
       .then((response) => response?.data)
       .catch((error) => {
         throw error?.response?.data;

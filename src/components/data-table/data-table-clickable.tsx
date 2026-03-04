@@ -30,6 +30,7 @@ import {
 import { Checkbox } from '../ui/checkbox';
 import { DataTablePagination } from './data-table-pagination';
 import { Input } from '../ui/input';
+import { DataTableSkeleton } from './data-table-skeleton';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -47,6 +48,15 @@ interface DataTableProps<TData, TValue> {
   pageSize?: number;
   rowCount?: number;
   pageSizeOptions?: number[];
+
+  manualSorting?: boolean;
+  onSortChange?: (
+    sortBy: string | undefined,
+    sortOrder: 'asc' | 'desc' | undefined,
+  ) => void;
+
+  isLoading?: boolean;
+
   filterColumns?: DataTableFilterField<TData>[];
   onFilter?: () => void;
   onAdd?: () => void;
@@ -90,6 +100,9 @@ export function DataTableClickable<TData, TValue>({
   pageSize = 10,
   rowCount,
   pageSizeOptions,
+  manualSorting = false,
+  onSortChange,
+  isLoading = false,
   filterColumns = [],
   onFilter,
   onAdd,
@@ -132,22 +145,63 @@ export function DataTableClickable<TData, TValue>({
     pageIndex: page - 1,
     pageSize: pageSize,
   });
+
+  React.useEffect(() => {
+    setPagination({
+      pageIndex: page - 1,
+      pageSize,
+    });
+  }, [page, pageSize]);
+
+  React.useEffect(() => {
+    setSearchValue(searchQuery);
+  }, [searchQuery]);
+
+  const totalPages =
+    manualPagination && rowCount ? Math.ceil(rowCount / pageSize) : undefined;
+
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+
+    ...(manualPagination
+      ? {}
+      : {
+          getPaginationRowModel: getPaginationRowModel(),
+          getFilteredRowModel: getFilteredRowModel(),
+        }),
+
+    onSortingChange: (updaterOrValue) => {
+      const newSorting =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(sorting)
+          : updaterOrValue;
+      setSorting(newSorting);
+      if (manualSorting && onSortChange) {
+        if (newSorting.length > 0) {
+          onSortChange(newSorting[0].id, newSorting[0].desc ? 'desc' : 'asc');
+        } else {
+          onSortChange(undefined, undefined);
+        }
+      }
+    },
+    ...(manualSorting
+      ? { manualSorting: true }
+      : { getSortedRowModel: getSortedRowModel() }),
+
     onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
+
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     getRowId,
     autoResetPageIndex: false,
     manualPagination,
-    rowCount,
+    pageCount: totalPages,
+    defaultColumn: {
+      sortDescFirst: false,
+    },
     state: {
       sorting,
       columnFilters,
@@ -329,7 +383,14 @@ export function DataTableClickable<TData, TValue>({
               ))}
             </TableHeader>
             <TableBody className="bg-white">
-              {table.getRowModel().rows?.length ? (
+              {isLoading ? (
+                <DataTableSkeleton
+                  table={table}
+                  columns={columns}
+                  enabledMultiSelect={enabledMultiSelect}
+                  pageSize={pageSize}
+                />
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -340,8 +401,8 @@ export function DataTableClickable<TData, TValue>({
                     }
                     className={
                       onView
-                        ? 'hover:bg-muted/50 cursor-pointer transition-colors'
-                        : undefined
+                        ? 'hover:bg-muted/50 h-[60px] cursor-pointer transition-colors'
+                        : 'h-[49px]'
                     }
                     onClick={(e) => {
                       if (!onView) return;

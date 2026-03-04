@@ -31,9 +31,15 @@ import { Loader } from 'lucide-react';
 
 import React from 'react';
 
+interface CreateMilestoneFormSheetProps
+  extends React.ComponentPropsWithRef<typeof Dialog> {
+  onSuccess?: () => void;
+}
+
 export function CreateMilestoneFormSheet({
+  onSuccess,
   ...props
-}: React.ComponentPropsWithRef<typeof Dialog>) {
+}: CreateMilestoneFormSheetProps) {
   const t = useTranslations('milestone.milestone-form');
   const tCommon = useTranslations('common');
 
@@ -70,6 +76,7 @@ export function CreateMilestoneFormSheet({
           notifyBeforeDays: Number(data.notifyBeforeDays),
         });
         form.reset();
+        onSuccess?.();
         props.onOpenChange?.(false);
         toast.success(t('toast.created-successfully'));
       }
@@ -83,8 +90,6 @@ export function CreateMilestoneFormSheet({
     if (!open) form.reset();
     props.onOpenChange?.(open);
   };
-  const dayPeriod = form.watch('dayPeriod');
-  const notifyBeforeDays = form.watch('notifyBeforeDays');
 
   return (
     <Dialog {...props} onOpenChange={handleOpenChange}>
@@ -114,7 +119,7 @@ export function CreateMilestoneFormSheet({
                   <FormControl>
                     <Input
                       placeholder={t('placeholder.name')}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="border-gray-300 bg-white"
                       {...field}
                     />
                   </FormControl>
@@ -134,7 +139,7 @@ export function CreateMilestoneFormSheet({
                   <FormControl>
                     <Textarea
                       placeholder={t('placeholder.description')}
-                      className="resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="resize-none border-gray-300 bg-white"
                       {...field}
                     />
                   </FormControl>
@@ -143,7 +148,7 @@ export function CreateMilestoneFormSheet({
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="dayPeriod"
               render={({ field }) => (
@@ -211,7 +216,7 @@ export function CreateMilestoneFormSheet({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <DialogFooter className="px-0">
               <div className="flex flex-1 justify-end space-x-2">

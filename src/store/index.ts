@@ -8,6 +8,7 @@ import userReducer from './user/user.slice';
 import authReducer from './auth/auth.slice';
 import dashboardReducer from './dashboard/dashboard.slice';
 import titleReducer from './title/title.slice';
+import stepProgressReportReducer from './step-progress-report/step-progress-report.slice';
 import studentStepAttemptsReducer from './student-step-attempts/student-step-attempts.slice';
 
 export const store = configureStore({
@@ -21,6 +22,7 @@ export const store = configureStore({
     auth: authReducer,
     dashboard: dashboardReducer,
     titles: titleReducer,
+    stepProgressReports: stepProgressReportReducer,
     studentStepAttempts: studentStepAttemptsReducer,
   },
 });

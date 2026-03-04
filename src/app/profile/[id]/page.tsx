@@ -14,9 +14,11 @@ import { useUser } from '@/hooks/use-user';
 import { PageHeader } from '@/components/page-header';
 import { ProfileTeacherComponent } from '@/components/profile/profile-teacher';
 import { useAttempt } from '@/hooks/use-attempt';
+import { Button } from '@/components/ui/button';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
+  const tStudent = useTranslations('student-page');
   const { user, initialized } = useAuth();
   const { fetchUserDetails, userMap } = useUser();
   const { fetchMilestonesWithStatus, milestoneMap } = useMilestone();
@@ -27,6 +29,24 @@ export default function ProfilePage() {
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
   const isOwnProfile = id === user?.id;
   const mode: ViewMode = isOwnProfile ? 'upload' : 'readonly';
+
+  const breadcrumb = isOwnProfile
+    ? [
+        {
+          label: t('personal_information.title'),
+          isPage: true,
+        },
+      ]
+    : [
+        {
+          label: tStudent('title'),
+          isPage: true,
+        },
+        {
+          label: tStudent('personal-information-student'),
+          isPage: true,
+        },
+      ];
 
   useEffect(() => {
     if (!isOwnProfile && id && !userMap[id]) {
@@ -94,11 +114,23 @@ export default function ProfilePage() {
   const renderMilestones = () => (
     <>
       <Separator className="my-6" />
-      <div className="mb-4 text-2xl font-bold">{t('progress_title')}</div>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="text-2xl font-bold">{t('progress_title')}</div>
+
+        {profileUser?.role === 'student' && (
+          <Button
+            variant="outline"
+            onClick={() => window.open(`/profile/${id}/pdf`, '_blank')}
+          >
+            {tStudent('export')}
+          </Button>
+        )}
+      </div>
       <MilestoneComponent
         milestones={Object.values(milestoneMap)}
         stepAttempts={Object.values(stepAttemptsMap)}
         mode={mode}
+        displayMode="normal"
         enrollDate={profileEnrollDate}
         onFileUpload={handleFileUpload}
         onSubmitSuccess={handleSubmitSuccess}
@@ -110,14 +142,13 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <PageHeader
-        breadcrumbs={[{ label: t('personal_information.title'), isPage: true }]}
-      />
+      <PageHeader breadcrumbs={breadcrumb} />
       {/* Student */}
       {profileUser?.role === 'student' && (
         <ProfileStudentComponent
           user={profileUser ?? null}
           isLoading={!initialized}
+          isOwnProfile={isOwnProfile}
         />
       )}
 

@@ -6,7 +6,7 @@ export type UserRole = 'student' | 'teacher';
 const baseSchema = (t: (key: string) => string) =>
   z.object({
     role: z.enum(['student', 'teacher']),
-    titleId: z.string().optional(),
+    titleId: z.string().min(1, t('errors.title-required')),
     firstName: z
       .string()
       .min(1, t('errors.first-name-required'))
@@ -24,31 +24,46 @@ const baseSchema = (t: (key: string) => string) =>
     phone: z
       .string()
       .min(1, t('errors.phone-required'))
-      .max(20, t('errors.phone-max')),
+      .length(10, t('errors.phone-length')),
+    isActive: z.boolean().default(true),
   });
 
 // Student-specific schema
 const studentSchema = (t: (key: string) => string) =>
   baseSchema(t).extend({
     role: z.literal('student'),
-    code: z.string().min(1, t('errors.code-required')),
+    code: z
+      .string()
+      .min(1, t('errors.code-required'))
+      .length(8, t('errors.code-length')),
     degree: z
       .string()
       .min(1, t('errors.degree-required'))
       .max(100, t('errors.degree-max')),
+    major: z.string().min(1, t('errors.major-required')),
     year: z
       .string()
       .min(1, t('errors.year-required'))
       .max(10, t('errors.year-max')),
     studyPlan: z.string().min(1, t('errors.study-plan-required')),
     courseId: z.string().min(1, t('errors.course-required')),
-    enrollDate: z.string().min(1, t('errors.enroll-date-required')),
+    enrollDate: z
+      .string()
+      .min(1, t('errors.enroll-date-required'))
+      .refine((date) => {
+        if (!date) return true;
+        const inputDate = new Date(date);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        return inputDate <= today;
+      }, t('errors.enroll-date-future')),
   });
 
 // Teacher-specific schema
 const teacherSchema = (t: (key: string) => string) =>
   baseSchema(t).extend({
     role: z.literal('teacher'),
+    major: z.string().min(1, t('errors.major-required')),
     teacherDegree: z.string().optional(),
     academicPosition: z.string().optional(),
     courseIds: z.array(z.string()).optional(),
@@ -66,7 +81,7 @@ export type UpdateUserFormData = z.infer<ReturnType<typeof updateUserSchema>>;
 
 export interface UserFormValues {
   role: UserRole;
-  titleId?: string;
+  titleId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -75,9 +90,11 @@ export interface UserFormValues {
   courseIds?: string[];
   code?: string;
   degree?: string;
+  major?: string;
   year?: string;
   studyPlan?: string;
   teacherDegree?: string;
   academicPosition?: string;
   enrollDate?: string;
+  isActive?: boolean;
 }

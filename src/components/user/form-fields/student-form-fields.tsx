@@ -5,7 +5,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { SelectOption } from '@/types';
+import { ICourse } from '@/types/course';
 import { UserFormValues } from '@/validations/user';
 import { useTranslations } from 'next-intl';
 import { UseFormReturn } from 'react-hook-form';
@@ -13,17 +13,35 @@ import { Input } from '../../ui/input';
 import { SingleCombobox } from '../../ui/combobox-single';
 import { DegreesCombobox } from '../../degree-combobox';
 import { EnrollDateInput } from '../../enroll-date-input';
+import { useMemo } from 'react';
 
 interface StudentFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
-  courseOptions: SelectOption[];
+  allCourses: ICourse[];
+  disabledFields?: string[];
 }
 
 export const StudentFormFields = ({
   form,
-  courseOptions,
+  allCourses,
+  disabledFields = [],
 }: StudentFormFieldsProps) => {
   const t = useTranslations('user.user-form');
+
+  // Watch degree to filter courses and disable courseId if not selected
+  const selectedDegree = form.watch('degree');
+
+  // Filter courses by selected degree
+  const filteredCourseOptions = useMemo(() => {
+    if (!selectedDegree) return [];
+    return allCourses
+      .filter((course) => course.degree === selectedDegree)
+      .map((course) => ({
+        label: `${course.code} - ${course.name}`,
+        value: course.id,
+      }));
+  }, [allCourses, selectedDegree]);
+
   return (
     <>
       <FormField
@@ -38,9 +56,62 @@ export const StudentFormFields = ({
               <Input
                 placeholder={t('placeholder.student-code')}
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                maxLength={8}
+                disabled={disabledFields.includes('code')}
                 {...field}
+                onInput={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  target.value = target.value.replace(/\D/g, '');
+                  field.onChange(target.value);
+                }}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger('code');
+                }}
               />
             </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="major"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium text-gray-700">
+              {t('label.major')}
+            </FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                placeholder={t('placeholder.major')}
+                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                disabled={disabledFields.includes('major')}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      {/* Degree must come BEFORE courseId so user selects degree first */}
+      <FormField
+        control={form.control}
+        name="degree"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium text-gray-700">
+              {t('label.degree')}
+            </FormLabel>
+            <DegreesCombobox
+              defaultValue={field.value || ''}
+              disabled={disabledFields.includes('degree')}
+              onChange={(value) => {
+                field.onChange(value);
+                // Reset courseId when degree changes
+                form.setValue('courseId', '');
+              }}
+            />
             <FormMessage />
           </FormItem>
         )}
@@ -55,30 +126,21 @@ export const StudentFormFields = ({
             </FormLabel>
             <FormControl>
               <SingleCombobox
-                placeholder={t('placeholder.course')}
+                placeholder={
+                  !selectedDegree
+                    ? t('placeholder.select-degree-first')
+                    : t('placeholder.course')
+                }
                 placeholderSearch={t('placeholder.search-course')}
                 placeholderEmpty={t('placeholder.no-course-found')}
-                options={courseOptions}
+                options={filteredCourseOptions}
                 defaultValue={field.value || ''}
+                disabled={
+                  disabledFields.includes('courseId') || !selectedDegree
+                }
                 onChange={(value) => field.onChange(value)}
               />
             </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="degree"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium text-gray-700">
-              {t('label.degree')}
-            </FormLabel>
-            <DegreesCombobox
-              defaultValue={field.value || ''}
-              onChange={(value) => field.onChange(value)}
-            />
             <FormMessage />
           </FormItem>
         )}
@@ -99,6 +161,7 @@ export const StudentFormFields = ({
                 {t('label.year')}
               </FormLabel>
               <SingleCombobox
+                disabled={disabledFields.includes('year')}
                 placeholder={t('placeholder.year')}
                 placeholderSearch={t('placeholder.search-year')}
                 placeholderEmpty={t('placeholder.no-year-found')}
@@ -116,8 +179,8 @@ export const StudentFormFields = ({
         name="studyPlan"
         render={({ field }) => {
           const studyPlanOptions = [
-            { label: t('study-plan-options.plan-a'), value: 'ก' },
-            { label: t('study-plan-options.plan-b'), value: 'ข' },
+            { label: t('study-plan-options.plan-a'), value: 'แผน ก' },
+            { label: t('study-plan-options.plan-b'), value: 'แผน ข' },
           ];
 
           return (
@@ -127,6 +190,7 @@ export const StudentFormFields = ({
               </FormLabel>
               <FormControl>
                 <SingleCombobox
+                  disabled={disabledFields.includes('studyPlan')}
                   placeholder={t('placeholder.study-plan')}
                   placeholderSearch={t('placeholder.search-study-plan')}
                   placeholderEmpty={t('placeholder.no-study-plan-found')}
@@ -149,7 +213,19 @@ export const StudentFormFields = ({
               {t('label.enroll-date')}
             </FormLabel>
             <div className="relative">
-              <EnrollDateInput value={field.value} onChange={field.onChange} />
+              <EnrollDateInput
+                disabled={disabledFields.includes('enrollDate')}
+                value={field.value}
+                onChange={(val) => {
+                  field.onChange(val);
+                  // Force validation trigger to clear error immediately after selection
+                  if (val) form.trigger('enrollDate');
+                }}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger('enrollDate');
+                }}
+              />
             </div>
             <FormMessage />
           </FormItem>

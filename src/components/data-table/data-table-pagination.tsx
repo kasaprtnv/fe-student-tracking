@@ -29,10 +29,13 @@ export function DataTablePagination<TData>({
   onPageChange,
 }: DataTablePaginationProps<TData>) {
   const t = useTranslations('data-table');
+
+  const pageIndex = table.getState().pagination.pageIndex;
+  const pageSize = table.getState().pagination.pageSize;
+  const pageCount = table.getPageCount();
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
       <div className="text-muted-foreground flex-1 text-sm whitespace-nowrap">
-        {' '}
         {enableMuitiSelect && (
           <>
             {Object.keys(table.getState().rowSelection).length} {t('of')}{' '}
@@ -42,6 +45,7 @@ export function DataTablePagination<TData>({
           </>
         )}
       </div>
+
       <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
         <div className="flex items-center space-x-2">
           <span className="text-sm whitespace-nowrap">
@@ -50,15 +54,15 @@ export function DataTablePagination<TData>({
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              const pageSize = Number(value);
-              table.setPageSize(pageSize);
+              const newSize = Number(value);
+              table.setPageSize(newSize);
               if (onPageSizeChange) {
-                onPageSizeChange(pageSize);
+                onPageSizeChange(newSize);
               }
             }}
           >
             <SelectTrigger className="h-8 w-[4.5rem]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent>
               {pageSizeOptions.map((option) => (
@@ -73,19 +77,21 @@ export function DataTablePagination<TData>({
           <p>{t('page')}</p>
           <Input
             type="number"
-            value={table.getState().pagination.pageIndex + 1}
+            value={pageIndex + 1}
             onChange={(e) => {
-              const pageIndex = Number(e.target.value);
-              if (pageIndex > table.getPageCount() || pageIndex < 1) return;
-              table.setPageIndex(pageIndex - 1);
+              const value = Number(e.target.value);
+              if (value > pageCount || value < 1) return;
+
+              const newIndex = value - 1;
+              table.setPageIndex(newIndex);
               if (onPageChange) {
-                onPageChange(pageIndex - 1);
+                onPageChange(newIndex);
               }
             }}
             className="w-12 appearance-none text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
           <p className="m-0">
-            {t('of')} {table.getPageCount()}
+            {t('of')} {pageCount}
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -126,7 +132,8 @@ export function DataTablePagination<TData>({
             size="icon"
             className="size-8"
             onClick={() => {
-              const pageIndex = table.getState().pagination.pageIndex - 1;
+              const pageIndex = table.getState().pagination.pageIndex + 1;
+              if (pageIndex >= pageCount) return;
               table.nextPage();
               if (onPageChange) {
                 onPageChange(pageIndex);
@@ -142,9 +149,10 @@ export function DataTablePagination<TData>({
             className="hidden size-8 p-0 lg:flex"
             size="icon"
             onClick={() => {
-              table.setPageIndex(table.getPageCount() - 1);
+              const lastIndex = pageCount - 1;
+              table.setPageIndex(lastIndex);
               if (onPageChange) {
-                onPageChange(table.getPageCount() - 1);
+                onPageChange(lastIndex);
               }
             }}
             disabled={!table.getCanNextPage()}

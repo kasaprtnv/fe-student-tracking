@@ -5,6 +5,7 @@ import { Check, ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SelectOption } from '@/types';
 import { Button } from './button';
+import { useTranslations } from 'next-intl';
 
 interface MultiSelectProps {
   options: SelectOption[];
@@ -14,17 +15,20 @@ interface MultiSelectProps {
   className?: string;
   disabled?: boolean;
   maxDisplayItems?: number;
+  enableEachCancel?: boolean;
 }
 
 export function MultiSelect({
   options,
   value,
   onChange,
-  placeholder = 'เลือกรายการ...',
+  placeholder = 'placeholder',
   className,
   disabled = false,
   maxDisplayItems = 4,
+  enableEachCancel = true,
 }: MultiSelectProps) {
+  const t = useTranslations('components.multi-select');
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -75,14 +79,14 @@ export function MultiSelect({
   // Display text for selected items
   const getDisplayText = () => {
     if (selectedOptions.length === 0) {
-      return placeholder;
+      return t(placeholder);
     }
 
     if (selectedOptions.length <= maxDisplayItems) {
       return selectedOptions.map((option) => option.label).join(', ');
     }
 
-    return `เลือกแล้ว ${selectedOptions.length} รายการ`;
+    return t('selected_items', { count: selectedOptions.length });
   };
 
   return (
@@ -104,10 +108,10 @@ export function MultiSelect({
             selectedOptions.map((option) => (
               <span
                 key={option.value}
-                className="bg-secondary inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium"
+                className="bg-secondary inline-flex items-center gap-1 rounded px-2 py-1 text-xs"
               >
                 {option.label}
-                {!disabled && (
+                {!disabled && enableEachCancel && (
                   <Button
                     onClick={(e) => removeItem(option.value, e)}
                     className="hover:bg-secondary-foreground/20 ml-1 h-3 w-3 rounded-sm"
@@ -139,7 +143,7 @@ export function MultiSelect({
               e.stopPropagation();
               onChange([]);
             }}
-            className="hover:bg-secondary mr-2 h-4 w-4 rounded-sm"
+            className="mr-2 h-5 w-5 rounded-sm"
           >
             <X className="h-3 w-3" />
           </Button>
@@ -162,7 +166,7 @@ export function MultiSelect({
             <input
               ref={inputRef}
               type="text"
-              placeholder="ค้นหา..."
+              placeholder={t('search_placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="border-input bg-background focus:ring-ring w-full rounded border px-2 py-1 text-sm focus:ring-1 focus:outline-none"
@@ -174,7 +178,7 @@ export function MultiSelect({
           <div className="max-h-60 overflow-auto">
             {filteredOptions.length === 0 ? (
               <div className="text-muted-foreground px-2 py-3 text-center text-sm">
-                ไม่พบรายการที่ค้นหา
+                {t('no_results')}
               </div>
             ) : (
               filteredOptions.map((option) => {
@@ -189,9 +193,7 @@ export function MultiSelect({
                     onClick={() => handleOptionSelect(option.value)}
                   >
                     <div className="flex-1 space-y-1">
-                      <div className="leading-tight font-medium">
-                        {option.label}
-                      </div>
+                      <div className="leading-tight">{option.label}</div>
                       <div className="text-muted-foreground text-xs leading-relaxed">
                         {option.description}
                       </div>
@@ -206,7 +208,7 @@ export function MultiSelect({
           {/* Footer with count */}
           {selectedOptions.length > 0 && (
             <div className="text-muted-foreground border-t px-2 py-2 text-xs">
-              เลือกแล้ว: {selectedOptions.length} รายการ
+              {t('selected_items', { count: selectedOptions.length })}
             </div>
           )}
         </div>

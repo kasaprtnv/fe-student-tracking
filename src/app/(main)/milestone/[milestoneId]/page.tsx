@@ -19,11 +19,13 @@ import { IMilestoneStep } from '@/types/milestone-step';
 import MilestoneStepCard from '@/components/milestone-step/milestone-step-card';
 import { PageHeader } from '@/components/page-header';
 import { Loader, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 const MilestoneStepPage = () => {
   const { milestoneId } = useParams();
   const milestoneIdString = milestoneId as string;
   const t = useTranslations('milestone-step');
+  const tMilestone = useTranslations('milestone');
 
   const {
     fetchMilestoneStepsByMilestone,
@@ -45,9 +47,9 @@ const MilestoneStepPage = () => {
   const [isEdit, setIsEdit] = React.useState<boolean>(false);
   const [isDelete, setIsDelete] = React.useState<boolean>(false);
   const [isDeleting, setIsDeleting] = React.useState<boolean>(false);
-  const [selectedStep, setSelectedStep] = React.useState<IMilestoneStep | null>(
-    null,
-  );
+  const [selectedStep, setSelectedStep] = React.useState<
+    IMilestoneStep | undefined
+  >(undefined);
 
   // Fetch milestone and milestone steps
   React.useEffect(() => {
@@ -96,6 +98,7 @@ const MilestoneStepPage = () => {
   const confirmUpdatePositions = async () => {
     try {
       await updateMultiMilestoneSteps(steps);
+      toast.success(t('milestone-step-form.toast.position-updated'));
       setOriginalSteps(steps); // Update original positions after saving
     } catch (error) {
       console.error('Failed to update positions:', error);
@@ -134,7 +137,7 @@ const MilestoneStepPage = () => {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: 'Milestones', href: '/milestone' },
+          { label: tMilestone('title'), href: '/milestone' },
           { label: milestone?.name || '', isPage: true },
         ]}
       />
