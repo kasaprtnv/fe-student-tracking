@@ -12,6 +12,8 @@ import {
   ScrollText,
 } from 'lucide-react';
 import { Separator } from '../ui/separator';
+import { useMemo } from 'react';
+import { ChangePasswordComponent } from './change-password/change-password';
 
 interface ProfileTeacherPageProps {
   user: User | null;
@@ -25,6 +27,15 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
   const t = useTranslations('profile');
   const API_STATIC_URL =
     process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
+
+  const manageCourseName = useMemo(() => {
+    const courseName: string[] = [];
+    user?.managedCourses?.forEach((course) => {
+      courseName.push(course.name);
+    });
+    return courseName.join(', ');
+  }, [user]);
+
   if (isLoading) {
     return (
       <div>
@@ -73,112 +84,122 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
           </div>
           <div className="mt-4 text-center text-2xl font-bold">{`${user?.titleName}${user?.firstName} ${user?.lastName}`}</div>
           <div className="text-center text-lg font-medium text-red-700">
-            {t('personal_information.teacher_position') ||
-              'อาจารย์ประจำหลักสูตร'}
+            {t('personal_information.teacher_position')}
+            {manageCourseName}
           </div>
         </div>
         <Separator className="mb-8" />
 
-        {/* Info Grid */}
-        <div className="mb-8 grid w-full max-w-7xl grid-cols-2 gap-x-32">
-          {/* Left column */}
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-2 px-12">
-              <span className="mr-2 text-base font-medium text-gray-600">
-                {t('personal_information.major')}
-              </span>
-              <div className="flex items-center gap-4">
-                <span className="text-center">
+        {/* ข้อมูลส่วนตัว */}
+        <div className="mb-6 w-11/12">
+          <div className="rounded-3xl border bg-white px-14 py-6">
+            {/* Header */}
+            <div className="mb-6 border-l-4 border-red-600 pl-4">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {t('personal_information.personal_information_title')}
+              </h2>
+            </div>
+            {/* Row 1 */}
+            <div className="grid grid-cols-12 gap-6">
+              {/* สาขา */}
+              <div className="col-span-5 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-base font-medium text-gray-700">
                   <Landmark className="size-5 text-red-800" />
+                  {t('personal_information.major')}
+                </label>
+                <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
+                  {user?.major ?? '-'}
                 </span>
-                <span className="text-xl">{user?.major ?? '-'}</span>
+              </div>
+
+              {/* คณะ */}
+              <div className="col-span-5 col-start-8 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-base font-medium text-gray-700">
+                  <LucideIdCardLanyard className="size-6 text-red-800" />
+                  {t('personal_information.faculty')}
+                </label>
+                <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
+                  {t('personal_information.polsci-law')}
+                </span>
               </div>
             </div>
-            <Separator />
-            <div className="flex flex-col gap-2 px-12">
-              <span className="mr-2 text-base font-medium text-gray-600">
-                {t('personal_information.course')}
-              </span>
-              <div className="flex items-center gap-4">
-                <span className="text-center">
+
+            {/* Row 2 */}
+            <div className="mt-6 grid grid-cols-12 gap-6">
+              {/* คอร์สที่ดูแล */}
+              <div className="col-span-5 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-base font-medium text-gray-700">
                   <GraduationCap className="size-5 text-red-800" />
-                </span>
-                <span className="text-xl">
+                  {t('personal_information.course')}
+                </label>
+                <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
                   {user?.managedCourses && user.managedCourses.length > 0
                     ? user.managedCourses.map((c) => c.name).join(', ')
                     : '-'}
                 </span>
               </div>
-            </div>
-            <Separator />
-            <div className="flex flex-col gap-2 px-12">
-              <span className="mr-2 text-base font-medium text-gray-600">
-                {t('personal_information.degree')}
-              </span>
-              <div className="flex items-center gap-4">
-                <span className="text-center">
-                  <ScrollText className="size-6 text-red-800" />
-                </span>
-                <span className="text-xl">{user?.teacherDegree ?? '-'}</span>
-              </div>
-            </div>
-            <Separator />
-            <div className="flex flex-col gap-2 px-12">
-              <span className="mr-2 text-base font-medium text-gray-600">
-                {t('personal_information.phone')}
-              </span>
-              <div className="flex items-center gap-4">
-                <span className="text-center">
-                  <Phone className="size-5 text-red-800" />
-                </span>
-                <span className="text-xl">{user?.phone ?? '-'}</span>
-              </div>
-            </div>
-            <Separator />
-          </div>
-          {/* Right column */}
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-2 px-12">
-              <span className="mr-2 text-base font-medium text-gray-600">
-                {t('personal_information.faculty')}
-              </span>
-              <div className="flex items-center gap-4">
-                <span className="text-center">
-                  <LucideIdCardLanyard className="size-6 text-red-800" />
-                </span>
-                <span className="text-xl">
-                  {t('personal_information.polsci-law')}
-                </span>
-              </div>
-            </div>
-            <Separator />
-            <div className="flex flex-col gap-2 px-12">
-              <span className="mr-2 text-base font-medium text-gray-600">
-                {t('personal_information.academic_position') ||
-                  'ตำแหน่งวิชาการ'}
-              </span>
-              <div className="flex items-center gap-4">
-                <span className="text-center">
+
+              {/* ตำแหน่งวิชาการ */}
+              <div className="col-span-5 col-start-8 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-base font-medium text-gray-700">
                   <Medal className="size-6 text-red-800" />
+                  {t('personal_information.academic_position')}
+                </label>
+                <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
+                  {user?.academicPosition
+                    ? user.academicPosition
+                        .split(',')
+                        .map((pos) => pos.trim())
+                        .join(', ')
+                    : '-'}
                 </span>
-                <span className="text-xl">{user?.academicPosition ?? '-'}</span>
               </div>
             </div>
-            <Separator />
-            <div className="flex flex-col gap-2 px-12">
-              <span className="mr-2 text-base font-medium text-gray-600">
-                {t('personal_information.email')}
-              </span>
-              <div className="flex items-center gap-4">
-                <span className="text-center">
-                  <Mail className="size-5 text-red-800" />
+
+            {/* Row 3 */}
+            <div className="mt-6 grid grid-cols-12 gap-6">
+              {/* วุฒิการศึกษา */}
+              <div className="col-span-5 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-base font-medium text-gray-700">
+                  <ScrollText className="size-6 text-red-800" />
+                  {t('personal_information.degree')}
+                </label>
+                <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
+                  {user?.teacherDegree ?? '-'}
                 </span>
-                <span className="text-xl">{user?.email ?? '-'}</span>
+              </div>
+
+              {/* อีเมล */}
+              <div className="col-span-5 col-start-8 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-base font-medium text-gray-700">
+                  <Mail className="size-6 text-red-800" />
+                  {t('personal_information.email')}
+                </label>
+                <span
+                  className="block truncate rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg"
+                  title={user?.email ?? '-'}
+                >
+                  {user?.email ?? '-'}
+                </span>
               </div>
             </div>
-            <Separator />
+
+            {/* Row 4 */}
+            <div className="mt-6 grid grid-cols-12 gap-6">
+              {/* วุฒิการศึกษา */}
+              <div className="col-span-5 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-base font-medium text-gray-700">
+                  <Phone className="size-5 text-red-800" />
+                  {t('personal_information.phone')}
+                </label>
+                <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
+                  {user?.phone ?? '-'}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
+        <ChangePasswordComponent />
       </div>
     </div>
   );

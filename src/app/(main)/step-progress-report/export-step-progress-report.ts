@@ -2,11 +2,15 @@
 
 import ExcelJS from 'exceljs';
 import { IStepProgressReport } from '@/types/step-progress-report';
-import { formatThaiDate } from '@/lib/format-date';
+import { formatShortDate } from '@/lib/format-date';
 
 interface ExportOptions {
   tColumn: (key: string) => string;
   tStatus: (key: string) => string;
+  tDegree: (key: string) => string;
+  locale: string;
+  filters?: { label: string; value: string }[];
+  filterTitle?: string;
 }
 
 const getStatusStyle = (status: IStepProgressReport['status']) => {
@@ -31,16 +35,67 @@ export const exportToExcel = async (
   options: ExportOptions,
   fileName: string,
 ) => {
-  const { tColumn, tStatus } = options;
+  const { tColumn, tStatus, tDegree, locale, filters, filterTitle } = options;
   if (!data.length) return;
 
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Report');
 
+  /* ================= FILTER INFO ================= */
+  let dataStartRow = 1;
+
+  if (filters && filters.length > 0) {
+    // Title row
+    const titleRow = worksheet.addRow([filterTitle ?? 'Applied Filters']);
+    titleRow.font = {
+      bold: true,
+      name: 'TH Sarabun New',
+      size: 18,
+      color: { argb: '1E3A8A' },
+    };
+    worksheet.mergeCells(1, 1, 1, 2);
+
+    const titleCell = titleRow.getCell(1);
+    titleCell.alignment = { horizontal: 'center' };
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: '2563EB' },
+    };
+    titleCell.font = {
+      color: { argb: 'FFFFFF' },
+      bold: true,
+      name: 'TH Sarabun New',
+      size: 18,
+    };
+
+    // Filter rows
+    filters.forEach((filter) => {
+      const filterRow = worksheet.addRow([filter.label, filter.value]);
+      filterRow.getCell(1).font = {
+        bold: true,
+        name: 'TH Sarabun New',
+        size: 16,
+      };
+      filterRow.getCell(2).font = {
+        name: 'TH Sarabun New',
+        size: 16,
+      };
+    });
+
+    // Empty row separator
+    worksheet.addRow([]);
+
+    dataStartRow = filters.length + 3; // title + filters + empty row
+  }
+
   /* ================= HEADER ================= */
   worksheet.addRow([
     tColumn('student-code'),
     tColumn('full-name'),
+    tColumn('major'),
+    tColumn('degree'),
+    tColumn('year'),
     tColumn('course-name'),
     tColumn('milestone-name'),
     tColumn('step-name'),
@@ -48,7 +103,7 @@ export const exportToExcel = async (
     tColumn('due-date'),
   ]);
 
-  const headerRow = worksheet.getRow(1);
+  const headerRow = worksheet.getRow(dataStartRow);
   headerRow.height = 24;
 
   headerRow.eachCell((cell) => {
@@ -74,11 +129,14 @@ export const exportToExcel = async (
     const excelRow = worksheet.addRow([
       row.studentCode,
       `${row.studentFirstName} ${row.studentLastName}`.trim() || '-',
+      row.studentMajor || '-',
+      tDegree(row.studentDegree) || '-',
+      row.studentYear || '-',
       row.courseName,
       row.milestoneName,
       row.stepName,
       tStatus(row.status),
-      row.dueDate ? formatThaiDate(row.dueDate) : '-',
+      row.dueDate ? formatShortDate(row.dueDate, locale) : '-',
     ]);
 
     excelRow.font = {
@@ -87,7 +145,7 @@ export const exportToExcel = async (
     };
 
     // STATUS CELL STYLE
-    const statusCell = excelRow.getCell(6);
+    const statusCell = excelRow.getCell(9);
     const style = getStatusStyle(row.status);
 
     statusCell.alignment = { horizontal: 'center' };
@@ -108,7 +166,7 @@ export const exportToExcel = async (
   });
 
   /* ================= FREEZE HEADER ================= */
-  worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+  worksheet.views = [{ state: 'frozen', ySplit: dataStartRow }];
 
   /* ================= EXPORT ================= */
   const buffer = await workbook.xlsx.writeBuffer();

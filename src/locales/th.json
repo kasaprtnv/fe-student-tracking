@@ -219,6 +219,7 @@
   "profile": {
     "personal_information": {
       "title": "รายละเอียดข้อมูลส่วนตัว",
+      "personal_information_title": "ข้อมูลส่วนตัว",
       "name": "ชื่อ-นามสกุล",
       "email": "อีเมล",
       "phone": "เบอร์โทรศัพท์",
@@ -231,6 +232,13 @@
       "academic_position": "ตำแหน่งทางวิชาการ",
       "degree": "วุฒิการศึกษา",
       "polsci-law": "รัฐศาสตร์และนิติศาสตร์"
+    },
+    "change_password": {
+      "title": "ความปลอดภัย",
+      "current_password": "รหัสผ่านปัจจุบัน",
+      "new_password": "รหัสผ่านใหม่",
+      "confirm_new_password": "ยืนยันรหัสผ่านใหม่",
+      "success": "เปลี่ยนรหัสผ่านสำเร็จ"
     },
     "progress_title": "ความคืบหน้าของนักศึกษา",
     "contact_admin": "โปรดติดต่อเจ้าหน้าที่เพื่อลงทะเบียนหลักสูตร"
@@ -249,12 +257,14 @@
     "upload_button": "แนบไฟล์หลักฐาน",
     "uploading": "กำลังอัปโหลด...",
     "uploaded_file": "ไฟล์ที่อัปโหลด",
+    "student_file_attachment": "ไฟล์ที่แนบหลักฐาน",
     "submitting": "กำลังส่ง...",
     "submit_button": "ยืนยันการดำเนินการ",
     "overall_progress": "ความคืบหน้า",
     "accept_file_type": "รองรับไฟล์ประเภท",
     "progress_count": "สำเร็จ {completed} จาก {total} ขั้นตอน",
     "reason_for_decline": "เหตุผลที่ไม่อนุมัติ",
+    "description_placeholder": "กรอกคำอธิบายเพิ่มเติม (ถ้ามี)",
     "recommendation": "คำแนะนำ",
     "description": "คำอธิบาย",
     "file_attachment": "ไฟล์ที่แนบมาจากผู้ดูแลหลักสูตร",
@@ -856,9 +866,13 @@
       "milestone": "ขั้นตอนการศึกษา",
       "step": "ขั้นตอนการศึกษาย่อย",
       "degree": "ระดับการศึกษา",
+      "major-placeholder": "กรอกสาขาวิชา",
+      "major": "สาขาวิชา",
       "status": "สถานะ",
       "apply-filters": "ใช้ตัวกรอง",
-      "export-excel": " ส่งออกรายงาน"
+      "export-excel": " ส่งออกรายงาน",
+      "all": "ทั้งหมด",
+      "applied-filters": "ตัวกรองที่ใช้"
     }
   },
   "components": {
