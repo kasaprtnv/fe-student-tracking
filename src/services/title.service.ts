@@ -65,6 +65,30 @@ class TitleService extends APIService {
         throw error?.response?.data;
       });
   }
+
+  async getAllTitlesUsage(titleIds: string[]): Promise<Record<string, boolean>> {
+    try {
+      // Check usage for each title in parallel
+      const results = await Promise.all(
+        titleIds.map(async (id) => {
+          try {
+            const inUse = await this.checkTitleInUse(id);
+            return { id, inUse };
+          } catch {
+            return { id, inUse: false };
+          }
+        })
+      );
+      
+      const usageMap: Record<string, boolean> = {};
+      results.forEach(({ id, inUse }) => {
+        usageMap[id] = inUse;
+      });
+      return usageMap;
+    } catch {
+      return {};
+    }
+  }
 }
 
 export const titleService = new TitleService();

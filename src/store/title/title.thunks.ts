@@ -79,3 +79,16 @@ export const deleteTitle = createAsyncThunk(
     }
   },
 );
+
+export const fetchAllTitlesUsage = createAsyncThunk(
+  'title/fetchAllUsage',
+  async (titleIds: string[]) => {
+    try {
+      const res = await titleService.getAllTitlesUsage(titleIds);
+      return res;
+    } catch {
+      // Return empty object if API doesn't exist
+      return {};
+    }
+  },
+);

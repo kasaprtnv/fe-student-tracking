@@ -22,7 +22,7 @@ const TitlePage = () => {
   const {
     filteredTitlesId,
     searchQuery,
-    fetchAllTitles,
+    fetchAllTitlesWithUsage,
     getTitleById,
     setSearch: setSearchQuery,
     removeTitle,
@@ -57,7 +57,7 @@ const TitlePage = () => {
   useSWR(
     'fetch-titles',
     async () => {
-      await fetchAllTitles();
+      await fetchAllTitlesWithUsage();
     },
     {
       revalidateOnFocus: false,

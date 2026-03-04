@@ -5,6 +5,7 @@ import {
   createTitle,
   updateTitle,
   deleteTitle,
+  fetchAllTitlesUsage,
 } from './title.thunks';
 import { ITitle, TitleState } from '@/types/title';
 
@@ -110,6 +111,23 @@ const titleSlice = createSlice({
       })
       .addCase(deleteTitle.rejected, (state, action) => {
         state.storeAction = 'none';
+        state.error = action.payload as string;
+      });
+
+    // Fetch all titles usage
+    builder
+      .addCase(fetchAllTitlesUsage.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(fetchAllTitlesUsage.fulfilled, (state, action) => {
+        const usageMap = action.payload as Record<string, boolean>;
+        Object.keys(state.titleMap).forEach((titleId) => {
+          if (state.titleMap[titleId]) {
+            state.titleMap[titleId].isInUse = usageMap[titleId] ?? false;
+          }
+        });
+      })
+      .addCase(fetchAllTitlesUsage.rejected, (state, action) => {
         state.error = action.payload as string;
       });
   },
