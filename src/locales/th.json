@@ -763,6 +763,9 @@
     "already_approved": "หลักฐานนี้ได้รับการอนุมัติแล้ว",
     "already_declined": "หลักฐานนี้ถูกปฏิเสธแล้ว",
     "no_document": "ไม่พบเอกสาร",
+    "no_attachment": "ไม่มีไฟล์แนบ",
+    "no_attachment_description": "ขั้นตอนนี้ไม่ต้องแนบเอกสาร",
+    "no_attachment_required": "(ขั้นตอนนี้ไม่ต้องแนบเอกสาร)",
     "download": "ดาวน์โหลด",
     "teacher": "อาจารย์"
   },
