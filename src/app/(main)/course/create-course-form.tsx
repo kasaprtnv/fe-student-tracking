@@ -137,7 +137,7 @@ export function CreateCourseFormDialog({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      maxLength={10}
+                      maxLength={20}
                       placeholder={t('placeholder.code')}
                       className="border-gray-300 bg-white"
                       {...field}
