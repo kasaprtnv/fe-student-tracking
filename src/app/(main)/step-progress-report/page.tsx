@@ -115,7 +115,7 @@ const StepProgressReportPage = () => {
       <PageHeader
         breadcrumbs={[{ label: tProgressReport('title'), isPage: true }]}
       />
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto pt-2 pb-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">
             {tProgressReport('title')}

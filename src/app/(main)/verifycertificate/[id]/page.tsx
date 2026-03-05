@@ -433,7 +433,7 @@ export default function VerifyDetailPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
         breadcrumbs={[
           { label: t('breadcrumb.verify'), href: '/verifycertificate' },
@@ -441,418 +441,429 @@ export default function VerifyDetailPage() {
         ]}
       />
 
-      <div className="container mx-auto">
+      <div className="container mx-auto pt-2 pb-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Document Preview (with batch & file tabs) - แสดงเฉพาะเมื่อมีไฟล์แนบ */}
-        {studentAttachments.length > 0 && (
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader className="flex flex-col gap-2 border-b pb-4">
-                {/* Batch tab bar ถูกลบออก */}
-                {/* File tab bar for latest batch only */}
-                <div className="mb-2 flex items-center gap-2 overflow-x-auto">
-                  {(attachmentBatches[0] || []).map((att, idx) => (
-                    <button
-                      key={att.id || att.fileKey || idx}
-                      className={`max-w-[200px] flex-shrink-0 truncate rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                      onClick={() => setSelectedAttachmentIdx(idx)}
-                      type="button"
-                      title={decodeFileName(
-                        att.fileName || `ไฟล์ที่ ${idx + 1}`,
-                      )}
-                    >
-                      {decodeFileName(att.fileName || `ไฟล์ที่ ${idx + 1}`)}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex w-full items-center justify-between gap-2">
-                  <CardTitle className="text-base font-medium">
-                    {getFileName()}
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" onClick={handleZoomIn}>
-                      <ZoomIn className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={handleZoomOut}>
-                      <ZoomOut className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleDownload}
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
+        {/* Content */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Document Preview (with batch & file tabs) - แสดงเฉพาะเมื่อมีไฟล์แนบ */}
+          {studentAttachments.length > 0 && (
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader className="flex flex-col gap-2 border-b pb-4">
+                  {/* Batch tab bar ถูกลบออก */}
+                  {/* File tab bar for latest batch only */}
+                  <div className="mb-2 flex items-center gap-2 overflow-x-auto">
+                    {(attachmentBatches[0] || []).map((att, idx) => (
+                      <button
+                        key={att.id || att.fileKey || idx}
+                        className={`max-w-[200px] flex-shrink-0 truncate rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                        onClick={() => setSelectedAttachmentIdx(idx)}
+                        type="button"
+                        title={decodeFileName(
+                          att.fileName || `ไฟล์ที่ ${idx + 1}`,
+                        )}
+                      >
+                        {decodeFileName(att.fileName || `ไฟล์ที่ ${idx + 1}`)}
+                      </button>
+                    ))}
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div
-                  className="flex items-center justify-center overflow-auto rounded-lg border bg-gray-50"
-                  style={{ height: '600px' }}
-                >
-                  {getFileUrl() ? (
-                    isImage() ? (
-                      <img
-                        src={getFileUrl() || ''}
-                        alt={getFileName()}
-                        className="max-h-full max-w-full object-contain"
-                        style={{
-                          transform: `scale(${zoom / 100})`,
-                          transformOrigin: 'center center',
-                        }}
-                      />
-                    ) : isPdf() ? (
-                      <iframe
-                        src={getFileUrl() || ''}
-                        className="h-full w-full"
-                        style={{
-                          transform: `scale(${zoom / 100})`,
-                          transformOrigin: 'top center',
-                        }}
-                        title="Document Preview"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center gap-4 text-center">
-                        <p className="text-gray-600">{getFileName()}</p>
-                        <Button onClick={handleDownload}>
-                          <Download className="mr-2 h-4 w-4" />
-                          {t('download')}
-                        </Button>
-                      </div>
-                    )
-                  ) : (
-                    <div className="text-center text-gray-500">
-                      <p>{t('no_document')}</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Details & Actions */}
-        <div className="space-y-6">
-          {/* Details Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('detail.title')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <span className="text-muted-foreground">
-                  {t('detail.student_code')}:
-                </span>
-                <span className="font-medium">
-                  {data.studentCode || data.student?.code || '-'}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <span className="text-muted-foreground">
-                  {t('detail.student_name')}:
-                </span>
-                <span className="font-medium">
-                  {data.studentName ||
-                    `${data.student?.firstName || ''} ${data.student?.lastName || ''}`.trim() ||
-                    '-'}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <span className="text-muted-foreground">
-                  {t('detail.step')}:
-                </span>
-                <span className="font-medium">
-                  {data.stepName || data.step?.name || '-'}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <span className="text-muted-foreground">
-                  {t('detail.submit_date')}:
-                </span>
-                <span className="font-medium">
-                  {formatDate(data.submittedAt)}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Student Comment Card - คำอธิบายเพิ่มเติมจากนักศึกษา */}
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('detail.student_comment')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg border bg-gray-50 p-4">
-                <p className="text-sm whitespace-pre-wrap">
-                  {studentComment || '-'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Review Card */}
-          {data.status === 'pending approval' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('review.title')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="declineReason">
-                    {t('review.decline_reason')}
-                  </Label>
-                  <Textarea
-                    id="declineReason"
-                    placeholder={t('review.decline_reason_placeholder')}
-                    value={declineReason}
-                    maxLength={1000}
-                    onChange={(e) => {
-                      const value = e.target.value.slice(0, 1000);
-                      setDeclineReason(value);
-                      if (value.trim()) {
-                        setDeclineReasonError(false);
-                      }
-                    }}
-                    className={`mt-2 ${declineReasonError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                    rows={4}
-                  />
-                  <div className="mt-1 flex justify-between">
-                    {declineReasonError ? (
-                      <p className="text-xs text-red-500">
-                        {t('review.decline_reason_required')}
-                      </p>
-                    ) : (
-                      <span />
-                    )}
-                    <p className="text-muted-foreground text-xs">
-                      {declineReason.length}/1000
-                    </p>
-                  </div>
-                </div>
-
-                {/* Staff Attachment Upload */}
-                <div>
-                  <Label>{t('review.staff_attachment')}</Label>
-                  <div
-                    className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-gray-400"
-                    onClick={() => fileInputRef.current?.click()}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      if (
-                        e.dataTransfer.files &&
-                        e.dataTransfer.files.length > 0
-                      ) {
-                        const allFiles = Array.from(e.dataTransfer.files);
-
-                        // ตรวจสอบประเภทไฟล์
-                        const validTypeFiles = allFiles.filter(isValidFileType);
-                        const invalidTypeFiles = allFiles.filter(
-                          (f) => !isValidFileType(f),
-                        );
-
-                        if (invalidTypeFiles.length > 0) {
-                          setFileTypeError(true);
-                          setTimeout(() => setFileTypeError(false), 3000);
-                        }
-
-                        // ตรวจสอบขนาดไฟล์
-                        const validFiles =
-                          validTypeFiles.filter(isValidFileSize);
-                        const oversizedFiles = validTypeFiles.filter(
-                          (f) => !isValidFileSize(f),
-                        );
-
-                        if (oversizedFiles.length > 0) {
-                          setFileSizeError(true);
-                          setTimeout(() => setFileSizeError(false), 3000);
-                        }
-
-                        if (validFiles.length > 0) {
-                          setStaffAttachmentFiles((prev) => [
-                            ...prev,
-                            ...validFiles,
-                          ]);
-                        }
-                      }
-                    }}
-                    onDragOver={(e) => e.preventDefault()}
-                  >
-                    <Upload className="mb-2 h-8 w-8 text-gray-400" />
-                    <p className="text-center text-sm text-gray-500">
-                      {t('review.click_to_upload')}
-                    </p>
-                    <p className="mt-1 text-center text-xs text-gray-400">
-                      {t('review.file_types')}
-                    </p>
-                  </div>
-                  {/* File type error message */}
-                  {fileTypeError && (
-                    <p className="mt-2 text-sm text-red-500">
-                      {t('review.invalid_file_type')}
-                    </p>
-                  )}
-                  {/* File size error message */}
-                  {fileSizeError && (
-                    <p className="mt-2 text-sm text-red-500">
-                      {t('review.file_too_large')}
-                    </p>
-                  )}
-                  {/* Selected files list */}
-                  {staffAttachmentFiles.length > 0 && (
-                    <div className="mt-3 space-y-2">
-                      {staffAttachmentFiles.map((file, index) => (
-                        <div
-                          key={`${file.name}-${index}`}
-                          className="flex items-center justify-between rounded-md bg-gray-50 p-3"
-                        >
-                          <span className="truncate text-sm">{file.name}</span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeStaffFile(index);
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.docx,.png,.jpg,.jpeg"
-                    className="hidden"
-                    onChange={handleStaffFileChange}
-                    multiple
-                  />
-                </div>
-
-                <div className="flex justify-end gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={handleDecline}
-                    disabled={submitting || uploadingStaffFile}
-                  >
-                    {submitting || uploadingStaffFile ? (
-                      <Spinner className="mr-2 h-4 w-4" />
-                    ) : null}
-                    {t('review.decline')}
-                  </Button>
-                  <Button
-                    onClick={handleApprove}
-                    disabled={submitting}
-                    className="bg-black hover:bg-gray-900"
-                  >
-                    {submitting ? <Spinner className="mr-2 h-4 w-4" /> : null}
-                    {t('review.approve')}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Already Reviewed */}
-          {data.status !== 'pending approval' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {data.status === 'approved'
-                    ? t('already_approved')
-                    : t('already_declined')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Staff Attachment - เอกสารที่แนบมา */}
-                {(staffAttachment || data.staffAttachment) && (
-                  <div>
-                    <Label className="text-muted-foreground">
-                      {t('detail.staff_attachment')}
-                    </Label>
-                    <div className="mt-2 flex items-center justify-between rounded-lg border bg-gray-50 p-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm">
-                          {staffAttachment?.fileName ||
-                            data.staffAttachment?.fileName ||
-                            'Document'}
-                        </span>
-                      </div>
+                  <div className="flex w-full items-center justify-between gap-2">
+                    <CardTitle className="text-base font-medium">
+                      {getFileName()}
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
-                        onClick={() => {
-                          const fileKey =
-                            staffAttachment?.fileKey ||
-                            staffAttachment?.fileUrl ||
-                            data.staffAttachment?.fileKey ||
-                            data.staffAttachment?.fileUrl;
-                          if (fileKey) {
-                            window.open(
-                              uploadService.getFileUrl(fileKey),
-                              '_blank',
-                            );
-                          }
-                        }}
+                        onClick={handleZoomIn}
+                      >
+                        <ZoomIn className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleZoomOut}
+                      >
+                        <ZoomOut className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleDownload}
                       >
                         <Download className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
-                )}
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div
+                    className="flex items-center justify-center overflow-auto rounded-lg border bg-gray-50"
+                    style={{ height: '600px' }}
+                  >
+                    {getFileUrl() ? (
+                      isImage() ? (
+                        <img
+                          src={getFileUrl() || ''}
+                          alt={getFileName()}
+                          className="max-h-full max-w-full object-contain"
+                          style={{
+                            transform: `scale(${zoom / 100})`,
+                            transformOrigin: 'center center',
+                          }}
+                        />
+                      ) : isPdf() ? (
+                        <iframe
+                          src={getFileUrl() || ''}
+                          className="h-full w-full"
+                          style={{
+                            transform: `scale(${zoom / 100})`,
+                            transformOrigin: 'top center',
+                          }}
+                          title="Document Preview"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-4 text-center">
+                          <p className="text-gray-600">{getFileName()}</p>
+                          <Button onClick={handleDownload}>
+                            <Download className="mr-2 h-4 w-4" />
+                            {t('download')}
+                          </Button>
+                        </div>
+                      )
+                    ) : (
+                      <div className="text-center text-gray-500">
+                        <p>{t('no_document')}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
-                {/* Decline Reason - เหตุผลในการปฏิเสธ */}
-                {data.declineReason && (
+          {/* Details & Actions */}
+          <div className="space-y-6">
+            {/* Details Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('detail.title')}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-2">
+                  <span className="text-muted-foreground">
+                    {t('detail.student_code')}:
+                  </span>
+                  <span className="font-medium">
+                    {data.studentCode || data.student?.code || '-'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <span className="text-muted-foreground">
+                    {t('detail.student_name')}:
+                  </span>
+                  <span className="font-medium">
+                    {data.studentName ||
+                      `${data.student?.firstName || ''} ${data.student?.lastName || ''}`.trim() ||
+                      '-'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <span className="text-muted-foreground">
+                    {t('detail.step')}:
+                  </span>
+                  <span className="font-medium">
+                    {data.stepName || data.step?.name || '-'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <span className="text-muted-foreground">
+                    {t('detail.submit_date')}:
+                  </span>
+                  <span className="font-medium">
+                    {formatDate(data.submittedAt)}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Student Comment Card - คำอธิบายเพิ่มเติมจากนักศึกษา */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('detail.student_comment')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-lg border bg-gray-50 p-4">
+                  <p className="text-sm whitespace-pre-wrap">
+                    {studentComment || '-'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Review Card */}
+            {data.status === 'pending approval' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('review.title')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div>
-                    <Label className="text-red-500">
-                      {t('detail.decline_reason')}
+                    <Label htmlFor="declineReason">
+                      {t('review.decline_reason')}
                     </Label>
-                    <div className="mt-2 rounded-lg border border-red-200 bg-red-50 p-3">
-                      <p className="text-sm text-red-700">
-                        {data.declineReason}
+                    <Textarea
+                      id="declineReason"
+                      placeholder={t('review.decline_reason_placeholder')}
+                      value={declineReason}
+                      maxLength={1000}
+                      onChange={(e) => {
+                        const value = e.target.value.slice(0, 1000);
+                        setDeclineReason(value);
+                        if (value.trim()) {
+                          setDeclineReasonError(false);
+                        }
+                      }}
+                      className={`mt-2 ${declineReasonError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                      rows={4}
+                    />
+                    <div className="mt-1 flex justify-between">
+                      {declineReasonError ? (
+                        <p className="text-xs text-red-500">
+                          {t('review.decline_reason_required')}
+                        </p>
+                      ) : (
+                        <span />
+                      )}
+                      <p className="text-muted-foreground text-xs">
+                        {declineReason.length}/1000
                       </p>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
 
-      {/* Success Modal */}
-      <AlertDialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <AlertDialogContent className="max-w-sm">
-          <AlertDialogTitle className="sr-only">
-            {t('success.title')}
-          </AlertDialogTitle>
-          <button
-            onClick={handleSuccessClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-          >
-            <X className="h-5 w-5" />
-          </button>
-          <div className="flex flex-col items-center justify-center py-6">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500">
-              <CheckCircle2 className="h-10 w-10 text-white" />
-            </div>
-            <h2 className="mb-2 text-2xl font-bold text-green-500">
-              {t('success.title')}
-            </h2>
-            <p className="text-center text-gray-600">{successMessage}</p>
+                  {/* Staff Attachment Upload */}
+                  <div>
+                    <Label>{t('review.staff_attachment')}</Label>
+                    <div
+                      className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-gray-400"
+                      onClick={() => fileInputRef.current?.click()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        if (
+                          e.dataTransfer.files &&
+                          e.dataTransfer.files.length > 0
+                        ) {
+                          const allFiles = Array.from(e.dataTransfer.files);
+
+                          // ตรวจสอบประเภทไฟล์
+                          const validTypeFiles =
+                            allFiles.filter(isValidFileType);
+                          const invalidTypeFiles = allFiles.filter(
+                            (f) => !isValidFileType(f),
+                          );
+
+                          if (invalidTypeFiles.length > 0) {
+                            setFileTypeError(true);
+                            setTimeout(() => setFileTypeError(false), 3000);
+                          }
+
+                          // ตรวจสอบขนาดไฟล์
+                          const validFiles =
+                            validTypeFiles.filter(isValidFileSize);
+                          const oversizedFiles = validTypeFiles.filter(
+                            (f) => !isValidFileSize(f),
+                          );
+
+                          if (oversizedFiles.length > 0) {
+                            setFileSizeError(true);
+                            setTimeout(() => setFileSizeError(false), 3000);
+                          }
+
+                          if (validFiles.length > 0) {
+                            setStaffAttachmentFiles((prev) => [
+                              ...prev,
+                              ...validFiles,
+                            ]);
+                          }
+                        }
+                      }}
+                      onDragOver={(e) => e.preventDefault()}
+                    >
+                      <Upload className="mb-2 h-8 w-8 text-gray-400" />
+                      <p className="text-center text-sm text-gray-500">
+                        {t('review.click_to_upload')}
+                      </p>
+                      <p className="mt-1 text-center text-xs text-gray-400">
+                        {t('review.file_types')}
+                      </p>
+                    </div>
+                    {/* File type error message */}
+                    {fileTypeError && (
+                      <p className="mt-2 text-sm text-red-500">
+                        {t('review.invalid_file_type')}
+                      </p>
+                    )}
+                    {/* File size error message */}
+                    {fileSizeError && (
+                      <p className="mt-2 text-sm text-red-500">
+                        {t('review.file_too_large')}
+                      </p>
+                    )}
+                    {/* Selected files list */}
+                    {staffAttachmentFiles.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {staffAttachmentFiles.map((file, index) => (
+                          <div
+                            key={`${file.name}-${index}`}
+                            className="flex items-center justify-between rounded-md bg-gray-50 p-3"
+                          >
+                            <span className="truncate text-sm">
+                              {file.name}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeStaffFile(index);
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,.docx,.png,.jpg,.jpeg"
+                      className="hidden"
+                      onChange={handleStaffFileChange}
+                      multiple
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={handleDecline}
+                      disabled={submitting || uploadingStaffFile}
+                    >
+                      {submitting || uploadingStaffFile ? (
+                        <Spinner className="mr-2 h-4 w-4" />
+                      ) : null}
+                      {t('review.decline')}
+                    </Button>
+                    <Button
+                      onClick={handleApprove}
+                      disabled={submitting}
+                      className="bg-black hover:bg-gray-900"
+                    >
+                      {submitting ? <Spinner className="mr-2 h-4 w-4" /> : null}
+                      {t('review.approve')}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Already Reviewed */}
+            {data.status !== 'pending approval' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {data.status === 'approved'
+                      ? t('already_approved')
+                      : t('already_declined')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Staff Attachment - เอกสารที่แนบมา */}
+                  {(staffAttachment || data.staffAttachment) && (
+                    <div>
+                      <Label className="text-muted-foreground">
+                        {t('detail.staff_attachment')}
+                      </Label>
+                      <div className="mt-2 flex items-center justify-between rounded-lg border bg-gray-50 p-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">
+                            {staffAttachment?.fileName ||
+                              data.staffAttachment?.fileName ||
+                              'Document'}
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => {
+                            const fileKey =
+                              staffAttachment?.fileKey ||
+                              staffAttachment?.fileUrl ||
+                              data.staffAttachment?.fileKey ||
+                              data.staffAttachment?.fileUrl;
+                            if (fileKey) {
+                              window.open(
+                                uploadService.getFileUrl(fileKey),
+                                '_blank',
+                              );
+                            }
+                          }}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Decline Reason - เหตุผลในการปฏิเสธ */}
+                  {data.declineReason && (
+                    <div>
+                      <Label className="text-red-500">
+                        {t('detail.decline_reason')}
+                      </Label>
+                      <div className="mt-2 rounded-lg border border-red-200 bg-red-50 p-3">
+                        <p className="text-sm text-red-700">
+                          {data.declineReason}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        </div>
+
+        {/* Success Modal */}
+        <AlertDialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+          <AlertDialogContent className="max-w-sm">
+            <AlertDialogTitle className="sr-only">
+              {t('success.title')}
+            </AlertDialogTitle>
+            <button
+              onClick={handleSuccessClose}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="flex flex-col items-center justify-center py-6">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500">
+                <CheckCircle2 className="h-10 w-10 text-white" />
+              </div>
+              <h2 className="mb-2 text-2xl font-bold text-green-500">
+                {t('success.title')}
+              </h2>
+              <p className="text-center text-gray-600">{successMessage}</p>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </>
   );
 }
