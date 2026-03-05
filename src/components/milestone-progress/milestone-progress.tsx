@@ -419,9 +419,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
         .join(', ')
         .replace(/, ([^,]*)$/, ' และ $1');
 
-      messages.push(
-        `คุณต้องดำเนินการขั้นตอนการศึกษาย่อยทั้งหมดของ ${milestoneNames}`,
-      );
+      messages.push(`${t('need_to_complete_milestone')} ${milestoneNames}`);
     }
 
     // เงื่อนไขสำหรับ step
@@ -429,12 +427,12 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       const stepNames = requiredSteps
         .map((s) => `"${s.name}"`)
         .join(', ')
-        .replace(/, ([^,]*)$/, ' และ $1');
+        .replace(/, ([^,]*)$/, ` ${t('and')} $1`);
 
       const prefix =
         requiredMilestones.length > 0
-          ? 'และดำเนินการขั้นตอนการศึกษาย่อย'
-          : 'คุณต้องดำเนินการขั้นตอนการศึกษาย่อย';
+          ? `${t('prefix_milestone')}`
+          : `${t('need_to_complete_step')}`;
 
       messages.push(`${prefix} ${stepNames}`);
     }

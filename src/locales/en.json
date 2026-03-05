@@ -230,9 +230,10 @@
       "major": "Department",
       "faculty": "Faculty",
       "degree": "Degree",
-      "teacher_position": "Teacher",
+      "teacher_position": "Lecturer",
       "academic_position": "Academic Position",
       "education": "Education",
+      "responsibility_course": "Responsibility Course",
       "polsci-law": "Political Science And Law"
     },
     "change_password": {
@@ -240,6 +241,8 @@
       "current_password": "Current Password",
       "new_password": "New Password",
       "confirm_new_password": "Confirm New Password",
+      "save": "Save",
+      "cancel": "Cancel",
       "success": "Password changed successfully"
     },
     "progress_title": "Graduate Progress",
@@ -255,7 +258,7 @@
     "pending": "Pending",
     "declined": "Declined",
     "deadline_date": "Deadline Date",
-    "locked": "Locked",
+    "locked": "Cannot proceed with this step",
     "upload_button": "Upload File",
     "uploading": "Uploading...",
     "uploaded_file": "Uploaded File",
@@ -280,6 +283,10 @@
     "student_attachment_label": "Submitted Document",
     "decline_reason_label": "Additional Comments",
     "staff_attachment_label": "Enter additional comments",
+    "need_to_complete_step": "You need to complete the following step",
+    "need_to_complete_milestone": "You need to complete all steps for the following milestone",
+    "prefix_milestone": "and complete the following milestone steps",
+    "and": "and",
     "decline_reason": "Additional Comments",
     "download": "Download"
   },

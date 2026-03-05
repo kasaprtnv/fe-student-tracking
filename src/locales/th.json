@@ -231,6 +231,7 @@
       "teacher_position": "อาจารย์ประจำหลักสูตร",
       "academic_position": "ตำแหน่งทางวิชาการ",
       "degree": "วุฒิการศึกษา",
+      "responsibility_course": "หลักสูตรที่รับผิดชอบ",
       "polsci-law": "รัฐศาสตร์และนิติศาสตร์"
     },
     "change_password": {
@@ -238,6 +239,8 @@
       "current_password": "รหัสผ่านปัจจุบัน",
       "new_password": "รหัสผ่านใหม่",
       "confirm_new_password": "ยืนยันรหัสผ่านใหม่",
+      "save": "บันทึก",
+      "cancel": "ยกเลิก",
       "success": "เปลี่ยนรหัสผ่านสำเร็จ"
     },
     "progress_title": "ความคืบหน้าของนักศึกษา",
@@ -278,6 +281,10 @@
     "student_attachment_label": "เอกสารที่แนบส่งมา",
     "decline_reason_label": "เหตุผลในการปฏิเสธ",
     "staff_attachment_label": "ไฟล์เพิ่มเติมจากเจ้าหน้าที่",
+    "need_to_complete_step": "คุณต้องดำเนินการขั้นตอนการศึกษาย่อย",
+    "need_to_complete_milestone": "คุณต้องดำเนินการขั้นตอนการศึกษาย่อยทั้งหมดของ",
+    "prefix_milestone": "และดำเนินการขั้นตอนการศึกษาย่อย",
+    "and": "และ",
     "decline_reason": "เหตุผลที่ปฏิเสธ",
     "download": "ดาวน์โหลด"
   },
