@@ -57,7 +57,6 @@ export default function VerifyDetailPage() {
   const [attachmentBatches, setAttachmentBatches] = useState<AttachmentDTO[][]>(
     [],
   );
-  const [selectedBatchIdx, setSelectedBatchIdx] = useState(0);
   const [selectedAttachmentIdx, setSelectedAttachmentIdx] = useState(0);
   const [staffAttachment, setStaffAttachment] = useState<AttachmentDTO | null>(
     null,
@@ -157,7 +156,6 @@ export default function VerifyDetailPage() {
           }
 
           setAttachmentBatches(batches);
-          setSelectedBatchIdx(0);
 
           // หา staff attachment (ไฟล์ที่ staff upload - uploadedByUserId ไม่ใช่ student)
           if (response.data?.status === 'declined' && attachments.length > 1) {
@@ -448,32 +446,43 @@ export default function VerifyDetailPage() {
 
         {/* Content */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Document Preview (with batch & file tabs) - แสดงเฉพาะเมื่อมีไฟล์แนบ */}
-          {studentAttachments.length > 0 && (
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader className="flex flex-col gap-2 border-b pb-4">
-                  {/* Batch tab bar ถูกลบออก */}
-                  {/* File tab bar for latest batch only */}
-                  <div className="mb-2 flex items-center gap-2 overflow-x-auto">
-                    {(attachmentBatches[0] || []).map((att, idx) => (
-                      <button
-                        key={att.id || att.fileKey || idx}
-                        className={`max-w-[200px] flex-shrink-0 truncate rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                        onClick={() => setSelectedAttachmentIdx(idx)}
-                        type="button"
-                        title={decodeFileName(
-                          att.fileName || `ไฟล์ที่ ${idx + 1}`,
-                        )}
-                      >
-                        {decodeFileName(att.fileName || `ไฟล์ที่ ${idx + 1}`)}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex w-full items-center justify-between gap-2">
+          {/* Document Preview (with batch & file tabs) */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader className="flex flex-col gap-2 border-b pb-4">
+                {/* File tab bar - แสดงเฉพาะเมื่อมีไฟล์มากกว่า 1 ไฟล์ */}
+                {studentAttachments.length > 0 &&
+                  (attachmentBatches[0] || []).length > 1 && (
+                    <div className="mb-2 flex items-center gap-2 overflow-x-auto">
+                      {(attachmentBatches[0] || []).map((att, idx) => (
+                        <button
+                          key={att.id || att.fileKey || idx}
+                          className={`max-w-[200px] flex-shrink-0 truncate rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                          onClick={() => setSelectedAttachmentIdx(idx)}
+                          type="button"
+                          title={decodeFileName(
+                            att.fileName || `ไฟล์ที่ ${idx + 1}`,
+                          )}
+                        >
+                          {decodeFileName(att.fileName || `ไฟล์ที่ ${idx + 1}`)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                <div className="flex w-full items-center justify-between gap-2">
+                  <div className="flex flex-col">
                     <CardTitle className="text-base font-medium">
-                      {getFileName()}
+                      {studentAttachments.length > 0
+                        ? getFileName()
+                        : t('no_attachment')}
                     </CardTitle>
+                    {data?.step?.requiresAttachment === false && (
+                      <span className="text-xs text-gray-500">
+                        {t('no_attachment_required')}
+                      </span>
+                    )}
+                  </div>
+                  {studentAttachments.length > 0 && (
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
@@ -497,14 +506,16 @@ export default function VerifyDetailPage() {
                         <Download className="h-4 w-4" />
                       </Button>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div
-                    className="flex items-center justify-center overflow-auto rounded-lg border bg-gray-50"
-                    style={{ height: '600px' }}
-                  >
-                    {getFileUrl() ? (
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div
+                  className="flex items-center justify-center overflow-auto rounded-lg border bg-gray-50"
+                  style={{ height: '600px' }}
+                >
+                  {studentAttachments.length > 0 ? (
+                    getFileUrl() ? (
                       isImage() ? (
                         <img
                           src={getFileUrl() || ''}
@@ -538,12 +549,18 @@ export default function VerifyDetailPage() {
                       <div className="text-center text-gray-500">
                         <p>{t('no_document')}</p>
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                    )
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-2 text-center text-gray-500">
+                      <p className="text-lg font-medium">
+                        {t('no_attachment_description')}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Details & Actions */}
           <div className="space-y-6">
@@ -571,8 +588,8 @@ export default function VerifyDetailPage() {
                       '-'}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <span className="text-muted-foreground">
+                <div className="flex gap-2">
+                  <span className="text-muted-foreground whitespace-nowrap">
                     {t('detail.step')}:
                   </span>
                   <span className="font-medium">
