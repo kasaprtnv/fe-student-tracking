@@ -199,35 +199,13 @@ export default function VerifyDetailPage() {
     if (!user?.id) return;
     setSubmitting(true);
     try {
-      // Upload staff attachments if exists - ใช้ stepId จาก data
-      if (staffAttachmentFiles.length > 0 && data) {
-        setUploadingStaffFile(true);
-        try {
-          // ใช้ stepId จาก data เพื่อ upload attachment
-          const stepId = data.stepId || data.step?.id;
-          if (stepId) {
-            // Upload all files in one request
-            const uploadResult = await uploadService.uploadStaffAttachment(
-              stepId,
-              staffAttachmentFiles,
-              user.id,
-            );
-            if (!uploadResult.success) {
-              console.warn(
-                'Staff attachment upload failed:',
-                uploadResult.error,
-              );
-            }
-          } else {
-            console.warn('No stepId found, skipping staff attachment upload');
-          }
-        } catch (uploadError) {
-          console.warn('Staff attachment upload error:', uploadError);
-        }
-        setUploadingStaffFile(false);
-      }
-
-      await studentStepProgressService.approve(id, user.id, declineReason);
+      // ส่งไฟล์แนบไปพร้อมกับ approve เพื่อให้ backend สร้าง attempt และเชื่อมโยง staff_attachment_id
+      await studentStepProgressService.approve(
+        id,
+        user.id,
+        declineReason,
+        staffAttachmentFiles.length > 0 ? staffAttachmentFiles : undefined,
+      );
       refreshPendingCount(); // Refresh pending count ทันที
       setSuccessMessage(t('success.approved'));
       setShowSuccessModal(true);
