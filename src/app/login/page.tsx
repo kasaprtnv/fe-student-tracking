@@ -89,7 +89,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h2 className="mb-6 text-center text-2xl font-bold text-[#7b1f1f] sm:mb-8 sm:text-3xl lg:mb-12 lg:text-4xl">
-            Login to Your Account
+            เข้าสู่ระบบบัญชีผู้ใช้
           </h2>
           <div className="mb-4 sm:mb-6 lg:mb-8">
             <div className="flex items-center rounded-full border-2 border-gray-300 px-4 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-5">
@@ -143,7 +143,7 @@ export default function LoginPage() {
             type="submit"
             className="w-full rounded-full bg-[#7b1f1f] px-6 py-3 text-base font-bold tracking-wider text-white transition-colors duration-300 hover:bg-[#5c1717] sm:px-8 sm:py-4 sm:text-lg lg:px-10 lg:py-5 lg:text-xl"
           >
-            Login
+            เข้าสู่ระบบ
           </button>
           {message && (
             <p
