@@ -107,13 +107,41 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
     () => Object.fromEntries(milestones.map((m) => [m.id, true])),
   );
   const attemptMap = useMemo(() => {
-    const map: Record<string, StudentStepAttempts> = {};
+    const map: Record<
+      string,
+      StudentStepAttempts & {
+        staffAttachments?: Array<{
+          id: string;
+          fileName: string;
+          fileKey: string;
+        }>;
+      }
+    > = {};
+
     stepAttempts?.forEach((attempt) => {
       const stepId = attempt.stepProgress.milestoneStepId;
+
+      // ถ้ายังไม่มี หรือ attemptNo ใหม่มากกว่า ให้เก็บ
       if (!map[stepId] || attempt.attemptNo > map[stepId].attemptNo) {
-        map[stepId] = attempt;
+        map[stepId] = {
+          ...attempt,
+          staffAttachments: attempt.staffAttachment
+            ? [attempt.staffAttachment]
+            : [],
+        };
+      }
+      // ถ้า attemptNo เท่ากัน ให้รวม staffAttachment
+      else if (
+        attempt.attemptNo === map[stepId].attemptNo &&
+        attempt.staffAttachment
+      ) {
+        if (!map[stepId].staffAttachments) {
+          map[stepId].staffAttachments = [];
+        }
+        map[stepId].staffAttachments!.push(attempt.staffAttachment);
       }
     });
+
     return map;
   }, [stepAttempts]);
 
@@ -838,31 +866,35 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                     {attemptMap[step.id] &&
                                       (completed || declined) && (
                                         <>
-                                          {attemptMap[step.id]
-                                            .staffAttachment && (
+                                          {(attemptMap[step.id].staffAttachments
+                                            ?.length || 0) > 0 && (
                                             <>
                                               <div className="mt-3 font-bold">
                                                 {t('file_attachment')}
                                               </div>
-                                              <div className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4">
-                                                <File className="mr-2" />
-                                                {
-                                                  attemptMap[step.id]
-                                                    .staffAttachment?.fileName
-                                                }
-                                                <div className="ml-auto">
-                                                  <Download
-                                                    className="hover:cursor-pointer"
-                                                    onClick={() =>
-                                                      downloadFile(
-                                                        attemptMap[step.id]
-                                                          .staffAttachment
-                                                          ?.fileKey || '',
-                                                      )
-                                                    }
-                                                  />
-                                                </div>
-                                              </div>
+                                              {attemptMap[
+                                                step.id
+                                              ].staffAttachments?.map(
+                                                (attachment, idx) => (
+                                                  <div
+                                                    key={idx}
+                                                    className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4"
+                                                  >
+                                                    <File className="mr-2" />
+                                                    {attachment.fileName}
+                                                    <div className="ml-auto">
+                                                      <Download
+                                                        className="hover:cursor-pointer"
+                                                        onClick={() =>
+                                                          downloadFile(
+                                                            attachment.fileKey,
+                                                          )
+                                                        }
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                ),
+                                              )}
                                             </>
                                           )}
                                         </>
