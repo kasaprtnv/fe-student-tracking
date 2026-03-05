@@ -361,7 +361,7 @@ export default function StudentPage() {
   return (
     <>
       <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto pt-2 pb-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">{t('description')}</p>

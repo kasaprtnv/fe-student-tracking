@@ -76,19 +76,36 @@ class StudentStepProgressService extends APIService {
       });
   }
 
-  // อนุมัติ
+  // อนุมัติ - รองรับหลายไฟล์ โดยแต่ละไฟล์จะสร้าง attempt ใหม่
   async approve(
     id: string,
     reviewedBy: string,
     recommendation?: string,
+    staffAttachmentFiles?: File[],
   ): Promise<IApiPatchResponse<IStudentStepProgress>> {
-    return this.patch(`/student-step-progress/${id}/approve`, {
-      reviewedBy,
-      recommendation,
+    const formData = new FormData();
+    formData.append('reviewedBy', reviewedBy);
+    if (recommendation) {
+      formData.append('recommendation', recommendation);
+    }
+
+    // ส่งหลายไฟล์ด้วย field name เดียวกัน
+    if (staffAttachmentFiles) {
+      for (const file of staffAttachmentFiles) {
+        formData.append('staffAttachmentFile', file);
+      }
+    }
+
+    return fetch(`${this.baseURL}/student-step-progress/${id}/approve`, {
+      method: 'PATCH',
+      body: formData,
     })
-      .then((response) => response?.data)
+      .then(async (response) => {
+        if (!response.ok) throw await response.json();
+        return response.json();
+      })
       .catch((error) => {
-        throw error?.response?.data;
+        throw error;
       });
   }
 

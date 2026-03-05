@@ -58,7 +58,7 @@ export const ChangePasswordComponent = () => {
             <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
           </div>
 
-          <div className="row-auto mb-6">
+          <div className="mb-6 grid grid-cols-12 gap-6">
             {/* รหัสผ่านเดิม */}
             <div className="col-span-5 flex flex-col gap-2">
               <label className="flex items-center gap-2 text-base font-medium text-gray-700">
@@ -111,13 +111,13 @@ export const ChangePasswordComponent = () => {
           {/* Buttons */}
           <div className="mt-8 flex justify-end gap-3">
             <Button variant="outline" className="px-8">
-              ยกเลิก
+              {t('cancel')}
             </Button>
             <Button
               className="bg-black px-8 hover:bg-gray-800"
               onClick={handleSave}
             >
-              บันทึก
+              {t('save')}
             </Button>
           </div>
           {error && (

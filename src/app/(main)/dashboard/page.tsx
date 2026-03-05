@@ -129,7 +129,7 @@ const DashboardPage = () => {
   return (
     <>
       <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
-      <div className="container mx-auto space-y-6 overflow-x-hidden py-8">
+      <div className="container mx-auto space-y-6 overflow-x-hidden pt-2 pb-8">
         <div className="mb-4">
           <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">{t('description')}</p>
