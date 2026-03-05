@@ -82,7 +82,7 @@ export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
         </div>
         {/* Information */}
         <div className="flex-1">
-          <div className="grid grid-cols-4 gap-x-2 gap-y-4">
+          <div className="grid gap-x-2 gap-y-4 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
             {role === 'student' && (
               <div className="flex flex-col gap-1">
                 <span className="mr-2 text-base font-medium text-gray-600">
@@ -104,7 +104,12 @@ export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
                 <span className="text-center">
                   <User2 className="size-6 text-red-800" />
                 </span>
-                <span className="text-xl">{`${user?.firstName} ${user?.lastName}`}</span>
+                <span
+                  className="block truncate text-xl"
+                  title={`${user?.firstName} ${user?.lastName}`}
+                >
+                  {`${user?.firstName} ${user?.lastName}`}
+                </span>
               </div>
             </div>
             <div className="flex flex-col gap-1">
@@ -152,7 +157,12 @@ export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
                 <span className="text-center">
                   <GraduationCap className="size-6 text-red-800" />
                 </span>
-                <span className="text-xl">{user?.courseName ?? '-'}</span>
+                <span
+                  className="block truncate text-xl"
+                  title={user?.courseName ?? '-'}
+                >
+                  {user?.courseName ?? '-'}
+                </span>
               </div>
             </div>
             <div className="flex flex-col gap-1">
@@ -163,7 +173,12 @@ export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
                 <span className="text-center">
                   <Mail className="size-5 text-red-800" />
                 </span>
-                <span className="text-xl">{user?.email ?? '-'}</span>
+                <span
+                  className="block truncate text-xl"
+                  title={user?.email ?? '-'}
+                >
+                  {user?.email ?? '-'}
+                </span>
               </div>
             </div>
             <div className="flex flex-col gap-1">
