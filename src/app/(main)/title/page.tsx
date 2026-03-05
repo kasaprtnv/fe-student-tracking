@@ -48,7 +48,7 @@ const TitlePage = () => {
   const [isAdd, setIsAdd] = React.useState(false);
   const [isDelete, setIsDelete] = React.useState<{
     isDeleting: boolean;
-    titleId?: string;
+    titleIds?: string[];
   }>({
     isDeleting: false,
   });
@@ -79,30 +79,53 @@ const TitlePage = () => {
         toast.error(tForm('toast.cannot-delete-in-use'));
         return;
       }
-      setIsDelete({ isDeleting: true, titleId: id });
+      setIsDelete({ isDeleting: true, titleIds: [id] });
     } catch (error) {
       toast.error(tForm('toast.delete-error'));
     }
   };
 
+  const onDeleteMultipleTitles = (titles: ITitle[]) => {
+    setIsDelete({
+      isDeleting: true,
+      titleIds: titles.map((title) => title.id),
+    });
+  };
+
   const onConfirmDelete = async () => {
-    if (!isDelete.titleId) return;
+    if (!isDelete.titleIds || isDelete.titleIds.length === 0) return;
     setIsDeleteLoading(true);
     try {
-      // ตรวจสอบอีกครั้งก่อนลบ
-      const isInUse = await checkTitleInUse(isDelete.titleId);
-      if (isInUse) {
+      const inUseIds: string[] = [];
+      const deletableIds: string[] = [];
+
+      await Promise.all(
+        isDelete.titleIds.map(async (id) => {
+          const isInUse = await checkTitleInUse(id);
+          if (isInUse) {
+            inUseIds.push(id);
+          } else {
+            deletableIds.push(id);
+          }
+        }),
+      );
+
+      if (inUseIds.length > 0) {
         toast.error(tForm('toast.cannot-delete-in-use'));
-        setIsDelete({ isDeleting: false, titleId: undefined });
-        return;
       }
-      await removeTitle(isDelete.titleId);
-      toast.success(tForm('toast.deleted-successfully'));
+
+      for (const id of deletableIds) {
+        await removeTitle(id);
+      }
+
+      if (deletableIds.length > 0) {
+        toast.success(tForm('toast.deleted-successfully'));
+      }
     } catch (error) {
       toast.error(tForm('toast.deletion-failed'));
     } finally {
       setIsDeleteLoading(false);
-      setIsDelete({ isDeleting: false, titleId: undefined });
+      setIsDelete({ isDeleting: false, titleIds: undefined });
     }
   };
 
@@ -126,6 +149,7 @@ const TitlePage = () => {
           onAdd={() => setIsAdd(true)}
           onEdit={(title) => setIsEdit({ isEditing: true, title })}
           onDelete={onDeleteTitle}
+          onMultiDelete={onDeleteMultipleTitles}
           onSearch={onSearchChange}
           searchQuery={searchQuery}
         />
@@ -144,13 +168,15 @@ const TitlePage = () => {
         />
         <DeleteConfirmationDialog
           open={isDelete.isDeleting}
-          onClose={() => setIsDelete({ isDeleting: false, titleId: undefined })}
+          onClose={() =>
+            setIsDelete({ isDeleting: false, titleIds: undefined })
+          }
           onConfirm={onConfirmDelete}
           isLoading={isDeleteLoading}
           title="header"
           description="confirm"
           translationKey="title.delete"
-          count={1}
+          count={isDelete.titleIds?.length}
         />
       </div>
     </>
