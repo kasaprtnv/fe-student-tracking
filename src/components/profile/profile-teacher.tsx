@@ -12,7 +12,6 @@ import {
   ScrollText,
 } from 'lucide-react';
 import { Separator } from '../ui/separator';
-import { useMemo } from 'react';
 import { ChangePasswordComponent } from './change-password/change-password';
 
 interface ProfileTeacherPageProps {
@@ -27,14 +26,6 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
   const t = useTranslations('profile');
   const API_STATIC_URL =
     process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
-
-  const manageCourseName = useMemo(() => {
-    const courseName: string[] = [];
-    user?.managedCourses?.forEach((course) => {
-      courseName.push(course.name);
-    });
-    return courseName.join(', ');
-  }, [user]);
 
   if (isLoading) {
     return (
@@ -85,7 +76,6 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
           <div className="mt-4 text-center text-2xl font-bold">{`${user?.titleName}${user?.firstName} ${user?.lastName}`}</div>
           <div className="text-center text-lg font-medium text-red-700">
             {t('personal_information.teacher_position')}
-            {manageCourseName}
           </div>
         </div>
         <Separator className="mb-8" />
@@ -130,7 +120,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
               <div className="col-span-5 flex flex-col gap-2">
                 <label className="flex items-center gap-2 text-base font-medium text-gray-700">
                   <GraduationCap className="size-5 text-red-800" />
-                  {t('personal_information.course')}
+                  {t('personal_information.responsibility_course')}
                 </label>
                 <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
                   {user?.managedCourses && user.managedCourses.length > 0
