@@ -381,10 +381,11 @@ export function UpdateUserFormDialog({
                   allCourses={allCourses}
                   disabledFields={[
                     'code',
-                    'courseId',
-                    'degree',
-                    'year',
-                    'enrollDate',
+                    // ถ้ายังไม่มีข้อมูล (auto-created จาก LDAP) ให้แก้ไขได้
+                    ...(user?.courseId ? ['courseId'] : []),
+                    ...(user?.degree ? ['degree'] : []),
+                    ...(user?.year ? ['year'] : []),
+                    ...(user?.enrollDate ? ['enrollDate'] : []),
                   ]}
                 />
               )}
