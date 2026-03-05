@@ -138,7 +138,7 @@ export function UpdateCourseFormDialog({
                   <FormControl>
                     <Input
                       disabled={course?.isUsed}
-                      maxLength={10}
+                      maxLength={20}
                       placeholder={t('placeholder.code')}
                       className="border-gray-300 bg-white"
                       {...field}
