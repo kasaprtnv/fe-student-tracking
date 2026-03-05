@@ -42,10 +42,14 @@ export const usePendingCount = () => {
           // Filter pending items by courseCode (flat field)
           const filteredPending = allPending.filter((item) => {
             const studentCourseId = item.student?.courseId;
-            const studentCourseCode = item.courseCode || item.student?.courseCode || '';
+            const studentCourseCode =
+              item.courseCode || item.student?.courseCode || '';
 
-            const matchById = studentCourseId && managedCourseIds.includes(studentCourseId);
-            const matchByCode = studentCourseCode && managedCourseCodes.includes(studentCourseCode);
+            const matchById =
+              studentCourseId && managedCourseIds.includes(studentCourseId);
+            const matchByCode =
+              studentCourseCode &&
+              managedCourseCodes.includes(studentCourseCode);
 
             return matchById || matchByCode;
           });

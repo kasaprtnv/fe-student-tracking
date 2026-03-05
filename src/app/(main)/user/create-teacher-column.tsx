@@ -99,13 +99,13 @@ export const createTeacherColumns = (
         if (!courses || courses.length === 0) return '-';
         return (
           <div className="flex flex-col gap-1">
-            {courses.map((course, index) => (
+            {courses.map((course) => (
               <span
-                key={index}
+                key={course.id}
                 className="block max-w-[350px] truncate text-sm"
-                title={course}
+                title={course.name}
               >
-                {course}
+                {course.name}
               </span>
             ))}
           </div>

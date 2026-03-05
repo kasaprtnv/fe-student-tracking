@@ -38,7 +38,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     loader,
   } = useUser();
   const { allCourseId, getCourseById, courseMap } = useCourse();
-  const { titleMap, fetchAllTitles } = useTitle();
+  const { titleMap, fetchAllTitles, fetchTitlesUsage } = useTitle();
   const { fetchAllCourseStaff } = useCourseStaff();
   const [allCourseStaff, setAllCourseStaff] = React.useState<ICourseStaff[]>(
     [],
@@ -156,9 +156,13 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
         const managedCourses = teacherCourseStaff
           .map((cs) => {
             const course = getCourseById(cs.courseId);
-            return course ? `${course.code} - ${course.name}` : null;
+            return course
+              ? { id: course.id, name: `${course.code} - ${course.name}` }
+              : null;
           })
-          .filter((name): name is string => name !== null);
+          .filter(
+            (course): course is { id: string; name: string } => course !== null,
+          );
 
         return {
           ...user,
@@ -244,6 +248,8 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
         toast.success(tUser('toast.deleted-multiple-successfully'));
       }
       refreshData();
+      // Refresh title usage status after user deletion
+      fetchTitlesUsage();
       setIsDelete({ isDeleting: false, userIds: undefined });
     } catch (error) {
       console.error('Failed to delete user(s):', error);
@@ -358,6 +364,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
         allCourses={allCourses}
         allCourseStaff={allCourseStaff}
         onCourseStaffChange={refetchCourseStaff}
+        onUserUpdated={() => fetchTitlesUsage()}
       />
       <DeleteTextConfirmationDialog
         open={isDelete.isDeleting}

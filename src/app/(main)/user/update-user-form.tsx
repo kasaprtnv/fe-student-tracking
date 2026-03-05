@@ -54,6 +54,7 @@ interface UpdateUserFormDialogProps {
   allCourseStaff?: ICourseStaff[];
   onOpenChange: (open: boolean) => void;
   onCourseStaffChange?: () => void;
+  onUserUpdated?: () => void;
 }
 
 export function UpdateUserFormDialog({
@@ -64,6 +65,7 @@ export function UpdateUserFormDialog({
   allCourseStaff = [],
   allCourses,
   onCourseStaffChange,
+  onUserUpdated,
 }: UpdateUserFormDialogProps) {
   const tForm = useTranslations('user.user-form');
   const tUser = useTranslations('user');
@@ -279,6 +281,7 @@ export function UpdateUserFormDialog({
 
       // Trigger refetch of course_staff data and courses (to update course page)
       onCourseStaffChange?.();
+      onUserUpdated?.();
       fetchAllCourses();
       fetchAllCourseStaff();
       // Invalidate SWR cache for course page
@@ -318,6 +321,7 @@ export function UpdateUserFormDialog({
 
       // Trigger refetch
       onCourseStaffChange?.();
+      onUserUpdated?.();
       fetchAllCourses();
       fetchAllCourseStaff();
       mutate('fetch-courses and-course-staff');

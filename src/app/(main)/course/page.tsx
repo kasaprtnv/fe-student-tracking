@@ -150,7 +150,7 @@ const CoursePage = () => {
   // Memoize filtered course data to prevent unnecessary re-renders
   const filterCourseData = React.useMemo(
     () =>
-      allCoursesFromMap.map((course) => {
+      (allCoursesFromMap as ICourse[]).map((course) => {
         if (course.staffIds && course.staffIds.length > 0) {
           const users = course.staffIds
             .map((userId) => getUserById(userId))
@@ -259,7 +259,7 @@ const CoursePage = () => {
   return (
     <>
       <PageHeader breadcrumbs={[{ label: tCourse('title'), isPage: true }]} />
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto pt-2 pb-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">{tCourse('title')}</h1>
           <p className="text-muted-foreground">{tCourse('sub_title')}</p>

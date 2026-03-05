@@ -32,9 +32,8 @@ export default function StudentPage() {
   const locale = useLocale();
 
   const { user } = useAuth();
-  const { fetchAllCourses, allCourseId, courseMap } = useCourse();
-  const { allCourseStaffId, courseStaffMap, fetchAllCourseStaff } =
-    useCourseStaff();
+  const { allCourseId, courseMap, fetchCoursesByTeacherId } = useCourse();
+  const { allCourseStaffId } = useCourseStaff();
   const {
     fetchFilteredStudents,
     filteredStudentsFromMap,
@@ -58,19 +57,32 @@ export default function StudentPage() {
   const [advancedFilters, setAdvancedFilters] =
     useState<AdvancedFilterValues>(defaultFilterValues);
 
-  useEffect(() => {
-    fetchAllCourses();
-    fetchAllCourseStaff();
-  }, [fetchAllCourses, fetchAllCourseStaff]);
+  useSWR(
+    'fetch-course-data',
+    async () => {
+      if (!user) return;
+      if (user.role === 'student') return; // students don't need course data
+      await fetchCoursesByTeacherId(user.id);
+    },
+    { revalidateOnFocus: false },
+  );
 
-  // Get teacher's managed course IDs
-  const teacherManagedCourseIds = useMemo(() => {
-    if (!user || user.role !== 'teacher') return [];
-    return allCourseStaffId
-      .map((id) => courseStaffMap[id])
-      .filter((cs) => (cs as unknown as { userId: string }).userId === user.id)
-      .map((cs) => cs.courseId);
-  }, [user, allCourseStaffId, courseStaffMap]);
+  // State: teacher's managed course IDs (for teacher only)
+  const [teacherManagedCourseIds, setTeacherManagedCourseIds] = useState<
+    string[]
+  >([]);
+
+  useEffect(() => {
+    if (!user || user.role === 'student') {
+      return;
+    }
+    // fetchCoursesByTeacherId จะต้อง return Promise<Course[]> หรือ array ที่มี id
+    fetchCoursesByTeacherId(user.id).then((courses) => {
+      setTeacherManagedCourseIds(
+        Array.isArray(courses) ? courses.map((c) => c.id) : [],
+      );
+    });
+  }, [user, fetchCoursesByTeacherId]);
 
   const allCourses = useMemo(() => {
     return allCourseId.map((id) => courseMap[id]).filter(Boolean);
@@ -85,28 +97,28 @@ export default function StudentPage() {
     }));
   }, [allCourses]);
 
-  // Build filter payload for API
+  // Build filter payload for API — only include non-empty values
   const filterPayload = useMemo((): StudentFilterPayload => {
-    const payload: StudentFilterPayload = {};
-    if (advancedFilters.code) payload.code = advancedFilters.code;
-    if (advancedFilters.fullName) payload.fullName = advancedFilters.fullName;
-    if (advancedFilters.email) payload.email = advancedFilters.email;
-    if (advancedFilters.phone) payload.phone = advancedFilters.phone;
-    if (advancedFilters.major) payload.major = advancedFilters.major;
-    if (advancedFilters.degree.length > 0)
-      payload.degree = advancedFilters.degree;
-    if (advancedFilters.year.length > 0) payload.year = advancedFilters.year;
-    if (advancedFilters.courseId.length > 0)
-      payload.courseId = advancedFilters.courseId;
-    if (advancedFilters.studyPlan.length > 0)
-      payload.studyPlan = advancedFilters.studyPlan;
-    if (advancedFilters.enrollDateFrom)
-      payload.enrollDateFrom = advancedFilters.enrollDateFrom.toISOString();
-    if (advancedFilters.enrollDateTo)
-      payload.enrollDateTo = advancedFilters.enrollDateTo.toISOString();
-    if (advancedFilters.graduated.length > 0)
-      payload.graduated = advancedFilters.graduated;
+    const { enrollDateFrom, enrollDateTo, ...rest } = advancedFilters;
+
+    // Pick non-empty string/array fields from advancedFilters
+    const entries = Object.entries(rest);
+
+    const filtered = entries.filter(([, value]) => {
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return !!value;
+    });
+
+    const payload = Object.fromEntries(filtered);
+
+    // Date fields need .toISOString() conversion
+    if (enrollDateFrom) payload.enrollDateFrom = enrollDateFrom.toISOString();
+    if (enrollDateTo) payload.enrollDateTo = enrollDateTo.toISOString();
+
     if (debouncedSearch) payload.search = debouncedSearch;
+
     // For teacher role, send managed course IDs to backend for filtering
     if (user?.role === 'teacher' && teacherManagedCourseIds.length > 0) {
       payload.managedCourseIds = teacherManagedCourseIds;
@@ -349,7 +361,7 @@ export default function StudentPage() {
   return (
     <>
       <PageHeader breadcrumbs={[{ label: t('title'), isPage: true }]} />
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto pt-2 pb-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">{t('description')}</p>
