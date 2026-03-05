@@ -135,7 +135,7 @@
         "name-required": "Course name is required",
         "degree-required": "Degree is required",
         "code-duplicate": "Course code already exists",
-        "code-too-long": "Course code must not exceed 10 characters"
+        "code-too-long": "Course code must not exceed 20 characters"
       },
       "label": {
         "code": "Course Code",
