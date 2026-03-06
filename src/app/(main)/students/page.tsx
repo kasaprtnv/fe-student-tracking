@@ -9,7 +9,6 @@ import useSWR from 'swr';
 import { DataTableClickable } from '@/components/data-table/data-table-clickable';
 import { useUser } from '@/hooks/use-user';
 import { useCourse } from '@/hooks/use-course';
-import { useCourseStaff } from '@/hooks/use-course_staff';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { DataTableFilterField } from '@/components/data-table/types';
@@ -33,7 +32,6 @@ export default function StudentPage() {
 
   const { user } = useAuth();
   const { allCourseId, courseMap, fetchCoursesByTeacherId } = useCourse();
-  const { allCourseStaffId } = useCourseStaff();
   const {
     fetchFilteredStudents,
     filteredStudentsFromMap,
@@ -71,16 +69,19 @@ export default function StudentPage() {
   const [teacherManagedCourseIds, setTeacherManagedCourseIds] = useState<
     string[]
   >([]);
+  const [coursesLoaded, setCoursesLoaded] = useState(false);
 
   useEffect(() => {
     if (!user || user.role === 'student') {
       return;
     }
-    // fetchCoursesByTeacherId จะต้อง return Promise<Course[]> หรือ array ที่มี id
     fetchCoursesByTeacherId(user.id).then((courses) => {
       setTeacherManagedCourseIds(
-        Array.isArray(courses) ? courses.map((c) => c.id) : [],
+        Array.isArray(courses?.data)
+          ? courses.data.map((c: { id: string }) => c.id)
+          : [],
       );
+      setCoursesLoaded(true);
     });
   }, [user, fetchCoursesByTeacherId]);
 
@@ -131,20 +132,20 @@ export default function StudentPage() {
     setCurrentPage(1);
   }, []);
 
-  // Determine if courseStaff is loaded (needed for teacher role)
+  // Determine if course data has been loaded (needed for teacher role)
   const isCourseStaffReady = useMemo(() => {
     if (!user) return false;
     if (user.role !== 'teacher') return true;
-    // For teachers, wait until courseStaff data is loaded
-    return allCourseStaffId.length > 0 || teacherManagedCourseIds.length >= 0;
-  }, [user, allCourseStaffId, teacherManagedCourseIds]);
+    // For teachers, wait until fetchCoursesByTeacherId has resolved
+    return coursesLoaded;
+  }, [user, coursesLoaded]);
 
-  // For teacher with no managed courses, return empty
+  // For teacher with no managed courses, show empty table
   const teacherHasNoCourses = useMemo(() => {
     if (!user || user.role !== 'teacher') return false;
-    if (allCourseStaffId.length === 0) return false; // still loading
+    if (!coursesLoaded) return false; // still loading
     return teacherManagedCourseIds.length === 0;
-  }, [user, allCourseStaffId, teacherManagedCourseIds]);
+  }, [user, coursesLoaded, teacherManagedCourseIds]);
 
   // SWR key — null to defer fetching until ready
   const swrKey =
