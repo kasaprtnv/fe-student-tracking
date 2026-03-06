@@ -54,7 +54,7 @@ class UserService extends APIService {
     const params = new URLSearchParams();
     params.append('query', searchQuery);
     params.append('page', String(page));
-    params.append('limit', String(pageSize));
+    params.append('pageSize', String(pageSize));
     if (role) params.append('role', role);
     if (sortBy) {
       params.append('sortBy', sortBy);
