@@ -189,18 +189,19 @@ export default function VerifyDetailPage() {
               return false;
             }
             // กรองออกถ้า uploadedByUserId ไม่ใช่ของนิสิต (เป็นของ staff/admin)
-            if (
-              att.uploadedByUserId &&
-              studentId &&
-              att.uploadedByUserId !== studentId
-            ) {
-              console.log(
-                'Excluding file uploaded by staff:',
-                att.fileName,
-                'uploadedBy:',
-                att.uploadedByUserId,
-              );
-              return false;
+            // ถ้ามี studentId ให้เก็บเฉพาะไฟล์ที่ uploadedByUserId ตรงกับ studentId
+            if (studentId) {
+              if (!att.uploadedByUserId || att.uploadedByUserId !== studentId) {
+                console.log(
+                  'Excluding file not uploaded by student:',
+                  att.fileName,
+                  'uploadedBy:',
+                  att.uploadedByUserId,
+                  'studentId:',
+                  studentId,
+                );
+                return false;
+              }
             }
             return true;
           });
