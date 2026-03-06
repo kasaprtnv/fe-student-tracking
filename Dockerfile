@@ -7,6 +7,7 @@ RUN apk update && apk upgrade --no-cache
 
 COPY package.json package-lock.json* yarn.lock* ./
 RUN npm install
+RUN apk add --no-cache chromium
 
 COPY . .
 RUN npm run build
