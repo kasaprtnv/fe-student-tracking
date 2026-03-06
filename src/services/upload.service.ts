@@ -113,7 +113,7 @@ class UploadService extends APIService {
     const response = await this.get(
       `/attachment/progress/${studentStepProgressId}`,
     );
-    console.log('DEBUG getAttachmentsByProgress response:', response);
+
     // Axios: response.data.data (array)
     if (Array.isArray(response)) {
       return response;
@@ -154,11 +154,7 @@ class UploadService extends APIService {
       const response = await this.get(
         `/attachment/approved-progress/${progressId}`,
       );
-      console.log(
-        'DEBUG getApprovedAttachmentsByProgress response:',
-        progressId,
-        response,
-      );
+
       if (Array.isArray(response)) {
         return response;
       }

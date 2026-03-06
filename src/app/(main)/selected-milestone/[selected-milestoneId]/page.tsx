@@ -7,7 +7,5 @@ export default function SelectedMilestoneByIdPage() {
   const params = useParams<{ 'selected-milestoneId': string }>();
   const courseId = params['selected-milestoneId'];
 
-  console.log('Course ID:', courseId);
-
   return <PageLayout courseId={courseId} />;
 }

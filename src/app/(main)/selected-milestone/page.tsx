@@ -269,8 +269,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     })
     .filter((ms) => ms !== undefined);
 
-  console.log(selectedMilestonesWithSteps);
-
   const [lockModalOpen, setLockModalOpen] = useState(false);
   const [targetLock, setTargetLock] = useState<{
     type: 'milestone' | 'step';
@@ -307,7 +305,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
 
       // 2. build prerequisite payload
       const dto = buildPrerequisiteDTO();
-      console.log('DTO TO SEND:', dto);
 
       // 3. 🔥 sync ทั้งชุด
       await update(courseId!, dto);
