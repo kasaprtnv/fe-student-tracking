@@ -7,6 +7,7 @@ RUN apk update && apk upgrade --no-cache
 
 COPY package.json package-lock.json* yarn.lock* ./
 RUN npm install
+RUN apk add --no-cache chromium
 
 COPY . .
 RUN npm run build
@@ -16,7 +17,20 @@ FROM node:24-alpine AS runner
 
 WORKDIR /app
 
-RUN apk update && apk upgrade --no-cache
+RUN apk update && apk upgrade --no-cache && \
+    apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    font-noto-emoji
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    CHROME_BIN=/usr/bin/chromium-browser \
+    CHROME_PATH=/usr/lib/chromium/
 
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules

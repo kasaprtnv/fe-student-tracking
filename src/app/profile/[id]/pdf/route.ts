@@ -28,8 +28,6 @@ export async function GET(
       milestones,
     };
 
-    console.log(profile);
-
     //render PDF
     const html = profilePdfHtml(fullProfile);
     const pdfUint8 = await generatePdf(html);

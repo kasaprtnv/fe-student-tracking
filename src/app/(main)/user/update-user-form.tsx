@@ -200,8 +200,6 @@ export function UpdateUserFormDialog({
     }
 
     try {
-      console.log('Submitting Update User Data:', formattedData);
-
       // Handle course_staff update for teachers (multi-course support)
       if (formattedData.role === 'teacher' && formattedData.courseIds) {
         const newCourseIds = formattedData.courseIds as string[];

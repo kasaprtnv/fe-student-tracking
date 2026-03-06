@@ -24,10 +24,7 @@ class MilestoneStepService extends APIService {
 
   async getMilestoneStepById(id: string): Promise<IMilestoneStep> {
     return this.get(`/milestone-steps/${id}`)
-      .then((response) => {
-        console.log(response);
-        return response.data;
-      })
+      .then((response) => response.data)
       .catch((error) => {
         throw error?.response?.data;
       });

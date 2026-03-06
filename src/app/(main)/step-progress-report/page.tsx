@@ -54,7 +54,6 @@ const StepProgressReportPage = () => {
   useSWR(
     user?.id ? `fetch-milestones-${user.id}` : null,
     async () => {
-      console.log('Fetching courses for teacher ID:', user!.id);
       await fetchCoursesByTeacherId(user!.id);
     },
     { revalidateOnFocus: false },

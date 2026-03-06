@@ -72,7 +72,7 @@ export function DataTableFilterItem<TData, TValue>({
                             selectedValues.add(option.value);
                           }
                           const filteredValue = Array.from(selectedValues);
-                          console.log('Filtered Value:', filteredValue);
+
                           column?.setFilterValue(
                             filteredValue.length ? filteredValue : undefined,
                           );
