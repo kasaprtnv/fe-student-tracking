@@ -87,16 +87,187 @@ export default function VerifyDetailPage() {
         const response = await studentStepProgressService.getById(id);
         setData(response.data);
 
-        // ดึงไฟล์แนบทั้งหมด
+        // ดึงไฟล์แนบตาม attempt ล่าสุด
         try {
-          const attachments = await uploadService.getAttachmentsByProgress(id);
           const studentId =
             response.data?.studentId || response.data?.student?.id;
-          // filter เฉพาะไฟล์ที่ student ส่ง (รวมไฟล์ที่ไม่มี uploadedByUserId ด้วย)
-          const studentFiles = (attachments || []).filter(
-            (att) =>
-              !att.uploadedByUserId || att.uploadedByUserId === studentId,
+
+          console.log('studentId:', studentId, 'from response:', response.data);
+
+          // ดึงไฟล์ทั้งหมดก่อน
+          const allAttachments =
+            await uploadService.getAttachmentsByProgress(id);
+
+          console.log(
+            'All attachments with uploadedByUserId:',
+            allAttachments.map((f) => ({
+              name: f.fileName,
+              uploadedByUserId: f.uploadedByUserId,
+              attemptId: f.attemptId,
+            })),
           );
+
+          // ดึง attempts เพื่อ log ดูข้อมูล
+          try {
+            const attemptsRes =
+              await studentStepProgressService.getAttemptsByProgressId(id);
+            console.log('All attempts:', attemptsRes.data);
+            if (
+              attemptsRes.data &&
+              Array.isArray(attemptsRes.data) &&
+              attemptsRes.data.length > 0
+            ) {
+              // เอา attempt ที่มี attemptNo สูงสุด
+              const sortedAttempts = [...attemptsRes.data].sort((a, b) => {
+                return (b.attemptNo || 0) - (a.attemptNo || 0);
+              });
+              const latestAttempt = sortedAttempts[0] as unknown as Record<
+                string,
+                unknown
+              >;
+              console.log(
+                'Latest attempt:',
+                'attemptNo:',
+                latestAttempt.attemptNo as number,
+                'full object:',
+                latestAttempt,
+                'all keys:',
+                Object.keys(latestAttempt),
+              );
+            }
+          } catch {
+            // ถ้าดึง attempts ไม่ได้
+          }
+
+          // ขั้นตอน 1: ดึง attempt ล่าสุดเพื่อหา staffAttachmentId (ไฟล์ที่ต้องกรองออก)
+          const staffAttachmentIds: string[] = [];
+          let studentFiles: AttachmentDTO[] = [];
+
+          try {
+            const attemptsRes2 =
+              await studentStepProgressService.getAttemptsByProgressId(id);
+            if (
+              attemptsRes2.data &&
+              Array.isArray(attemptsRes2.data) &&
+              attemptsRes2.data.length > 0
+            ) {
+              // เก็บ staffAttachmentId ทั้งหมดเพื่อกรองออก
+              attemptsRes2.data.forEach((attempt) => {
+                if (attempt.staffAttachmentId) {
+                  staffAttachmentIds.push(attempt.staffAttachmentId);
+                }
+              });
+
+              // เอา attempt ที่มี attemptNo สูงสุด
+              const sortedAttempts = [...attemptsRes2.data].sort((a, b) => {
+                return (b.attemptNo || 0) - (a.attemptNo || 0);
+              });
+              const latestAttempt = sortedAttempts[0];
+              console.log(
+                'Latest attempt:',
+                'attachmentId (student):',
+                latestAttempt.attachmentId,
+                'staffAttachmentId:',
+                latestAttempt.staffAttachmentId,
+                'attemptNo:',
+                latestAttempt.attemptNo,
+              );
+              console.log(
+                'All staff attachment IDs to exclude:',
+                staffAttachmentIds,
+              );
+            }
+          } catch (err) {
+            console.error('Error getting attempts:', err);
+          }
+
+          // ขั้นตอน 2: กรองไฟล์โดยเอาไฟล์ที่เป็น staffAttachmentId ออก และกรองโดย uploadedByUserId
+          const filesExcludingStaff = (allAttachments || []).filter((att) => {
+            // กรองออกถ้า id ตรงกับ staffAttachmentId
+            if (att.id && staffAttachmentIds.includes(att.id)) {
+              console.log('Excluding staff file:', att.fileName, 'id:', att.id);
+              return false;
+            }
+            // กรองออกถ้า uploadedByUserId ไม่ใช่ของนิสิต (เป็นของ staff/admin)
+            if (
+              att.uploadedByUserId &&
+              studentId &&
+              att.uploadedByUserId !== studentId
+            ) {
+              console.log(
+                'Excluding file uploaded by staff:',
+                att.fileName,
+                'uploadedBy:',
+                att.uploadedByUserId,
+              );
+              return false;
+            }
+            return true;
+          });
+
+          console.log(
+            'Files after excluding staff attachments:',
+            filesExcludingStaff.length,
+            filesExcludingStaff.map((f) => ({
+              id: f.id,
+              name: f.fileName,
+              attemptId: f.attemptId,
+            })),
+          );
+
+          // ขั้นตอน 3: หา attemptId ล่าสุดจากไฟล์ที่เหลือ
+          if (filesExcludingStaff.length > 0) {
+            // หา attemptId ล่าสุดจากไฟล์ (ใช้เวลาสร้าง)
+            const filesWithAttemptId = filesExcludingStaff.filter(
+              (att) => att.attemptId,
+            );
+
+            if (filesWithAttemptId.length > 0) {
+              // หา attemptId ที่ล่าสุด
+              const sortedByTime = [...filesWithAttemptId].sort(
+                (a, b) =>
+                  new Date(b.createdAt || 0).getTime() -
+                  new Date(a.createdAt || 0).getTime(),
+              );
+              const latestAttemptIdFromFiles =
+                sortedByTime[0].attemptId || null;
+              console.log(
+                'Latest attemptId from files:',
+                latestAttemptIdFromFiles,
+              );
+
+              if (latestAttemptIdFromFiles) {
+                // Filter ไฟล์ที่มี attemptId ตรงกัน
+                studentFiles = filesExcludingStaff.filter(
+                  (att) => att.attemptId === latestAttemptIdFromFiles,
+                );
+                console.log(
+                  'Files with latest attemptId:',
+                  studentFiles.length,
+                  studentFiles.map((f) => f.fileName),
+                );
+              }
+            } else {
+              // ถ้าไม่มี attemptId ใช้เวลาล่าสุด
+              console.log('No attemptId, using time-based filter');
+              const latestTime = Math.max(
+                ...filesExcludingStaff.map((f) =>
+                  new Date(f.createdAt || 0).getTime(),
+                ),
+              );
+              const BATCH_WINDOW_MS = 1 * 60 * 1000; // 1 minute
+              studentFiles = filesExcludingStaff.filter((f) => {
+                const fileTime = new Date(f.createdAt || 0).getTime();
+                return latestTime - fileTime <= BATCH_WINDOW_MS;
+              });
+              console.log(
+                'Files after time filter:',
+                studentFiles.length,
+                studentFiles.map((f) => f.fileName),
+              );
+            }
+          }
+
           // sort ล่าสุดไว้หน้าแรก
           studentFiles.sort(
             (a, b) =>
@@ -158,11 +329,20 @@ export default function VerifyDetailPage() {
           setAttachmentBatches(batches);
 
           // หา staff attachment (ไฟล์ที่ staff upload - uploadedByUserId ไม่ใช่ student)
-          if (response.data?.status === 'declined' && attachments.length > 1) {
-            const staffAtt = attachments.find(
-              (att) => att.uploadedByUserId !== studentId,
-            );
-            if (staffAtt) setStaffAttachment(staffAtt);
+          // ดึงไฟล์ทั้งหมดสำหรับหา staff attachment
+          if (response.data?.status === 'declined') {
+            try {
+              const allAttachments =
+                await uploadService.getAttachmentsByProgress(id);
+              if (allAttachments.length > 1) {
+                const staffAtt = allAttachments.find(
+                  (att: AttachmentDTO) => att.uploadedByUserId !== studentId,
+                );
+                if (staffAtt) setStaffAttachment(staffAtt);
+              }
+            } catch {
+              // ignore
+            }
           }
         } catch (attachError) {
           console.error('Error fetching attachments:', attachError);
