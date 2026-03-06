@@ -55,6 +55,7 @@ import {
 } from '../ui/tooltip';
 import { Textarea } from '../ui/textarea';
 import { Separator } from '../ui/separator';
+import { StepStatus } from '@/types/profile';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
@@ -423,7 +424,38 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
       month: 'long',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC',
     });
+  };
+
+  const checkRequiredIsCompleted = (milestoneId: string) => {
+    let IsAllComplete: boolean = true;
+    const required = milestoneRequiredMap[milestoneId];
+    if (!required) return true;
+    const requiredMilestones = required.milestones || [];
+    if (requiredMilestones.length > 0) {
+      requiredMilestones.forEach((rm) => {
+        const ms = milestones.find((m) => m.id === rm.id);
+        ms?.steps?.forEach((s) => {
+          if (!isStepCompleted(s.status)) {
+            IsAllComplete = false;
+          }
+        });
+      });
+    }
+
+    const requiredSteps = required.steps || [];
+    if (requiredSteps.length > 0) {
+      requiredSteps.forEach((rs) => {
+        for (const ms of milestones) {
+          const step = ms.steps?.find((s) => s.id === rs.id);
+          if (step && !isStepCompleted(step.status)) {
+            IsAllComplete = false;
+          }
+        }
+      });
+    }
+    return IsAllComplete;
   };
 
   const getUnlockMessage = (
@@ -582,24 +614,26 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                         <CardDescription>
                           {milestone.description}
                         </CardDescription>
-                        {(milestoneRequiredMap[milestone.id]?.milestones
-                          ?.length > 0 ||
-                          milestoneRequiredMap[milestone.id]?.steps?.length >
-                            0) && (
-                          <div className="mt-2 flex w-fit items-center gap-2 rounded-md bg-gray-100 px-4 py-2">
-                            <Lock className="h-4 w-4 text-gray-600" />
-                            <p className="text-sm text-gray-700">
-                              {getUnlockMessage(
-                                milestoneRequiredMap[milestone.id]
-                                  ?.milestones || [],
-                                milestoneRequiredMap[milestone.id]?.steps || [],
-                                milestone.name,
-                                'milestone',
-                                t,
-                              )}
-                            </p>
-                          </div>
-                        )}
+                        {!checkRequiredIsCompleted(milestone.id) &&
+                          (milestoneRequiredMap[milestone.id]?.milestones
+                            ?.length > 0 ||
+                            milestoneRequiredMap[milestone.id]?.steps?.length >
+                              0) && (
+                            <div className="mt-2 flex w-fit items-center gap-2 rounded-md bg-gray-100 px-4 py-2">
+                              <Lock className="h-4 w-4 text-gray-600" />
+                              <p className="text-sm text-gray-700">
+                                {getUnlockMessage(
+                                  milestoneRequiredMap[milestone.id]
+                                    ?.milestones || [],
+                                  milestoneRequiredMap[milestone.id]?.steps ||
+                                    [],
+                                  milestone.name,
+                                  'milestone',
+                                  t,
+                                )}
+                              </p>
+                            </div>
+                          )}
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">

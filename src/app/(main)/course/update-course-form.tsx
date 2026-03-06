@@ -75,7 +75,7 @@ export function UpdateCourseFormDialog({
   const onSubmit = async (data: UpdateCourseFormData) => {
     if (!course?.id || !data) return;
     try {
-      if (data.code.length > 10) {
+      if (data.code.length > 20) {
         form.setError('code', {
           type: 'manual',
           message: t('errors.code-too-long'),

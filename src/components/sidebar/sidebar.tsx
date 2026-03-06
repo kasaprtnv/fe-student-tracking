@@ -170,7 +170,7 @@ export default function Sidebar() {
                     'px-4',
                     childActive
                       ? 'bg-red-100 text-red-600'
-                      : 'hover:bg-gray-100',
+                      : 'hover:bg-red-100',
                   )}
                   onClick={() => toggleSubmenu(item.title)}
                 >
@@ -196,7 +196,7 @@ export default function Sidebar() {
                             'w-full justify-start rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                             isChildItemActive
                               ? 'bg-red-500 text-white hover:bg-red-500'
-                              : 'hover:bg-gray-100',
+                              : 'hover:bg-red-100',
                           )}
                           onClick={() => router.push(child.route)}
                         >
@@ -219,7 +219,7 @@ export default function Sidebar() {
                 open ? 'px-4' : 'justify-center px-0',
                 isActive
                   ? 'bg-red-500 text-white hover:bg-red-500'
-                  : 'hover:bg-gray-100',
+                  : 'hover:bg-red-100',
               )}
               onClick={() => item.route && router.push(item.route)}
             >
