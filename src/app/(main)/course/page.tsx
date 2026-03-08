@@ -169,8 +169,9 @@ const CoursePage = () => {
         .map((id) => {
           const user = getUserById(id);
           if (!user || user.role !== 'teacher') return undefined;
+          if (user.titleName === null) user.titleName = '';
           return {
-            label: `${user.firstName} ${user.lastName}`,
+            label: `${user.titleName}${user.firstName} ${user.lastName}`,
             value: user.id,
           };
         })
