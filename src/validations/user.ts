@@ -18,9 +18,8 @@ const baseSchema = (t: (key: string) => string) =>
       .min(2, t('errors.last-name-min'))
       .max(50, t('errors.last-name-max')),
     email: z
-      .string()
-      .min(1, t('errors.email-required'))
-      .email(t('errors.email-invalid')),
+      .email(t('errors.email-invalid'))
+      .min(1, t('errors.email-required')),
     phone: z
       .string()
       .min(1, t('errors.phone-required'))

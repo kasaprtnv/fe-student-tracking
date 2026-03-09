@@ -245,12 +245,9 @@ const MilestonePage = () => {
         <UpdateMilestoneFormSheet
           open={isEdit.isEditing}
           milestone={isEdit.milestone}
-          onOpenChange={(open) =>
-            setIsEdit((prev) => ({
-              ...prev,
-              isEditing: open,
-            }))
-          }
+          onOpenChange={() => {
+            setIsEdit({ isEditing: false, milestone: undefined });
+          }}
           onSuccess={refreshData}
         />
 

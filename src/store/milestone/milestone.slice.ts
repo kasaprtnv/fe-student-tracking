@@ -61,13 +61,10 @@ const milestoneSlice = createSlice({
       .addCase(fetchMilestones.fulfilled, (state, action) => {
         state.loader = false;
         state.milestoneMap = {};
-        const sortedMilestones = action.payload.data.sort((a, b) =>
-          a.name.localeCompare(b.name),
-        );
-        sortedMilestones.forEach((milestone) => {
+        action.payload.data.forEach((milestone) => {
           state.milestoneMap[milestone.id] = milestone;
         });
-        state.allMilestoneIds = sortedMilestones.map((ms) => ms.id);
+        state.allMilestoneIds = action.payload.data.map((ms) => ms.id);
         if (action.payload.pagination) {
           state.pagination.total = action.payload.pagination.total || 0;
           state.pagination.totalPages =

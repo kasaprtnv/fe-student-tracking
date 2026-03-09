@@ -983,7 +983,20 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                               key={idx}
                                             >
                                               <File className="mr-2" />
-                                              <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                              <span
+                                                className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
+                                                onClick={() => {
+                                                  const file =
+                                                    internalFiles[step.id]?.[
+                                                      idx
+                                                    ];
+                                                  if (file) {
+                                                    const url =
+                                                      URL.createObjectURL(file);
+                                                    window.open(url, '_blank');
+                                                  }
+                                                }}
+                                              >
                                                 {name}
                                               </span>
                                             </div>

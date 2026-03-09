@@ -163,7 +163,7 @@ const TitlePage = () => {
           open={isEdit.isEditing && isEdit.title !== undefined}
           title={isEdit.title}
           onOpenChange={() => {
-            setIsEdit({ isEditing: false });
+            setIsEdit({ isEditing: false, title: undefined });
           }}
         />
         <DeleteConfirmationDialog

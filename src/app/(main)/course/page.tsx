@@ -298,7 +298,7 @@ const CoursePage = () => {
           open={isEdit.isEditing && isEdit.course !== undefined}
           course={isEdit.course}
           onOpenChange={() => {
-            setIsEdit({ isEditing: false });
+            setIsEdit({ isEditing: false, course: undefined });
           }}
           teacherOptions={teacherOptions}
           onSuccess={refreshData}
