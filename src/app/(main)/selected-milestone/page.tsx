@@ -379,7 +379,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   };
 
   return (
-    <div className="h-full w-full pb-52">
+    <>
       <PageHeader
         breadcrumbs={[
           { label: tSelectedMilestone('header.course'), href: '/course' },
@@ -389,24 +389,26 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           },
         ]}
       />
-      <div className="h-full w-full p-6">
-        <div className="mb-2 text-3xl font-bold">
-          {tSelectedMilestone('header.title')}
+      <div className="container mx-auto pt-2 pb-8">
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold">
+            {tSelectedMilestone('header.title')}
+          </h1>
+          {course && (
+            <div>
+              <div className="mb-2 text-xl text-gray-600">
+                {tSelectedMilestone('header.course-name')} : {course.name}
+              </div>
+              <div className="mb-2 text-gray-600">
+                {tSelectedMilestone('header.course-code')} : {course.code}
+              </div>
+              <div className="mb-2 text-gray-600">
+                {tSelectedMilestone('header.course-description')} :{' '}
+                {course.description}
+              </div>
+            </div>
+          )}
         </div>
-        {course && (
-          <div>
-            <div className="mb-2 text-xl text-gray-600">
-              {tSelectedMilestone('header.course-name')} : {course.name}
-            </div>
-            <div className="mb-2 text-gray-600">
-              {tSelectedMilestone('header.course-code')} : {course.code}
-            </div>
-            <div className="mb-2 text-gray-600">
-              {tSelectedMilestone('header.course-description')} :{' '}
-              {course.description}
-            </div>
-          </div>
-        )}
         <ResizablePanelGroup
           direction="horizontal"
           className="h-full w-full rounded-lg border"
@@ -586,7 +588,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </div>
+    </>
   );
 }
 
