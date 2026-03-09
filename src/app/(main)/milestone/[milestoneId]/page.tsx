@@ -121,6 +121,7 @@ const MilestoneStepPage = () => {
     try {
       await deleteMilestoneStepById(selectedStep.id);
       setIsDelete(false);
+      toast.success(t('milestone-step-form.toast.deleted-successfully'));
     } catch (error) {
       console.error('Failed to delete milestone step:', error);
     } finally {
