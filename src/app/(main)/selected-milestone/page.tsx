@@ -175,7 +175,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
   const handleRemove = async (milestoneId: string) => {
     if (!courseId) return;
 
-    await removeCourseMilestoneFromCourse(courseId, milestoneId);
+    // await removeCourseMilestoneFromCourse(courseId, milestoneId);
     setSelectedItems((prev) => prev.filter((x) => x !== milestoneId));
 
     const stepIds = stepsByMilestone[milestoneId]?.map((s) => s.id) ?? [];
@@ -294,7 +294,17 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
 
   const handleConfirmSave = async () => {
     try {
-      // 1. save position
+      const courseMs = swrData?.positionResult?.data || [];
+      const originalIds = courseMs.map((c) => c.milestone.id);
+
+      const removedIds = originalIds.filter(
+        (id) => !selectedItems.includes(id),
+      );
+
+      for (const id of removedIds) {
+        await removeCourseMilestoneFromCourse(courseId!, id);
+      }
+
       const positionPayload = selectedItems.map((milestoneId, index) => ({
         id: milestoneId,
         position: index + 1,
@@ -303,10 +313,8 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
 
       await reorderPositions(positionPayload);
 
-      // 2. build prerequisite payload
       const dto = buildPrerequisiteDTO();
 
-      // 3. 🔥 sync ทั้งชุด
       await update(courseId!, dto);
 
       setConfirmOpen(false);
@@ -389,7 +397,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           },
         ]}
       />
-      <div className="container mx-auto pt-2 pb-8">
+      <div className="container mx-auto h-[80%] pt-2 pb-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">
             {tSelectedMilestone('header.title')}
@@ -397,10 +405,8 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           {course && (
             <div>
               <div className="mb-2 text-xl text-gray-600">
+                {tSelectedMilestone('header.course-code')} : {course.code}{' '}
                 {tSelectedMilestone('header.course-name')} : {course.name}
-              </div>
-              <div className="mb-2 text-gray-600">
-                {tSelectedMilestone('header.course-code')} : {course.code}
               </div>
               <div className="mb-2 text-gray-600">
                 {tSelectedMilestone('header.course-description')} :{' '}

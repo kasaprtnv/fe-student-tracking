@@ -432,7 +432,7 @@
       "course-name": "ชื่อหลักสูตร",
       "course-description": "คำอธิบายหลักสูตร",
       "course-code": "รหัสหลักสูตร",
-      "course": "หลักสูตร",
+      "course": "จัดการหลักสูตร",
       "select-milestone": "เลือกขั้นตอนการศึกษา"
     },
 
