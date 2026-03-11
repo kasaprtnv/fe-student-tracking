@@ -674,7 +674,7 @@
       }
     },
     "import-dialog": {
-      "title": "Import Users data from Excel",
+      "title": "Import Users from Excel",
       "description": "Upload an Excel file to import multiple users at once",
       "drag-drop-text": "Drag and drop file here, or click to select",
       "file-format": "Supports .xlsx and .xls files (max 5MB)",
