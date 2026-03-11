@@ -45,13 +45,19 @@ export const createStudentColumns = (
     },
     {
       header: t('full-name'),
+      accessorKey: 'fullNameWithTitle',
       sortingFn: mixedThEnTextSort<User>(),
       accessorFn: (row) => {
-        const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
-        const firstName = row.firstName || '';
-        const lastName = row.lastName || '';
-        const fullName = `${titleName}${firstName} ${lastName}`.trim();
-        return fullName || '-';
+        if (row.fullNameWithTitle) return row.fullNameWithTitle;
+        else {
+          const titleName = row.titleId
+            ? titleMap[row.titleId]?.name || ''
+            : '';
+          const firstName = row.firstName || '';
+          const lastName = row.lastName || '';
+          const fullName = `${titleName}${firstName} ${lastName}`.trim();
+          return fullName || '-';
+        }
       },
     },
     {
@@ -105,10 +111,12 @@ export const createStudentColumns = (
     },
     {
       header: t('enrolled-course-name'),
-      accessorKey: 'courseName',
+      accessorKey: 'courseCodeWithName',
       sortingFn: mixedThEnTextSort<User>(),
       cell: ({ row }) => {
-        const value = row.original.courseName || '-';
+        const value = row.original.courseCodeWithName
+          ? row.original.courseCodeWithName
+          : row.original.courseName || '-';
         return (
           <span className="block max-w-[280px] truncate" title={value}>
             {value}

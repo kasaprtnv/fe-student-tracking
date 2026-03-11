@@ -1,12 +1,14 @@
 import { formatShortDate } from '@/lib/format-date';
 import { formatPhoneNumber } from '@/lib/format-phone';
 import { mixedThEnTextSort, numericStringSort } from '@/lib/table-sorted';
+import { ITitle } from '@/types/title';
 import { User } from '@/types/user';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const createStudentColumns = (
   t: (key: string) => string,
   tDegree: (key: string) => string,
+  titleMap: Record<string, ITitle>,
   onViewProfile?: (id: string) => void,
   locale: string = 'th',
 ): ColumnDef<User>[] => {
@@ -36,17 +38,19 @@ export const createStudentColumns = (
     },
     {
       header: t('full-name'),
+      accessorKey: 'fullNameWithTitle',
       sortingFn: mixedThEnTextSort<User>(),
       accessorFn: (row) => {
-        const firstName = row.firstName || '';
-        const lastName = row.lastName || '';
-        return `${firstName} ${lastName}`.trim() || '-';
-      },
-      cell: ({ row }) => {
-        const firstName = row.original.firstName || '';
-        const lastName = row.original.lastName || '';
-        const fullName = `${firstName} ${lastName}`.trim();
-        return fullName || '-';
+        if (row.fullNameWithTitle) return row.fullNameWithTitle;
+        else {
+          const titleName = row.titleId
+            ? titleMap[row.titleId]?.name || ''
+            : '';
+          const firstName = row.firstName || '';
+          const lastName = row.lastName || '';
+          const fullName = `${titleName}${firstName} ${lastName}`.trim();
+          return fullName || '-';
+        }
       },
     },
     {
@@ -101,10 +105,10 @@ export const createStudentColumns = (
     },
     {
       header: t('enrolled-course-name'),
-      accessorKey: 'courseName',
+      accessorKey: 'courseCodeWithName',
       sortingFn: mixedThEnTextSort<User>(),
       cell: ({ row }) => {
-        const value = row.original.courseName || '-';
+        const value = row.original.courseCodeWithName || '-';
         return (
           <span className="inline-block max-w-[350px] truncate" title={value}>
             {value}

@@ -27,6 +27,9 @@ export interface User {
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
+
+  fullNameWithTitle?: string;
+  courseCodeWithName?: string;
 }
 
 export interface StudentFilterPayload {
