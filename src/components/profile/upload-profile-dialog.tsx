@@ -14,6 +14,7 @@ import { useMemo, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useUser } from '@/hooks/use-user';
 import { useDropzone } from 'react-dropzone';
+import { useTranslations } from 'next-intl';
 
 interface UploadProfileDialogProps {
   userId?: string;
@@ -28,6 +29,7 @@ export const UploadProfileDialog = ({
 }: UploadProfileDialogProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
+  const t = useTranslations('profile.edit_profile_picture');
   const { uploadProfileImage, getUserProfile } = useUser();
 
   // เพิ่มฟังก์ชัน onDrop
@@ -80,8 +82,8 @@ export const UploadProfileDialog = ({
       </DialogTrigger>
       <DialogContent className="md:max-w-[750px]">
         <DialogHeader>
-          <DialogTitle>แก้ไขรูปโปรไฟล์</DialogTitle>
-          <DialogDescription>เลือกรูปภาพที่ต้องการใช้</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <div
           {...getRootProps()}
@@ -118,12 +120,10 @@ export const UploadProfileDialog = ({
             {!file && (
               <>
                 <div className="mb-1 text-center text-lg">
-                  {isDragActive
-                    ? 'วางไฟล์ที่นี่...'
-                    : 'ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์'}
+                  {isDragActive ? t('drop_file_here') : t('drag_file_here')}
                 </div>
                 <div className="text-center text-sm text-gray-600">
-                  รองรับไฟล์ PNG, JPG, JPEG (ขนาดไม่เกิน 5MB)
+                  {t('supported_file_types')}
                 </div>
               </>
             )}
@@ -132,11 +132,11 @@ export const UploadProfileDialog = ({
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline" onClick={clearFile}>
-              ยกเลิก
+              {t('cancel')}
             </Button>
           </DialogClose>
           <Button type="submit" onClick={handleUpload} disabled={!file}>
-            บันทึก
+            {t('save')}
           </Button>
         </DialogFooter>
       </DialogContent>

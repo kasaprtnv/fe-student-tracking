@@ -245,6 +245,15 @@
       "cancel": "Cancel",
       "success": "Password changed successfully"
     },
+    "edit_profile_picture": {
+      "title": "Edit Profile Picture",
+      "description": "Select the image you want to use",
+      "supported_file_types": "Supported file types: PNG, JPG, JPEG (size not exceeding 5MB)",
+      "drop_file_here": "Drop file here...",
+      "drag_file_here": "Drag file here or click to select file",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
     "progress_title": "Graduate Progress",
     "contact_admin": "Please contact staff to enroll in a course"
   },
