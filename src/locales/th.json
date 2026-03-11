@@ -318,7 +318,7 @@
       "label": {
         "name": "ชื่อขั้นตอนการศึกษา",
         "courseId": "รหัสคอร์ส",
-        "description": "คำอธิบาย",
+        "description": "คำอธิบายขั้นตอนการศึกษา",
         "deadlineDate": "วันที่กำหนดส่ง",
         "notifyReceiverEmail": "อีเมลแจ้งเตือน",
         "position": "ลำดับ",
