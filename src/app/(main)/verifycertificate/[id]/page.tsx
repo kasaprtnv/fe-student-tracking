@@ -531,7 +531,7 @@ export default function VerifyDetailPage() {
 
       <div className="container mx-auto pt-2 pb-8">
         <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+          <h1 className="mb-2 text-3xl font-bold">{t('breadcrumb.detail')}</h1>
         </div>
 
         {/* Content */}

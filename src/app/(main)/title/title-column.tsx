@@ -60,6 +60,11 @@ export const createTitleColumns = (
     {
       accessorKey: 'isInUse',
       header: 'is_used',
+      sortingFn: (rowA, rowB, columnId) => {
+        const a = rowA.getValue<boolean>(columnId);
+        const b = rowB.getValue<boolean>(columnId);
+        return a === b ? 0 : a ? -1 : 1;
+      },
       cell: ({ row, table }) => {
         const isInUse = row.original.isInUse;
         const { t } = table.options.meta as ColumnActions;
