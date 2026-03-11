@@ -40,7 +40,7 @@ export default function ProfilePage() {
     : [
         {
           label: tStudent('title'),
-          isPage: true,
+          href: '/students',
         },
         {
           label: tStudent('personal-information-student'),
