@@ -681,7 +681,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                             key={step.id}
                             className={cn(
                               'border-2 transition-colors',
-                              completed && 'border-green-200 bg-green-50',
+                              completed && 'border-green-200',
                               declined && 'border-red-200',
                               pending && 'border-yellow-200',
                               locked &&
