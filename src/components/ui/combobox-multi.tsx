@@ -79,7 +79,7 @@ export function MultiSelect({
   // Display text for selected items
   const getDisplayText = () => {
     if (selectedOptions.length === 0) {
-      return t(placeholder);
+      return placeholder || t('placeholder');
     }
 
     if (selectedOptions.length <= maxDisplayItems) {
