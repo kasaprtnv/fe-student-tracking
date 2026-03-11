@@ -298,6 +298,12 @@ class UserService extends APIService {
         throw error?.response?.data;
       });
   }
+
+  async checkEmailExists(email: string): Promise<{ exists: boolean }> {
+    return this.get(`/users/check-email?email=${encodeURIComponent(email)}`)
+      .then((response) => response?.data)
+      .catch(() => ({ exists: false }));
+  }
 }
 
 export const userService = new UserService();

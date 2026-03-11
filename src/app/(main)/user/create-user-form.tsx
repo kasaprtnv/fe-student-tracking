@@ -32,6 +32,7 @@ import {
   UserRole,
 } from '@/validations/user';
 import { TeacherFormFields } from '@/components/user/form-fields/teacher-form-fields';
+import { userService } from '@/services/user.service';
 
 interface CreateUserFormDialogProps {
   open: boolean;
@@ -52,15 +53,18 @@ export function CreateUserFormDialog({
 }: CreateUserFormDialogProps) {
   const t = useTranslations('user.user-form');
   const tCommon = useTranslations('common');
-  const { createNewUser, storeAction, userMap } = useUser();
+  const { createNewUser, storeAction } = useUser();
   const { createNewCourseStaff } = useCourseStaff();
   const { updateExistingCourse, getCourseById } = useCourse();
 
-  // Check if email already exists
-  const isEmailExists = (email: string): boolean => {
-    return Object.values(userMap).some(
-      (user) => user.email?.toLowerCase() === email.toLowerCase(),
-    );
+  // Check if email already exists (calls backend to check all users including inactive)
+  const isEmailExists = async (email: string): Promise<boolean> => {
+    try {
+      const result = await userService.checkEmailExists(email);
+      return result.exists;
+    } catch {
+      return false;
+    }
   };
 
   const [selectedRole, setSelectedRole] = React.useState<UserRole>(defaultRole);
@@ -159,7 +163,8 @@ export function CreateUserFormDialog({
 
   const onSubmit = async (data: UserFormValues) => {
     // Check if email already exists
-    if (isEmailExists(data.email)) {
+    const emailExists = await isEmailExists(data.email);
+    if (emailExists) {
       form.setError('email', {
         type: 'manual',
         message: t('errors.email-exists'),
@@ -260,7 +265,7 @@ export function CreateUserFormDialog({
             className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
           >
             <RoleSelector form={form} handleRoleChange={handleRoleChange} />
-            <CommonFormFields form={form} />
+            <CommonFormFields form={form} emailCheckFn={isEmailExists} />
             {selectedRole === 'student' && (
               <StudentFormFields form={form} allCourses={allCourses} />
             )}

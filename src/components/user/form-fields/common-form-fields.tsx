@@ -22,11 +22,13 @@ import React from 'react';
 interface CommonFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
   disabledFields?: string[];
+  emailCheckFn?: (email: string) => Promise<boolean>;
 }
 
 export const CommonFormFields = ({
   form,
   disabledFields = [],
+  emailCheckFn,
 }: CommonFormFieldsProps) => {
   const t = useTranslations('user.user-form');
   const { titleMap, allTitleId, fetchAllTitles } = useTitle();
@@ -130,6 +132,22 @@ export const CommonFormFields = ({
                 className="border-gray-300 bg-white"
                 disabled={disabledFields.includes('email')}
                 {...field}
+                onBlur={async () => {
+                  field.onBlur();
+                  if (emailCheckFn && field.value) {
+                    const exists = await emailCheckFn(field.value);
+                    if (exists) {
+                      form.setError('email', {
+                        type: 'manual',
+                        message: t('errors.email-exists'),
+                      });
+                    } else {
+                      form.clearErrors('email');
+                    }
+                  } else {
+                    form.clearErrors('email');
+                  }
+                }}
               />
             </FormControl>
             <FormMessage />
