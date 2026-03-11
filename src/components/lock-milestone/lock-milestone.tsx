@@ -4,6 +4,13 @@ import { useState, useEffect } from 'react';
 import type { IMilestone } from '@/types/milestone';
 import { useTranslations } from 'next-intl';
 import { Lock } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 
 interface UnlockCondition {
   type: 'milestone' | 'step';
@@ -355,18 +362,15 @@ export default function UnlockConditionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="max-h-[85vh] w-[500px] overflow-auto rounded-xl bg-white p-6 shadow-lg">
-        <button
-          onClick={onClose}
-          className="absolute left-291 p-1 text-gray-500 hover:text-black"
-          aria-label="Close"
-        >
-          ✕
-        </button>
-        <h2 className="mb-4 text-xl font-semibold">
-          {tSelectedMilestone('unlock-condition.title')}
-        </h2>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-h-[85vh] w-[500px] overflow-auto">
+        <DialogHeader>
+          <DialogTitle>
+            <div className="text-2xl">
+              {tSelectedMilestone('unlock-condition.title')}
+            </div>
+          </DialogTitle>
+        </DialogHeader>
         {/* No data */}
         {hasNoData && (
           <div>
@@ -378,11 +382,11 @@ export default function UnlockConditionModal({
         {/* Milestones */}
         {!hasNoData && milestoneCount > 0 && (
           <>
-            <h3 className="mb-2 text-sm font-medium">
+            <h3 className="text-lg font-medium">
               {tSelectedMilestone('unlock-condition.milestone-section')}
             </h3>
 
-            <div className="mb-6 space-y-2">
+            <div className="space-y-2">
               {milestones
                 .filter((ms) => {
                   if (target.type === 'milestone') {
@@ -422,7 +426,7 @@ export default function UnlockConditionModal({
         {/* Steps */}
         {!hasNoData && stepCount > 0 && (
           <>
-            <h3 className="mb-2 text-sm font-medium">
+            <h3 className="text-lg font-medium">
               {tSelectedMilestone('unlock-condition.step-section')}
             </h3>
 
@@ -465,7 +469,7 @@ export default function UnlockConditionModal({
                   )),
               )}
             </div>
-            <div className="mt-6 flex justify-end gap-3">
+            <DialogFooter className="mt-6">
               <button className="rounded-lg border px-4 py-2" onClick={onClose}>
                 {tSelectedMilestone('unlock-condition.cancel')}
               </button>
@@ -476,10 +480,10 @@ export default function UnlockConditionModal({
               >
                 {tSelectedMilestone('unlock-condition.save')}
               </button>
-            </div>
+            </DialogFooter>
           </>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

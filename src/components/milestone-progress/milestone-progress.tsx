@@ -1005,6 +1005,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       </>
                                     )}
                                     {displayMode !== 'select-milestone' &&
+                                      mode === 'upload' &&
                                       (available || declined) && (
                                         <div>
                                           <div className="mt-3 font-bold">
