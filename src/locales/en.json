@@ -650,7 +650,7 @@
         "email-required": "Email is required",
         "email-invalid": "Invalid email format",
         "email-exists": "This email already exists in the system",
-        "phone-required": "Phone is required",
+        "phone-required": "Phone number is required",
         "phone-length": "Phone number must be exactly 10 digits",
         "code-required": "Code is required",
         "code-length": "Student ID must be exactly 8 digits",
