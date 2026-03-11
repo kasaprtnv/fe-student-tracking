@@ -106,7 +106,7 @@ export const UploadFileDialog = ({
       <DialogContent className="md:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>{t('upload_button')}</DialogTitle>
-          <DialogDescription>เลือกไฟล์ที่ต้องการอัปโหลด</DialogDescription>
+          <DialogDescription>เลือกไฟล์หลักฐานที่ต้องการแนบ</DialogDescription>
         </DialogHeader>
         <div
           {...getRootProps()}
