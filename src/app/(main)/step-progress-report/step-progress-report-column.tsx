@@ -53,17 +53,17 @@ export const createStepProgressReportColumns = (
     },
     {
       accessorKey: 'courseName',
-      header: 'course-name',
+      header: 'course',
       sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {
       accessorKey: 'milestoneName',
-      header: 'milestone-name',
+      header: 'milestone',
       sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {
       accessorKey: 'stepName',
-      header: 'step-name',
+      header: 'milestone-step',
       sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {

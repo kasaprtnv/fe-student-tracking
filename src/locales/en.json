@@ -89,7 +89,9 @@
     "course-name": "Course Name",
     "course-description": "Course Description",
     "title-name": "Title Name",
-    "title-description": "Title Description"
+    "title-description": "Title Description",
+    "milestone": "Milestone",
+    "milestone-step": "Milestone Step"
   },
   "common": {
     "submit": "Submit",

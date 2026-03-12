@@ -89,7 +89,9 @@
     "course-name": "ชื่อหลักสูตร",
     "course-description": "คำอธิบายหลักสูตร",
     "title-name": "คำนำหน้า",
-    "title-description": "คำอธิบายคำนำหน้า"
+    "title-description": "คำอธิบายคำนำหน้า",
+    "milestone": "ขั้นตอนการศึกษา",
+    "milestone-step": "ขั้นตอนการศึกษาย่อย"
   },
   "common": {
     "submit": "ส่ง",
