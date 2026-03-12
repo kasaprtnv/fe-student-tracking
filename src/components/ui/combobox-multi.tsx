@@ -22,7 +22,7 @@ export function MultiSelect({
   options,
   value,
   onChange,
-  placeholder = 'placeholder',
+  placeholder,
   className,
   disabled = false,
   maxDisplayItems = 4,
