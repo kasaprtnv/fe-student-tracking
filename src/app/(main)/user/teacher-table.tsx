@@ -202,7 +202,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
     }
 
     if (isDelete.userIds.length === 1) {
-      const user = getUserById(isDelete.userIds[0]);
+      const user = isDelete.users?.[0] || getUserById(isDelete.userIds[0]);
       return user ? user.code || user.email || user.firstName : 'DELETE USER';
     } else {
       return 'DELETE SELECTED USERS';
@@ -228,6 +228,7 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
   const [isDelete, setIsDelete] = React.useState<{
     isDeleting: boolean;
     userIds?: string[];
+    users?: User[];
   }>({
     isDeleting: false,
   });
@@ -326,10 +327,20 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
           setIsEdit({ isEditing: true, user: user });
         }}
         onDelete={(userId) => {
-          setIsDelete({ isDeleting: true, userIds: [userId] });
+          const user =
+            getUserById(userId) || filterTeacher.find((u) => u.id === userId);
+          setIsDelete({
+            isDeleting: true,
+            userIds: [userId],
+            users: user ? [user] : undefined,
+          });
         }}
         onMultiDelete={(users) => {
-          setIsDelete({ isDeleting: true, userIds: users.map((u) => u.id) });
+          setIsDelete({
+            isDeleting: true,
+            userIds: users.map((u) => u.id),
+            users,
+          });
         }}
         onImport={onImport}
         buttonImportLabel={importLabel}

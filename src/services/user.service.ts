@@ -304,6 +304,12 @@ class UserService extends APIService {
       .then((response) => response?.data)
       .catch(() => ({ exists: false }));
   }
+
+  async checkCodeExists(code: string): Promise<{ exists: boolean }> {
+    return this.get(`/users/check-code?code=${encodeURIComponent(code)}`)
+      .then((response) => response?.data)
+      .catch(() => ({ exists: false }));
+  }
 }
 
 export const userService = new UserService();

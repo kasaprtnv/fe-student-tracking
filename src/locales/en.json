@@ -555,9 +555,9 @@
     },
     "dialog": {
       "confirm_course_change_with_progress": "This student has {count} progress records. If you change the course, all progress data will be deleted. Do you want to proceed?",
-      "confirm_delete_user_with_progress": "This user has {count} progress records. Deleting will remove all data. Confirm?",
-      "delete-users-with-progress-description": "Are you sure you want to delete {count} users with a total of {progressCount} progress records? This action cannot be undone.",
-      "warning-delete-users-with-progress": "Warning: You are about to delete {count} users with a total of {progressCount} progress records. This action cannot be undone."
+      "confirm_delete_user_with_progress": "Deleting will remove all user data. Confirm?",
+      "delete-users-with-progress-description": "Are you sure you want to delete {count} users? This action cannot be undone.",
+      "warning-delete-users-with-progress": "Warning: You are about to delete {count} users. This action cannot be undone."
     },
     "user-form": {
       "header": {

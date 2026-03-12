@@ -67,6 +67,16 @@ export function CreateUserFormDialog({
     }
   };
 
+  // Check if student code already exists
+  const isCodeExists = async (code: string): Promise<boolean> => {
+    try {
+      const result = await userService.checkCodeExists(code);
+      return result.exists;
+    } catch {
+      return false;
+    }
+  };
+
   const [selectedRole, setSelectedRole] = React.useState<UserRole>(defaultRole);
 
   const form = useForm<UserFormValues>({
@@ -161,16 +171,35 @@ export function CreateUserFormDialog({
     }
   };
 
-  const onSubmit = async (data: UserFormValues) => {
-    // Check if email already exists
-    const emailExists = await isEmailExists(data.email);
+  const checkDuplicates = async (data: UserFormValues): Promise<boolean> => {
+    const [emailExists, codeExists] = await Promise.all([
+      isEmailExists(data.email),
+      data.role === 'student' && 'code' in data && data.code
+        ? isCodeExists(data.code as string)
+        : Promise.resolve(false),
+    ]);
+
+    let hasError = false;
     if (emailExists) {
       form.setError('email', {
         type: 'manual',
         message: t('errors.email-exists'),
       });
-      return;
+      hasError = true;
     }
+    if (codeExists) {
+      form.setError('code', {
+        type: 'manual',
+        message: t('errors.code-exists'),
+      });
+      hasError = true;
+    }
+    return hasError;
+  };
+
+  const onSubmit = async (data: UserFormValues) => {
+    const hasError = await checkDuplicates(data);
+    if (hasError) return;
 
     const formattedData = { ...data };
 
@@ -261,13 +290,21 @@ export function CreateUserFormDialog({
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, (_, e) => {
+              const currentValues = form.getValues();
+              checkDuplicates(currentValues);
+              e?.preventDefault();
+            })}
             className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
           >
             <RoleSelector form={form} handleRoleChange={handleRoleChange} />
             <CommonFormFields form={form} emailCheckFn={isEmailExists} />
             {selectedRole === 'student' && (
-              <StudentFormFields form={form} allCourses={allCourses} />
+              <StudentFormFields
+                form={form}
+                allCourses={allCourses}
+                codeCheckFn={isCodeExists}
+              />
             )}
             {selectedRole === 'teacher' && (
               <TeacherFormFields form={form} courseOptions={courseOptions} />
