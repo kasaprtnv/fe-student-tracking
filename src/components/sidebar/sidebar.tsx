@@ -110,7 +110,9 @@ export default function Sidebar() {
           const Icon = item.icon;
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus.includes(item.title);
-          const isActive = item.route ? pathname === item.route : false;
+          const isActive = item.route
+            ? pathname === item.route || pathname.startsWith(item.route + '/')
+            : false;
           const childActive = hasChildren && isChildActive(item.children!);
 
           if (hasChildren) {
@@ -187,7 +189,12 @@ export default function Sidebar() {
                 {isExpanded && (
                   <div className="mt-1 ml-4 flex flex-col gap-1 border-l-2 border-gray-200 pl-4">
                     {item.children!.map((child, childIndex) => {
-                      const isChildItemActive = pathname === child.route;
+                      const isChildItemActive =
+                        pathname === child.route ||
+                        pathname.startsWith(child.route + '/') ||
+                        (item.route && pathname.startsWith(item.route)) ||
+                        (child.route === '/course' &&
+                          pathname.startsWith('/selected-milestone'));
                       return (
                         <Button
                           key={childIndex}
