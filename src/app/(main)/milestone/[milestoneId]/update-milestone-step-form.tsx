@@ -112,8 +112,15 @@ const UpdateMilestoneStepForm = ({
     }
   };
 
+  const handleonOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset();
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleonOpenChange}>
       <DialogContent className="flex flex-col gap-6 bg-gray-50 shadow-lg sm:max-w-md">
         <DialogHeader className="text-left">
           <DialogTitle className="text-xl font-semibold text-gray-800">
