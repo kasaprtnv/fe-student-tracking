@@ -591,7 +591,8 @@
         "major": "สาขาวิชา",
         "teacher-degree": "วุฒิการศึกษา",
         "academic-position": "ตำแหน่งทางวิชาการ",
-        "add-academic-position": "เพิ่มตำแหน่งทางวิชาการ"
+        "add-academic-position": "เพิ่มตำแหน่งทางวิชาการ",
+        "add-teacher-degree": "เพิ่มวุฒิการศึกษา"
       },
       "placeholder": {
         "role": "เลือกประเภทผู้ใช้",

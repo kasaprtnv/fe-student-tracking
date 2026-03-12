@@ -101,6 +101,10 @@ export const StudentFormFields = ({
                 placeholder={t('placeholder.major')}
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 disabled={disabledFields.includes('major')}
+                onBlur={() => {
+                  field.onChange(field.value?.trim() ?? '');
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormMessage />

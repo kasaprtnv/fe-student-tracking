@@ -592,7 +592,8 @@
         "major": "Department",
         "teacher-degree": "Degree",
         "academic-position": "Academic Position",
-        "add-academic-position": "Add Academic Position"
+        "add-academic-position": "Add Academic Position",
+        "add-teacher-degree": "Add Degree"
       },
       "placeholder": {
         "role": "Select role",

@@ -90,6 +90,10 @@ export const CommonFormFields = ({
                   className="border-gray-300 bg-white"
                   disabled={disabledFields.includes('firstName')}
                   {...field}
+                  onBlur={() => {
+                    field.onChange(field.value?.trim() ?? '');
+                    field.onBlur();
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -111,6 +115,10 @@ export const CommonFormFields = ({
                 className="border-gray-300 bg-white"
                 disabled={disabledFields.includes('lastName')}
                 {...field}
+                onBlur={() => {
+                  field.onChange(field.value?.trim() ?? '');
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -133,6 +141,7 @@ export const CommonFormFields = ({
                 disabled={disabledFields.includes('email')}
                 {...field}
                 onBlur={async () => {
+                  field.onChange(field.value?.trim() ?? '');
                   field.onBlur();
                   if (emailCheckFn && field.value) {
                     const exists = await emailCheckFn(field.value);
