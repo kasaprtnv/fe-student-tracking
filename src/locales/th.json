@@ -708,7 +708,7 @@
     "breadcrumb": {
       "home": "แดชบอร์ด",
       "verify": "ตรวจสอบหลักฐาน",
-      "detail": "รายละเอียด"
+      "detail": "รายละเอียดหลักฐาน"
     },
     "search_placeholder": "ค้นหา",
     "filter": {
@@ -780,7 +780,7 @@
     "already_declined": "หลักฐานนี้ถูกปฏิเสธแล้ว",
     "no_document": "ไม่พบเอกสาร",
     "no_attachment": "ไม่มีไฟล์แนบ",
-    "no_attachment_description": "ขั้นตอนนี้ไม่ต้องแนบเอกสาร",
+    "no_attachment_description": "ขั้นตอนการศึกษาย่อยนี้ไม่มีการแนบไฟล์หลักฐาน",
     "no_attachment_required": "(ขั้นตอนนี้ไม่ต้องแนบเอกสาร)",
     "download": "ดาวน์โหลด",
     "teacher": "อาจารย์"

@@ -8,7 +8,7 @@
     "studentReport": "Student Report",
     "progressVerify": "Progress Verify",
     "stepProgressReport": "Step Progress Report",
-    "mergeFiles": "Approved evidence files",
+    "mergeFiles": "Approved Evidence Files",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -709,7 +709,7 @@
     "breadcrumb": {
       "home": "Dashboard",
       "verify": "Progress Verify",
-      "detail": "Detail"
+      "detail": "Progress Detail"
     },
     "search_placeholder": "Search",
     "filter": {
@@ -760,12 +760,12 @@
     },
     "review": {
       "title": "Review Submission",
-      "decline_reason": "Decline Reason",
-      "decline_reason_placeholder": "Please specify the reason",
+      "decline_reason": "Additional comments",
+      "decline_reason_placeholder": "Enter additional comments",
       "decline_reason_required": "Please enter a reason before declining",
       "approve": "Approve",
       "decline": "Decline",
-      "staff_attachment": "Attach Additional Document (for revision/decline)",
+      "staff_attachment": "Upload additional files",
       "click_to_upload": "Drag or click to upload file",
       "file_types": "Supports PDF, PNG, JPEG, JPG and DOCX (max 20MB)",
       "invalid_file_type": "This file type is not supported. Only PDF, PNG, JPEG, JPG and DOCX are allowed.",
@@ -852,7 +852,7 @@
     }
   },
   "merge-files": {
-    "title": "Approved evidence files",
+    "title": "Approved Evidence Files",
     "description": "Display all approved evidence files",
     "loading": "Loading data...",
     "error-loading": "Error loading data",
@@ -863,7 +863,7 @@
     "grad_year": "Academic Year",
     "course": "Course",
     "course_name": "Course Name",
-    "milestone_step": "Sub-step",
+    "milestone_step": "Milestone Step",
     "enroll_date": "Evidence Submit Date",
     "reviewed_by": "Reviewer",
     "actions": "Save File",
