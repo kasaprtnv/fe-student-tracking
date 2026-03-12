@@ -106,7 +106,7 @@ export const UploadFileDialog = ({
       <DialogContent className="md:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>{t('upload_button')}</DialogTitle>
-          <DialogDescription>เลือกไฟล์ที่ต้องการอัปโหลด</DialogDescription>
+          <DialogDescription>{t('choose_file')}</DialogDescription>
         </DialogHeader>
         <div
           {...getRootProps()}
@@ -124,12 +124,10 @@ export const UploadFileDialog = ({
           </div>
           <div className="flex w-full flex-col items-center gap-2">
             <span className="text-xl">
-              {isDragActive
-                ? 'วางไฟล์ที่นี่...'
-                : 'ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์'}
+              {isDragActive ? t('drop_file_here') : t('drag_file_here')}
             </span>
             <span className="text-sm text-gray-600">
-              รองรับไฟล์ PDF, PNG, JPEG, JPG และ DOCX (ขนาดรวมไม่เกิน 20MB)
+              {t('supported_file_types')}
             </span>
           </div>
         </div>
@@ -153,7 +151,7 @@ export const UploadFileDialog = ({
         )}
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">ยกเลิก</Button>
+            <Button variant="outline">{t('cancel')}</Button>
           </DialogClose>
           <Button
             type="button"
@@ -163,10 +161,10 @@ export const UploadFileDialog = ({
             }
           >
             {isLimitFileSize()
-              ? 'ขนาดไฟล์รวมเกิน 5MB'
+              ? t('limit_file_size')
               : isUploading?.[step.id]
-                ? 'กำลังอัปโหลด...'
-                : 'แนบไฟล์'}
+                ? t('uploading')
+                : t('attach_file')}
           </Button>
         </DialogFooter>
       </DialogContent>

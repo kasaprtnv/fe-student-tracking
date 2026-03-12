@@ -189,6 +189,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
   const [isDelete, setIsDelete] = React.useState<{
     isDeleting: boolean;
     userIds?: string[];
+    users?: User[];
     progressCount: number;
     isStudentDelete: boolean;
   }>({
@@ -232,7 +233,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     }
 
     if (isDelete.userIds.length === 1) {
-      const user = getUserById(isDelete.userIds[0]);
+      const user = isDelete.users?.[0] || getUserById(isDelete.userIds[0]);
       return user ? user.code || user.email || user.firstName : 'DELETE USER';
     } else {
       return 'DELETE SELECTED USERS';
@@ -277,6 +278,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         setIsDelete({
           isDeleting: true,
           userIds: users.map((u) => u.id),
+          users,
           progressCount: totalProgressCount,
           isStudentDelete: true,
         });
@@ -290,6 +292,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     setIsDelete({
       isDeleting: true,
       userIds: users.map((u) => u.id),
+      users,
       progressCount: 0,
       isStudentDelete: false,
     });
@@ -297,7 +300,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
 
   const handleDeleteClick = async (userId: string) => {
     // Check if user is a student and has progress
-    const user = userMap[userId];
+    const user = userMap[userId] || allUsers.find((u) => u.id === userId);
     if (user?.role === 'student') {
       try {
         const count = await getStudentProgressCount(userId);
@@ -305,6 +308,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
         setIsDelete({
           isDeleting: true,
           userIds: [userId],
+          users: user ? [user] : undefined,
           progressCount: count,
           isStudentDelete: true,
         });
@@ -318,6 +322,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
     setIsDelete({
       isDeleting: true,
       userIds: [userId],
+      users: user ? [user] : undefined,
       progressCount: 0,
       isStudentDelete: false,
     });
@@ -340,6 +345,7 @@ export const AllTable = ({ onImport, importLabel }: AllTableProps) => {
       setIsDelete({
         isDeleting: false,
         userIds: undefined,
+        users: undefined,
         progressCount: 0,
         isStudentDelete: false,
       });

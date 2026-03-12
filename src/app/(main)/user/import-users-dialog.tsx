@@ -47,6 +47,7 @@ export function ImportUsersDialog({
   const [file, setFile] = React.useState<File | null>(null);
   const [isDragging, setIsDragging] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
+  const [importErrors, setImportErrors] = React.useState<string[]>([]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Use course hook to get course data for courseName to courseId mapping
@@ -336,29 +337,18 @@ export function ImportUsersDialog({
 
         if (failedCount > 0) {
           toast.warning(t('toast.import-partial', { failed: failedCount }));
-
-          // Show each error message
           const errors = result.data?.errors || [];
-          errors.forEach((error) => {
-            // Clean up the error message (remove leading tabs/whitespace)
-            const cleanError = error.trim();
-            toast.error(cleanError, { duration: 8000 });
-          });
+          setImportErrors(errors.map((e) => e.trim()));
+        } else {
+          setFile(null);
+          onOpenChange(false);
+          onImportSuccess?.();
         }
-
-        setFile(null);
-        onOpenChange(false);
-        onImportSuccess?.();
       } else if (result.data?.hasValidationErrors) {
         // File has invalid rows — entire file is rejected
         toast.error(t('toast.import-failed'));
-
         const errors = result.data?.errors || [];
-        errors.forEach((error) => {
-          const cleanError = error.trim();
-          toast.error(cleanError, { duration: 8000 });
-        });
-
+        setImportErrors(errors.map((e) => e.trim()));
         // Keep the dialog open so user can fix the file
       } else {
         toast.error(result.message || t('toast.import-failed'));
@@ -373,6 +363,7 @@ export function ImportUsersDialog({
 
   const handleRemoveFile = () => {
     setFile(null);
+    setImportErrors([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -381,6 +372,7 @@ export function ImportUsersDialog({
   const handleClose = () => {
     if (!isUploading) {
       setFile(null);
+      setImportErrors([]);
       onOpenChange(false);
     }
   };
@@ -394,6 +386,30 @@ export function ImportUsersDialog({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Error list */}
+          {importErrors.length > 0 && (
+            <div className="rounded-md border border-red-200 bg-red-50">
+              <div className="flex items-center justify-between border-b border-red-200 px-3 py-2">
+                <p className="text-sm font-medium text-red-700">
+                  พบข้อผิดพลาด {importErrors.length} รายการ
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setImportErrors([])}
+                  className="text-red-400 hover:text-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <ul className="max-h-40 overflow-y-auto px-3 py-2 text-xs text-red-700">
+                {importErrors.map((err, i) => (
+                  <li key={i} className="py-0.5">
+                    • {err}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {/* Download Template Buttons */}
           <div className="flex justify-end gap-2">
             <Button

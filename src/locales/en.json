@@ -65,7 +65,7 @@
     "role": "Role",
     "education-level": "Education Level",
     "year": "Year",
-    "enrolled-course-name": "Course Name",
+    "enrolled-course-name": "Enrolled Course",
     "enroll-date": "Enroll Date",
     "course": "Course",
     "academic-year": "Academic Year",
@@ -245,6 +245,15 @@
       "cancel": "Cancel",
       "success": "Password changed successfully"
     },
+    "edit_profile_picture": {
+      "title": "Edit Profile Picture",
+      "description": "Select the image you want to use",
+      "supported_file_types": "Supported file types: PNG, JPG, JPEG (size not exceeding 5MB)",
+      "drop_file_here": "Drop file here...",
+      "drag_file_here": "Drag file here or click to select file",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
     "progress_title": "Graduate Progress",
     "contact_admin": "Please contact staff to enroll in a course"
   },
@@ -260,6 +269,12 @@
     "deadline_date": "Deadline Date",
     "locked": "Cannot proceed with this step",
     "upload_button": "Upload File",
+    "choose_file": "Choose File to Attach",
+    "drop_file_here": "Drop file here...",
+    "drag_file_here": "Drag file here or click to select file",
+    "supported_file_types": "Supported file types: PDF, PNG, JPEG, JPG, and DOCX (total size not exceeding 20MB)",
+    "limit_file_size": "Total file size exceeds 20MB",
+    "attach_file": "Attach File",
     "uploading": "Uploading...",
     "uploaded_file": "Uploaded File",
     "student_file_attachment": "Student File Attachment",
@@ -540,9 +555,9 @@
     },
     "dialog": {
       "confirm_course_change_with_progress": "This student has {count} progress records. If you change the course, all progress data will be deleted. Do you want to proceed?",
-      "confirm_delete_user_with_progress": "This user has {count} progress records. Deleting will remove all data. Confirm?",
-      "delete-users-with-progress-description": "Are you sure you want to delete {count} users with a total of {progressCount} progress records? This action cannot be undone.",
-      "warning-delete-users-with-progress": "Warning: You are about to delete {count} users with a total of {progressCount} progress records. This action cannot be undone."
+      "confirm_delete_user_with_progress": "Deleting will remove all user data. Confirm?",
+      "delete-users-with-progress-description": "Are you sure you want to delete {count} users? This action cannot be undone.",
+      "warning-delete-users-with-progress": "Warning: You are about to delete {count} users. This action cannot be undone."
     },
     "user-form": {
       "header": {
@@ -577,7 +592,8 @@
         "major": "Department",
         "teacher-degree": "Degree",
         "academic-position": "Academic Position",
-        "add-academic-position": "Add Academic Position"
+        "add-academic-position": "Add Academic Position",
+        "add-teacher-degree": "Add Degree"
       },
       "placeholder": {
         "role": "Select role",
@@ -635,7 +651,7 @@
         "email-required": "Email is required",
         "email-invalid": "Invalid email format",
         "email-exists": "This email already exists in the system",
-        "phone-required": "Phone is required",
+        "phone-required": "Phone number is required",
         "phone-length": "Phone number must be exactly 10 digits",
         "code-required": "Code is required",
         "code-length": "Student ID must be exactly 8 digits",
@@ -659,11 +675,11 @@
       }
     },
     "import-dialog": {
-      "title": "Import Users data from Excel",
+      "title": "Import Users from Excel",
       "description": "Upload an Excel file to import multiple users at once",
       "drag-drop-text": "Drag and drop file here, or click to select",
       "file-format": "Supports .xlsx and .xls files (max 5MB)",
-      "upload-button": "import",
+      "upload-button": "Import",
       "download-template": "Download Template",
       "download-student-template": "Student Template",
       "download-teacher-template": "Teacher Template",
