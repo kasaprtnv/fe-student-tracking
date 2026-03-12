@@ -32,7 +32,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     searchForStudents,
     deleteExistingUser,
     deleteExistingUsers,
-    getUserById,
+    userMap,
     storeAction,
     loader,
     getStudentProgressCount,
@@ -198,7 +198,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     }
 
     if (isDelete.userIds.length === 1) {
-      const user = getUserById(isDelete.userIds[0]);
+      const user = userMap[isDelete.userIds[0]];
       return user ? user.code || user.firstName : 'DELETE USER';
     } else {
       return 'DELETE SELECTED USERS';
