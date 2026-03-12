@@ -217,6 +217,7 @@ export function AdvancedFilterPopover({
                         options={degreeOptions}
                         value={field.value}
                         onChange={field.onChange}
+                        placeholder={t('degree-placeholder')}
                         maxDisplayItems={2}
                         enableEachCancel={false}
                       />
@@ -237,6 +238,7 @@ export function AdvancedFilterPopover({
                         options={yearOptions}
                         value={field.value}
                         onChange={field.onChange}
+                        placeholder={t('year-placeholder')}
                         maxDisplayItems={2}
                         enableEachCancel={false}
                       />
@@ -255,6 +257,7 @@ export function AdvancedFilterPopover({
                         options={courseOptions}
                         value={field.value}
                         onChange={field.onChange}
+                        placeholder={t('course-placeholder')}
                         maxDisplayItems={1}
                         enableEachCancel={false}
                       />
@@ -275,6 +278,7 @@ export function AdvancedFilterPopover({
                         options={studyPlanOptions}
                         value={field.value}
                         onChange={field.onChange}
+                        placeholder={t('study-plan-placeholder')}
                         maxDisplayItems={2}
                         enableEachCancel={false}
                       />
@@ -293,6 +297,7 @@ export function AdvancedFilterPopover({
                         options={graduatedOptions}
                         value={field.value}
                         onChange={field.onChange}
+                        placeholder={t('graduated-placeholder')}
                         maxDisplayItems={2}
                         enableEachCancel={false}
                       />
@@ -302,7 +307,7 @@ export function AdvancedFilterPopover({
               />
 
               {/* Row 6: Enroll Date Range */}
-              <div className="col-span-2 space-y-1">
+              <div className="space-y-1">
                 <FormLabel className="text-xs">
                   {t('enroll-date-range')}
                 </FormLabel>

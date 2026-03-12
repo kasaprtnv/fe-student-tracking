@@ -32,6 +32,7 @@ import {
   UserRole,
 } from '@/validations/user';
 import { TeacherFormFields } from '@/components/user/form-fields/teacher-form-fields';
+import { userService } from '@/services/user.service';
 
 interface CreateUserFormDialogProps {
   open: boolean;
@@ -52,15 +53,28 @@ export function CreateUserFormDialog({
 }: CreateUserFormDialogProps) {
   const t = useTranslations('user.user-form');
   const tCommon = useTranslations('common');
-  const { createNewUser, storeAction, userMap } = useUser();
+  const { createNewUser, storeAction } = useUser();
   const { createNewCourseStaff } = useCourseStaff();
   const { updateExistingCourse, getCourseById } = useCourse();
 
-  // Check if email already exists
-  const isEmailExists = (email: string): boolean => {
-    return Object.values(userMap).some(
-      (user) => user.email?.toLowerCase() === email.toLowerCase(),
-    );
+  // Check if email already exists (calls backend to check all users including inactive)
+  const isEmailExists = async (email: string): Promise<boolean> => {
+    try {
+      const result = await userService.checkEmailExists(email);
+      return result.exists;
+    } catch {
+      return false;
+    }
+  };
+
+  // Check if student code already exists
+  const isCodeExists = async (code: string): Promise<boolean> => {
+    try {
+      const result = await userService.checkCodeExists(code);
+      return result.exists;
+    } catch {
+      return false;
+    }
   };
 
   const [selectedRole, setSelectedRole] = React.useState<UserRole>(defaultRole);
@@ -157,15 +171,35 @@ export function CreateUserFormDialog({
     }
   };
 
-  const onSubmit = async (data: UserFormValues) => {
-    // Check if email already exists
-    if (isEmailExists(data.email)) {
+  const checkDuplicates = async (data: UserFormValues): Promise<boolean> => {
+    const [emailExists, codeExists] = await Promise.all([
+      isEmailExists(data.email),
+      data.role === 'student' && 'code' in data && data.code
+        ? isCodeExists(data.code as string)
+        : Promise.resolve(false),
+    ]);
+
+    let hasError = false;
+    if (emailExists) {
       form.setError('email', {
         type: 'manual',
         message: t('errors.email-exists'),
       });
-      return;
+      hasError = true;
     }
+    if (codeExists) {
+      form.setError('code', {
+        type: 'manual',
+        message: t('errors.code-exists'),
+      });
+      hasError = true;
+    }
+    return hasError;
+  };
+
+  const onSubmit = async (data: UserFormValues) => {
+    const hasError = await checkDuplicates(data);
+    if (hasError) return;
 
     const formattedData = { ...data };
 
@@ -256,13 +290,21 @@ export function CreateUserFormDialog({
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, (_, e) => {
+              const currentValues = form.getValues();
+              checkDuplicates(currentValues);
+              e?.preventDefault();
+            })}
             className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4"
           >
             <RoleSelector form={form} handleRoleChange={handleRoleChange} />
-            <CommonFormFields form={form} />
+            <CommonFormFields form={form} emailCheckFn={isEmailExists} />
             {selectedRole === 'student' && (
-              <StudentFormFields form={form} allCourses={allCourses} />
+              <StudentFormFields
+                form={form}
+                allCourses={allCourses}
+                codeCheckFn={isCodeExists}
+              />
             )}
             {selectedRole === 'teacher' && (
               <TeacherFormFields form={form} courseOptions={courseOptions} />
