@@ -531,7 +531,7 @@ export default function VerifyDetailPage() {
 
       <div className="container mx-auto pt-2 pb-8">
         <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+          <h1 className="mb-2 text-3xl font-bold">{t('breadcrumb.detail')}</h1>
         </div>
 
         {/* Content */}
@@ -678,11 +678,11 @@ export default function VerifyDetailPage() {
                       '-'}
                   </span>
                 </div>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 items-center gap-2">
                   <span className="text-muted-foreground whitespace-nowrap">
                     {t('detail.step')}:
                   </span>
-                  <span className="font-medium">
+                  <span className="min-w-0 font-medium break-all">
                     {data.stepName || data.step?.name || '-'}
                   </span>
                 </div>

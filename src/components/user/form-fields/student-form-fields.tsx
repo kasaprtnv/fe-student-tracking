@@ -19,12 +19,14 @@ interface StudentFormFieldsProps {
   form: UseFormReturn<UserFormValues>;
   allCourses: ICourse[];
   disabledFields?: string[];
+  codeCheckFn?: (code: string) => Promise<boolean>;
 }
 
 export const StudentFormFields = ({
   form,
   allCourses,
   disabledFields = [],
+  codeCheckFn,
 }: StudentFormFieldsProps) => {
   const t = useTranslations('user.user-form');
 
@@ -64,9 +66,20 @@ export const StudentFormFields = ({
                   target.value = target.value.replace(/\D/g, '');
                   field.onChange(target.value);
                 }}
-                onBlur={() => {
+                onBlur={async () => {
                   field.onBlur();
                   form.trigger('code');
+                  if (codeCheckFn && field.value) {
+                    const exists = await codeCheckFn(field.value);
+                    if (exists) {
+                      form.setError('code', {
+                        type: 'manual',
+                        message: t('errors.code-exists'),
+                      });
+                    } else {
+                      form.clearErrors('code');
+                    }
+                  }
                 }}
               />
             </FormControl>
@@ -88,6 +101,10 @@ export const StudentFormFields = ({
                 placeholder={t('placeholder.major')}
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 disabled={disabledFields.includes('major')}
+                onBlur={() => {
+                  field.onChange(field.value?.trim() ?? '');
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormMessage />

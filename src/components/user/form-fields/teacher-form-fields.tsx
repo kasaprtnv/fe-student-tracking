@@ -41,6 +41,10 @@ export const TeacherFormFields = ({
                 {...field}
                 placeholder={t('placeholder.major')}
                 disabled={disabledFields.includes('major')}
+                onBlur={() => {
+                  field.onChange(field.value?.trim() ?? '');
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -56,9 +60,11 @@ export const TeacherFormFields = ({
               {t('label.teacher-degree')}
             </FormLabel>
             <FormControl>
-              <Input
-                {...field}
+              <DynamicInputList
+                value={field.value}
+                onChange={field.onChange}
                 placeholder={t('placeholder.teacher-degree')}
+                buttonLabel={t('label.add-teacher-degree')}
                 disabled={disabledFields.includes('teacherDegree')}
               />
             </FormControl>

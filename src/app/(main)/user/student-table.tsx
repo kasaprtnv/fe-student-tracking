@@ -169,6 +169,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
   const [isDelete, setIsDelete] = React.useState<{
     isDeleting: boolean;
     userIds?: string[];
+    users?: User[];
     progressCount: number;
   }>({
     isDeleting: false,
@@ -233,6 +234,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
         setIsDelete({
           isDeleting: true,
           userIds: users.map((u) => u.id),
+          users,
           progressCount: totalProgressCount,
         });
       } catch (error) {
@@ -244,9 +246,12 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
   const handleDeleteClick = async (userId: string) => {
     try {
       const count = await getStudentProgressCount(userId);
+      const user =
+        getUserById(userId) || filterStudent.find((u) => u.id === userId);
       setIsDelete({
         isDeleting: true,
         userIds: [userId],
+        users: user ? [user] : undefined,
         progressCount: count,
       });
     } catch (error) {

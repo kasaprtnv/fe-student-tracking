@@ -24,12 +24,17 @@ export const selectFilteredTitlesId = createSelector(
     }
 
     const filtered = titles
-      .filter(
-        (title) =>
+      .filter((title) => {
+        const statusText = title.isInUse ? 'กำลังใช้งาน' : 'ยังไม่ถูกใช้งาน';
+
+        return (
           title.name?.toLowerCase().includes(lowerSearchQuery) ||
-          title.description?.toLowerCase().includes(lowerSearchQuery),
-      )
+          title.description?.toLowerCase().includes(lowerSearchQuery) ||
+          statusText.toLowerCase().includes(lowerSearchQuery)
+        );
+      })
       .map((title) => title.id);
+
     return filtered;
   },
 );

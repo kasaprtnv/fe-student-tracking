@@ -196,7 +196,10 @@ export default function Sidebar() {
                     {item.children!.map((child, childIndex) => {
                       const isChildItemActive =
                         pathname === child.route ||
-                        pathname.startsWith(`${child.route}/`);
+                        pathname.startsWith(child.route + '/') ||
+                        (item.route && pathname.startsWith(item.route)) ||
+                        (child.route === '/course' &&
+                          pathname.startsWith('/selected-milestone'));
                       return (
                         <Button
                           key={childIndex}
