@@ -72,13 +72,15 @@ export const ProfileStudentComponent: React.FC<ProfileStudentPageProps> = ({
             />
             <AvatarFallback>{`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`}</AvatarFallback>
           </Avatar>
-          <div className="absolute right-4 bottom-4">
-            <UploadProfileDialog
-              userId={user?.id}
-              firstName={user?.firstName}
-              lastName={user?.lastName}
-            />
-          </div>
+          {isOwnProfile && (
+            <div className="absolute right-4 bottom-4">
+              <UploadProfileDialog
+                userId={user?.id}
+                firstName={user?.firstName}
+                lastName={user?.lastName}
+              />
+            </div>
+          )}
         </div>
         {/* Information */}
         <div className="flex-1">
