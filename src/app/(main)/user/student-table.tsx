@@ -36,6 +36,7 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     storeAction,
     loader,
     getStudentProgressCount,
+    getUserById,
   } = useUser();
   const { allCourseId, getCourseById, courseMap } = useCourse();
   const { titleMap, fetchTitlesUsage } = useTitle();
