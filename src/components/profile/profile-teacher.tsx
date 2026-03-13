@@ -98,7 +98,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
                   {t('personal_information.major')}
                 </label>
                 <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
-                  {user?.major ?? '-'}
+                  {user?.major ? user.major : '-'}
                 </span>
               </div>
 
@@ -155,7 +155,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
                   {t('personal_information.degree')}
                 </label>
                 <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
-                  {user?.teacherDegree ?? '-'}
+                  {user?.teacherDegree ? user.teacherDegree : '-'}
                 </span>
               </div>
 
@@ -169,7 +169,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
                   className="block truncate rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg"
                   title={user?.email ?? '-'}
                 >
-                  {user?.email ?? '-'}
+                  {user?.email ? user.email : '-'}
                 </span>
               </div>
             </div>
@@ -183,7 +183,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
                   {t('personal_information.phone')}
                 </label>
                 <span className="rounded-lg border border-gray-200 bg-red-50 px-4 py-2 text-lg">
-                  {user?.phone ?? '-'}
+                  {user?.phone ? user.phone : '-'}
                 </span>
               </div>
             </div>
