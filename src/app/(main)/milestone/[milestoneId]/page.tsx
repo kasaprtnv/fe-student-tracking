@@ -142,8 +142,8 @@ const MilestoneStepPage = () => {
           { label: milestone?.name || '', isPage: true },
         ]}
       />
-      <div className="container mx-auto space-y-4 py-8">
-        <div>
+      <div className="container mx-auto pt-2 pb-8">
+        <div className="mb-8">
           <h1 className="text-2xl font-bold">
             {t('milestone')} : {milestone?.name}
           </h1>

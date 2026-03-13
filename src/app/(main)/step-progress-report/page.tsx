@@ -85,6 +85,7 @@ const StepProgressReportPage = () => {
     summary: { label: string; value: string }[],
   ) => {
     try {
+      data.currentUserId = user?.id;
       const result = await fetchStepProgressReportByFilter(data);
       setReportData(result);
       setFilterSummary(summary);

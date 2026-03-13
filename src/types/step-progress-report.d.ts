@@ -30,6 +30,7 @@ export interface IStepProgressReportFilter {
   degrees?: string[];
   years?: string[];
   major?: string;
+  currentUserId?: string;
 }
 
 export interface StepProgressReportState {

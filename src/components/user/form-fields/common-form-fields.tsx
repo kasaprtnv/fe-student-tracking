@@ -135,7 +135,6 @@ export const CommonFormFields = ({
             </FormLabel>
             <FormControl>
               <Input
-                type="email"
                 placeholder={t('placeholder.email')}
                 className="border-gray-300 bg-white"
                 disabled={disabledFields.includes('email')}

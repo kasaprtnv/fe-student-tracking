@@ -22,6 +22,7 @@ import {
   AdvancedFilterValues,
   defaultFilterValues,
 } from './advanced-filter-dialog';
+import { useTitle } from '@/hooks/use-title';
 
 export default function StudentPage() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function StudentPage() {
   const locale = useLocale();
 
   const { user } = useAuth();
+  const { titleMap } = useTitle();
   const { allCourseId, courseMap, fetchCoursesByTeacherId } = useCourse();
   const {
     fetchFilteredStudents,
@@ -251,8 +253,15 @@ export default function StudentPage() {
   );
 
   const studentColumns = useMemo(
-    () => createStudentColumns(tColumn, tDegree, handleViewProfile, locale),
-    [tColumn, tDegree, handleViewProfile, locale],
+    () =>
+      createStudentColumns(
+        tColumn,
+        tDegree,
+        titleMap,
+        handleViewProfile,
+        locale,
+      ),
+    [tColumn, tDegree, titleMap, handleViewProfile, locale],
   );
 
   const filterColumns = useMemo<DataTableFilterField<User>[]>(() => {

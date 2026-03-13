@@ -89,7 +89,9 @@
     "course-name": "ชื่อหลักสูตร",
     "course-description": "คำอธิบายหลักสูตร",
     "title-name": "คำนำหน้า",
-    "title-description": "คำอธิบายคำนำหน้า"
+    "title-description": "คำอธิบายคำนำหน้า",
+    "milestone": "ขั้นตอนการศึกษา",
+    "milestone-step": "ขั้นตอนการศึกษาย่อย"
   },
   "common": {
     "submit": "ส่ง",
@@ -688,11 +690,11 @@
         "file-too-large": "ไฟล์มีขนาดใหญ่เกินไป (สูงสุด {size})"
       },
       "toast": {
-        "import-success": "นำเข้าข้อมูลผู้ใช้งานสำเร็จ",
+        "import-success": "นำเข้าข้อมูลผู้ใช้งานสำเร็จ!",
         "import-partial": "ข้อมูลผู้ใช้งานไม่สำเร็จ {failed} คน",
         "import-updated": "อัพเดทข้อมูล {count} คน",
         "import-skipped": "ข้อมูลไม่มีการเปลี่ยนแปลง {count} คน",
-        "import-failed": "นำเข้าข้อมูลผู้ใช้งานไม่สำเร็จ",
+        "import-failed": "นำเข้าข้อมูลผู้ใช้งานไม่สำเร็จ!",
         "template-downloaded": "ดาวน์โหลดไฟล์ตัวอย่างสำเร็จ"
       }
     }

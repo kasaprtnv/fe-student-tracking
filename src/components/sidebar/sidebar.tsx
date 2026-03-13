@@ -67,7 +67,10 @@ export default function Sidebar() {
   };
 
   const isChildActive = (children: { route: string }[]) => {
-    return children?.some((child) => pathname === child.route);
+    return children?.some(
+      (child) =>
+        pathname === child.route || pathname.startsWith(`${child.route}/`),
+    );
   };
 
   return (
@@ -111,7 +114,7 @@ export default function Sidebar() {
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus.includes(item.title);
           const isActive = item.route
-            ? pathname === item.route || pathname.startsWith(item.route + '/')
+            ? pathname === item.route || pathname.startsWith(`${item.route}/`)
             : false;
           const childActive = hasChildren && isChildActive(item.children!);
 
@@ -140,7 +143,9 @@ export default function Sidebar() {
                   >
                     <div className="flex flex-col gap-1">
                       {item.children!.map((child, childIndex) => {
-                        const isChildItemActive = pathname === child.route;
+                        const isChildItemActive =
+                          pathname === child.route ||
+                          pathname.startsWith(`${child.route}/`);
                         return (
                           <Button
                             key={childIndex}

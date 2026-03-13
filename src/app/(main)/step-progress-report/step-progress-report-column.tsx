@@ -10,6 +10,7 @@ export const createStepProgressReportColumns = (
   tDegree: (key: string) => string,
   locale: string = 'th',
 ): ColumnDef<IStepProgressReport>[] => {
+  const degreeMap = getDegreeMap(tDegree);
   const columns: ColumnDef<IStepProgressReport>[] = [
     {
       accessorKey: 'studentCode',
@@ -34,16 +35,18 @@ export const createStepProgressReportColumns = (
     {
       accessorKey: 'studentDegree',
       header: 'degree',
-      sortingFn: 'basic',
+      filterFn: (row, columnId, filterValue) => {
+        const raw = row.getValue<string | null>(columnId);
+        if (!raw) return false;
+        const translated = (degreeMap[raw] ?? raw).toLowerCase();
+        const filter = String(filterValue).toLowerCase();
+        return (
+          translated.includes(filter) || raw.toLowerCase().includes(filter)
+        );
+      },
       cell: ({ row }) => {
         const degree = row.original.studentDegree;
-        if (!degree) return '-';
-        const degreeMap: Record<string, string> = {
-          bachelor: tDegree('bachelor'),
-          master: tDegree('master'),
-          doctorate: tDegree('doctorate'),
-        };
-        return degreeMap[degree] || degree;
+        return degreeMap[degree] || degree || '-';
       },
     },
     {
@@ -53,22 +56,31 @@ export const createStepProgressReportColumns = (
     },
     {
       accessorKey: 'courseName',
-      header: 'course-name',
+      header: 'course',
       sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {
       accessorKey: 'milestoneName',
-      header: 'milestone-name',
+      header: 'milestone',
       sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {
       accessorKey: 'stepName',
-      header: 'step-name',
+      header: 'milestone-step',
       sortingFn: mixedThEnTextSort<IStepProgressReport>(),
     },
     {
       accessorKey: 'status',
       header: 'status',
+      filterFn: (row, columnId, filterValue) => {
+        const rawStatus = row.getValue<string>(columnId);
+        const translatedStatus = tStatus(rawStatus).toLowerCase();
+        const filter = String(filterValue).toLowerCase();
+        return (
+          translatedStatus.includes(filter) ||
+          rawStatus.toLowerCase().includes(filter)
+        );
+      },
       cell: (info) => {
         const rawStatus = info.getValue<string>();
         const color = statusColor(rawStatus);
@@ -83,11 +95,16 @@ export const createStepProgressReportColumns = (
       accessorKey: 'dueDate',
       header: 'due-date',
       sortingFn: 'datetime',
+      filterFn: (row, columnId, filterValue) => {
+        const rawDate = row.getValue<string>(columnId);
+        if (!rawDate) return false;
+        const formatted = formatShortDate(rawDate, locale).toLowerCase();
+        return formatted.includes(String(filterValue).toLowerCase());
+      },
       cell: (row) => {
         const rawDate = row.getValue<string>();
         if (!rawDate) return <span>-</span>;
-        const localString = formatShortDate(rawDate, locale);
-        return localString;
+        return formatShortDate(rawDate, locale);
       },
     },
   ];
@@ -104,3 +121,11 @@ const statusColor = (status: string) => {
   };
   return colorMap[status] || '';
 };
+
+const getDegreeMap = (
+  tDegree: (key: string) => string,
+): Record<string, string> => ({
+  bachelor: tDegree('bachelor'),
+  master: tDegree('master'),
+  doctorate: tDegree('doctorate'),
+});

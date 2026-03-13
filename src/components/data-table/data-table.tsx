@@ -184,6 +184,24 @@ export function DataTable<TData, TValue>({
           getFilteredRowModel: getFilteredRowModel(),
         }),
 
+    globalFilterFn: (row, columnId, filterValue) => {
+      const columnDef = columns.find((col) => {
+        const key = (col as { accessorKey?: string }).accessorKey;
+        const id = (col as { id?: string }).id;
+        return key === columnId || id === columnId;
+      });
+
+      if (columnDef && typeof columnDef.filterFn === 'function') {
+        return columnDef.filterFn(row, columnId, filterValue, () => {});
+      }
+
+      // fallback default behavior
+      const value = row.getValue(columnId);
+      return String(value ?? '')
+        .toLowerCase()
+        .includes(String(filterValue).toLowerCase());
+    },
+
     onSortingChange: (updaterOrValue) => {
       const newSorting =
         typeof updaterOrValue === 'function'

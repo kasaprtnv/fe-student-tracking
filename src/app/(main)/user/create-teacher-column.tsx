@@ -30,13 +30,19 @@ export const createTeacherColumns = (
   const columns: ColumnDef<User>[] = [
     {
       header: t('full-name'),
+      accessorKey: 'fullNameWithTitle',
       sortingFn: mixedThEnTextSort<User>(),
       accessorFn: (row) => {
-        const titleName = row.titleId ? titleMap[row.titleId]?.name || '' : '';
-        const firstName = row.firstName || '';
-        const lastName = row.lastName || '';
-        const fullName = `${titleName}${firstName} ${lastName}`.trim();
-        return fullName || '-';
+        if (row.fullNameWithTitle) return row.fullNameWithTitle;
+        else {
+          const titleName = row.titleId
+            ? titleMap[row.titleId]?.name || ''
+            : '';
+          const firstName = row.firstName || '';
+          const lastName = row.lastName || '';
+          const fullName = `${titleName}${firstName} ${lastName}`.trim();
+          return fullName || '-';
+        }
       },
     },
     {
@@ -74,10 +80,12 @@ export const createTeacherColumns = (
     {
       header: t('teacher-degree'),
       accessorKey: 'teacherDegree',
+      enableSorting: false,
       cell: ({ row }) => row.original.teacherDegree || '-',
     },
     {
       header: t('academic-position'),
+      enableSorting: false,
       accessorKey: 'academicPosition',
       sortingFn: mixedThEnTextSort<User>(),
       cell: ({ row }) => {
