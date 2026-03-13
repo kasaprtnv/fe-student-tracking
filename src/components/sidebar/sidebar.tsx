@@ -114,7 +114,10 @@ export default function Sidebar() {
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus.includes(item.title);
           const isActive = item.route
-            ? pathname === item.route || pathname.startsWith(`${item.route}/`)
+            ? pathname === item.route ||
+              pathname.startsWith(`${item.route}/`) ||
+              // เพิ่มเงื่อนไขสำหรับเมนู "รายชื่อนิสิต" ให้ไฮไลต์เมื่ออยู่หน้า /profile หรือ /profile/[id]
+              (item.route === '/students' && pathname.startsWith('/profile'))
             : false;
           const childActive = hasChildren && isChildActive(item.children!);
 
