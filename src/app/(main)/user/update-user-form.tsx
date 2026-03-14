@@ -72,7 +72,7 @@ export function UpdateUserFormDialog({
   const tCommon = useTranslations('common');
   const { updateExistingUser, storeAction, userMap, getStudentProgressCount } =
     useUser();
-  const { fetchAllCourses, updateExistingCourse, getCourseById } = useCourse();
+  const { fetchAllCourses } = useCourse();
   const { mutate } = useSWRConfig();
 
   // Check if email already exists (excluding current user)
@@ -214,35 +214,17 @@ export function UpdateUserFormDialog({
           (cs) => !newCourseIds.includes(cs.courseId),
         );
 
-        // Delete removed course_staff records and update course.staffIds
+        // Delete removed course_staff records
         for (const courseStaff of coursesToRemove) {
           await removeCourseStaff(courseStaff.id);
-          // Update course to remove this user from staffIds
-          const course = getCourseById(courseStaff.courseId);
-          if (course) {
-            const updatedStaffIds = (course.staffIds || []).filter(
-              (id) => id !== user.id,
-            );
-            await updateExistingCourse(course.id, {
-              staffIds: updatedStaffIds,
-            });
-          }
         }
 
-        // Create new course_staff records and update course.staffIds
+        // Create new course_staff records
         for (const courseId of coursesToAdd) {
           await createNewCourseStaff({
             courseId,
             userId: user.id,
           });
-          // Update course to add this user to staffIds
-          const course = getCourseById(courseId);
-          if (course) {
-            const updatedStaffIds = [...(course.staffIds || []), user.id];
-            await updateExistingCourse(course.id, {
-              staffIds: updatedStaffIds,
-            });
-          }
         }
 
         // Remove courseId from user data since it's managed by course_staff
