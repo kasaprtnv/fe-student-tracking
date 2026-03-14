@@ -669,8 +669,8 @@
         "major-required": "กรุณากรอกสาขาวิชา"
       },
       "toast": {
-        "created-successfully": "เพิ่มผู้ใช้สำเร็จ!",
-        "creation-failed": "เพิ่มผู้ใช้ไม่สำเร็จ!",
+        "created-successfully": "เพิ่มผู้ใช้งานสำเร็จ!",
+        "creation-failed": "เพิ่มผู้ใช้งานไม่สำเร็จ!",
         "updated-successfully": "แก้ไขผู้ใช้งานสำเร็จ!",
         "update-failed": "แก้ไขผู้ใช้งานไม่สำเร็จ!"
       }
