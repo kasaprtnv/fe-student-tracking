@@ -18,7 +18,6 @@ import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUser } from '@/hooks/use-user';
 import { useCourseStaff } from '@/hooks/use-course_staff';
-import { useCourse } from '@/hooks/use-course';
 import { toast } from 'sonner';
 import { SelectOption } from '@/types';
 import { ICourse } from '@/types/course';
@@ -55,7 +54,6 @@ export function CreateUserFormDialog({
   const tCommon = useTranslations('common');
   const { createNewUser, storeAction } = useUser();
   const { createNewCourseStaff } = useCourseStaff();
-  const { updateExistingCourse, getCourseById } = useCourse();
 
   // Check if email already exists (calls backend to check all users including inactive)
   const isEmailExists = async (email: string): Promise<boolean> => {
@@ -221,15 +219,6 @@ export function CreateUserFormDialog({
             courseId,
             userId: newUserId,
           });
-
-          // Update course.staffIds
-          const course = getCourseById(courseId);
-          if (course) {
-            const updatedStaffIds = [...(course.staffIds || []), newUserId];
-            await updateExistingCourse(course.id, {
-              staffIds: updatedStaffIds,
-            });
-          }
         }
       }
 
