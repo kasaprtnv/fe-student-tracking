@@ -32,7 +32,6 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     searchForStudents,
     deleteExistingUser,
     deleteExistingUsers,
-    userMap,
     storeAction,
     loader,
     getStudentProgressCount,
