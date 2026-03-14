@@ -200,7 +200,10 @@ export const StudentTable = ({ onImport, importLabel }: StudentTableProps) => {
     }
 
     if (isDelete.userIds.length === 1) {
-      const user = userMap[isDelete.userIds[0]];
+      const user =
+        isDelete?.users?.[0] ||
+        getUserById(isDelete.userIds[0]) ||
+        filterStudent.find((u) => u.id === isDelete.userIds![0]);
       return user ? user.code || user.firstName : 'DELETE USER';
     } else {
       return 'DELETE SELECTED USERS';
