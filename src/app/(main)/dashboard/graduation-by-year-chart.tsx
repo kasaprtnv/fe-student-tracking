@@ -84,7 +84,10 @@ export function GraduationByYearChart({
       {};
 
     for (const student of filteredStudents) {
-      const year = student.year || 'Unknown';
+      const year = student.year?.trim();
+      if (!year) {
+        continue;
+      }
       if (!yearMap[year]) {
         yearMap[year] = { graduated: 0, notGraduated: 0 };
       }

@@ -77,18 +77,21 @@ export function MultiCombobox({
           className={cn(
             'border-input h-[max-content] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-normal transition-all',
             'focus:ring-ring focus:ring-1 focus:outline-none',
-            'flex items-center justify-between',
+            'flex items-center justify-between overflow-hidden',
             errorMessage && 'border-red-500',
           )}
         >
-          <div className="flex min-w-0 flex-1 flex-wrap gap-1">
+          <div className="flex min-w-0 flex-1 flex-wrap gap-1 overflow-hidden">
             {values.size > 0 && !loader ? (
               [...values].map((val) => (
                 <div
                   key={val}
-                  className="flex items-center rounded bg-gray-200 px-2 py-1 text-sm dark:bg-neutral-700 dark:text-neutral-200"
+                  className="flex max-w-full min-w-0 items-center rounded bg-gray-200 px-2 py-1 text-sm dark:bg-neutral-700 dark:text-neutral-200"
+                  title={options.find((opt) => opt.value === val)?.label || val}
                 >
-                  {options.find((opt) => opt.value === val)?.label || val}
+                  <span className="block max-w-full truncate">
+                    {options.find((opt) => opt.value === val)?.label || val}
+                  </span>
                 </div>
               ))
             ) : (
