@@ -302,8 +302,16 @@ export const TeacherTable = ({ onImport, importLabel }: TeacherTableProps) => {
 
   const handleSortChange = React.useCallback(
     (sortBy: string | undefined, sortOrder: 'asc' | 'desc' | undefined) => {
+      // Flip sort order for boolean columns so "Active" appears first on asc
+      const adjustedSortOrder =
+        sortBy === 'isActive' && sortOrder
+          ? sortOrder === 'asc'
+            ? 'desc'
+            : 'asc'
+          : sortOrder;
+
       setCurrentSortBy(sortBy);
-      setCurrentSortOrder(sortOrder);
+      setCurrentSortOrder(adjustedSortOrder);
       setCurrentPage(1);
       setTeacherPage(1);
     },

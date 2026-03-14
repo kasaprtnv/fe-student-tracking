@@ -236,14 +236,21 @@ const CoursePage = () => {
 
   const handleSortChange = React.useCallback(
     (sortBy: string | undefined, sortOrder: 'asc' | 'desc' | undefined) => {
+      // Flip sort order for boolean columns so "Active" appears first on asc
+      const adjustedSortOrder =
+        sortBy === 'isUsed' && sortOrder
+          ? sortOrder === 'asc'
+            ? 'desc'
+            : 'asc'
+          : sortOrder;
+
       setCurrentSortBy(sortBy);
-      setCurrentSortOrder(sortOrder);
-      setCurrentPage(1); // Reset to first page on sort change
+      setCurrentSortOrder(adjustedSortOrder);
+      setCurrentPage(1);
       setPage(1);
     },
     [setPage],
   );
-
   // Memoize refresh function
   const refreshData = React.useCallback(() => {
     mutate();
