@@ -27,17 +27,16 @@ export function createFileColumns(
 ): ColumnDef<FileItem>[] {
   function getDownloadUrl(fileUrl: string) {
     if (!fileUrl) return '';
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
-    if (
-      fileUrl.startsWith('http://localhost') ||
-      fileUrl.startsWith('https://localhost')
-    ) {
-      return fileUrl.replace(/https?:\/\/localhost(:\d+)?/, apiBase);
-    }
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
     if (fileUrl.startsWith('/')) {
-      return apiBase.replace(/\/$/, '') + fileUrl;
+      return `${apiBase}${fileUrl}`;
     }
-    return fileUrl;
+    try {
+      const parsed = new URL(fileUrl);
+      return `${apiBase}${parsed.pathname}${parsed.search}`;
+    } catch {
+      return fileUrl;
+    }
   }
 
   // ฟังก์ชันดาวน์โหลดไฟล์โดยตรง ไม่เปิดแท็บใหม่
