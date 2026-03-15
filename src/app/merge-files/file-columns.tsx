@@ -25,16 +25,26 @@ export function createFileColumns(
   _handleDownload: (file: FileItem) => void,
   t?: TranslationFunction,
 ): ColumnDef<FileItem>[] {
+  function getDownloadUrl(fileUrl: string) {
+    if (!fileUrl) return '';
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+    if (
+      fileUrl.startsWith('http://localhost') ||
+      fileUrl.startsWith('https://localhost')
+    ) {
+      return fileUrl.replace(/https?:\/\/localhost(:\d+)?/, apiBase);
+    }
+    if (fileUrl.startsWith('/')) {
+      return apiBase.replace(/\/$/, '') + fileUrl;
+    }
+    return fileUrl;
+  }
+
   // ฟังก์ชันดาวน์โหลดไฟล์โดยตรง ไม่เปิดแท็บใหม่
   async function directDownload(file: FileItem) {
     if (!file.file_url) return;
     try {
-      const url = file.file_url.startsWith('http')
-        ? file.file_url
-        : (await import('@/services/upload.service')).uploadService.getFileUrl(
-            file.file_url,
-          );
-
+      const url = getDownloadUrl(file.file_url);
       const response = await fetch(url);
       if (!response.ok) throw new Error('Network response was not ok');
       const blob = await response.blob();
