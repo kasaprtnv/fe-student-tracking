@@ -405,8 +405,9 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
           {course && (
             <div>
               <div className="mb-2 text-xl text-gray-600">
-                {tSelectedMilestone('header.course-code')} : {course.code}{' '}
-                {tSelectedMilestone('header.course-name')} : {course.name}
+                {tSelectedMilestone('header.course-code')} : {course.code}
+                {' - '}
+                {course.name}
               </div>
               <div className="mb-2 text-gray-600">
                 {tSelectedMilestone('header.course-description')} :{' '}
