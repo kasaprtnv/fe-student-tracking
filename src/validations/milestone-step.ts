@@ -7,6 +7,7 @@ export const createMilestoneStepSchema = (t: (key: string) => string) =>
     requiresAttachment: z.boolean(),
     dayPeriod: z.number().int(),
     notifyBeforeDays: z.number().int(),
+    secondNotifyBeforeDays: z.number().int(),
   });
 export const updateMilestoneStepSchema = (t: (key: string) => string) =>
   z.object({
@@ -15,6 +16,7 @@ export const updateMilestoneStepSchema = (t: (key: string) => string) =>
     requiresAttachment: z.boolean(),
     dayPeriod: z.number().int(),
     notifyBeforeDays: z.number().int(),
+    secondNotifyBeforeDays: z.number().int(),
     isActive: z.boolean().optional(),
   });
 

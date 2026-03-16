@@ -116,8 +116,18 @@ const MilestoneStepCard = ({
               <div className="flex items-center gap-1">
                 <Bell size={14} />
                 <span>
-                  {t('notify-before-days')} {step.notifyBeforeDays}{' '}
+                  {t('first-notify-before-days')} : {step.notifyBeforeDays}{' '}
                   {tCommon('days')}
+                </span>
+              </div>
+            </>
+            <>
+              <span className="text-gray-300">|</span>
+              <div className="flex items-center gap-1">
+                <Bell size={14} />
+                <span>
+                  {t('second-notify-before-days')} :{' '}
+                  {step.secondNotifyBeforeDays} {tCommon('days')}
                 </span>
               </div>
             </>

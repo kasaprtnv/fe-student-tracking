@@ -385,6 +385,8 @@
     "requires-attachment": "สามารถแนบไฟล์หลักฐานได้",
     "no-attachment-required": "ไม่สามารถแนบไฟล์หลักฐานได้",
     "notify-before-days": "แจ้งเตือนล่วงหน้า",
+    "first-notify-before-days": "แจ้งเตือนล่วงหน้าครั้งที่ 1",
+    "second-notify-before-days": "แจ้งเตือนล่วงหน้าครั้งที่ 2",
     "day-period": "ระยะเวลา",
     "milestone-step-form": {
       "header": {
@@ -401,7 +403,8 @@
         "position": "ลำดับ",
         "requiresAttachment": "สามารถแนบไฟล์หลักฐานได้",
         "dayPeriod": "ระยะเวลา (วัน)",
-        "notifyBeforeDays": "แจ้งเตือนล่วงหน้า (วัน)",
+        "notifyBeforeDays": "แจ้งเตือนล่วงหน้าครั้งที่ 1 (วัน)",
+        "secondNotifyBeforeDays": "แจ้งเตือนล่วงหน้าครั้งที่ 2 (วัน)",
         "isActive": "ใช้งานอยู่",
         "confirm-position": "ยืนยันลำดับ"
       },
@@ -410,7 +413,8 @@
         "description": "กรอกคำอธิบายขั้นตอนการศึกษาย่อย",
         "position": "เช่น 1",
         "dayPeriod": "จำนวนวันในช่วงเวลา",
-        "notifyBeforeDays": "จำนวนวันก่อนแจ้งเตือน"
+        "notifyBeforeDays": "จำนวนวันก่อนแจ้งเตือน",
+        "secondNotifyBeforeDays": "จำนวนวันก่อนแจ้งเตือนครั้งที่ 2"
       },
       "toast": {
         "created-successfully": "เพิ่มขั้นตอนการศึกษาย่อยสำเร็จ!",
@@ -431,8 +435,9 @@
 
         "dayPeriod-integer": "ช่วงเวลาต้องเป็นตัวเลข",
 
-        "notifyBeforeDays-greater-than-dayPeriod": "จำนวนวันแจ้งเตือนล่วงหน้าต้องไม่มากกว่าระยะเวลา",
-
+        "notifyBeforeDays-greater-than-dayPeriod": "จำนวนวันแจ้งเตือนล่วงหน้าครั้งที่ 1ต้องไม่มากกว่าระยะเวลา",
+        "secondNotifyBeforeDays-greater-than-dayPeriod": "จำนวนวันแจ้งเตือนล่วงหน้าครั้งที่ 2 ต้องไม่มากกว่าระยะเวลา",
+        "secondNotifyBeforeDays-greater-than-notifyBeforeDays": "จำนวนวันแจ้งเตือนล่วงหน้าครั้งที่ 2 ต้องไม่มากกว่าจำนวนวันแจ้งเตือนล่วงหน้าครั้งที่ 1",
         "notifyBeforeDays-integer": "จำนวนวันก่อนแจ้งเตือนต้องเป็นตัวเลข",
         "dayPeriod-exceeds": "ช่วงเวลาไม่สามารถเกินช่วงเวลาของขั้นตอนการศึกษาที่ {value} วัน"
       }

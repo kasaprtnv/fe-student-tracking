@@ -62,6 +62,7 @@ const CreateMilestoneStepForm = ({
       requiresAttachment: false,
       dayPeriod: 0,
       notifyBeforeDays: 0,
+      secondNotifyBeforeDays: 0,
     },
   });
 
@@ -83,6 +84,31 @@ const CreateMilestoneStepForm = ({
       form.setError('notifyBeforeDays', {
         type: 'manual',
         message: tForm('errors.notifyBeforeDays-greater-than-dayPeriod'),
+      });
+      return;
+    }
+    if (data.secondNotifyBeforeDays > data.dayPeriod) {
+      form.setError('secondNotifyBeforeDays', {
+        type: 'manual',
+        message: tForm('errors.secondNotifyBeforeDays-greater-than-dayPeriod'),
+      });
+      return;
+    }
+    if (data.secondNotifyBeforeDays >= data.notifyBeforeDays) {
+      form.setError('secondNotifyBeforeDays', {
+        type: 'manual',
+        message: tForm(
+          'errors.secondNotifyBeforeDays-greater-than-notifyBeforeDays',
+        ),
+      });
+      return;
+    }
+    if (data.secondNotifyBeforeDays === data.notifyBeforeDays) {
+      form.setError('secondNotifyBeforeDays', {
+        type: 'manual',
+        message: tForm(
+          'errors.secondNotifyBeforeDays-equal-to-notifyBeforeDays',
+        ),
       });
       return;
     }
@@ -204,6 +230,33 @@ const CreateMilestoneStepForm = ({
                       type="number"
                       min={0}
                       placeholder={tForm('placeholder.notifyBeforeDays')}
+                      className="border-gray-300 bg-white"
+                      {...field}
+                      value={Number(field.value ?? 0).toString()}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/^0+(?=\d)/, '');
+                        field.onChange(Number(val));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="secondNotifyBeforeDays"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.secondNotifyBeforeDays')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder={tForm('placeholder.secondNotifyBeforeDays')}
                       className="border-gray-300 bg-white"
                       {...field}
                       value={Number(field.value ?? 0).toString()}

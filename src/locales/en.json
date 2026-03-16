@@ -387,6 +387,8 @@
     "requires-attachment": "Requires Attachment",
     "no-attachment-required": "No Attachment Required",
     "notify-before-days": "Notify Before Days",
+    "first-notify-before-days": "First Advance Notification",
+    "second-notify-before-days": "Second Advance Notification",
     "day-period": "Day Period",
     "milestone-step-form": {
       "header": {
@@ -403,7 +405,8 @@
         "position": "Position",
         "requiresAttachment": "Require Attachment",
         "dayPeriod": "Day Period",
-        "notifyBeforeDays": "Notify Before (Days)",
+        "notifyBeforeDays": "1st Advance Notification (Days)",
+        "secondNotifyBeforeDays": "2nd Advance Notification (Days)",
         "isActive": "Is Active",
         "confirm-position": "Confirm Position"
       },
@@ -412,7 +415,8 @@
         "description": "Enter step description",
         "position": "e.g. 1",
         "dayPeriod": "Number of days for the period",
-        "notifyBeforeDays": "Number of days before notification"
+        "notifyBeforeDays": "Number of days before first notification",
+        "secondNotifyBeforeDays": "Number of days before second notification"
       },
       "toast": {
         "created-successfully": "Milestone step created successfully!",
@@ -431,9 +435,12 @@
         "position-integer": "Position must be a number",
         "position-min": "Position must be at least 1",
         "dayPeriod-integer": "Day period must be a number",
-        "notifyBeforeDays-greater-than-dayPeriod": "Notify before days cannot be greater than day period",
+        "notifyBeforeDays-greater-than-dayPeriod": "First advance notification cannot be greater than day period",
         "notifyBeforeDays-integer": "Notify-before-days must be a number",
 
+        "secondNotifyBeforeDays-greater-than-dayPeriod": "Second advance notification days cannot be greater than day period",
+        "secondNotifyBeforeDays-greater-than-notifyBeforeDays": "Second advance notification days cannot be greater than first advance notification",
+        "secondNotifyBeforeDays-equal-to-notifyBeforeDays": "Second advance notification days cannot be equal to first advance notification",
         "dayPeriod-exceeds": "Day period cannot exceed milestone's day period of {value} days"
       }
     },

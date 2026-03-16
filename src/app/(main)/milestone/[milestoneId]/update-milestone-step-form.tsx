@@ -61,6 +61,7 @@ const UpdateMilestoneStepForm = ({
       requiresAttachment: milestoneStep?.requiresAttachment || false,
       dayPeriod: milestoneStep?.dayPeriod || 0,
       notifyBeforeDays: milestoneStep?.notifyBeforeDays || 0,
+      secondNotifyBeforeDays: milestoneStep?.secondNotifyBeforeDays || 0,
     },
   });
 
@@ -72,6 +73,7 @@ const UpdateMilestoneStepForm = ({
         requiresAttachment: milestoneStep.requiresAttachment || false,
         dayPeriod: milestoneStep.dayPeriod || 0,
         notifyBeforeDays: milestoneStep.notifyBeforeDays || 0,
+        secondNotifyBeforeDays: milestoneStep.secondNotifyBeforeDays || 0,
       });
     }
   }, [milestoneStep, form]);
@@ -99,6 +101,31 @@ const UpdateMilestoneStepForm = ({
       form.setError('notifyBeforeDays', {
         type: 'manual',
         message: tForm('errors.notifyBeforeDays-greater-than-dayPeriod'),
+      });
+      return;
+    }
+    if (data.secondNotifyBeforeDays > data.dayPeriod) {
+      form.setError('secondNotifyBeforeDays', {
+        type: 'manual',
+        message: tForm('errors.secondNotifyBeforeDays-greater-than-dayPeriod'),
+      });
+      return;
+    }
+    if (data.secondNotifyBeforeDays > data.notifyBeforeDays) {
+      form.setError('secondNotifyBeforeDays', {
+        type: 'manual',
+        message: tForm(
+          'errors.secondNotifyBeforeDays-greater-than-notifyBeforeDays',
+        ),
+      });
+      return;
+    }
+    if (data.secondNotifyBeforeDays === data.notifyBeforeDays) {
+      form.setError('secondNotifyBeforeDays', {
+        type: 'manual',
+        message: tForm(
+          'errors.secondNotifyBeforeDays-equal-to-notifyBeforeDays',
+        ),
       });
       return;
     }
@@ -216,6 +243,32 @@ const UpdateMilestoneStepForm = ({
                       type="number"
                       min={0}
                       placeholder={tForm('placeholder.notifyBeforeDays')}
+                      {...field}
+                      value={Number(field.value ?? 0).toString()}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/^0+(?=\d)/, '');
+                        field.onChange(Number(val));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="secondNotifyBeforeDays"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">
+                    {tForm('label.secondNotifyBeforeDays')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder={tForm('placeholder.secondNotifyBeforeDays')}
                       {...field}
                       value={Number(field.value ?? 0).toString()}
                       onChange={(e) => {
