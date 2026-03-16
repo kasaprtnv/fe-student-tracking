@@ -826,7 +826,7 @@
     "title": "Dashboard",
     "description": "Overview of students and courses",
     "summary-cards": {
-      "total-students": "Total Students",
+      "total-students": "Total Students (Active)",
       "total-teachers": "Teachers",
       "total-courses": "Total Courses",
       "students-in-courses": "Students in My Courses",
