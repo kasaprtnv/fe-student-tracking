@@ -12,7 +12,6 @@ import {
   ScrollText,
 } from 'lucide-react';
 import { Separator } from '../ui/separator';
-import { ChangePasswordComponent } from './change-password/change-password';
 
 interface ProfileTeacherPageProps {
   user: User | null;
@@ -73,7 +72,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
               />
             </div>
           </div>
-          <div className="mt-4 text-center text-2xl font-bold">{`${user?.titleName}${user?.firstName} ${user?.lastName}`}</div>
+          <div className="mt-4 text-center text-2xl font-bold">{`${user?.titleName || ''}${user?.firstName} ${user?.lastName}`}</div>
           <div className="text-center text-lg font-medium text-red-700">
             {t('personal_information.teacher_position')}
           </div>
@@ -189,7 +188,6 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
             </div>
           </div>
         </div>
-        <ChangePasswordComponent />
       </div>
     </div>
   );
