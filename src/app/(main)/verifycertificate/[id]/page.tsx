@@ -857,7 +857,7 @@ export default function VerifyDetailPage() {
 
                   <div className="flex justify-end gap-3">
                     <Button
-                      variant="outline"
+                      variant="destructive"
                       onClick={handleDecline}
                       disabled={submitting || uploadingStaffFile}
                     >
@@ -867,9 +867,9 @@ export default function VerifyDetailPage() {
                       {t('review.decline')}
                     </Button>
                     <Button
+                      variant="default"
                       onClick={handleApprove}
                       disabled={submitting}
-                      className="bg-black hover:bg-gray-900"
                     >
                       {submitting ? <Spinner className="mr-2 h-4 w-4" /> : null}
                       {t('review.approve')}

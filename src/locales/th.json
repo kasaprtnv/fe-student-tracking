@@ -821,7 +821,7 @@
     "title": "แดชบอร์ด",
     "description": "ภาพรวมข้อมูลนิสิตและหลักสูตร",
     "summary-cards": {
-      "total-students": "นิสิตทั้งหมด",
+      "total-students": "นิสิตทั้งหมด (เปิดใช้งานอยู่)",
       "total-teachers": "อาจารย์",
       "total-courses": "หลักสูตรทั้งหมด",
       "students-in-courses": "นิสิตทั้งหมดในหลักสูตร",
