@@ -868,6 +868,7 @@ export default function VerifyDetailPage() {
                     </Button>
                     <Button
                       variant="default"
+                      className="bg-green-500 text-white hover:bg-green-600"
                       onClick={handleApprove}
                       disabled={submitting}
                     >
