@@ -56,11 +56,7 @@ export const ProfileTeacherComponent: React.FC<ProfileTeacherPageProps> = ({
           <div className="relative">
             <Avatar className="h-60 w-60 border-4 border-white bg-white">
               <AvatarImage
-                src={
-                  user?.profileImageUrl
-                    ? `${API_STATIC_URL}${user.profileImageUrl}`
-                    : '/profile.png'
-                }
+                src={`${API_STATIC_URL}${user?.profileImageUrl ?? ''}`}
               />
               <AvatarFallback className="text-4xl">{`${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`}</AvatarFallback>
             </Avatar>

@@ -963,47 +963,54 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       )}
                                     {displayMode !== 'select-milestone' &&
                                       attemptMap[step.id] &&
-                                      attemptMap[step.id].staffAttachment &&
-                                      attemptMap[step.id].staffComment != '' &&
-                                      attemptMap[step.id].staffComment !=
-                                        null &&
+                                      (attemptMap[step.id].staffAttachment ||
+                                        (attemptMap[step.id].staffComment !=
+                                          '' &&
+                                          attemptMap[step.id].staffComment !=
+                                            null)) &&
                                       declined && (
                                         <Separator className="my-6" />
                                       )}
                                     {/* List file Upload */}
-                                    {internalFileNames[step.id] && (
-                                      <>
-                                        <div className="mt-3 font-bold">
-                                          {t('student_file_attachment')}
-                                        </div>
-                                        {internalFileNames[step.id]?.map(
-                                          (name, idx) => (
-                                            <div
-                                              className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4"
-                                              key={idx}
-                                            >
-                                              <File className="mr-2" />
-                                              <span
-                                                className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
-                                                onClick={() => {
-                                                  const file =
-                                                    internalFiles[step.id]?.[
-                                                      idx
-                                                    ];
-                                                  if (file) {
-                                                    const url =
-                                                      URL.createObjectURL(file);
-                                                    window.open(url, '_blank');
-                                                  }
-                                                }}
+                                    {(available || declined) &&
+                                      internalFileNames[step.id] && (
+                                        <>
+                                          <div className="mt-3 font-bold">
+                                            {t('student_file_attachment')}
+                                          </div>
+                                          {internalFileNames[step.id]?.map(
+                                            (name, idx) => (
+                                              <div
+                                                className="mt-3 flex w-1/2 rounded-2xl border p-4 py-4"
+                                                key={idx}
                                               >
-                                                {name}
-                                              </span>
-                                            </div>
-                                          ),
-                                        )}
-                                      </>
-                                    )}
+                                                <File className="mr-2" />
+                                                <span
+                                                  className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
+                                                  onClick={() => {
+                                                    const file =
+                                                      internalFiles[step.id]?.[
+                                                        idx
+                                                      ];
+                                                    if (file) {
+                                                      const url =
+                                                        URL.createObjectURL(
+                                                          file,
+                                                        );
+                                                      window.open(
+                                                        url,
+                                                        '_blank',
+                                                      );
+                                                    }
+                                                  }}
+                                                >
+                                                  {name}
+                                                </span>
+                                              </div>
+                                            ),
+                                          )}
+                                        </>
+                                      )}
                                     {displayMode !== 'select-milestone' &&
                                       mode === 'upload' &&
                                       (available || declined) && (

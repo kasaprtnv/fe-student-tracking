@@ -337,11 +337,7 @@ export default function Sidebar() {
           >
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src={
-                  user?.profileImageUrl
-                    ? `${API_STATIC_URL}${user.profileImageUrl}`
-                    : '/profile.png'
-                }
+                src={`${API_STATIC_URL}${user?.profileImageUrl ?? ''}`}
               />
               <AvatarFallback>{`${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`}</AvatarFallback>
             </Avatar>
