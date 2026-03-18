@@ -9,11 +9,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, X } from 'lucide-react';
 import { IMilestoneStep } from '@/types/milestone-step';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 interface UploadFileDialogProps {
   userId?: string;
@@ -39,20 +40,22 @@ export const UploadFileDialog = ({
   // รองรับหลายไฟล์
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      setFile((prev) => {
-        // ป้องกันไฟล์ซ้ำ
-        const newFiles = acceptedFiles.filter(
-          (f) => !prev.some((pf) => pf.name === f.name && pf.size === f.size),
-        );
-        const allFiles = [...prev, ...newFiles];
-        // ตรวจสอบขนาดรวม
-        if (getTotalFileSize(allFiles) > limitFileSize) {
-          return prev;
-        }
-        return allFiles;
-      });
+      const newFiles = acceptedFiles.filter(
+        (f) => !file.some((pf) => pf.name === f.name && pf.size === f.size),
+      );
+
+      if (newFiles.length === 0) return;
+
+      const totalSize = getTotalFileSize(file) + getTotalFileSize(newFiles);
+
+      if (totalSize > limitFileSize) {
+        toast.error(t('limit_file_size'), { id: 'upload-size-limit' });
+        return;
+      }
+
+      setFile((prev) => [...prev, ...newFiles]);
     },
-    [limitFileSize],
+    [file, limitFileSize, t],
   );
 
   // เรียก onFileUpload เฉพาะตอนกดปุ่มอัปโหลด
@@ -132,7 +135,7 @@ export const UploadFileDialog = ({
           </div>
         </div>
         {file.length > 0 && (
-          <div className="mt-4 w-full space-y-2">
+          <div className="mt-4 max-h-72 w-full space-y-2 overflow-y-auto pr-2">
             {file.map((f) => (
               <div
                 key={f.name + f.size}
