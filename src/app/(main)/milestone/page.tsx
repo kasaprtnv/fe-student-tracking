@@ -27,6 +27,7 @@ const MilestonePage = () => {
     allMilestoneFormMap,
     pagination,
     searchQuery,
+    milestoneMap,
     // filteredMilestoneIds,
     fetchAllMilestones,
     searchForMilestones,
@@ -145,8 +146,21 @@ const MilestonePage = () => {
 
     try {
       if (isDelete.milestoneId.length === 1) {
+        if (milestoneMap[isDelete.milestoneId[0]]?.isUsed) {
+          toast.error(tForm('toast.deletion-failed-used'));
+          setIsDelete({ isDeleting: false, milestoneId: undefined });
+          return;
+        }
         await removeMilestone(isDelete.milestoneId[0]);
       } else {
+        const usedMilestones = isDelete.milestoneId
+          .map((id) => milestoneMap[id])
+          .filter((milestone) => milestone?.isUsed === true);
+        if (usedMilestones.length > 0) {
+          toast.error(tForm('toast.deletion-failed-used-multiple'));
+          setIsDelete({ isDeleting: false, milestoneId: undefined });
+          return;
+        }
         await removeMultipleMilestones(isDelete.milestoneId);
       }
       refreshData();

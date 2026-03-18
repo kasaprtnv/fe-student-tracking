@@ -26,6 +26,7 @@ const CoursePage = () => {
   const router = useRouter();
   const {
     allCoursesFromMap,
+    courseMap,
     pagination,
     searchQuery,
     fetchAllCourses,
@@ -192,11 +193,26 @@ const CoursePage = () => {
 
   const onConfirmDelete = async () => {
     if (!isDelete.courseId || isDelete?.courseId.length == 0) return;
-
     try {
       if (isDelete.courseId.length === 1) {
+        const course = courseMap[isDelete.courseId[0]];
+
+        if (course.isUsed === true) {
+          toast.error(tForm('toast.deletion-failed-used'));
+          setIsDelete({ isDeleting: false, courseId: undefined });
+          return;
+        }
+
         await removeCourse(isDelete.courseId[0]);
       } else {
+        const usedCourses = isDelete.courseId
+          .map((id) => courseMap[id])
+          .filter((course) => course.isUsed === true);
+        if (usedCourses.length > 0) {
+          toast.error(tForm('toast.deletion-failed-used-multiple'));
+          setIsDelete({ isDeleting: false, courseId: undefined });
+          return;
+        }
         await removeMultipleCourses(isDelete.courseId);
       }
 

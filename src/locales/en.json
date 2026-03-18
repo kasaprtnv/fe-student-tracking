@@ -162,7 +162,9 @@
         "update-failed": "Failed to update course. Please try again.",
         "deleted-successfully": "Course deleted successfully!",
         "deletion-failed": "Failed to delete course. Please try again.",
-        "fetch_error": "Failed to fetch courses. Please try again."
+        "fetch_error": "Failed to fetch courses. Please try again.",
+        "deletion-failed-used": "Cannot delete this course because it is currently in use.",
+        "deletion-failed-used-multiple": "Cannot delete some courses because they are currently in use."
       },
       "header": {
         "create": "Create New Course",
@@ -346,7 +348,9 @@
         "update-failed": "Failed to update milestone. Please try again.",
         "deleted-successfully": "Milestone deleted successfully!",
         "deletion-failed": "Failed to delete milestone. Please try again.",
-        "fetch_error": "Failed to fetch milestones. Please try again."
+        "fetch_error": "Failed to fetch milestones. Please try again.",
+        "deletion-failed-used": "Cannot delete this milestone because it is currently in use.",
+        "deletion-failed-used-multiple": "Cannot delete some milestones because they are currently in use."
       },
       "errors": {
         "code-duplicate": "Course code already exists",
