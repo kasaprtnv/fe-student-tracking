@@ -522,6 +522,10 @@ export default function VerifyDetailPage() {
 
   return (
     <>
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
       <PageHeader
         breadcrumbs={[
           { label: t('breadcrumb.verify'), href: '/verifycertificate' },
@@ -543,20 +547,40 @@ export default function VerifyDetailPage() {
                 {/* File tab bar - แสดงเฉพาะเมื่อมีไฟล์มากกว่า 1 ไฟล์ */}
                 {studentAttachments.length > 0 &&
                   (attachmentBatches[0] || []).length > 1 && (
-                    <div className="mb-2 flex items-center gap-2 overflow-x-auto">
-                      {(attachmentBatches[0] || []).map((att, idx) => (
-                        <button
-                          key={att.id || att.fileKey || idx}
-                          className={`max-w-[200px] flex-shrink-0 truncate rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-colors ${selectedAttachmentIdx === idx ? 'border-red-500 bg-white text-red-700' : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                          onClick={() => setSelectedAttachmentIdx(idx)}
-                          type="button"
-                          title={decodeFileName(
-                            att.fileName || `ไฟล์ที่ ${idx + 1}`,
-                          )}
-                        >
-                          {decodeFileName(att.fileName || `ไฟล์ที่ ${idx + 1}`)}
-                        </button>
-                      ))}
+                    <div className="relative mb-2 w-full overflow-x-hidden">
+                      {/* Gradient ซ้าย */}
+                      <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-6 bg-gradient-to-r from-white to-transparent" />
+
+                      {/* Gradient ขวา */}
+                      <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-6 bg-gradient-to-l from-white to-transparent" />
+
+                      <div
+                        className="scrollbar-hide flex w-full items-center gap-2 overflow-x-auto px-1 whitespace-nowrap"
+                        style={{ WebkitOverflowScrolling: 'touch' }}
+                        onWheel={(e) => {
+                          e.currentTarget.scrollLeft += e.deltaY;
+                        }}
+                      >
+                        {(attachmentBatches[0] || []).map((att, idx) => (
+                          <button
+                            key={att.id || att.fileKey || idx}
+                            onClick={() => setSelectedAttachmentIdx(idx)}
+                            type="button"
+                            title={decodeFileName(
+                              att.fileName || `ไฟล์ที่ ${idx + 1}`,
+                            )}
+                            className={`max-w-[200px] flex-shrink-0 truncate rounded-t border-b-2 px-3 py-1 text-sm font-medium transition-all ${
+                              selectedAttachmentIdx === idx
+                                ? 'border-red-500 bg-white text-red-700'
+                                : 'border-transparent bg-gray-100 text-gray-500 hover:bg-gray-200'
+                            }`}
+                          >
+                            {decodeFileName(
+                              att.fileName || `ไฟล์ที่ ${idx + 1}`,
+                            )}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 <div className="flex w-full items-center justify-between gap-2">
@@ -660,16 +684,16 @@ export default function VerifyDetailPage() {
                 <CardTitle>{t('detail.title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <span className="text-muted-foreground">
+                <div className="flex items-start gap-4">
+                  <span className="text-muted-foreground min-w-[230px] shrink-0">
                     {t('detail.student_code')}:
                   </span>
                   <span className="font-medium">
                     {data.studentCode || data.student?.code || '-'}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <span className="text-muted-foreground">
+                <div className="flex items-start gap-4">
+                  <span className="text-muted-foreground min-w-[230px] shrink-0">
                     {t('detail.student_name')}:
                   </span>
                   <span className="font-medium">
@@ -678,16 +702,16 @@ export default function VerifyDetailPage() {
                       '-'}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 items-center gap-2">
-                  <span className="text-muted-foreground whitespace-nowrap">
+                <div className="flex items-start gap-4">
+                  <span className="text-muted-foreground min-w-[230px] shrink-0">
                     {t('detail.step')}:
                   </span>
-                  <span className="min-w-0 font-medium break-all">
+                  <span className="font-medium break-words">
                     {data.stepName || data.step?.name || '-'}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <span className="text-muted-foreground">
+                <div className="flex items-start gap-4">
+                  <span className="text-muted-foreground min-w-[230px] shrink-0">
                     {t('detail.submit_date')}:
                   </span>
                   <span className="font-medium">
