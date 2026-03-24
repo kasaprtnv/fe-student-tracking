@@ -29,7 +29,7 @@ const DashboardPage = () => {
     }
   }, [user, initialized, router]);
 
-  const { fetchStudents, studentUsers, loader: userLoader } = useUser();
+  const { fetchStudents, studentUsers, allStudentUsers, loader: userLoader } = useUser();
   const {
     fetchAllCourses,
     allCourseId,
@@ -92,7 +92,7 @@ const DashboardPage = () => {
     );
   }, [user, courseMap, teacherCourseIds]);
 
-  // Filter students based on role
+  // Filter students based on role (active only, for summary card)
   const filteredStudents = React.useMemo(() => {
     if (user?.role === 'admin') return studentUsers;
     return studentUsers.filter(
@@ -100,7 +100,15 @@ const DashboardPage = () => {
     );
   }, [user, studentUsers, teacherCourseIds]);
 
-  // Calculate totals for summary cards (using filtered data)
+  // Filter all students based on role (including inactive, for charts)
+  const allFilteredStudents = React.useMemo(() => {
+    if (user?.role === 'admin') return allStudentUsers;
+    return allStudentUsers.filter(
+      (s) => s.courseId && teacherCourseIds.includes(s.courseId),
+    );
+  }, [user, allStudentUsers, teacherCourseIds]);
+
+  // Calculate totals for summary cards (using active students only)
   const totalStudents = filteredStudents.length;
   const totalTeachers = stats?.totalTeachers ?? 0;
   const totalCourses = filteredCourseIds.length;
@@ -108,14 +116,14 @@ const DashboardPage = () => {
   const isLoading =
     userLoader || courseLoader || dashboardLoader || !teacherCoursesLoaded;
 
-  // Get all unique years from filtered students
+  // Get all unique years from all students (including inactive)
   const allYears = React.useMemo(() => {
     const yearSet = new Set<string>();
-    filteredStudents.forEach((s) => {
+    allFilteredStudents.forEach((s) => {
       if (s.year) yearSet.add(s.year);
     });
     return Array.from(yearSet).sort();
-  }, [filteredStudents]);
+  }, [allFilteredStudents]);
 
   // Don't render anything until we confirm user is admin or teacher
   if (
@@ -158,7 +166,7 @@ const DashboardPage = () => {
             allYears={allYears}
           />
           <GraduationByYearChart
-            students={filteredStudents}
+            students={allFilteredStudents}
             courseMap={filteredCourseMap}
             allCourseIds={filteredCourseIds}
             allYears={allYears}

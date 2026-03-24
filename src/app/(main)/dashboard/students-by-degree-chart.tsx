@@ -19,6 +19,7 @@ import { User } from '@/types/user';
 import { ICourse } from '@/types/course';
 import { CompactMultiCombobox } from '@/components/ui/combobox/compact-multi-combobox';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 interface StudentsByDegreeChartProps {
   students: User[];
@@ -42,6 +43,7 @@ export function StudentsByDegreeChart({
   const tLegend = useTranslations('dashboard.legend');
   const tFilters = useTranslations('dashboard.filters');
   const tSummary = useTranslations('dashboard.summary-cards');
+  const router = useRouter();
   const [selectedCourses, setSelectedCourses] = React.useState<string[]>([]);
   const [selectedYear, setSelectedYear] = React.useState<string>('all');
 
@@ -79,8 +81,8 @@ export function StudentsByDegreeChart({
       (user) => user.degree === 'doctorate',
     ).length;
     return [
-      { name: tLegend('master'), value: masterCount, color: '#8b5cf6' },
-      { name: tLegend('doctorate'), value: doctorateCount, color: '#f59e0b' },
+      { name: tLegend('master'), value: masterCount, color: '#8b5cf6', degree: 'master' },
+      { name: tLegend('doctorate'), value: doctorateCount, color: '#f59e0b', degree: 'doctorate' },
     ];
   }, [filteredStudents, tLegend]);
 
@@ -198,7 +200,23 @@ export function StudentsByDegreeChart({
                     labelLine={false}
                   >
                     {data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.color}
+                        cursor="pointer"
+                        onClick={() => {
+                          const params = new URLSearchParams();
+                          params.set('degree', entry.degree);
+                          if (selectedCourses.length > 0) {
+                            params.set('courseId', selectedCourses.join(','));
+                          }
+                          if (selectedYear !== 'all') {
+                            params.set('year', selectedYear);
+                          }
+                          params.set('graduated', 'false'); // Only show active students
+                          router.push(`/students?${params.toString()}`);
+                        }}
+                      />
                     ))}
                   </Pie>
                 </PieChart>

@@ -111,7 +111,10 @@ export function AdvancedFilterPopover({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant={isActive ? 'default' : 'outline'}>
+        <Button
+          variant={isActive ? 'outline' : 'outline'}
+          className={isActive ? 'bg-black text-white hover:bg-black/90 hover:text-white' : ''}
+        >
           <Filter className="mr-2 h-4 w-4" />
           {t('filter-button')}
         </Button>

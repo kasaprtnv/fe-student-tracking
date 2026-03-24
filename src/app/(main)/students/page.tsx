@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { Download } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import useSWR from 'swr';
 import { DataTableClickable } from '@/components/data-table/data-table-clickable';
@@ -26,6 +26,7 @@ import { useTitle } from '@/hooks/use-title';
 
 export default function StudentPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('student-page');
   const tColumn = useTranslations('column');
   const tDegree = useTranslations('degree');
@@ -43,6 +44,27 @@ export default function StudentPage() {
     clearErr,
   } = useUser();
 
+  // Build initial filters from URL search params (from dashboard navigation)
+  const initialFilters = useMemo((): AdvancedFilterValues => {
+    const year = searchParams.get('year');
+    const courseId = searchParams.get('courseId');
+    const degree = searchParams.get('degree');
+    const graduated = searchParams.get('graduated');
+
+    if (!year && !courseId && !degree && !graduated) {
+      return defaultFilterValues;
+    }
+
+    return {
+      ...defaultFilterValues,
+      year: year ? year.split(',') : [],
+      courseId: courseId ? courseId.split(',') : [],
+      degree: degree ? degree.split(',') : [],
+      graduated: graduated ? graduated.split(',') : [],
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only compute once on mount
+
   // Local state for pagination, sorting, search, and filters
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageSize, setCurrentPageSize] = useState(10);
@@ -55,7 +77,15 @@ export default function StudentPage() {
   const [searchQuery, setSearch] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 500);
   const [advancedFilters, setAdvancedFilters] =
-    useState<AdvancedFilterValues>(defaultFilterValues);
+    useState<AdvancedFilterValues>(initialFilters);
+
+  // Clear URL search params after applying initial filters
+  useEffect(() => {
+    if (searchParams.toString()) {
+      router.replace('/students', { scroll: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useSWR(
     'fetch-course-data',

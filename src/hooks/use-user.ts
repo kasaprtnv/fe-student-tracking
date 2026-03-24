@@ -25,6 +25,7 @@ import {
   selectAllUserIds,
   selectUserState,
   selectStudentUsers,
+  selectAllStudentUsers,
   selectPagination,
   selectStudentPagination,
   selectTeacherPagination,
@@ -63,6 +64,7 @@ export const useUser = () => {
   const filteredUserIds = useSelector(selectFilteredUserIds);
   const allUserIds = useSelector(selectAllUserIds);
   const studentUsers = useSelector(selectStudentUsers);
+  const allStudentUsers = useSelector(selectAllStudentUsers);
   const allUsersFromMap = useSelector(selectAllUsersFromMap);
   const paginatedUsersFromMap = useSelector(selectPaginatedUsersFromMap);
   const paginatedStudentsFromMap = useSelector(selectPaginatedStudentsFromMap);
@@ -320,6 +322,7 @@ export const useUser = () => {
     filteredUserIds,
     allUserIds,
     studentUsers,
+    allStudentUsers,
     allUsersFromMap,
     paginatedUsersFromMap,
     paginatedStudentsFromMap,

@@ -25,6 +25,7 @@ import {
 import { User } from '@/types/user';
 import { ICourse } from '@/types/course';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { CompactMultiCombobox } from '@/components/ui/combobox/compact-multi-combobox';
 
 interface GraduationByYearChartProps {
@@ -49,6 +50,7 @@ export function GraduationByYearChart({
   const tLegend = useTranslations('dashboard.legend');
   const tSummary = useTranslations('dashboard.summary-cards');
   const tDegree = useTranslations('degree');
+  const router = useRouter();
   const [selectedCourses, setSelectedCourses] = React.useState<string[]>([]);
   const [selectedDegree, setSelectedDegree] = React.useState<string>('all');
   const [yearRange, setYearRange] = React.useState<string>('3');
@@ -217,6 +219,21 @@ export function GraduationByYearChart({
                     name={tLegend('graduated')}
                     fill="#22c55e"
                     radius={[4, 4, 0, 0]}
+                    cursor="pointer"
+                    onClick={(data) => {
+                      if (data?.year) {
+                        const params = new URLSearchParams();
+                        params.set('year', String(data.year));
+                        params.set('graduated', 'true');
+                        if (selectedDegree !== 'all') {
+                          params.set('degree', selectedDegree);
+                        }
+                        if (selectedCourses.length > 0) {
+                          params.set('courseId', selectedCourses.join(','));
+                        }
+                        router.push(`/students?${params.toString()}`);
+                      }
+                    }}
                   >
                     <LabelList
                       dataKey="graduated"
@@ -231,6 +248,21 @@ export function GraduationByYearChart({
                     name={tLegend('not-graduated')}
                     fill="#eab308"
                     radius={[4, 4, 0, 0]}
+                    cursor="pointer"
+                    onClick={(data) => {
+                      if (data?.year) {
+                        const params = new URLSearchParams();
+                        params.set('year', String(data.year));
+                        params.set('graduated', 'false');
+                        if (selectedDegree !== 'all') {
+                          params.set('degree', selectedDegree);
+                        }
+                        if (selectedCourses.length > 0) {
+                          params.set('courseId', selectedCourses.join(','));
+                        }
+                        router.push(`/students?${params.toString()}`);
+                      }
+                    }}
                   >
                     <LabelList
                       dataKey="notGraduated"
