@@ -981,15 +981,9 @@ export default function VerifyDetailPage() {
         >
           <AlertDialogContent className="max-w-sm">
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                {t('confirm.approve_title', {
-                  defaultValue: 'คุณแน่ใจหรือไม่ที่จะอนุมัติ?',
-                })}
-              </AlertDialogTitle>
+              <AlertDialogTitle>คุณแน่ใจหรือไม่ที่จะอนุมัติ?</AlertDialogTitle>
               <AlertDialogDescription>
-                {t('confirm.approve_desc', {
-                  defaultValue: 'โปรดยืนยันว่าคุณต้องการอนุมัติรายการนี้',
-                })}
+                โปรดยืนยันว่าคุณต้องการอนุมัติรายการนี้
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -997,7 +991,7 @@ export default function VerifyDetailPage() {
                 variant="outline"
                 onClick={() => setShowConfirmApproveModal(false)}
               >
-                {t('cancel', { defaultValue: 'common.cancel' })}
+                ยกเลิก
               </Button>
               <Button
                 variant="default"
@@ -1008,7 +1002,7 @@ export default function VerifyDetailPage() {
                 }}
                 disabled={submitting}
               >
-                {t('confirm', { defaultValue: 'common.confirm' })}
+                ยืนยัน
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -1022,14 +1016,10 @@ export default function VerifyDetailPage() {
           <AlertDialogContent className="max-w-sm">
             <AlertDialogHeader>
               <AlertDialogTitle>
-                {t('confirm.decline_title', {
-                  defaultValue: 'คุณแน่ใจหรือไม่ที่จะไม่อนุมัติ?',
-                })}
+                คุณแน่ใจหรือไม่ที่จะไม่อนุมัติ?
               </AlertDialogTitle>
               <AlertDialogDescription>
-                {t('confirm.decline_desc', {
-                  defaultValue: 'โปรดยืนยันว่าคุณต้องการไม่อนุมัติรายการนี้',
-                })}
+                โปรดยืนยันว่าคุณต้องการไม่อนุมัติรายการนี้
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -1037,7 +1027,7 @@ export default function VerifyDetailPage() {
                 variant="outline"
                 onClick={() => setShowConfirmDeclineModal(false)}
               >
-                {t('cancel', { defaultValue: 'common.cancel' })}
+                ยกเลิก
               </Button>
               <Button
                 variant="destructive"
@@ -1047,12 +1037,11 @@ export default function VerifyDetailPage() {
                 }}
                 disabled={submitting || uploadingStaffFile}
               >
-                {t('confirm', { defaultValue: 'common.confirm' })}
+                ยืนยัน
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
         {/* Success Modal */}
         <AlertDialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
           <AlertDialogContent className="max-w-sm">
@@ -1066,12 +1055,25 @@ export default function VerifyDetailPage() {
               <X className="h-5 w-5" />
             </button>
             <div className="flex flex-col items-center justify-center py-6">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500">
-                <CheckCircle2 className="h-10 w-10 text-white" />
-              </div>
-              <h2 className="mb-2 text-2xl font-bold text-green-500">
-                {t('success.title')}
-              </h2>
+              {successMessage === t('success.approved') ? (
+                <>
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500">
+                    <CheckCircle2 className="h-10 w-10 text-white" />
+                  </div>
+                  <h2 className="mb-2 text-2xl font-bold text-green-500">
+                    {t('success.title')}
+                  </h2>
+                </>
+              ) : (
+                <>
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-500">
+                    <X className="h-10 w-10 text-white" />
+                  </div>
+                  <h2 className="mb-2 text-2xl font-bold text-red-500">
+                    {t('success.title')}
+                  </h2>
+                </>
+              )}
               <p className="text-center text-gray-600">{successMessage}</p>
             </div>
           </AlertDialogContent>
