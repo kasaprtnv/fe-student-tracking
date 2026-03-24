@@ -490,7 +490,7 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
             </div>
           </ResizablePanel>
           <Button
-            className="mt-13 mr-4 flex"
+            className="bg-primary hover:bg-primary/90 mt-13 mr-4 flex"
             disabled={!pendingMilestone || isCourseUsed}
             onClick={() => {
               if (!pendingMilestone) return;
@@ -568,7 +568,11 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
         </ResizablePanelGroup>
 
         <div className="mt-4 flex justify-end">
-          <Button onClick={() => setConfirmOpen(true)} disabled={isCourseUsed}>
+          <Button
+            onClick={() => setConfirmOpen(true)}
+            disabled={isCourseUsed}
+            className="bg-primary hover:bg-primary/90"
+          >
             {tSelectedMilestone('milestone.next')}
           </Button>
         </div>
