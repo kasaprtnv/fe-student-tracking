@@ -6,9 +6,15 @@ import { Toaster } from '@/components/ui/sonner';
 import MainLayout from '@/components/layout/main-layout';
 import './globals.css';
 import AuthProvider from '@/providers/AuthProvider';
+import { Metadata } from 'next';
 
 type Props = {
   children: React.ReactNode;
+};
+
+export const metadata: Metadata = {
+  title: 'Graduated Learning Progress Tracking System',
+  description: '',
 };
 
 export default async function RootLayout({ children }: Props) {
