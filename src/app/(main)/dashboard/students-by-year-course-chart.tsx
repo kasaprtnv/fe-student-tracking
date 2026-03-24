@@ -25,6 +25,7 @@ import {
 import { User } from '@/types/user';
 import { ICourse } from '@/types/course';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { CompactMultiCombobox } from '@/components/ui/combobox/compact-multi-combobox';
 
 interface StudentsByYearCourseChartProps {
@@ -41,6 +42,7 @@ export function StudentsByYearCourseChart({
   const tDegree = useTranslations('degree');
   const tLegend = useTranslations('dashboard.legend');
   const tSummary = useTranslations('dashboard.summary-cards');
+  const router = useRouter();
   const [selectedCourses, setSelectedCourses] = React.useState<string[]>([]);
   const [yearRange, setYearRange] = React.useState<string>('3');
   const [selectedDegree, setSelectedDegree] = React.useState<string>('all');
@@ -250,6 +252,19 @@ export function StudentsByYearCourseChart({
                       name={displayCourseNames[courseId]}
                       fill={displayCourseColors[courseId]}
                       radius={[4, 4, 0, 0]}
+                      cursor="pointer"
+                      onClick={(data) => {
+                        if (data?.year) {
+                          const params = new URLSearchParams();
+                          params.set('year', String(data.year));
+                          params.set('courseId', courseId);
+                          if (selectedDegree !== 'all') {
+                            params.set('degree', selectedDegree);
+                          }
+                          params.set('graduated', 'false'); // Only show active students
+                          router.push(`/students?${params.toString()}`);
+                        }
+                      }}
                     >
                       <LabelList
                         dataKey={courseId}

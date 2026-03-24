@@ -178,7 +178,7 @@ const userSlice = createSlice({
         users.forEach((user: User) => {
           state.paginatedStudentMap[user.id] = user;
         });
-        // Merge active users into userMap
+        // Merge active users into userMap (for summary card count)
         users
           .filter((user: User) => user.isActive !== false)
           .forEach((user: User) => {

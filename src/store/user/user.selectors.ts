@@ -116,6 +116,14 @@ export const selectStudentUsers = createSelector([selectUserMap], (userMap) => {
   return Object.values(userMap).filter((user) => user.role === 'student');
 });
 
+// All students including inactive (for dashboard charts)
+export const selectAllStudentUsers = createSelector(
+  [selectPaginatedStudentMap],
+  (paginatedStudentMap) => {
+    return Object.values(paginatedStudentMap);
+  },
+);
+
 export const selectTeacherUsers = createSelector([selectUserMap], (userMap) => {
   return Object.values(userMap).filter((user) => user.role === 'teacher');
 });

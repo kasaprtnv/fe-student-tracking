@@ -139,11 +139,12 @@ export function MultiSelect({
         {selectedOptions.length > 0 && !disabled && (
           <Button
             type="button"
+            variant="ghost"
             onClick={(e) => {
               e.stopPropagation();
               onChange([]);
             }}
-            className="mr-2 h-5 w-5 rounded-sm"
+            className="mr-2 h-5 w-5 rounded-sm bg-black text-white hover:bg-black/80 hover:text-white"
           >
             <X className="h-3 w-3" />
           </Button>
