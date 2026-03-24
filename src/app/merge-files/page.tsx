@@ -89,9 +89,16 @@ export default function FileListPage() {
           item.attachments as AttachmentWithDeleted[]
         ).filter((a) => !a.isDeleted && (a.fileUrl || a.fileKey));
 
-        // ถ้าไม่มี attachment ที่ active ให้ return empty array
+        // ✅ ถ้าไม่มีไฟล์ ให้แสดง row เปล่า แทนที่จะ return []
         if (activeAttachments.length === 0) {
-          return [];
+          return [
+            {
+              ...baseItem,
+              attachmentId: '',
+              filename: '-',
+              file_url: '',
+            },
+          ];
         }
 
         return activeAttachments.map((attachment) => ({
@@ -102,7 +109,7 @@ export default function FileListPage() {
         }));
       }
 
-      // Fallback to single attachment or fileName field
+      // Fallback
       const fileName = item.fileName || item.attachment?.fileName || '-';
       const fileUrl =
         item.fileUrl ||
@@ -112,16 +119,12 @@ export default function FileListPage() {
         '';
       const attachmentId = item.attachment?.id || '';
 
-      // ถ้าไม่มีไฟล์แนบ ให้ return empty array (ไม่แสดงในตาราง)
-      if (!fileUrl || fileName === '-') {
-        return [];
-      }
-
+      // ✅ แสดง row เปล่าแทนที่จะซ่อน
       return [
         {
           ...baseItem,
           attachmentId,
-          filename: fileName,
+          filename: fileName === '-' ? '-' : fileName,
           file_url: fileUrl,
         },
       ];
@@ -234,7 +237,8 @@ export default function FileListPage() {
 
   // สร้าง unique id สำหรับแต่ละ row
   const getRowId = (file: FileItem) =>
-    file.attachmentId || `${file.filename}-${file.email}`;
+    file.attachmentId ||
+    `${file.milestone_step}-${file.email}-${file.filename}`;
 
   if (loading) {
     return (

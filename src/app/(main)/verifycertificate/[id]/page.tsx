@@ -66,6 +66,8 @@ export default function VerifyDetailPage() {
   const [declineReasonError, setDeclineReasonError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showConfirmApproveModal, setShowConfirmApproveModal] = useState(false);
+  const [showConfirmDeclineModal, setShowConfirmDeclineModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [zoom, setZoom] = useState(100);
 
@@ -882,7 +884,7 @@ export default function VerifyDetailPage() {
                   <div className="flex justify-end gap-3">
                     <Button
                       variant="destructive"
-                      onClick={handleDecline}
+                      onClick={() => setShowConfirmDeclineModal(true)}
                       disabled={submitting || uploadingStaffFile}
                     >
                       {submitting || uploadingStaffFile ? (
@@ -893,7 +895,7 @@ export default function VerifyDetailPage() {
                     <Button
                       variant="default"
                       className="bg-green-500 text-white hover:bg-green-600"
-                      onClick={handleApprove}
+                      onClick={() => setShowConfirmApproveModal(true)}
                       disabled={submitting}
                     >
                       {submitting ? <Spinner className="mr-2 h-4 w-4" /> : null}
@@ -971,6 +973,85 @@ export default function VerifyDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Confirm Approve Modal */}
+        <AlertDialog
+          open={showConfirmApproveModal}
+          onOpenChange={setShowConfirmApproveModal}
+        >
+          <AlertDialogContent className="max-w-sm">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {t('confirm.approve_title', {
+                  defaultValue: 'คุณแน่ใจหรือไม่ที่จะอนุมัติ?',
+                })}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('confirm.approve_desc', {
+                  defaultValue: 'โปรดยืนยันว่าคุณต้องการอนุมัติรายการนี้',
+                })}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowConfirmApproveModal(false)}
+              >
+                {t('cancel', { defaultValue: 'common.cancel' })}
+              </Button>
+              <Button
+                variant="default"
+                className="bg-green-500 text-white hover:bg-green-600"
+                onClick={async () => {
+                  setShowConfirmApproveModal(false);
+                  await handleApprove();
+                }}
+                disabled={submitting}
+              >
+                {t('confirm', { defaultValue: 'common.confirm' })}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Confirm Decline Modal */}
+        <AlertDialog
+          open={showConfirmDeclineModal}
+          onOpenChange={setShowConfirmDeclineModal}
+        >
+          <AlertDialogContent className="max-w-sm">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {t('confirm.decline_title', {
+                  defaultValue: 'คุณแน่ใจหรือไม่ที่จะไม่อนุมัติ?',
+                })}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('confirm.decline_desc', {
+                  defaultValue: 'โปรดยืนยันว่าคุณต้องการไม่อนุมัติรายการนี้',
+                })}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowConfirmDeclineModal(false)}
+              >
+                {t('cancel', { defaultValue: 'common.cancel' })}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={async () => {
+                  setShowConfirmDeclineModal(false);
+                  await handleDecline();
+                }}
+                disabled={submitting || uploadingStaffFile}
+              >
+                {t('confirm', { defaultValue: 'common.confirm' })}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Success Modal */}
         <AlertDialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>

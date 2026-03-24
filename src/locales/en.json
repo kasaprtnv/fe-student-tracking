@@ -8,7 +8,7 @@
     "studentReport": "Student Report",
     "progressVerify": "Progress Verify",
     "stepProgressReport": "Step Progress Report",
-    "mergeFiles": "Approved Evidence Files",
+    "mergeFiles": "Approved Evidence",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -865,8 +865,8 @@
     }
   },
   "merge-files": {
-    "title": "Approved Evidence Files",
-    "description": "Display all approved evidence files",
+    "title": "Approved Evidence",
+    "description": "Display all approved evidence",
     "loading": "Loading data...",
     "error-loading": "Error loading data",
     "filename": "Filename",
