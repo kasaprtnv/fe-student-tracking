@@ -154,7 +154,7 @@ const MilestoneStepPage = () => {
         <div className="flex justify-end">
           <Button
             onClick={() => setIsAdd(true)}
-            className="mb-4"
+            className="bg-primary hover:bg-primary/90 mb-4"
             disabled={milestone?.isUsed}
           >
             <Plus size={16} />

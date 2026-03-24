@@ -1125,10 +1125,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmSubmit}
-              className="bg-black hover:bg-black"
-            >
+            <AlertDialogAction onClick={handleConfirmSubmit}>
               {t('confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -368,7 +368,10 @@ export function FilterStepProgressReportForm({
                 {t('export-excel')}
               </span>
             </Button>
-            <Button type="submit" className="min-w-[120px]">
+            <Button
+              type="submit"
+              className="bg-primary hover:bg-primary/90 min-w-[120px]"
+            >
               <Filter className="h-4 w-4" />
               <span className="flex items-center gap-2">
                 {t('apply-filters')}

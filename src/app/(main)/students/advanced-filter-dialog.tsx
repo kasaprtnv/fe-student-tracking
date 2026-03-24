@@ -389,7 +389,6 @@ export function AdvancedFilterPopover({
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
                           className="w-full"
                           onClick={() => {
                             form.setValue('enrollDateFrom', undefined);
@@ -406,25 +405,18 @@ export function AdvancedFilterPopover({
             </div>
 
             <div className="mt-4 flex items-center justify-between border-t pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleReset}
-              >
+              <Button type="button" variant="outline" onClick={handleReset}>
                 <RotateCcw className="mr-2 h-3 w-3" />
                 {t('reset')}
               </Button>
               <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCancel}
-                >
+                <Button type="button" variant="outline" onClick={handleCancel}>
                   {t('cancel')}
                 </Button>
-                <Button type="submit" size="sm">
+                <Button
+                  type="submit"
+                  className="bg-primary hover:bg-primary/90"
+                >
                   {t('apply')}
                 </Button>
               </div>
