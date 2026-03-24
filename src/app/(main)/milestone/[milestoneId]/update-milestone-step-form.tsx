@@ -111,20 +111,15 @@ const UpdateMilestoneStepForm = ({
       });
       return;
     }
-    if (data.secondNotifyBeforeDays > data.notifyBeforeDays) {
+    // 0 means "no second notification", so only validate ordering when second notification is enabled.
+    if (
+      data.secondNotifyBeforeDays > 0 &&
+      data.secondNotifyBeforeDays >= data.notifyBeforeDays
+    ) {
       form.setError('secondNotifyBeforeDays', {
         type: 'manual',
         message: tForm(
           'errors.secondNotifyBeforeDays-greater-than-notifyBeforeDays',
-        ),
-      });
-      return;
-    }
-    if (data.secondNotifyBeforeDays === data.notifyBeforeDays) {
-      form.setError('secondNotifyBeforeDays', {
-        type: 'manual',
-        message: tForm(
-          'errors.secondNotifyBeforeDays-equal-to-notifyBeforeDays',
         ),
       });
       return;
