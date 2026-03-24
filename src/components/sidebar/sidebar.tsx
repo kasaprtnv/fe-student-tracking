@@ -260,7 +260,7 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className={cn('flex justify-center pb-3', open ? 'px-3' : '')}>
+      {/* <div className={cn('flex justify-center pb-3', open ? 'px-3' : '')}>
         {open ? (
           <div
             className={cn(
@@ -318,7 +318,7 @@ export default function Sidebar() {
             />
           </button>
         )}
-      </div>
+      </div> */}
       <div className="border-t-2 border-gray-200 p-3">
         <div
           className={cn(

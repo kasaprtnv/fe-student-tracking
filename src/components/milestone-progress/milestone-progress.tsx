@@ -32,6 +32,7 @@ import {
   CircleX,
   CircleCheck,
   Hourglass,
+  CalendarCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -55,7 +56,6 @@ import {
 } from '../ui/tooltip';
 import { Textarea } from '../ui/textarea';
 import { Separator } from '../ui/separator';
-import { StepStatus } from '@/types/profile';
 
 interface MilestoneProgressProps {
   milestones: IMilestone[];
@@ -675,6 +675,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                         const pending = isStepPending(step.status);
                         const available = isStepAvailable(step.status);
                         const locked = isLocked(step.status);
+                        const attempt = attemptMap[step.id];
 
                         return (
                           <Card
@@ -856,6 +857,7 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                         </div>
                                       </>
                                     )}
+
                                     {declined && (
                                       <>
                                         <div className="flex items-center gap-1.5">
@@ -895,6 +897,25 @@ export const MilestoneProgress: React.FC<MilestoneProgressProps> = ({
                                       </>
                                     )}
                                   </div>
+                                  {completed &&
+                                    attempt &&
+                                    attempt.updatedAt &&
+                                    attempt.approverUser && (
+                                      <div className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
+                                        <CalendarCheck className="size-3" />
+                                        <span>
+                                          {t('approval_date')} :{' '}
+                                          {formatDate(
+                                            new Date(attempt.updatedAt),
+                                          )}
+                                        </span>
+                                        <span>
+                                          {t('approved_by', {
+                                            name: `${attempt.approverUser.firstName} ${attempt.approverUser.lastName}`,
+                                          })}
+                                        </span>
+                                      </div>
+                                    )}
                                   <div>
                                     {/* Attachment Preview */}
                                     {attemptMap[step.id] &&

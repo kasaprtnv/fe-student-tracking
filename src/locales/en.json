@@ -291,6 +291,8 @@
     "recommendation": "Recommendation",
     "description": "Description",
     "file_attachment": "File Attachment",
+    "approved_by": "by {{name}}",
+    "approval_date": "Approval date",
     "description_placeholder": "Enter additional description (if any)",
     "confirm_submit_title": "Confirm Submission",
     "confirm_submit_description": "Are you sure you want to submit this file?",

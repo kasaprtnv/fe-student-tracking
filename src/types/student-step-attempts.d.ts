@@ -16,6 +16,14 @@ export interface StudentStepAttempts {
   attemptNo: number;
   stepProgress: StudentStepProgress;
   staffAttachment: Attachment;
+  updatedAt?: string;
+  approverUser?: ApproverUser;
+}
+
+export interface ApproverUser {
+  id: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface Attachment {

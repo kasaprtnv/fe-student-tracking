@@ -29,6 +29,7 @@ export default function ProfilePage() {
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
   const isOwnProfile = id === user?.id;
   const mode: ViewMode = isOwnProfile ? 'upload' : 'readonly';
+  const targetId = user?.role === 'student' && user?.id ? user.id : (id ?? '');
 
   const breadcrumb = isOwnProfile
     ? [
@@ -57,17 +58,11 @@ export default function ProfilePage() {
   }, [isOwnProfile, id, userMap, fetchUserDetails, router, user?.id]);
 
   useSWR(
-    user?.role === 'student' && user?.id
-      ? ['getStudentStepAttempts', user.id]
-      : null,
-    user?.role === 'student' && user?.id
-      ? async () => {
-          await getAttemptByUserId(user?.id ?? '');
-        }
-      : null,
+    targetId ? ['getStudentStepAttempts', targetId] : null,
+    targetId ? async () => await getAttemptByUserId(targetId) : null,
     {
-      revalidateOnFocus: true, // Refresh เมื่อกลับมาที่หน้านี้
-      refreshInterval: 30000, // Refresh ทุก 30 วินาที เพื่อให้เห็นการเปลี่ยนแปลงสถานะ
+      revalidateOnFocus: true,
+      refreshInterval: 30000,
     },
   );
 
