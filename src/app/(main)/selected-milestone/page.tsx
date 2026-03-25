@@ -71,7 +71,6 @@ export default function PageLayout({ courseId }: { courseId?: string }) {
     Record<string, UnlockCondition[]>
   >({});
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const t = useTranslations();
   const {
     allMilestoneIds,
     getMilestoneById,

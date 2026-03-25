@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { IMilestone } from '@/types/milestone';
 import { useTranslations } from 'next-intl';
 import { Lock } from 'lucide-react';

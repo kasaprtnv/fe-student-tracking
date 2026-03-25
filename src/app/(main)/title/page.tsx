@@ -80,7 +80,7 @@ const TitlePage = () => {
         return;
       }
       setIsDelete({ isDeleting: true, titleIds: [id] });
-    } catch (error) {
+    } catch {
       toast.error(tForm('toast.delete-error'));
     }
   };
@@ -121,7 +121,7 @@ const TitlePage = () => {
       if (deletableIds.length > 0) {
         toast.success(tForm('toast.deleted-successfully'));
       }
-    } catch (error) {
+    } catch {
       toast.error(tForm('toast.deletion-failed'));
     } finally {
       setIsDeleteLoading(false);

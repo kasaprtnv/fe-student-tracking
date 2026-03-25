@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useTransition, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
-import { setLocale } from '@/actions/setLocale';
 import Image from 'next/image';
 import { ArrowRight, LogOut, ChevronDown, ChevronUp } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -14,7 +13,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/use-auth';
 import { usePendingCount } from '@/hooks/use-pending-count';
 
@@ -24,14 +23,12 @@ export default function Sidebar() {
   const { user, initialized } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [, startTransition] = useTransition();
   const { pendingCount } = usePendingCount();
   const hiddenRoutes = [`/login`];
   const API_STATIC_URL =
     process.env.NEXT_PUBLIC_STATIC_URL || 'http://localhost:3001/static';
 
   const t = useTranslations();
-  const locale = useLocale();
   const { logoutUser } = useAuth();
 
   const filteredSidebarItems = useMemo(() => {
@@ -49,13 +46,6 @@ export default function Sidebar() {
 
   if (hiddenRoutes.includes(pathname)) {
     return null;
-  }
-
-  function changeLanguage(newLocale: string) {
-    startTransition(async () => {
-      await setLocale(newLocale);
-      router.refresh();
-    });
   }
 
   const toggleSubmenu = (title: string) => {

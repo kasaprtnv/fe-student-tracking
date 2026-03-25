@@ -57,7 +57,7 @@ export function createFileColumns(
         document.body.removeChild(a);
         window.URL.revokeObjectURL(downloadUrl);
       }, 100);
-    } catch (e) {
+    } catch {
       alert('ไม่สามารถดาวน์โหลดไฟล์ได้');
     }
   }

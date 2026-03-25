@@ -29,7 +29,12 @@ const DashboardPage = () => {
     }
   }, [user, initialized, router]);
 
-  const { fetchStudents, studentUsers, allStudentUsers, loader: userLoader } = useUser();
+  const {
+    fetchStudents,
+    studentUsers,
+    allStudentUsers,
+    loader: userLoader,
+  } = useUser();
   const {
     fetchAllCourses,
     allCourseId,

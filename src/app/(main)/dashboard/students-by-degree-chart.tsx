@@ -81,8 +81,18 @@ export function StudentsByDegreeChart({
       (user) => user.degree === 'doctorate',
     ).length;
     return [
-      { name: tLegend('master'), value: masterCount, color: '#8b5cf6', degree: 'master' },
-      { name: tLegend('doctorate'), value: doctorateCount, color: '#f59e0b', degree: 'doctorate' },
+      {
+        name: tLegend('master'),
+        value: masterCount,
+        color: '#8b5cf6',
+        degree: 'master',
+      },
+      {
+        name: tLegend('doctorate'),
+        value: doctorateCount,
+        color: '#f59e0b',
+        degree: 'doctorate',
+      },
     ];
   }, [filteredStudents, tLegend]);
 

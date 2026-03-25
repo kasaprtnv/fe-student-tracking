@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 import { IStudentStepProgress } from '@/types/student-step-progress';
@@ -9,31 +8,6 @@ import { mixedThEnTextSort } from '@/lib/table-sorted';
 import { formatShortDate } from '@/lib/format-date';
 
 type TranslationFunction = (key: string) => string;
-
-const getStatusBadge = (status: string, t: TranslationFunction) => {
-  switch (status) {
-    case 'pending approval':
-      return (
-        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-          {t('status.pending')}
-        </Badge>
-      );
-    case 'approved':
-      return (
-        <Badge variant="secondary" className="bg-green-100 text-green-800">
-          {t('status.approved')}
-        </Badge>
-      );
-    case 'declined':
-      return (
-        <Badge variant="secondary" className="bg-red-100 text-red-800">
-          {t('status.declined')}
-        </Badge>
-      );
-    default:
-      return <Badge variant="secondary">{status}</Badge>;
-  }
-};
 
 export function createVerifyColumns(
   t: TranslationFunction,
