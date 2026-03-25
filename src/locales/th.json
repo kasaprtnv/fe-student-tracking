@@ -830,7 +830,7 @@
       "total-students": "นิสิตที่ยังไม่สำเร็จการศึกษา (เปิดใช้งานอยู่)",
       "total-teachers": "อาจารย์ (เปิดใช้งานอยู่)",
       "total-courses": "หลักสูตรทั้งหมด",
-      "students-in-courses": "นิสิตทั้งหมดในหลักสูตร",
+      "students-in-courses": "นิสิตที่กำลังศึกษาในหลักสูตร",
       "managed-courses": "หลักสูตรที่ดูแลทั้งหมด",
       "unit-people": "คน",
       "unit-courses": "หลักสูตร"
